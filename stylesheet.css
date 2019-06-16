@@ -1,9 +1,19 @@
 @font-face {
-  font-family: Bahnschrift;
-  src: url(Bahnschrift.ttf) format("truetype");
+  font-family: AvenirLTStd-Light;
+  src: url(AvenirLTStd-Light.otf) format("opentype");
+}
+@font-face {
+  font-family: NFGEB;
+  src: url(NFGEB.ttf) format("truetype");
 }
 * {
-  font-family: Bahnschrift;
+  font-family: AvenirLTStd-Light;
+  font-weight: light;
+}
+.nfgeb {
+  font-family: NFGEB;
+  text-align: center;
+  font-size: 25px;
 }
 body {
   background-image: url("Background.png");
@@ -25,40 +35,64 @@ li {
 table {
   margin: auto;
 }
-.albumart {
-  height: 300px;
-  width: 300px;
-  padding: 0px;
-  box-shadow: 10px 10px 5px rgba(0, 0, 0, .25);
-}
-.albuminfo {
-  padding-left: 50px;
-  width: 400px;
-  height: 300px;
-}
-.albumtitle {
-  font-size: 40px;
-}
-.length {
-  font-size: 20px;
-}
-.content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #f1f1f1;
+.logobottom {
+  height: 30px;
+  width: 30px;
+  padding: 10px;
 }
 a {
   color: #000;
+  text-decoration: none;
 }
-.collapsible {
-  background-color: #fff;
-  width: 300px;
-  border: 0px;
-  outline: 0;
-  padding: 10px;
-  font-size: 15px;
+.albumart {
+  height: 500px;
+  width: 500px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
 }
-.content {
-  background-color: rgba(255, 255, 255, .5)
+.title {
+  font-size: 50px;
+  padding: 0px;
+}
+td {
+  padding: 30px;
+  width: 500px;
+  align-content: center;
+  text-align: center;
+}
+table {
+  margin: 0;
+  position: absolute;
+  top: 20%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  left: 50%;
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
+.tracklist {
+	text-align: center;
+	font-size: 18px;
+}
+.caption {
+	font-size: 20px;
+}
+.platforms {
+}
+.homebutton {
+  height: 50px;
+  width: 50px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.smallart {
+  height: 350px;
+  width: 350px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+}
+.albumindex {
+  width: 100%;
 }
