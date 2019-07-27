@@ -9,6 +9,8 @@
 * {
   font-family: AvenirLTStd-Light;
   font-weight: light;
+  --utopian: #fa8dac;
+  --chase-an-idea: #493c8e;
 }
 .nfgeb {
   font-family: NFGEB;
@@ -21,8 +23,8 @@ body {
 .banner {
   margin: auto;
   background-color: rgba(255, 255, 255, .5);
-  padding: 20px;
-  margin: 10px;
+  padding: 3px;
+  margin: 3px;
   text-align: center;
 }
 h1 {
