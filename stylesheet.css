@@ -9,8 +9,6 @@
 * {
   font-family: AvenirLTStd-Light;
   font-weight: light;
-  --utopian: #fa8dac;
-  --chase-an-idea: #493c8e;
 }
 .nfgeb {
   font-family: NFGEB;
@@ -18,7 +16,7 @@
   font-size: 25px;
 }
 body {
-  background-image: url("Background.png");
+  background: #efefef;
 }
 .banner {
   margin: auto;
