@@ -1,14 +1,14 @@
 @font-face {
-  font-family: AvenirLTStd-Light;
-  src: url(AvenirLTStd-Light.otf) format("opentype");
+  font-family: Bahnschrift-Light;
+  src: url(BAHNSCHRIFT.TTF) format("truetype");
+}
+* {
+  font-family: Bahnschrift Light;
+  font-weight: light;
 }
 @font-face {
   font-family: NFGEB;
   src: url(nfgeb.ttf) format("truetype");
-}
-* {
-  font-family: AvenirLTStd-Light;
-  font-weight: light;
 }
 .nfgeb {
   font-family: NFGEB;
@@ -29,13 +29,10 @@ body {
 .discography {
 	background-color: #ffffff;
 	width: 850px;
-	margin: 50px auto;
-	padding: 10px 0px 100px 0px;
+	margin: 30px auto;
+	padding: 10px 0px 50px 0px;
 	text-align: center;
-}
-h1 {
-  font-weight: normal;
-  font-size: 50px;
+	box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
 }
 li {
   font-size: 13px;
@@ -61,6 +58,10 @@ a {
 .title {
   font-size: 50px;
   padding: 0px;
+  text-align: center;
+}
+.paragraph {
+  margin: 30px 20%;
 }
 td {
   padding: 30px;
