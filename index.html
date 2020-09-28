@@ -4,6 +4,9 @@
 <link rel="icon" href="./Logo.png">
 <title>Astro</title>
 <style>
+@font-face {font-family: Segoe UI; src: url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2); }
+* {font-family: Segoe UI;}
+
 :root {--white: #fff; --black: #393e46; --color: #0288f5;}
 
 * {font-family:"Segoe UI";font-weight:normal;color:var(--black); text-align:center;}
@@ -25,6 +28,10 @@ span.date {font-size:20px; font-weight: Bold;}
 span.tracklist {}
 a.link {text-decoration:none;color:var(--color); font-size:18px}
 a.link:hover {text-decoration:underline;}
+
+::-webkit-scrollbar { width: 15px;}
+::-webkit-scrollbar-track { background: var(--black);}
+::-webkit-scrollbar-thumb { background: url("./Background.png"); background-size: cover;}
 </style>
 </head>
 <body>

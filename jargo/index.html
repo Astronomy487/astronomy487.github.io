@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" type="image/png" href="./icon.png">
+<title>Jȧrgo</title>
+<style>
+@font-face {font-family: Antapani; src: url(Antapani-ExtraBold.otf); }
+* {font-family: Antapani;}
+
+:root {--color: #ff2e63;}
+
+:root {--white: #F0F0F0; --black: #303841;}
+.sidebar {height: 100%; width: 240px; position: fixed; z-index: 1; top: 0; left: 0; overflow-x: hidden; padding: 30px;}
+.main {margin-left: 292px; padding: 20px 45px; width: 40%;}
+.sidebar {background-color: var(--black); color: var(--white);}
+body {background-color: var(--white); color: var(--black);}
+* {font-size: 20px; font-weight: Normal; text-align: justify;}
+h2 {font-size:30px;}
+a {color: var(--color); text-decoration: none;}
+a:hover {color: var(--white);}
+h1 {color: var(--black); border-left: solid 5px var(--color); padding: 6px 18px; font-size: 24px; margin: 40px 10px 10px 10px;}
+b {color: var(--color);}
+table {width:75%;background-color:var(--black); margin:auto;}
+td {background-color:var(--white);}
+th {background-color:var(--color); color:var(--white);}
+td, th {padding:5px;}
+::selection {color:var(--white); background:var(--color);}
+::-moz-selection {color:var(--white); background:var(--color);}
+
+::-webkit-scrollbar { width: 15px;}
+::-webkit-scrollbar-track { background: var(--white);}
+::-webkit-scrollbar-thumb { background: var(--color);}
+</style>
+
+</head>
+<body>
+	
+<div class="sidebar">
+  <h2>Jȧrgo</h2>
+  <a href="#Concept">Concept</a><br>
+  <a href="#Phonology">Phonology</a><br>
+  <a href="#Predicates">Predicates</a><br>
+  <a href="#Arguments">Arguments</a><br>
+  <a href="#CompoundPredicates">Compound Predicates</a><br>
+  <a href="#PredicateList">Predicate List</a><br>
+</div>
+
+<div class="main">
+
+<a id="Concept"></a>
+<h1>Concept</h1>
+<p>Jȧrgo is a personal language based on predicate logic.</p>
+
+<a id="Phonology"></a>
+<h1>Phonology</h1>
+<p>Jȧrgo has 6 vowels and 10 consonants. The vowels come in three pairs, each differing from their partner by vowel
+depth. Consonants are built on four places of articulation and do not have voicing distinctions.</p>
+<table><tr>
+<th></th>		<th>Front</th>	<th>Back</th>
+</tr><tr>
+<th>Close</th>	<td>i</td>	<td>u</td>
+</tr><tr>
+<th>Mid</th>	<td>e</td>	<td>o</td>
+</tr><tr>
+<th>Open</th>	<td>a</td>	<td>ȧ</td>
+</tr></table>
+<br><table><tr>
+<th></th>			<th>Labial</th>	<th>Alveolar</th>	<th>Palatal</th>	<th>Velar</th>
+</tr><tr>
+<th>Nasal</th>		<td></td>		<td>n</td>			<td></td>			<td></td>
+</tr><tr>
+<th>Plosive</th>	<td>b</td>		<td>d</td>			<td>ġ</td>			<td>g</td>
+</tr><tr>
+<th>Fricative</th>	<td>v</td>		<td>z</td>			<td>j</td>			<td>r</td>
+</tr><tr>
+<th>Liquid</th>		<td></td>		<td>l</td>			<td></td>			<td></td>
+</tr></table>
+
+<a id="Predicates"></a>
+<h1>Predicates</h1>
+<p>A predicate connects a set of arguments and defines their relationship. The predicate can be thought of as the verb
+of a clause, and the arguments can be thought of as the nouns of a clause, although they are subtly different.</p>
+<p>All predicates, as they appear in the dictionary, end in <b>-na</b>, <b>-ne</b>, or <b>-ni</b>. From this base form,
+a total of 20 forms can be created by altering the consonant and the vowel depth. These 20 forms are used to convey
+grammatical information. Wordlists define predicates like this:</p>
+<p><b>rane</b>: speaker¹ says message² to audience³ through medium⁴</p>
+
+<a id="Arguments"></a>
+<h1>Arguments</h1>
+<p>Predicates can support anywhere from 0 to 4 arguments. These come in slots, and the use of a slot is defined by the
+predicate. For example, in the clause <b>I speak to you</b>, <b>I</b> is the speaker in position 1, and <b>you</b> is
+the audience in position 2. All of these arguments, even if they seem unrelated, are analyzed as different players of
+what is fundamentally one action or state.</p>
+<p>Further, arguments can be derived from predicates. The word <b>speaker</b>, defined as something that satisfies
+position 1 of <b>rane</b>, can be used as an argument for any new predicate, like position 2 of <b>jadroni</b>. The word
+form of the argument is a form of <b>rane</b> from position 1 to position 2. Of the 20 predicate forms, 16 are used to
+form arguments from predicates. This argument derivation process also includes the alteration of vowel depth between the
+three vowel pairs. This chart shows the 16 derivations using the vowel pair <b>i</b>-<b>u</b>.</p>
+<table><tr>
+<th></th>		<th>from 1</th>	<th>from 2</th>	<th>from 3</th>	<th>from 4</th>
+</tr><tr>
+<th>to 1</th>	<td>-vi</td>	<td>-bi</td>	<td>-vu</td>	<td>-bu</td>
+</tr><tr>
+<th>to 2</th>	<td>-zi</td>	<td>-di</td>	<td>-zu</td>	<td>-du</td>
+</tr><tr>
+<th>to 3</th>	<td>-ji</td>	<td>-ġi</td>	<td>-ju</td>	<td>-ġu</td>
+</tr><tr>
+<th>to 4</th>	<td>-ri</td>	<td>-gi</td>	<td>-ru</td>	<td>-gu</td>
+</tr></table>
+
+<a id="CompoundPredicates"></a>
+<h1>Compound Predicates</h1>
+<p>Compound predicates are formed when several predicates are combined for use as a predicate or argument. This is also
+how adjectives and adverbs are formed.
+
+<a id="PredicateList"></a>
+<h1>Predicate List</h1>
+<b>jadroni</b>: threat¹ endangers victim², saved by savior³ by means⁴
+<b>rane</b>: speaker¹ says message² to audience³ through medium⁴
+<b>vine</b>: desire¹ is wanted by person² for purpose³
+<b>word</b>: event¹ is tragic for victim² in way³
+<b>word</b>: teacher¹ informs student² about concept³ by method⁴
+<b>word</b>: text¹ is written by scribe² in medium³ using tool⁴
+<b>zguni</b>: meter¹ measures length² in meters
+<b>ġubduna</b>: failure¹ fails to accomplish task² without condition³ happening, inflicting punishment⁴
+<b>ȧ</b>: child¹ is the child of parent² forming family³
+<b>um</b>: truth¹ is suspicious over fact² to doubter³ who instead believes counter⁴
+
+</div>
+
+</body>
+</html>
+
