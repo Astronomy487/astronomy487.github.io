@@ -1,0 +1,9 @@
+@font-face {font-family: Antapani; src: url(./Antapani-ExtraBold.otf); }
+* {font-family: Antapani;}
+:root {--white: #F0F0F0; --black: #303841; --color: #ff2e63;}
+
+::selection {color:var(--white); background:var(--color);}
+::-moz-selection {color:var(--white); background:var(--color);}
+
+::-webkit-scrollbar { width: 15px;}
+::-webkit-scrollbar-thumb { background: var(--color);}
