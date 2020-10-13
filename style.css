@@ -4,6 +4,3 @@
 
 ::selection {color:var(--white); background:var(--color);}
 ::-moz-selection {color:var(--white); background:var(--color);}
-
-::-webkit-scrollbar { width: 15px;}
-::-webkit-scrollbar-thumb { background: var(--color);}
