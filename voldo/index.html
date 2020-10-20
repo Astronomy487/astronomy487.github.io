@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" type="image/png" href="./icon.png">
+<link rel="icon" type="image/png" href="../icon.png">
 <link rel="stylesheet" href="../style.css">
 <title>Voldo</title>
 <style>
+.main {margin: auto; padding: 0px; width: 768px; margin-top: 64px; margin-bottom: 64px;}
 
-.sidebar {height: 100%; width: 240px; position: fixed; z-index: 1; top: 0; left: 0; overflow-x: hidden;}
-.main {margin-left: 292px; padding: 20px 45px; width: 40%;}
+body {background-color: var(--black); color: var(--white);}
 
-body {background-color: var(--white); color: var(--black);}
-.sidebar {background-color: var(--black); width:292px;}
-.sidebarhead {padding: 20px; background-color:var(--color);}
-.toc {background-color: var(--black); color: var(--white); padding: 5px 30px 30px 30px;}
+section {background-color: var(--white); color: var(--black);}
+section {border-radius:0px 0px 15px 15px; padding:15px 45px 30px 45px; margin-bottom:48px;}
+.title {border-radius:15px 15px 0px 0px; margin-bottom:0px; background-color:var(--color); height: 64px;}
 
-h1 {color: var(--black); border-left: solid 5px var(--color); padding: 6px 18px; font-size: 24px; margin: 40px 10px 10px 10px;}
-h2 {font-size:25px;margin-top:25px;margin-bottom:0px;}
+h1 {line-height: 64px; text-align:center; font-size:24px;}
+h2 {color: var(--black); border-left: solid 5px var(--color); padding: 6px 18px; font-size: 24px; margin: 30px 10px 10px 10px;}
 
 * {font-size: 20px; font-weight: Normal; text-align: justify;}
 b {color: var(--color);}
 
-a.tocl {color: var(--color); text-decoration: none;}
-a.tocl:hover {color: var(--white); }
-
 table {background-color:var(--black); margin:auto; margin-bottom: 15px; border-radius: 3px; padding: 3px;}
 td {background-color:var(--white);}
 th {background-color:var(--color); color:var(--white);}
-td, th {padding:5px; text-align:center;}
+td, th {padding:6px; text-align:center;}
 
 ::-webkit-scrollbar { width: 15px;}
 ::-webkit-scrollbar-thumb { background: var(--color);}
@@ -35,41 +31,13 @@ td, th {padding:5px; text-align:center;}
 </head>
 <body>
 
-<div class="sidebar">
-<div class="sidebarhead">
-<img src="./icon.png" style="height: 65px; image-rendering: pixelated; margin-left: auto; margin-right: auto; display: block;">
-</div>
-<div class="toc">
-  <h2>Phono</h2>
-  <a class="tocl" href="#Phonology">Phonology</a><br>
-  <a class="tocl" href="#Orthography">Orthography</a><br>
-  <h2>Predicates</h2>
-  <a class="tocl" href="#Predicates">Predicates</a><br>
-  <a class="tocl" href="#Loanwords">Loanwords</a><br>
-  <h2>Arguments</h2>
-  <a class="tocl" href="#Arguments">Arguments</a><br>
-  <a class="tocl" href="#Pronouns">Pronouns</a><br>
-  <a class="tocl" href="#NominalClauses">Nominal Clauses</a><br>
-  <h2>Modifiers</h2>
-  <a class="tocl" href="#Compounds">Compounds</a><br>
-  <a class="tocl" href="#Numbers">Numbers</a><br>
-  <a class="tocl" href="#RelativeClauses">Relative Clauses</a><br>
-  <h2>other</h2>
-  <a class="tocl" href="#Conjunctions">Conjunctions</a><br>
-  <h2>Wordlists</h2>
-  <a class="tocl" href="#ParticleList">Particle List</a><br>
-  <a class="tocl" href="#InflectionList">Inflection List</a><br>
-  <a class="tocl" href="#PredicateList">Predicate List</a><br>
-</div>
-</div>
-
 <div class="main">
 
-<p>Voldo is a personal language based on predicate logic, unambiguity, a degree of simplicity and consistency,
-and personal preferences.</p>
+<div style="margin:50px;">Voldo is a personal language based on predicate logic, unambiguity, a degree of
+simplicity and consistency, and personal preferences.</div>
 
-<a id="Phonology"></a>
-<h1>Phonology</h1>
+<div class="title"><h1>Phono</h1></div><section>
+<h2>Phonology</h2>
 <p>Voldo has 6 vowels and 10 consonants. Consonants are built on three places of articulation and do not have
 voicing distinctions. Characters on the IPA tables are in the typical Roman orthography.</p>
 <table>
@@ -87,8 +55,7 @@ voicing distinctions. Characters on the IPA tables are in the typical Roman orth
 </table>
 <p>All consonants are either CV or CCV. The only disallowed clusters are repeated consonants.</p>
 
-<a id="Orthography"></a>
-<h1>Orthography</h1>
+<h2>Orthography</h2>
 <p>The Voldo Roman orthography contains 16 letters: <b>a b d e g i l m n o r u v z ġ ȧ</b>.</p>
 <p>Text in Voldo can be written in all lowercase and without punctuation. If a writer or reader decides to, however,
 it can be written with capitalization and punctuation for any reason.</p>
@@ -96,9 +63,10 @@ it can be written with capitalization and punctuation for any reason.</p>
 <b>ǵ</b>), with apostrophes (<b>a'</b>, <b>g'</b>), or with capitalization (<b>A</b>, <b>G</b>) (assuming the surrounding
 text doesn't contain capitalization).</p>
 <p>There also exists an orthography for Voldo where alphabetical characters are arranged into word blocks.</p>
+</section>
 
-<a id="Predicates"></a>
-<h1>Predicates</h1>
+<div class="title"><h1>Predicates</h1></div><section>
+<h2>Predicates</h2>
 <p>A predicate connects a set of arguments and defines their relationship. The predicate can be thought of as the verb
 of a clause, and the arguments can be thought of as the nouns of a clause, although they are subtly different.</p>
 <p>All predicates, as they appear in the dictionary, are at least 2 consonants of the form <b>C(C)aC(C)a</b>, where each
@@ -109,8 +77,7 @@ inflect the predicate. An example of a predicate is:</p>
 <p><b>rana</b>: speaker¹ says message² to audience³ through medium⁴</p>
 <p>Predicates can be loaned into Voldo for any use, especially proper nouns.</p>
 
-<a id="Loanwords"></a>
-<h1>Loanwords</h1>
+<h2>Loanwords</h2>
 <p>A loanword, to be identified as a loanword, must contain at least 3 syllables. The first two syllables are inflected
 like any other predicate, and any extra vowels from additional syllables retain the vowel in their root (meaning
 <b>zadaro</b> and <b>zadari</b> are separate predicates).</p>
@@ -118,9 +85,10 @@ like any other predicate, and any extra vowels from additional syllables retain 
 <p><b>zadaro</b>: Zadaro¹ is called or named Zadaro by group² in context³</p>
 <p>Geographic regions like countries are defined like this:</p>
 <p><b>vazgazi</b>: Wisconsin¹ is the geographic region Wisconsin, inhabited by Wisconsinites²</p>
+</section>
 
-<a id="Arguments"></a>
-<h1>Arguments</h1>
+<div class="title"><h1>Arguments</h1></div><section>
+<h2>Arguments</h2>
 <p>Predicates can support anywhere from 0 to 4 arguments. These come in slots, and the use of a slot is defined by the
 predicate. For example, in the clause <b>I speak to you</b>, <b>I</b> is the speaker in position 1, and <b>you</b> is
 the audience in position 2. All of these arguments, even if they seem unrelated, are analyzed as different players of
@@ -138,27 +106,25 @@ allows for 16 derivations of a predicate to be used as an argument.</p>
 </table>
 <p>Arguments can also be formed without predicates by pronouns and nominal clauses.</p>
 
-<a id="Pronouns"></a>
-<h1>Pronouns</h1>
+<h2>Pronouns</h2>
 <p>Pronouns are a type of argument not derived from a predicate. The simplest pronoun is the generic pronoun (<b>lo</b>¹,
 <b>li</b>², <b>le</b>³, <b>lu</b>⁴). On its own, it makes no more sense to include it than to not include it, but it is
 combined with pronoun modifiers to indicate additional meaning.</p>
 
-<a id="NominalClauses"></a>
-<h1>Nominal Clauses</h1>
+<h2>Nominal Clauses</h2>
 <p>A nominal clause encloses a clause or clauses and treats them as an argument for another clause. This is also how
 quotations are indicated. The position of the nominal clause determines which particle opens it (<b>zo</b>¹, <b>zi</b>²,
 <b>ze</b>³, <b>zu</b>⁴), and the particle <b>zȧ</b> closes a nominal clause.</p>
+</section>
 
-<a id="Compounds"></a>
-<h1>Compounds</h1>
+<div class="title"><h1>Modifiers</h1></div><section>
+<h2>Compounds</h2>
 <p>Compound predicates are formed when several predicates are combined. This is also how adjectives and adverbs are formed.
 In a compound predicate, only the first predicate is inflected, and all the following predicates that modify it take a new
 compound inflection. This inflection is determined by the position of the modifier (<b>o-ȧ</b>¹, <b>i-ȧ</b>², <b>e-ȧ</b>³,
 <b>u-ȧ</b>⁴) (not necessarily the position of the argument as a whole).</p>
 
-<a id="Numbers"></a>
-<h1>Numbers</h1>
+<h2>Numbers</h2>
 <p>Numbers are used to quantify an argument and, in rarer occasions, a predicate.</p>
 <p>The simpler way to express positive integers is to list digits from left to right using corresponding particle words
 (<b>ve</b> 1, <b>ġo</b> 2, <b>vo</b> 3, <b>vȧ</b> 4, <b>ġȧ</b> 5, <b>do</b> 6, <b>de</b> 7, <b>ġe</b> 8, <b>dȧ</b> 9,
@@ -180,8 +146,7 @@ operator also has use with units (<b>5 cubic meters</b> is <b>govlȧ bva vo ġli
 <p>Numbers are considered a predicate modifier, just like compounds, meaning they can be strung after a predicate or argument
 and extend the meaning (a number can be put before or after the modifier of a compound and be valid).</p>
 
-<a id="RelativeClauses"></a>
-<h1>Relative Clauses</h1>
+<h2>Relative Clauses</h2>
 <p>A relative clause describes an argument of a clause and provides another clause it satisfies. In the clause <b>I see
 the person who has a dog</b>, the main clause is <b>I see the person</b>, and <b>the person</b> is further described as
 satisfying position 1 of <b>[they] have a dog</b>. The position satisfied in the relative clause is indicated by the particle
@@ -189,9 +154,10 @@ that opens the relative clause (<b>no</b>¹, <b>ni</b>², <b>ne</b>³, <b>nu</b>
 to be at all stated in the relative clause. There's also a separate particle, <b>nȧ</b>, to close the relative clause.
 Relative clauses can be embedded within other relative clauses.</p>
 <p>Relative clauses are also a predicate modifier, like numbers, although they can only be used on arguments.</p>
+</section>
 
-<a id="Conjunctions"></a>
-<h1>Conjunctions</h1>
+<div class="title"><h1>idk</h1></div><section>
+<h2>Conjunctions</h2>
 <p>Conjunctions connect two clauses or two arguments and says something about their truth. It cannot connect two predicates
 with the same set of arguments because those arguments will take different roles in a new predicate.</p>
 <p>There are five base types of conjunction: three commutatives (<b>and</b> ∧, <b>xor</b> ⊕, <b>or</b> ∨), two non-commutatives
@@ -232,10 +198,10 @@ particles.</p>
 <tr>	<td>#</td>		<td>bru</td>				<td>bu</td>					<tr>
 </table>
 <!--am i going crazy or is this table like messed up when you view the webpage. all the borders are different thicknesses-->
-<p>%%%%%</p>
+</section>
 
-<a id="ParticleList"></a>
-<h1>Particle List</h1>
+<div class="title"><h1>Wordlists</h1></div><section>
+<h2>Particle List</h2>
 <p>
 <b>bra</b>: and clause conjunction
 <b>ba</b>: and argument conjunction
@@ -271,15 +237,15 @@ particles.</p>
 <b>na</b>: digit 0
 <b>bla</b>: negative number
 <b>zdo</b>: non-integer (m×10^n)
-<b>gli</b> addition operator
-<b>blu</b> subtraction operator
-<b>ġli</b> multiplication operator
-<b>mlu</b> division operator
-<b>bva</b> exponentiation operator
-<b>dza</b> root operator
-<b>gra</b> logarithm operator
-<b>gze</b> left parentheses operator
-<b>dzo</b> right parentheses operator
+<b>gli</b>: addition operator
+<b>blu</b>: subtraction operator
+<b>ġli</b>: multiplication operator
+<b>mlu</b>: division operator
+<b>bva</b>: exponentiation operator
+<b>dza</b>: root operator
+<b>gra</b>: logarithm operator
+<b>gze</b>: left parentheses operator
+<b>dzo</b>: right parentheses operator
 </p>
 
 <!-- table of CV particles. i pretend CCV particles do not exist
@@ -289,14 +255,13 @@ a		num		cnj
 ȧ		rel	num	cnj	num		num	nom		
 e		rel	num	cnj	num		num	nom		prn
 i		rel		cnj				nom		prn
-o		rel	num	cnj	num			nom		prn
+o		rel	num	cnj	num		num	nom		prn
 u		rel		cnj				nom		prn
 
 also why are you looking at my html comments
 -->
 
-<a id="InflectionList"></a>
-<h1>Inflection List</h1>
+<h2>Inflection List</h2>
 <p>The 36 simple predicate inflections:</p>
 <table>
 <tr>	<th></th>		<th>a-</th>			<th>ȧ-</th>			<th>e-</th>			<th>i-</th>			<th>o-</th>			<th>u-</th>			</tr>
@@ -307,10 +272,8 @@ also why are you looking at my html comments
 <tr>	<th>-o</th>		<td></td>			<td></td>			<td>arg. 3→1</td>	<td>arg. 2→1</td>	<td>arg. 1→1</td>	<td>arg. 4→1</td>	</tr>
 <tr>	<th>-u</th>		<td></td>			<td></td>			<td>arg. 3→4</td>	<td>arg. 2→4</td>	<td>arg. 1→4</td>	<td>arg. 4→4</td>	</tr>
 </table>
-<p>%%%%%</p>
 
-<a id="PredicateList"></a>
-<h1>Predicate List</h1>
+<h2>Predicate List</h2>
 <p>
 <b>balna</b>: threat¹ endangers victim², saved by savior³ by means⁴
 <b>baġla</b>: truth¹ is suspicious over fact² to doubter³ who instead believes counter⁴
@@ -352,12 +315,18 @@ also why are you looking at my html comments
 <b>gada</b>: looker¹ sees object² in space³ under condition⁴
 <b>bnaġa</b>: oppressor¹ subjugates oppressed² by means³ in struggle⁴
 <b>gġaba</b>: player¹ plays game²
-
-navda baġra zaza danla rbaza malga ġanda vanga nvaba grara ġazda mġama bġama vavla bavġa zamna vama nanma rnava rġara ġazna gvaga rabġa zrama dvala vgara dzaza ġava lalva ndala daġza vmana razba vrava zabga dzara vrada laġda malra zmaġa rlama lgana lagla bazġa ġazba lzama ġarza gaza damda gvara zamra lalra baġma vdaga bagra mvava mamda bagna marna dalġa ġagma nraġa ragva rmaba malma ġnaġa rnala lnama lgala ġaġna mazda bamna labda bnaza ranla vara zrada ġvara vlaġa ġnava dbala mgaġa vazda gazva vazla maġla zazma rarġa ġnaba rnaba damra vbaġa blaza dzama lbava lraġa lalma lzaga zraba bġaza zavna mamga lbara gvaġa bzada rvada zrana vaġa bvava rmaġa babra galga ġadma dagna gvaza bgava lnana bġana rgava barma bavba danza mala bagġa rzava gbala gdava lzaza mrala zdada gġama mdala ġavma lbaġa navba ġazġa ravla laba badba vnana rdava ngaza rġaza zbara gzana ġazva davza ġada dabġa dabga gamza bvaba lnada gazda bgaza vlava gamga dalda dalna ġabda vabla zagma rbaba dnaġa garba zanma ganġa namva zanġa vavna damna zgana zġava nabġa manġa bazga vabma mġaza ġgaga lanġa naġna banva zdaga ralza nzara nraza znaġa zama lġara barba nbaba vdaba mlaza baġa nadza mrana ralġa bnaga vgama zagza zġada galva ġalba bazla bagla zalra lgama dava bdada lazva lanba ndaġa nbava nlaza zalma manra nvaza ravba ngama navza mazba mabra nadġa raġla ġrama dlada gagba radla gavma vaġna lbama gvada lamra vmama radġa mzana galza vadva ġlava ravġa gana ġaga ralna nalma bmala bvaġa manba mlaga zġama vdama nlama ġagra lazba vnala lgaġa brada ladga grama lavġa nala dazra malva davna ġraġa lrana gagna zbala rarva ldaza nabna lada bvana vnaza glala nara magda grava nzaga mara lġada nlava mavma maġra gavġa rvaba navna ġrara madga laġza zġaba madba drava zara vagla rabra garga darma rava laġma vagza ġamga vmaga zgada lvaġa lnava zmaza landa babma labma ldama dgala nbaza rgaza vġaġa grala ladva dagva ġadga zaġva davda lġaga vzara nalra valġa gġara ġvana ġanra nabza ganra vadma zada ġagġa rbada bavza babva valma mlara vzaġa ranra nġaġa gavna baza ladra mlada madva zgala larga lanra zadga dalga lavba nagva nadma ġzana garla dvaba mazra mgana ġlara lġala ngana rbaġa nrava gnaġa vavba nvama zabna manda zrava narba ġamva lamda mnaza ragda mdama gala vnaġa malna vzaba lvara vadba radba gġala lagba ġalġa mbava vġara zlada dlara dġava damza ġbala barga mrada vmada vnaba davra gbama mvada nanva garva vaġla lrara gadga ġvama bagba bgada nalza banma dgama ġavza vmala rbala zamba damga nmama rgama gama barva rabma labva nalga lzana zrara zabva nana lġama navma dġala ġmala nlaba narva vlaza laġla vanda zarġa ldaga vzada razga znava baba ngaġa vmaġa bagma vġala nzama dbara dmaga bagva zarza vamva gadġa bzana nadva zagra gnada nagla bnala namra zabda vamġa vanra ngaba rzara lamva mgada rġala larva bmada bvala zanva ġagda zaġla gdana zvaga mrava mraba naġma ġbaba valga baġva zrala grada dara mbana nmara malba lġaba bnama maġza vraba ġamla bala vabza babla zbaza vabġa rġama nbana nzaġa ġlama vabva bavda ġmara lmara nada daġa ġalra gzaba bzala vraza darda narda zgava mzaga namza gadra gdara nbara dabza lamga garma zarda langa ġarna babna rlava brara gabma gadba ġavla zaba mdana manma gaġma ġaba ġamba gaġga lagġa zġaza rarna namna balma bdava nrala ġvala vbaga darva zadba nadga daġra mbara razva magla ġadġa mvama bġava ġagba nadna razġa gagva maġga nmada mabza zazga dadva dadla ravza banla zlaza larza nabla ġagla rvaġa mavga badġa vagva labġa mraġa rdana vbama rnaza mamba ġbaġa zaġba mlama damva zmana gaġba gava mabna dġaza ndaza larma raġa radma ġdada gbana nraba ġamra mġana ravga nalda magna gavga bgama gagda dvaga rdaġa dazga nagba ġgaġa dadza nġava ġlaza vnava lmaga ġarla dgada vnara ġzaba gazba ġzaġa mbaga gnana mvaza ġaġla vazga vbana gabga zaga dzava dvana maġa ralda gvaba ġadra zlaga glaga lanla zavma mrara ġmana zamġa mlana bmaġa gnara graga zamda dlava varga vdava ganda vavza mnaba ġdaga zvara zarla blala vraga radga gġaġa bvaza zarba lavda lġaġa garda ragra zava vgaga daba dadġa lagma bġara manza raza nzala vġaga zagla gaġla ramla larna rzaġa zabza zmara bamġa badga ġarma ġabza glara bamda ganma drara bġada rlaga mlava lvama nvana darga mzama galġa nmaba dġara brala lvala bamba galma mgara rmava zdama rgada ragba galda dġaġa vamba ġgaba gbaza bmaga raġda ġlana zaġma mzaza zalga lagra nbama zlama ġala graġa znana dnaba lavza ganva zdala zabġa bavga zazba rmara zdaġa dazba vabna glana labra braġa lzara ravna maġma dalva lvana ġarga dana gagla dabda maġna gnaba labla draġa ġlala gabġa ġarda banga vagba nvaga darba gara nazna vana mvaga dbada ġdaġa mraza lmaġa mabma dmara dadba lava lalda ġbaza bdala dazda ġalga navga dbava draga davba vamza dzala rnada nlaga madna mġada larba mgaza rarba bgaba dadna vdara badva lbaga nanza laga nlaġa dlaba zarna mavla narza zalza ġavra vdaġa nmaza darna ġnada naġza ralma vavra davga zamva ramda rnama darza gmala ranba zazġa lmana mada ġadna mlala mdada ġmaza bnava ganba nmala rbana gdala mnava nmava gavda zadna mdara zġala dbaba lanva lvaza zġana vnada vagma ġavġa vava mzada dlama zala lġava nmaga vaġra nlada rġaġa ganza gzada vala nanġa galra gvala zazva ladna gazġa lmava ġlaġa rzana labna gagma zmada gaġna vzaza ġlaba bara dazma zvaza marza gmava bazva larda dvaġa mamva vadla gadza ndana nġada darla ralba nava rlaġa gadva rada gġaga lnara rmaza ġaġva rlala ġbana znaza lmada bvama zgaba vbaba ravda razna zlala bzava naġra bnara lrama rzaza lrava vabra zazda ġalma dagra nbada mnaġa nazva vgana rabza zvada bgala bama vmava gbaba ġmaba gzama gazla vmara rmada ġdala lazma zavra lgaga ġaġda rġaba rabva ragza mabda vgaġa naġga mzaġa gdaza drama balba manga glama naza lagva ndaba ġmaga zaġna zalda ġanba danma bagda ramna rbava raġna balġa braza ġvaza rvara znada lnaba mvala lavga rbama gbava gġada gzaga dazġa lanza ġanma dgana mnala balva gaġra banba ġaġza narla dnana rlaza ġbama zalna drana lvaba ġaġra ranga manla nzava dgaga zalva grana babga bmaba ladġa rvama dzada vzava laġba mrama ġabga navla nrara ranġa gadna dalba bzaġa zanba nadba vzala gabla nġaga gaga nrada mavra mvara naġva dada rdaza zdaba mazġa manva ġanza mġava banra varla dzaba rmana vaġda blaba damġa ngara dlala danba gavba dagda znama bavma lvada rvana ngaga ġrada gnala ldava bgara mgama davġa ġamza mdaba dadra nazla ldara ġdaba dlaġa ndara ladza bavla dabma ladla dvava ġama bmava lzala lgava ġnala garza znala zgaġa valra zavda nanra zvava nalva dmala maga zagda ġabma nġana mzara ġavba lnala nagza vadga raba zmaba nġara vanza zazla rabda varva lmaza ġalda marla lagza gvava lrada gbaġa dabna rzada bana badza nanla davla dġaga dalza namba blana dzaġa zbaġa mava mraga bavra ġvada ġgava rgala rmama rġana ngava zavba zvaba rama ġdama ġagna lbada gmana nzana lġana gadla nagġa vrama lgaba darġa bzara gaġda lzaba ngada ravma nanda nagra marġa ġvava mamza rabla lraza vanla dgaza varda mazga ġgara ġdana lġaza zaġra nazba raġba bdara lgada vbada ġadla nġaba rvava mgala zadra zlaġa vdada ġamna ġamda rzaba baġza gbara rbaga gaġa lzava narga balga ndava zazra madla dagġa bmaza nazra zanza ġnaza nadra vlana nlara balda radna laġga lmama bvada radza vavda vdaza bvaga zġaga rlada ġdava nazma lalza mnara zvala mġaba znaga bġaba ġdaza ġzaga mvaba ġadva zvama dlaza nalġa zaġza dnava mazla danda vlaba ġnara zdaza gazra blaga randa nvala gabda rlara larla namda nrama vnaga mbada dvara mavna zġaġa davma mlaba ragma ġrana dbaga lanma daġda blara danva ġarġa marda mnaga gzaġa rdara rarla dabva marma gdaga gamba gnaga vaba mbaġa zabla zabra naga nvava dgaba mġala lalna ramza brava vraġa mvana mamġa mdaga vbava ġavga dbaġa razra mzaba glava gmaga vzana lnaza raġva gnava zanra rzala rlaba danra dagza ranva lalġa lana zavza ralga gamda ġanga rzama zbada ġarva rdaga radva ġrava dmada vbara damba gbada zgara galba dgava bnada rvaza rġava bdama magma narna gzava bamra nagma ndaga vgaba bgaga lazġa mgaba malġa bvara marva ġaġma daġba ġzala ġvaga vaġva gazna badla zaġda mzala ldaġa gagza barġa dnada dmana zaġga vavma zlaba garġa gnama valza bazna ramġa naġba rgaġa vanma vamla dnama ramba maba ngala barla mabġa bdana graba ralra ġazra vzama dbaza zraza maġda nvaġa zadla nzaba razma magra vanba lamba lala vlama vaġma blama gagġa gvana rbara ġraza lzaġa dnaza dzana zanga zraġa rarma zbaga dmama rarda ġazla zavga zavla ġaġa lvava zlana vamna zdara zlara mġara mġaga vagna namġa lraba rnaġa gabna vavġa bgaġa rgara naba dabra badra nrana gvama gavra mdaza mabla laġva braga rgana ġadba vadra magġa mana nlana vaġza mnana ġabva naġda ġanġa nvada ġavda blada nabga dnala ġnama ġalza varma dnara bzaga bzama rġaga madma glaġa vaza vlara gġana dagla rabga bdaba lgara bmara zġara radra bġaġa bavna rvaga ravra ganga ġnana valna dmaġa ġabna gdaba varza zadza rnaga ġraga brana nmana ġzama gzara ġamġa dzaga dmava gdada lvaga ġvaġa ġmaġa nama vanġa gadma zadma nalba dadma gnaza zarma vagra vabga ġarba laġra gmama banza lazda rdama ġazma lagna lazra baġga daza vaġba labga namla ġbara madra raġma vadna dbana drada rlana gaġva ġlada zagba bamga rvala dgaġa gavza ġaza vrala ramra zamza zagva madza valva gġava gazga zbava vamga lamla ġana rġada zvana dġada gagra lraga daġga draba baġda vadza zbana bmama ġnaga mbala ġalva balra dġaba ġbava zlava mavġa lamna ġara vnama zvaġa raġra babda mgava mnada ġraba nġama gamna ġgaza bazda baga vazva dmaba nazga danga ndada bnaba bagza bzaba bamla dazva zmava barza vazba vazma graza varna mnama rnana ġmava garna lalga bamza varba bamva rdada gamġa ladba gamra zamga ragna ġgada ġaġga nabma ġrala lnaġa gmaba glada zadġa ġvaba ranma labza lavma ragla ganla badma vgava mazva vrara nlala nbaga lamġa nġala bava baġna lbana dgara nalna dagma bmana ġabra magva bdaġa ragġa vazġa gabra mavda navra dazna nraga draza zdana mavba rzaga marba lavra mazna rgaga gamva ġdara dala raġza nagna lbaba nvara rmaga mazma zmala vġaza maġva balza narġa ġazga rarza bgana dalma mbaza gbaga bdaza gabza nġaza rmala vamra ġagva zaġa znaba dvaza rdaba mavza gamla vġama nzada rnara zgaza nanba vġaba ladma gmaza ndama bnana zalba vlaga vavga ġanva lgaza vġana madġa mabga lazla mbama banda damla vgada mgaga gazma nazġa zarva varġa mamla valba nbala maġba vanva glaza zmama gzala ġalna ġadza gaba lara ldada zdava zanla nbaġa dagba nzaza zadva raga barna ġgana bazba vgala galna zarga lalba ġgama drala ġmada vaġga zagna vmaza barda mzava ralva vagda lavna mdava vgaza namga vamda brama dmaza mamra zbama ġmama marga ġlaga ġavna vbaza ranza malza vdala zavġa ġbaga laġna dġama zgaga dama nazda nabva mabva blaġa vazra badna razla lrala vazna vabda rala vdana rgaba zalġa gzaza rdala vzaga zamla lamza lmaba nadla braba zazna babġa nabra ġabġa nanga glaba mlaġa bdaga dlaga gaġza naġla narma ldana gġaza vlala zraga zgama dazla zmaga bġaga mamna zabma rabna gmada banġa zana mvaġa dabla blava rarga gdaġa ġzaza lmala dbama navġa vadġa zbaba ramva ġgala lnaga magza ġanla lbala ġzada lzada ramga gmara larġa mġaġa lazga ġbada mbaba bġala ġaġba ldaba ġabla bazma dlana vġada ġzava nagda dadga ġagza daġva gdama daġna vlada vmaba vagġa daġla gmaġa daġma lagda nmaġa rara ġzara dġana dvada bada baġba bazra
-
+<b>navda</b>: patient¹ with illness² is treated by doctor³ by remedy⁴
+<b>baġra</b>: speakers¹ use language² expressed in medium³ to communicate content⁴
+<b>zaza</b>: user¹ uses subject² for purpose³
+<b>danla</b>: seeker¹ searches for object² in set³
+<b>rbaza</b>: logic¹ is a system
+<b></b>: code¹ encodes original² by method³
+<!--
+malga ġanda vanga nvaba grara ġazda mġama bġama vavla bavġa zamna vama nanma rnava rġara ġazna gvaga rabġa zrama dvala vgara dzaza ġava lalva ndala daġza vmana razba vrava zabga dzara vrada laġda malra zmaġa rlama lgana lagla bazġa ġazba lzama ġarza gaza damda gvara zamra lalra baġma vdaga bagra mvava mamda bagna marna dalġa ġagma nraġa ragva rmaba malma ġnaġa rnala lnama lgala ġaġna mazda bamna labda bnaza ranla vara zrada ġvara vlaġa ġnava dbala mgaġa vazda gazva vazla maġla zazma rarġa ġnaba rnaba damra vbaġa blaza dzama lbava lraġa lalma lzaga zraba bġaza zavna mamga lbara gvaġa bzada rvada zrana vaġa bvava rmaġa babra galga ġadma dagna gvaza bgava lnana bġana rgava barma bavba danza mala bagġa rzava gbala gdava lzaza mrala zdada gġama mdala ġavma lbaġa navba ġazġa ravla laba badba vnana rdava ngaza rġaza zbara gzana ġazva davza ġada dabġa dabga gamza bvaba lnada gazda bgaza vlava gamga dalda dalna ġabda vabla zagma rbaba dnaġa garba zanma ganġa namva zanġa vavna damna zgana zġava nabġa manġa bazga vabma mġaza ġgaga lanġa naġna banva zdaga ralza nzara nraza znaġa zama lġara barba nbaba vdaba mlaza baġa nadza mrana ralġa bnaga vgama zagza zġada galva ġalba bazla bagla zalra lgama dava bdada lazva lanba ndaġa nbava nlaza zalma manra nvaza ravba ngama navza mazba mabra nadġa raġla ġrama dlada gagba radla gavma vaġna lbama gvada lamra vmama radġa mzana galza vadva ġlava ravġa gana ġaga ralna nalma bmala bvaġa manba mlaga zġama vdama nlama ġagra lazba vnala lgaġa brada ladga grama lavġa nala dazra malva davna ġraġa lrana gagna zbala rarva ldaza nabna lada bvana vnaza glala nara magda grava nzaga mara lġada nlava mavma maġra gavġa rvaba navna ġrara madga laġza zġaba madba drava zara vagla rabra garga darma rava laġma vagza ġamga vmaga zgada lvaġa lnava zmaza landa babma labma ldama dgala nbaza rgaza vġaġa grala ladva dagva ġadga zaġva davda lġaga vzara nalra valġa gġara ġvana ġanra nabza ganra vadma zada ġagġa rbada bavza babva valma mlara vzaġa ranra nġaġa gavna baza ladra mlada madva zgala larga lanra zadga dalga lavba nagva nadma ġzana garla dvaba mazra mgana ġlara lġala ngana rbaġa nrava gnaġa vavba nvama zabna manda zrava narba ġamva lamda mnaza ragda mdama gala vnaġa malna vzaba lvara vadba radba gġala lagba ġalġa mbava vġara zlada dlara dġava damza ġbala barga mrada vmada vnaba davra gbama mvada nanva garva vaġla lrara gadga ġvama bagba bgada nalza banma dgama ġavza vmala rbala zamba damga nmama rgama gama barva rabma labva nalga lzana zrara zabva nana lġama navma dġala ġmala nlaba narva vlaza laġla vanda zarġa ldaga vzada razga znava baba ngaġa vmaġa bagma vġala nzama dbara dmaga bagva zarza vamva gadġa bzana nadva zagra gnada nagla bnala namra zabda vamġa vanra ngaba rzara lamva mgada rġala larva bmada bvala zanva ġagda zaġla gdana zvaga mrava mraba naġma ġbaba valga baġva zrala grada dara mbana nmara malba lġaba bnama maġza vraba ġamla bala vabza babla zbaza vabġa rġama nbana nzaġa ġlama vabva bavda ġmara lmara nada daġa ġalra gzaba bzala vraza darda narda zgava mzaga namza gadra gdara nbara dabza lamga garma zarda langa ġarna babna rlava brara gabma gadba ġavla zaba mdana manma gaġma ġaba ġamba gaġga lagġa zġaza rarna namna balma bdava nrala ġvala vbaga darva zadba nadga daġra mbara razva magla ġadġa mvama bġava ġagba nadna razġa gagva maġga nmada mabza zazga dadva dadla ravza banla zlaza larza nabla ġagla rvaġa mavga badġa vagva labġa mraġa rdana vbama rnaza mamba ġbaġa zaġba mlama damva zmana gaġba gava mabna dġaza ndaza larma raġa radma ġdada gbana nraba ġamra mġana ravga nalda magna gavga bgama gagda dvaga rdaġa dazga nagba ġgaġa dadza nġava ġlaza vnava lmaga ġarla dgada vnara ġzaba gazba ġzaġa mbaga gnana mvaza ġaġla vazga vbana gabga zaga dzava dvana maġa ralda gvaba ġadra zlaga glaga lanla zavma mrara ġmana zamġa mlana bmaġa gnara graga zamda dlava varga vdava ganda vavza mnaba ġdaga zvara zarla blala vraga radga gġaġa bvaza zarba lavda lġaġa garda ragra zava vgaga daba dadġa lagma bġara manza raza nzala vġaga zagla gaġla ramla larna rzaġa zabza zmara bamġa badga ġarma ġabza glara bamda ganma drara bġada rlaga mlava lvama nvana darga mzama galġa nmaba dġara brala lvala bamba galma mgara rmava zdama rgada ragba galda dġaġa vamba ġgaba gbaza bmaga raġda ġlana zaġma mzaza zalga lagra nbama zlama ġala graġa znana dnaba lavza ganva zdala zabġa bavga zazba rmara zdaġa dazba vabna glana labra braġa lzara ravna maġma dalva lvana ġarga dana gagla dabda maġna gnaba labla draġa ġlala gabġa ġarda banga vagba nvaga darba gara nazna vana mvaga dbada ġdaġa mraza lmaġa mabma dmara dadba lava lalda ġbaza bdala dazda ġalga navga dbava draga davba vamza dzala rnada nlaga madna mġada larba mgaza rarba bgaba dadna vdara badva lbaga nanza laga nlaġa dlaba zarna mavla narza zalza ġavra vdaġa nmaza darna ġnada naġza ralma vavra davga zamva ramda rnama darza gmala ranba zazġa lmana mada ġadna mlala mdada ġmaza bnava ganba nmala rbana gdala mnava nmava gavda zadna mdara zġala dbaba lanva lvaza zġana vnada vagma ġavġa vava mzada dlama zala lġava nmaga vaġra nlada rġaġa ganza gzada vala nanġa galra gvala zazva ladna gazġa lmava ġlaġa rzana labna gagma zmada gaġna vzaza ġlaba bara dazma zvaza marza gmava bazva larda dvaġa mamva vadla gadza ndana nġada darla ralba nava rlaġa gadva rada gġaga lnara rmaza ġaġva rlala ġbana znaza lmada bvama zgaba vbaba ravda razna zlala bzava naġra bnara lrama rzaza lrava vabra zazda ġalma dagra nbada mnaġa nazva vgana rabza zvada bgala bama vmava gbaba ġmaba gzama gazla vmara rmada ġdala lazma zavra lgaga ġaġda rġaba rabva ragza mabda vgaġa naġga mzaġa gdaza drama balba manga glama naza lagva ndaba ġmaga zaġna zalda ġanba danma bagda ramna rbava raġna balġa braza ġvaza rvara znada lnaba mvala lavga rbama gbava gġada gzaga dazġa lanza ġanma dgana mnala balva gaġra banba ġaġza narla dnana rlaza ġbama zalna drana lvaba ġaġra ranga manla nzava dgaga zalva grana babga bmaba ladġa rvama dzada vzava laġba mrama ġabga navla nrara ranġa gadna dalba bzaġa zanba nadba vzala gabla nġaga gaga nrada mavra mvara naġva dada rdaza zdaba mazġa manva ġanza mġava banra varla dzaba rmana vaġda blaba damġa ngara dlala danba gavba dagda znama bavma lvada rvana ngaga ġrada gnala ldava bgara mgama davġa ġamza mdaba dadra nazla ldara ġdaba dlaġa ndara ladza bavla dabma ladla dvava ġama bmava lzala lgava ġnala garza znala zgaġa valra zavda nanra zvava nalva dmala maga zagda ġabma nġana mzara ġavba lnala nagza vadga raba zmaba nġara vanza zazla rabda varva lmaza ġalda marla lagza gvava lrada gbaġa dabna rzada bana badza nanla davla dġaga dalza namba blana dzaġa zbaġa mava mraga bavra ġvada ġgava rgala rmama rġana ngava zavba zvaba rama ġdama ġagna lbada gmana nzana lġana gadla nagġa vrama lgaba darġa bzara gaġda lzaba ngada ravma nanda nagra marġa ġvava mamza rabla lraza vanla dgaza varda mazga ġgara ġdana lġaza zaġra nazba raġba bdara lgada vbada ġadla nġaba rvava mgala zadra zlaġa vdada ġamna ġamda rzaba baġza gbara rbaga gaġa lzava narga balga ndava zazra madla dagġa bmaza nazra zanza ġnaza nadra vlana nlara balda radna laġga lmama bvada radza vavda vdaza bvaga zġaga rlada ġdava nazma lalza mnara zvala mġaba znaga bġaba ġdaza ġzaga mvaba ġadva zvama dlaza nalġa zaġza dnava mazla danda vlaba ġnara zdaza gazra blaga randa nvala gabda rlara larla namda nrama vnaga mbada dvara mavna zġaġa davma mlaba ragma ġrana dbaga lanma daġda blara danva ġarġa marda mnaga gzaġa rdara rarla dabva marma gdaga gamba gnaga vaba mbaġa zabla zabra naga nvava dgaba mġala lalna ramza brava vraġa mvana mamġa mdaga vbava ġavga dbaġa razra mzaba glava gmaga vzana lnaza raġva gnava zanra rzala rlaba danra dagza ranva lalġa lana zavza ralga gamda ġanga rzama zbada ġarva rdaga radva ġrava dmada vbara damba gbada zgara galba dgava bnada rvaza rġava bdama magma narna gzava bamra nagma ndaga vgaba bgaga lazġa mgaba malġa bvara marva ġaġma daġba ġzala ġvaga vaġva gazna badla zaġda mzala ldaġa gagza barġa dnada dmana zaġga vavma zlaba garġa gnama valza bazna ramġa naġba rgaġa vanma vamla dnama ramba maba ngala barla mabġa bdana graba ralra ġazra vzama dbaza zraza maġda nvaġa zadla nzaba razma magra vanba lamba lala vlama vaġma blama gagġa gvana rbara ġraza lzaġa dnaza dzana zanga zraġa rarma zbaga dmama rarda ġazla zavga zavla ġaġa lvava zlana vamna zdara zlara mġara mġaga vagna namġa lraba rnaġa gabna vavġa bgaġa rgara naba dabra badra nrana gvama gavra mdaza mabla laġva braga rgana ġadba vadra magġa mana nlana vaġza mnana ġabva naġda ġanġa nvada ġavda blada nabga dnala ġnama ġalza varma dnara bzaga bzama rġaga madma glaġa vaza vlara gġana dagla rabga bdaba lgara bmara zġara radra bġaġa bavna rvaga ravra ganga ġnana valna dmaġa ġabna gdaba varza zadza rnaga ġraga brana nmana ġzama gzara ġamġa dzaga dmava gdada lvaga ġvaġa ġmaġa nama vanġa gadma zadma nalba dadma gnaza zarma vagra vabga ġarba laġra gmama banza lazda rdama ġazma lagna lazra baġga daza vaġba labga namla ġbara madra raġma vadna dbana drada rlana gaġva ġlada zagba bamga rvala dgaġa gavza ġaza vrala ramra zamza zagva madza valva gġava gazga zbava vamga lamla ġana rġada zvana dġada gagra lraga daġga draba baġda vadza zbana bmama ġnaga mbala ġalva balra dġaba ġbava zlava mavġa lamna ġara vnama zvaġa raġra babda mgava mnada ġraba nġama gamna ġgaza bazda baga vazva dmaba nazga danga ndada bnaba bagza bzaba bamla dazva zmava barza vazba vazma graza varna mnama rnana ġmava garna lalga bamza varba bamva rdada gamġa ladba gamra zamga ragna ġgada ġaġga nabma ġrala lnaġa gmaba glada zadġa ġvaba ranma labza lavma ragla ganla badma vgava mazva vrara nlala nbaga lamġa nġala bava baġna lbana dgara nalna dagma bmana ġabra magva bdaġa ragġa vazġa gabra mavda navra dazna nraga draza zdana mavba rzaga marba lavra mazna rgaga gamva ġdara dala raġza nagna lbaba nvara rmaga mazma zmala vġaza maġva balza narġa ġazga rarza bgana dalma mbaza gbaga bdaza gabza nġaza rmala vamra ġagva zaġa znaba dvaza rdaba mavza gamla vġama nzada rnara zgaza nanba vġaba ladma gmaza ndama bnana zalba vlaga vavga ġanva lgaza vġana madġa mabga lazla mbama banda damla vgada mgaga gazma nazġa zarva varġa mamla valba nbala maġba vanva glaza zmama gzala ġalna ġadza gaba lara ldada zdava zanla nbaġa dagba nzaza zadva raga barna ġgana bazba vgala galna zarga lalba ġgama drala ġmada vaġga zagna vmaza barda mzava ralva vagda lavna mdava vgaza namga vamda brama dmaza mamra zbama ġmama marga ġlaga ġavna vbaza ranza malza vdala zavġa ġbaga laġna dġama zgaga dama nazda nabva mabva blaġa vazra badna razla lrala vazna vabda rala vdana rgaba zalġa gzaza rdala vzaga zamla lamza lmaba nadla braba zazna babġa nabra ġabġa nanga glaba mlaġa bdaga dlaga gaġza naġla narma ldana gġaza vlala zraga zgama dazla zmaga bġaga mamna zabma rabna gmada banġa zana mvaġa dabla blava rarga gdaġa ġzaza lmala dbama navġa vadġa zbaba ramva ġgala lnaga magza ġanla lbala ġzada lzada ramga gmara larġa mġaġa lazga ġbada mbaba bġala ġaġba ldaba ġabla bazma dlana vġada ġzava nagda dadga ġagza daġva gdama daġna vlada vmaba vagġa daġla gmaġa daġma lagda nmaġa rara ġzara dġana dvada bada baġba bazra
+-->
 </p>
+</section>
 
 </div>
 </body>
 </html>
-
