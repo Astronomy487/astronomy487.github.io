@@ -1,5 +1,5 @@
-@font-face {font-family: Antapani; src: url(./Antapani-ExtraBold.otf); }
-* {font-family: Antapani;}
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;800&display=swap');
+* {font-family: Work Sans;}
 :root {--white: #F0F0F0; --black: #303841; --color: #ff2e63;}
 
 ::selection {color:var(--white); background:var(--color);}
