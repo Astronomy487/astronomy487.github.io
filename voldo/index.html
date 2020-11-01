@@ -5,43 +5,49 @@
 <link rel="stylesheet" href="../style.css">
 <title>Voldo</title>
 <style>
+/**page**/
 body { color:var(--black); background-color:var(--white); font-size:16px;}
-div.main {width: 700px; margin: auto; padding:50px;}
+div.main {width: 700px; margin: auto; padding:40px 10px;}
 
+/**headings**/
 h1 {font-size: 32px; font-weight:bold; margin-bottom: 16px; text-align: center;}
 h2 {font-size: 24px; font-weight:bold;}
 h3 {font-size: 18px; font-weight:bold;}
 hr {border: 0px; height: 2px; background-color:var(--black); margin: 32px 0px;}
 
+/**main text**/
 div.sub {text-align:justify; width:80%; margin:auto;}
 p {text-align:justify;}
 b, a {color:var(--color); font-weight:bold; text-decoration:none;}
 i {font-style: normal; background-color:var(--color); font-size:14px; padding: 1px 4px; color:var(--white); border-radius: 3px;}
 
+/**auto headings**/
 h1 {counter-reset: h2}
 h2.linkhead:before {counter-increment: h2; content: counter(h2) " ";}
 h2.linkhead {counter-reset: h3}
 h3.linkhead:before {counter-increment: h3; content: counter(h2) "." counter(h3) " ";}
 
+/**tables**/
 caption {background-color:var(--black); color:var(--white); padding: 6px;}
 table {background-color:var(--black); margin:auto; margin-bottom: 15px; padding: 2px; width: 67%;}
 td {background-color:var(--white);}
 th {background-color:var(--color); color:var(--white); font-weight:normal;}
 td, th {padding:6px; text-align:center; min-width: 16px;}
 
+/**auto toc format**/
 ol {counter-reset: item}
-ol > li {display: block}
-ol > li:before {content: counters(item, ".") " "; counter-increment: item}
+ol>li {display: block}
+ol>li:before {content: counters(item, ".") " "; counter-increment: item}
+/**ol,ol>li,ol>a,ol>li>a {color:var(--black);font-weight:normal;}**/
 
+/**scrollbar**/
 ::-webkit-scrollbar { width: 15px;}
 ::-webkit-scrollbar-thumb { background: var(--color);}
-::selection {color:var(--white); background:var(--color);}
-::-moz-selection {color:var(--white); background:var(--color);}
 </style></head>
 <body><div class="main">
 
 <h1>Voldo</h1>
-<div class="sub">Voldo is a WIP personal language based on predicate logic, unambiguity,
+<div class="sub">Voldo is a personal language based on predicate logic, unambiguity,
 a degree of simplicity and consistency, and personal preferences. This language is still
 a work in progress. To see the other things I (Astro) do on the internet, click
 <a href="../" target="_blank">here</a>.</div>
@@ -77,9 +83,6 @@ the same.</p>
 pronounced the same as their IPA equivalents, with the exception of <b>r</b>, the velar fricative.</p>
 <p>Text in Voldo can be written in all lowercase and without punctuation. If a writer or reader decides to, however,
 it can be written with capitalization and punctuation for any reason.</p>
-<p>If the letters <b>ə</b> and <b>ŋ</b> are unavailable, their diacritics can be replaced with any others (<b>á</b>,
-<b>ǵ</b>), with apostrophes (<b>a'</b>, <b>g'</b>), or with capitalization (<b>A</b>, <b>G</b>) (assuming the surrounding
-text doesn't contain capitalization).</p>
 
 <h2 class="linkhead">The Predicate</h2>
 <h3 class="linkhead">Predicates</h3>
@@ -165,9 +168,9 @@ system can also be used for integers to round numbers and shorten text.</p>
 <p>12.5663706 → 1.256×10^1 → 1 2 5 6 <b>zdo</b> 1 → <b>ve ŋo ŋə do zdo ve</b></p>
 <p>Two extra number particles, <b>znu</b> and <b>zni</b>, multiply or divide quantities by 1000 respectively. <b>ŋo znu ŋo na</b>,
 literally <b>2 ×1000 2 0</b>, means <b>2020</b>.</p>
-<p>A number always quantifies the argument or predicate that comes before it (<b>Four teachers</b>, <b>loŋo də</b>). This number is also
-how singular is specified (<b>One teacher</b>, <b>loŋo ve</b>). When <b>rə</b>, the negation conjunction for arguments, is
-used in conjunction with a singular, it is implied to mean plural (<b>Teachers</b>, <b>loŋo ve rə</b>).</p>
+<p>A number always quantifies the argument or predicate that comes before it (<b>four teachers</b>, <b>loŋo də</b>). This number is also
+how singular is specified (<b>one teacher</b>, <b>loŋo ve</b>). When <b>rə</b>, the negation conjunction for arguments, is
+used in conjunction with a singular, it is implied to mean plural (<b>teachers</b>, <b>loŋo ve rə</b>).</p>
 <p>These number particles need spaces between them to prevent them from being interpreted as a predicate.</p>
 <p>Also classified as number particles are particles for operations (<b>gli</b> +, <b>blu</b> -, <b>ŋli</b> ×, <b>mlu</b> ÷,
 <b>bva</b> ^, <b>dza</b> √, <b>gra</b> log, <b>gze</b> (, <b>dzo</b> )).</p>
@@ -189,7 +192,7 @@ of these derived units have their own predicates, in this case <b>ŋanda</b>.</p
 the person who has a dog</b>, the main clause is <b>I see the person</b>, and <b>the person</b> is further described as
 satisfying position 1 of <b>[they] have a dog</b>. The position satisfied in the relative clause is indicated by the particle
 that opens the relative clause (<b>no</b>¹, <b>ni</b>², <b>ne</b>³, <b>nu</b>⁴). Hence, the <b>[they]</b> does not have
-to be at all stated in the relative clause. There's also a separate particle, <b>nə</b>, to close the relative clause.
+to be at all stated in the relative clause. There is also a separate particle, <b>nə</b>, to close the relative clause.
 Relative clauses can be embedded within other relative clauses.</p>
 <p>Relative clauses are also a predicate modifier, like numbers, although they can only be used on arguments.</p>
 
