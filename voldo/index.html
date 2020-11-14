@@ -1,56 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" type="image/png" href="../icon.png">
-<link rel="stylesheet" href="../style.css">
-<title>Voldo</title>
-<style>
-/**page**/
-body { color:var(--black); background-color:var(--white); font-size:16px;}
-div.main {width: 700px; margin: auto; padding:40px 10px;}
+  <link rel="icon" type="image/png" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+  <title>Voldo</title>
+  <style>
+    /**page**/
+    body { color:var(--black); background-color:var(--white); font-size:16px;}
+    div.main {width: 700px; margin: auto; padding:40px 10px;}
 
-/**headings**/
-h1 {font-size: 32px; font-weight:bold; margin-bottom: 16px; text-align: center;}
-h2 {font-size: 24px; font-weight:bold;}
-h3 {font-size: 18px; font-weight:bold;}
-hr {border: 0px; height: 2px; background-color:var(--black); margin: 32px 0px;}
+    /**headings**/
+    h1 {font-size: 32px; font-weight:bold; margin-bottom: 16px; text-align: center;}
+    h2 {font-size: 24px; font-weight:bold;}
+    h3 {font-size: 18px; font-weight:bold;}
+    hr {border: 0px; height: 2px; background-color:var(--black); margin: 32px 0px;}
 
-/**main text**/
-div.sub {text-align:justify; width:80%; margin:auto;}
-p {text-align:justify;}
-b, a {color:var(--color); font-weight:bold; text-decoration:none;}
-i {font-style: normal; background-color:var(--color); font-size:14px; padding: 1px 4px; color:var(--white); border-radius: 3px;}
+    /**main text**/
+    div.sub {text-align:justify; width:80%; margin:auto;}
+    p {text-align:justify;}
+    b, a {color:var(--color); font-weight:bold; text-decoration:none;}
+    i {font-style: normal; background-color:var(--color); font-size:14px; padding: 1px 4px; color:var(--white); border-radius: 3px;}
 
-/**auto headings**/
-h1 {counter-reset: h2}
-h2.linkhead:before {counter-increment: h2; content: counter(h2) " ";}
-h2.linkhead {counter-reset: h3}
-h3.linkhead:before {counter-increment: h3; content: counter(h2) "." counter(h3) " ";}
+    /**auto headings**/
+    h1 {counter-reset: h2}
+    h2.linkhead:before {counter-increment: h2; content: counter(h2) " ";}
+    h2.linkhead {counter-reset: h3}
+    h3.linkhead:before {counter-increment: h3; content: counter(h2) "." counter(h3) " ";}
 
-/**tables**/
-caption {background-color:var(--black); color:var(--white); padding: 6px;}
-table {background-color:var(--black); margin:auto; margin-bottom: 15px; padding: 2px; width: 67%;}
-td {background-color:var(--white);}
-th {background-color:var(--color); color:var(--white); font-weight:normal;}
-td, th {padding:6px; text-align:center; min-width: 16px;}
+    /**tables**/
+    caption {background-color:var(--black); color:var(--white); padding: 6px;}
+    table {background-color:var(--black); margin:auto; margin-bottom: 15px; padding: 2px; width: 67%;}
+    td {background-color:var(--white);}
+    th {background-color:var(--color); color:var(--white); font-weight:normal;}
+    td, th {padding:6px; text-align:center; min-width: 16px;}
 
-/**auto toc format**/
-ol {counter-reset: item}
-ol>li {display: block}
-ol>li:before {content: counters(item, ".") " "; counter-increment: item}
-/**ol,ol>li,ol>a,ol>li>a {color:var(--black);font-weight:normal;}**/
+    /**auto toc format**/
+    ol {counter-reset: item}
+    ol>li {display: block}
+    ol>li:before {content: counters(item, ".") " "; counter-increment: item}
+    /**ol,ol>li,ol>a,ol>li>a {color:var(--black);font-weight:normal;}**/
+    #toc:empty:after{content:"Generating table of contents...";}
 
-/**scrollbar**/
-::-webkit-scrollbar { width: 15px;}
-::-webkit-scrollbar-thumb { background: var(--color);}
-</style></head>
+    /**scrollbar**/
+    ::-webkit-scrollbar { width: 15px;}
+    ::-webkit-scrollbar-thumb { background: var(--color);}
+  </style>
+</head>
 <body><div class="main">
-
 <h1>Voldo</h1>
-<div class="sub">Voldo is a personal language based on predicate logic, unambiguity,
-a degree of simplicity and consistency, and personal preferences. This language is still
-a work in progress. To see the other things I (Astro) do on the internet, click
-<a href="../" target="_blank">here</a>.</div>
+<div class="sub">Voldo is a personal engelang based on predicate logic, unambiguity, a degree of simplicity and consistency, and personal preferences. This language is still a work in progress. To see the other things I (Astro) do on the internet, click <a href="../">here</a>. Special thanks to <a href="http://vrabbers.github.io/" target="_blank">Vrabbers</a> for the auto TOC and help troubleshooting.</div>
 
 <hr>
 <h2>Table of Contents</h2>
@@ -59,8 +57,7 @@ a work in progress. To see the other things I (Astro) do on the internet, click
 
 <h2 class="linkhead">Phono</h2>
 <h3 class="linkhead">Phonology</h3>
-<p>Voldo has 6 vowels and 10 consonants. Consonants are built on three places of articulation and do not have
-voicing distinctions. Characters on the IPA tables are in the typical Roman orthography.</p>
+<p>Voldo has 6 vowels and 10 consonants. Consonants are built on three places of articulation and do not have voicing distinctions. Characters on the IPA tables are in the typical Roman orthography.</p>
 <table><caption>Vowels</caption>
 <tr> <th></th>      <th>Front</th> <th>Central</th> <th>Back</th> </tr>
 <tr> <th>Close</th> <td>i</td>     <td></td>        <td>u</td>    </tr>
@@ -74,67 +71,42 @@ voicing distinctions. Characters on the IPA tables are in the typical Roman orth
 <tr> <th>Fricative</th> <td>v</td>      <td>z</td>       <td>r</td>      </tr>
 <tr> <th>Liquid</th>    <td></td>       <td>l</td>       <td></td>       </tr>
 </table>
-<p>It is preffered that consonants are pronounced voiced, but voiceless consonants would of course be interpreted
-the same.</p>
-<p>All consonants are either <b>CV</b> or <b>CCV</b>. The only disallowed clusters are repeated consonants.</p>
+<p>It is preffered that consonants are pronounced voiced, but voiceless consonants would of course be interpreted the same.</p>
+<p>All syllables are either <b>CV</b> or <b>CCV</b>. The only disallowed clusters are repeated consonants.</p>
 
 <h3 class="linkhead">Orthography</h3>
-<p>The Voldo Roman orthography contains 16 letters: <b>a b d e g i l m n o r u v z ŋ ə</b>. All these letters are
-pronounced the same as their IPA equivalents, with the exception of <b>r</b>, the velar fricative.</p>
-<p>Text in Voldo can be written in all lowercase and without punctuation. If a writer or reader decides to, however,
-it can be written with capitalization and punctuation for any reason.</p>
+<p>The Voldo Roman orthography contains 16 letters: <b>a b d e g i l m n o r u v z ŋ ə</b>. All these letters are pronounced the same as their IPA equivalents, with the exception of <b>r</b>, the velar fricative.</p>
+<p>Text in Voldo can be written in all lowercase and without punctuation. If a writer or reader decides to, however, it can be written with capitalization and punctuation for any reason.</p>
 
 <h2 class="linkhead">The Predicate</h2>
 <h3 class="linkhead">Predicates</h3>
-<p>A predicate connects a set of arguments and defines their relationship. The predicate can be thought of as the verb
-of a clause, and the arguments can be thought of as the nouns of a clause, although they are subtly different.</p>
-<p>All predicates, as they appear in the dictionary, are at least 2 consonants of the form <b>C(C)aC(C)a</b>, where each
-<b>C</b> is any consonant and each <b>a</b> is a dummy vowel. Common predicates (100) are 2 consonants, typical predicates
-(1000) are 2 consonants, and obscure predicates (10000) are 4 consonants. These are not rigid predicate classes, just
-guidelines to determine how the importance of a predicate relates to its length. The vowels of a predicate are changed to
-inflect the predicate. An example of a predicate is:</p>
+<p>A predicate connects a set of arguments and defines their relationship. The predicate can be thought of as the verb of a clause, and the arguments can be thought of as the nouns of a clause, although they are subtly different.</p>
+<p>All predicates, as they appear in the dictionary, are at least 2 consonants of the form <b>C(C)aC(C)a</b>, where each <b>C</b> is any consonant and each <b>a</b> is a dummy vowel. The vowels of a predicate are changed to inflect the predicate. An example of a predicate is:</p>
 <p><b>rana</b>: speaker¹ says message² to audience³ through medium⁴</p>
 <p>Predicates can be loaned into Voldo for any use, especially proper nouns.</p>
 
 <h3 class="linkhead">Loanwords</h3>
-<p>A loanword, to be identified as a loanword, must contain at least 3 syllables. The first two syllables are inflected
-like any other predicate, and any extra vowels from additional syllables retain the vowel in their root (meaning
-<b>zadaro</b> and <b>zadari</b> are separate predicates). The most common use for borrowing a word into Voldo is proper
-nouns. Their positions take the formats listed in the section on predicate groups.</p>
+<p>A loanword, to be identified as a loanword, must contain at least 3 syllables. The first two syllables are inflected like any other predicate, and any extra vowels from additional syllables retain the vowel in their root (meaning <b>zadaro</b> and <b>zadari</b> are separate predicates). The most common use for borrowing a word into Voldo is proper nouns. Their positions take the formats listed in the section on predicate groups.</p>
 
 <h3 class="linkhead">Predicate Groups</h3>
-<p>Predicate groups are groups of predicates with similar meanings or argument slot structures. In the predicate list,
-predicates belonging to groups are marked with a tag like this: <i>UNIT</i>. Functionally, predicates within a group
-behave identically to predicates outside the group. Predicate groups are not limited to predicates from the base
-vocabulary, as <i>NAME</i> and <i>REGION</i> are also predicate groups. This list contains all predicate groups and
-their argument slot structures:</p>
+<p>Predicate groups are groups of predicates with similar meanings or argument slot structures. In the predicate list, predicates belonging to groups are marked with a tag like this: <i>UNIT</i>. Functionally, predicates within a group behave identically to predicates outside the group. Predicate groups are not limited to predicates from the base vocabulary, as <i>NAME</i> and <i>REGION</i> are also predicate groups. This list contains all predicate groups and their argument slot structures:</p>
 <ul>
-<li><i>UNIT</i> unit¹ measures amount² of quantity³</li>
-<span class="sub">unit¹ is the item being measured, which defaults to a measurement of one unit if no amount² is provided</span>
-<li><i>NAME</i> name¹ is called or named name by group² in context³</li>
-<span class="sub">name¹ is an or the entity that goes by the name</span>
-<li><i>REGION</i> region¹ is the geographic region of region, inhabited by inhabitants²</li>
-<span class="sub">region¹ is the region that goes by the name</span>
-<li><i>LANGUAGE</i> language¹ is the language of language spoken among speakers² to express content³ through medium⁴</li>
-<span class="sub">region¹ is the region that goes by the name</span>
+  <li><i>UNIT</i> unit¹ measures amount² of quantity³</li>
+  <span class="sub">unit¹ is the item being measured, which defaults to a measurement of one unit if no amount² is provided</span>
+  <li><i>NAME</i> name¹ is called or named name by group² in context³</li>
+  <span class="sub">name¹ is an or the entity that goes by the name</span>
+  <li><i>REGION</i> region¹ is the geographic region of region, inhabited by inhabitants²</li>
+  <span class="sub">region¹ is the region that goes by the name</span>
+  <li><i>LANGUAGE</i> language¹ is the language of language spoken among speakers² to express content³ through medium⁴</li>
+  <span class="sub">region¹ is the region that goes by the name</span>
 </ul>
-<p>The names of these argument slots change for each predicate. For example, the second slot of any predicate in the
-<i>REGION</i> group is never <b>inhabitants²</b>; it is always pertaining to the specific predicate, like <b>Wisconsinites²</b>
-in the case of the predicate corresponding to Wisconsin.
-<p>These groups all have a predicate that contains a generic structure, one of which every other predicate in the group
-satisfies; these are the words for <b>unit</b>, <b>name</b>, etc. It is from these predicates that the form for the
-group is made. These predicates are also tagged as part of the group.</p>
+<p>The names of these argument slots change for each predicate. For example, the second slot of any predicate in the <i>REGION</i> group is never <b>inhabitants²</b>; it is always pertaining to the specific predicate, like <b>Wisconsinites²</b> in the case of the predicate corresponding to Wisconsin.
+<p>These groups all have a predicate that contains a generic structure, one of which every other predicate in the group satisfies; these are the words for <b>unit</b>, <b>name</b>, etc. It is from these predicates that the form for the group is made. These predicates are also tagged as part of the group.</p>
 
 <h2 class="linkhead">The Argument</h2>
 <h3 class="linkhead">Arguments</h3>
-<p>Predicates can support anywhere from 0 to 4 arguments. These come in slots, and the use of a slot is defined by the
-predicate. For example, in the clause <b>I speak to you</b>, <b>I</b> is the speaker in position 1, and <b>you</b> is
-the audience in position 2. All of these arguments, even if they seem unrelated, are analyzed as different players of
-what is fundamentally one action or state.</p>
-<p>Further, arguments can be derived from predicates. The word <b>speaker</b>, defined as something that satisfies
-position 1 of <b>rana</b>, can be used as an argument for any new predicate, like position 2 of <b>balna</b>. The word
-form of the argument is a form of <b>rana</b> from position 1 to position 2, which is <b>roni</b>. Altering the vowels
-allows for 16 derivations of a predicate to be used as an argument.</p>
+<p>Predicates can support anywhere from 0 to 4 arguments. These come in slots, and the use of a slot is defined by the predicate. For example, in the clause <b>I speak to you</b>, <b>I</b> is the speaker in position 1, and <b>you</b> is the audience in position 2. All of these arguments, even if they seem unrelated, are analyzed as different players of what is fundamentally one action or state.</p>
+<p>Further, arguments can be derived from predicates. The word <b>speaker</b>, defined as something that satisfies position 1 of <b>rana</b>, can be used as an argument for any new predicate, like position 2 of <b>balna</b>. The word form of the argument is a form of <b>rana</b> from position 1 to position 2, which is <b>roni</b>. Altering the vowels allows for 16 derivations of a predicate to be used as an argument.</p>
 <table><caption>Argument places to predicate inflections</caption>
 <tr> <th></th>     <th>from 1</th> <th>from 2</th> <th>from 3</th> <th>from 4</th> </tr>
 <tr> <th>to 1</th> <td>o-o</td>    <td>i-o</td>    <td>e-o</td>    <td>u-o</td>    </tr>
@@ -145,14 +117,10 @@ allows for 16 derivations of a predicate to be used as an argument.</p>
 <p>Arguments can also be formed without predicates by pronouns and nominal clauses.</p>
 
 <h3 class="linkhead">Pronouns</h3>
-<p>Pronouns are a type of argument not derived from a predicate. The simplest pronoun is the generic pronoun (<b>lo</b>¹,
-<b>li</b>², <b>le</b>³, <b>lu</b>⁴). On its own, it makes no more sense to include it than to not include it, but it is
-combined with pronoun modifiers to indicate additional meaning.</p>
+<p>Pronouns are a type of argument not derived from a predicate. The simplest pronoun is the generic pronoun (<b>lo</b>¹, <b>li</b>², <b>le</b>³, <b>lu</b>⁴). On its own, it makes no more sense to include it than to not include it, but it is combined with pronoun modifiers to indicate additional meaning.</p>
 
 <h3 class="linkhead">Nominal Clauses</h3>
-<p>A nominal clause encloses a clause or clauses and treats them as an argument for another clause. This is also how
-quotations are indicated. The position of the nominal clause determines which particle opens it (<b>zo</b>¹, <b>zi</b>²,
-<b>ze</b>³, <b>zu</b>⁴), and the particle <b>zə</b> closes a nominal clause.</p>
+<p>A nominal clause encloses a clause or clauses and treats them as an argument for another clause. This is also how quotations are indicated. The position of the nominal clause determines which particle opens it (<b>zo</b>¹, <b>zi</b>², <b>ze</b>³, <b>zu</b>⁴), and the particle <b>zə</b> closes a nominal clause.</p>
 
 <h2 class="linkhead">Modifiers</h2>
 <h3 class="linkhead">Numbers</h3>
@@ -354,7 +322,7 @@ also why are you looking at my html comments
 <b>mdaŋa</b>: container¹ holds contents² from outside³ by barrier⁴
 <b>nabda</b>: cleaner¹ cleans mess² using means³, making it clean⁴
 <b>navda</b>: patient¹ with illness² is treated by doctor³ by remedy⁴
-<b>naŋa</b>: origin¹ becomes something² over process³ by stimulus⁴
+<b>naŋa</b>: input¹ becomes product² over process³ by stimulus⁴
 <b>nvaba</b>: member¹ belongs to set² among others³
 <b>rana</b>: speaker¹ says message² to audience³ through medium⁴
 <b>razda</b>: house¹ houses inhabitants²
@@ -376,9 +344,6 @@ also why are you looking at my html comments
  ŋazda mŋama bŋama vavla bavŋa zamna vama nanma rnava rŋara ŋazna gvaga rabŋa zrama dvala vgara dzaza ŋava lalva ndala daŋza vmana razba vrava zabga dzara vrada laŋda malra zmaŋa rlama lgana lagla bazŋa ŋazba lzama ŋarza gaza damda gvara zamra lalra baŋma vdaga bagra mvava mamda bagna marna dalŋa ŋagma nraŋa ragva rmaba malma ŋnaŋa rnala lnama lgala ŋaŋna mazda bamna labda bnaza ranla vara zrada ŋvara vlaŋa ŋnava dbala mgaŋa vazda gazva vazla maŋla zazma rarŋa ŋnaba rnaba damra vbaŋa blaza dzama lbava lraŋa lalma lzaga zraba bŋaza zavna mamga lbara gvaŋa bzada rvada zrana vaŋa bvava rmaŋa babra galga ŋadma dagna gvaza bgava lnana bŋana rgava barma bavba danza mala bagŋa rzava gbala gdava lzaza mrala zdada gŋama mdala ŋavma lbaŋa navba ŋazŋa ravla laba badba vnana rdava ngaza rŋaza zbara gzana ŋazva davza ŋada dabŋa dabga gamza bvaba lnada gazda bgaza vlava gamga dalda dalna ŋabda vabla zagma rbaba dnaŋa garba zanma ganŋa namva zanŋa vavna damna zgana zŋava nabŋa manŋa bazga vabma mŋaza ŋgaga lanŋa naŋna banva zdaga ralza nzara nraza znaŋa zama lŋara barba nbaba vdaba mlaza baŋa nadza mrana ralŋa bnaga vgama zagza zŋada galva ŋalba bazla bagla zalra lgama dava bdada lazva lanba ndaŋa nbava nlaza zalma manra nvaza ravba ngama navza mazba mabra nadŋa raŋla ŋrama dlada gagba radla gavma vaŋna lbama gvada lamra vmama radŋa mzana galza vadva ŋlava ravŋa gana ŋaga ralna nalma bmala bvaŋa manba mlaga zŋama vdama nlama ŋagra lazba vnala lgaŋa brada ladga grama lavŋa nala dazra malva davna ŋraŋa lrana gagna zbala rarva ldaza nabna lada bvana vnaza glala nara magda grava nzaga mara lŋada nlava mavma maŋra gavŋa rvaba navna ŋrara madga laŋza zŋaba madba drava zara vagla rabra garga darma rava laŋma vagza ŋamga vmaga zgada lvaŋa lnava zmaza landa babma labma ldama dgala nbaza rgaza vŋaŋa grala ladva dagva ŋadga zaŋva davda lŋaga vzara nalra valŋa gŋara ŋvana ŋanra nabza ganra vadma zada ŋagŋa rbada bavza babva valma mlara vzaŋa ranra nŋaŋa gavna baza ladra mlada madva zgala larga lanra zadga dalga lavba nagva nadma ŋzana garla dvaba mazra mgana ŋlara lŋala ngana rbaŋa nrava gnaŋa vavba nvama zabna manda zrava narba ŋamva lamda mnaza ragda mdama gala vnaŋa malna vzaba lvara vadba radba gŋala lagba ŋalŋa mbava vŋara zlada dlara dŋava damza ŋbala barga mrada vmada vnaba davra gbama mvada nanva garva vaŋla lrara gadga ŋvama bagba bgada nalza banma dgama ŋavza vmala rbala zamba damga nmama rgama gama barva rabma labva nalga lzana zrara zabva nana lŋama navma dŋala ŋmala nlaba narva vlaza laŋla vanda zarŋa ldaga vzada razga znava baba ngaŋa vmaŋa bagma vŋala nzama dbara dmaga bagva zarza vamva gadŋa bzana nadva zagra gnada nagla bnala namra zabda vamŋa vanra ngaba rzara lamva mgada rŋala larva bmada bvala zanva ŋagda zaŋla gdana zvaga mrava mraba naŋma ŋbaba valga baŋva zrala grada dara mbana nmara malba lŋaba bnama maŋza vraba ŋamla bala vabza babla zbaza vabŋa rŋama nbana nzaŋa ŋlama vabva bavda ŋmara lmara nada daŋa ŋalra gzaba bzala vraza darda narda zgava mzaga namza gadra gdara nbara dabza lamga garma zarda langa ŋarna babna rlava brara gabma gadba ŋavla zaba mdana manma gaŋma ŋaba ŋamba gaŋga lagŋa zŋaza rarna namna balma bdava nrala ŋvala vbaga darva zadba nadga daŋra mbara razva magla ŋadŋa mvama bŋava ŋagba nadna razŋa gagva maŋga nmada mabza zazga dadva dadla ravza banla zlaza larza nabla ŋagla rvaŋa mavga badŋa vagva labŋa mraŋa rdana vbama rnaza mamba ŋbaŋa zaŋba mlama damva zmana gaŋba gava mabna dŋaza ndaza larma raŋa radma ŋdada gbana nraba ŋamra mŋana ravga nalda magna gavga bgama gagda dvaga rdaŋa dazga nagba ŋgaŋa dadza nŋava ŋlaza vnava lmaga ŋarla dgada vnara ŋzaba gazba ŋzaŋa mbaga gnana mvaza ŋaŋla vazga vbana gabga zaga dzava dvana maŋa ralda gvaba ŋadra zlaga glaga lanla zavma mrara ŋmana zamŋa mlana bmaŋa gnara graga zamda dlava varga vdava ganda vavza mnaba ŋdaga zvara zarla blala vraga radga gŋaŋa bvaza zarba lavda lŋaŋa garda ragra zava vgaga daba dadŋa lagma bŋara manza raza nzala vŋaga zagla gaŋla ramla larna rzaŋa zabza zmara bamŋa badga ŋarma ŋabza glara bamda ganma drara bŋada rlaga mlava lvama nvana darga mzama galŋa nmaba dŋara brala lvala bamba galma mgara rmava zdama rgada ragba galda dŋaŋa vamba ŋgaba gbaza bmaga raŋda ŋlana zaŋma mzaza zalga lagra nbama zlama ŋala graŋa znana dnaba lavza ganva zdala zabŋa bavga zazba rmara zdaŋa dazba vabna glana labra braŋa lzara ravna maŋma dalva lvana ŋarga dana gagla dabda maŋna gnaba labla draŋa ŋlala gabŋa ŋarda banga vagba nvaga darba gara nazna vana mvaga dbada ŋdaŋa mraza lmaŋa mabma dmara dadba lava lalda ŋbaza bdala dazda ŋalga navga dbava draga davba vamza dzala rnada nlaga madna mŋada larba mgaza rarba bgaba dadna vdara badva lbaga nanza laga nlaŋa dlaba zarna mavla narza zalza ŋavra vdaŋa nmaza darna ŋnada naŋza ralma vavra davga zamva ramda rnama darza gmala ranba zazŋa lmana mada ŋadna mlala mdada ŋmaza bnava ganba nmala rbana gdala mnava nmava gavda zadna mdara zŋala dbaba lanva lvaza zŋana vnada vagma ŋavŋa vava mzada dlama zala lŋava nmaga vaŋra nlada rŋaŋa ganza gzada vala nanŋa galra gvala zazva ladna gazŋa lmava ŋlaŋa rzana labna gagma zmada gaŋna vzaza ŋlaba bara dazma zvaza marza gmava bazva larda dvaŋa mamva vadla gadza ndana nŋada darla ralba nava rlaŋa gadva rada gŋaga lnara rmaza ŋaŋva rlala ŋbana znaza lmada bvama zgaba vbaba ravda razna zlala bzava naŋra bnara lrama rzaza lrava vabra zazda ŋalma dagra nbada mnaŋa nazva vgana rabza zvada bgala bama vmava gbaba ŋmaba gzama gazla vmara rmada ŋdala lazma zavra lgaga ŋaŋda rŋaba rabva ragza mabda vgaŋa naŋga mzaŋa gdaza drama balba manga glama naza lagva ndaba ŋmaga zaŋna zalda ŋanba danma bagda ramna rbava raŋna balŋa braza ŋvaza rvara znada lnaba mvala lavga rbama gbava gŋada gzaga dazŋa lanza ŋanma dgana mnala balva gaŋra banba ŋaŋza narla dnana rlaza ŋbama zalna drana lvaba ŋaŋra ranga manla nzava dgaga zalva grana babga bmaba ladŋa rvama dzada vzava laŋba mrama ŋabga navla nrara ranŋa gadna dalba bzaŋa zanba nadba vzala gabla nŋaga gaga nrada mavra mvara naŋva dada rdaza zdaba mazŋa manva ŋanza mŋava banra varla dzaba rmana vaŋda blaba damŋa ngara dlala danba gavba dagda znama bavma lvada rvana ngaga ŋrada gnala ldava bgara mgama davŋa ŋamza mdaba dadra nazla ldara ŋdaba dlaŋa ndara ladza bavla dabma ladla dvava ŋama bmava lzala lgava ŋnala garza znala zgaŋa valra zavda nanra zvava nalva dmala maga zagda ŋabma nŋana mzara ŋavba lnala nagza vadga raba zmaba nŋara vanza zazla rabda varva lmaza ŋalda marla lagza gvava lrada gbaŋa dabna rzada bana badza nanla davla dŋaga dalza namba blana dzaŋa zbaŋa mava mraga bavra ŋvada ŋgava rgala rmama rŋana ngava zavba zvaba rama ŋdama ŋagna lbada gmana nzana lŋana gadla nagŋa vrama lgaba darŋa bzara gaŋda lzaba ngada ravma nanda nagra marŋa ŋvava mamza rabla lraza vanla dgaza varda mazga ŋgara ŋdana lŋaza zaŋra nazba raŋba bdara lgada vbada ŋadla nŋaba rvava mgala zadra zlaŋa vdada ŋamna ŋamda rzaba baŋza gbara rbaga gaŋa lzava narga balga ndava zazra madla dagŋa bmaza nazra zanza ŋnaza nadra vlana nlara balda radna laŋga lmama bvada radza vavda vdaza bvaga zŋaga rlada ŋdava nazma lalza mnara zvala mŋaba znaga bŋaba ŋdaza ŋzaga mvaba ŋadva zvama dlaza nalŋa zaŋza dnava mazla danda vlaba ŋnara zdaza gazra blaga randa nvala gabda rlara larla namda nrama vnaga mbada dvara mavna zŋaŋa davma mlaba ragma ŋrana dbaga lanma daŋda blara danva ŋarŋa marda mnaga gzaŋa rdara rarla dabva marma gdaga gamba gnaga vaba mbaŋa zabla zabra naga nvava dgaba mŋala lalna ramza brava vraŋa mvana mamŋa mdaga vbava ŋavga dbaŋa razra mzaba glava gmaga vzana lnaza raŋva gnava zanra rzala rlaba danra dagza ranva lalŋa lana zavza ralga gamda ŋanga rzama zbada ŋarva rdaga radva ŋrava dmada vbara damba gbada zgara galba dgava bnada rvaza rŋava bdama magma narna gzava bamra nagma ndaga vgaba bgaga lazŋa mgaba malŋa bvara marva ŋaŋma daŋba ŋzala ŋvaga vaŋva gazna badla zaŋda mzala ldaŋa gagza barŋa dnada dmana zaŋga vavma zlaba garŋa gnama valza bazna ramŋa naŋba rgaŋa vanma vamla dnama ramba maba ngala barla mabŋa bdana graba ralra ŋazra vzama dbaza zraza maŋda nvaŋa zadla nzaba razma magra vanba lamba lala vlama vaŋma blama gagŋa gvana rbara ŋraza lzaŋa dnaza dzana zanga zraŋa rarma zbaga dmama rarda ŋazla zavga zavla ŋaŋa lvava zlana vamna zdara zlara mŋara mŋaga vagna namŋa lraba rnaŋa gabna vavŋa bgaŋa rgara naba dabra badra nrana gvama gavra mdaza mabla laŋva braga rgana ŋadba vadra magŋa mana nlana vaŋza mnana ŋabva naŋda ŋanŋa nvada ŋavda blada nabga dnala ŋnama ŋalza varma dnara bzaga bzama rŋaga madma glaŋa vaza vlara gŋana dagla rabga bdaba lgara bmara zŋara radra bŋaŋa bavna rvaga ravra ganga ŋnana valna dmaŋa ŋabna gdaba varza zadza rnaga ŋraga brana nmana ŋzama gzara ŋamŋa dzaga dmava gdada lvaga ŋvaŋa ŋmaŋa nama vanŋa gadma zadma nalba dadma gnaza zarma vagra vabga ŋarba laŋra gmama banza lazda rdama ŋazma lagna lazra baŋga daza vaŋba labga namla ŋbara madra raŋma vadna dbana drada rlana gaŋva ŋlada zagba bamga rvala dgaŋa gavza ŋaza vrala ramra zamza zagva madza valva gŋava gazga zbava vamga lamla ŋana rŋada zvana dŋada gagra lraga daŋga draba baŋda vadza zbana bmama ŋnaga mbala ŋalva balra dŋaba ŋbava zlava mavŋa lamna ŋara vnama zvaŋa raŋra babda mgava mnada ŋraba nŋama gamna ŋgaza bazda baga vazva dmaba nazga danga ndada bnaba bagza bzaba bamla dazva zmava barza vazba vazma graza varna mnama rnana ŋmava garna lalga bamza varba bamva rdada gamŋa ladba gamra zamga ragna ŋgada ŋaŋga nabma ŋrala lnaŋa gmaba glada zadŋa ŋvaba ranma labza lavma ragla ganla badma vgava mazva vrara nlala nbaga lamŋa nŋala bava baŋna lbana dgara nalna dagma bmana ŋabra magva bdaŋa ragŋa vazŋa gabra mavda navra dazna nraga draza zdana mavba rzaga marba lavra mazna rgaga gamva ŋdara dala raŋza nagna lbaba nvara rmaga mazma zmala vŋaza maŋva balza narŋa ŋazga rarza bgana dalma mbaza gbaga bdaza gabza nŋaza rmala vamra ŋagva zaŋa znaba dvaza rdaba mavza gamla vŋama nzada rnara zgaza nanba vŋaba ladma gmaza ndama bnana zalba vlaga vavga ŋanva lgaza vŋana madŋa mabga lazla mbama banda damla vgada mgaga gazma nazŋa zarva varŋa mamla valba nbala maŋba vanva glaza zmama gzala ŋalna ŋadza gaba lara ldada zdava zanla nbaŋa dagba nzaza zadva raga barna ŋgana bazba vgala galna zarga lalba ŋgama drala ŋmada vaŋga zagna vmaza barda mzava ralva vagda lavna mdava vgaza namga vamda brama dmaza mamra zbama ŋmama marga ŋlaga ŋavna vbaza ranza malza vdala zavŋa ŋbaga laŋna dŋama zgaga dama nazda nabva mabva blaŋa vazra badna razla lrala vazna vabda rala vdana rgaba zalŋa gzaza rdala vzaga zamla lamza lmaba nadla braba zazna babŋa nabra ŋabŋa nanga glaba mlaŋa bdaga dlaga gaŋza naŋla narma ldana gŋaza vlala zraga zgama dazla zmaga bŋaga mamna zabma rabna gmada banŋa zana mvaŋa dabla blava rarga gdaŋa ŋzaza lmala dbama navŋa vadŋa zbaba ramva ŋgala lnaga magza ŋanla lbala ŋzada lzada ramga gmara larŋa mŋaŋa lazga ŋbada mbaba bŋala ŋaŋba ldaba ŋabla bazma dlana vŋada ŋzava nagda dadga ŋagza daŋva gdama daŋna vlada vmaba vagŋa daŋla gmaŋa daŋma lagda nmaŋa rara ŋzara dŋana dvada bada baŋba bazra
 -->
 </p>
-
-<hr><div class="sub" style="text-align:center;">Thanks to <a href="http://vrabbers.github.io/" target="_blank">Vrabbers</a> for the auto TOC and help troubleshooting.</div>
-
 </div>
 
 <script> //thank you vrabbers !!!
