@@ -1,119 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" type="image/png" href="../icon.png">
-<link rel="stylesheet" href="../style.css">
-<title>Discography</title>
-<style>
-body {background-color:var(--black); color: var(--white); padding:64px;}
-table.main {width: 896px; margin:auto; margin-top:24px; margin-bottom:24px; background-color:var(--white); color:var(--black); padding:30px; border-radius:15px;}
-img {user-select:none;}
-
-::-webkit-scrollbar { width: 15px;}
-::-webkit-scrollbar-thumb { background: var(--white);}
-
-td.art{height:256px; width:256px; padding:0px;}
-img{max-width:100%;max-height:100%; display: block; border-radius:5px;}
-
-td.info{text-align:center;}
-div.date {font-size:14px; font-weight:bold;}
-div.title{font-size:32px; font-weight:bold;}
-hr {border:none; height:3px; width:70%; background-color:var(--black); margin-top: 10px;margin-bottom:10px;}
-div.tracklist {width:90%; margin:auto;margin-bottom:10px;}
-a {color:var(--color); text-decoration:none; font-weight:bold;}
-a.feat {color: var(--black);}
-a.feat:hover {color: var(--color);}
-</style>
-
+  <link rel="icon" type="image/png" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <title>Discography</title>
+  <style>
+    /**main**/
+    body {background-color:var(--black); color: var(--white); padding:64px;}
+    img, .links {user-select:none;}
+    .link {user-select:auto;}
+    
+    /**album cards**/
+    table.album {width: 896px; margin: 24px auto; background-color:var(--white); color:var(--black); padding:30px; border-radius:15px;}
+    div.albumhead {width: 896px; margin: auto; padding: 12px 0px; background-color: var(--color); text-align:center; border-radius:15px 15px 0px 0px; font-size: 16px; font-weight:bold;}
+    #latest {margin-top:0px; border-radius: 0px 0px 15px 15px;}
+    
+    /**scrollbar**/
+    ::-webkit-scrollbar { width: 15px;}
+    ::-webkit-scrollbar-thumb { background: var(--white);}
+    
+    /**album art**/
+    td.art{height:256px; width:256px; padding:0px;}
+    img{max-width:100%;max-height:100%; display: block; border-radius:5px;}
+    
+    /**album info**/
+    td.info{text-align:center;}
+    div.date {font-size:14px; font-weight:bold;}
+    div.title{font-size:32px; font-weight:bold;}
+    hr {border:none; height:3px; width:70%; background-color:var(--black); margin-top: 10px;margin-bottom:10px;}
+    div.tracklist {width:90%; margin:auto;margin-bottom:10px;}
+    a {color:var(--color); text-decoration:none; font-weight:bold;}
+    
+    .homebutton {color:var(--white);}
+  </style>
 </head>
 <body>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/10KDegrees.jpg"></td>
+<a class="homebutton" href="../">◀ HOME</a>
+
+<div class="albumhead">LATEST RELEASE</div>
+<table class="album" id="latest"><tr>
+  <td class="art"><img src="../art/10k-Degrees.jpg" alt="10k Degrees album art"></td>
   <td class="info">
     <div class="date">OCTOBER 3, 2020</div>
     <div class="title">10k Degrees</div><hr>
 	<div class="tracklist">Throne · Endless I · Hailstorm · Incredibly Hot · Death System · Endless II · Blood Everywhere · Evil Thoughts · When Everything Was Okay · Fast · Endless III · Nausea · Go Go Go Go · Furious · Late Night · Run Away Really Fast · Sincere</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/10k-degrees">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sd-WA6NrFfZa9xLKGSar56">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/10k-degrees">Bandcamp</a>
-  </div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/10k-degrees">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sd-WA6NrFfZa9xLKGSar56">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/10k-degrees">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/NexusCondition.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Nexus-Condition.jpg" alt="Nexus Condition album art"></td>
   <td class="info">
     <div class="date">MARCH 27, 2020</div>
     <div class="title">Nexus Condition</div><hr>
 	<div class="tracklist">Legacy · My Collapse · Myth · Sustain · In a Heartbeat · Tragedy Immortal · Unstable Dream · The Fear · Echo · Promise · Fractured Bliss · Moral Complex · Miracle Tears · Villains</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/nexus-condition">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/nexus-condition">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/Exosphere.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Exosphere.jpg" alt="Exosphere album art"></td>
   <td class="info">
     <div class="date">NOVEMBER 18, 2019</div>
     <div class="title">Exosphere</div><hr>
 	<div class="tracklist">Callisto · Dione · Europa · Titan · Oberon · Charon · Ganymede · Iapetus · Umbriel · Tethys · Ariel · Miranda · Mimas · Enceladus · Rhea · Triton · Io · Titania</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/exosphere">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5tqtPfAIt3kZE-Kn5zHRLNd">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/exosphere">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/exosphere">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5tqtPfAIt3kZE-Kn5zHRLNd">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/exosphere">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/PulseWidth.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Pulse-Width.jpg" alt="Pulse Width album art"></td>
   <td class="info">
     <div class="date">OCTOBER 12, 2019</div>
     <div class="title">Pulse Width</div><hr>
 	<div class="tracklist">Infinity · Intensity · Clarity · Activity · Credibility · Mortality · Trinity · Purity · Opportunity · Possibility · Utility · Oddity · Serenity · Fatality · Objectivity</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/pulse-width">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sUDZVVuRqVDcsitOeo3xpQ">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/pulse-width">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/pulse-width">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sUDZVVuRqVDcsitOeo3xpQ">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/pulse-width">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/Emerge.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Emerge.jpg" alt="Emerge album art"></td>
   <td class="info">
     <div class="date">SEPTEMBER 19, 2019</div>
     <div class="title">Emerge</div><hr>
 	<div class="tracklist">Exist · Under · Solos · Weird · Group · Coins · Camps · Honey · Floor · Shark · Final · Craft · Blink · Spoop · Study · Crabs · Grill · Fancy · Write · Cycle · Small · Price · Short · Scope · Ratio · Lunch · Mercy · Mouth · Snail · Delay</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/emerge">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sN5a4-UDqXLZEjekC6CKUd">YouTube</a>&emsp;
-  	<a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/emerge">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/emerge">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sN5a4-UDqXLZEjekC6CKUd">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/emerge">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/AsymmetricSilhouette.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Asymmetric-Silhouette.jpg" alt="Asymmetric Silhouette album art"></td>
   <td class="info">
     <div class="date">AUGUST 24, 2019</div>
     <div class="title">Asymmetric Silhouette</div><hr>
 	<div class="tracklist">Archaic · Soft · Yesterday · Melancholy · Macrophobia · Entropy · Terrestrial · Remember · Incredible · Clear · Simple · Illusion · Laughing · Hopeful · Overnight · Underneath · Eternal · Temporary · Time · Elude</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/asymmetric-silhouette">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5v211uhSD0PbV8T4xW9LrHs">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/asymmetric-silhouette">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/asymmetric-silhouette">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5v211uhSD0PbV8T4xW9LrHs">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/asymmetric-silhouette">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/Utopian.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Utopian.jpg" alt="Utopian album art"></td>
   <td class="info">
     <div class="date">JULY 27, 2019</div>
     <div class="title">Utopian</div><hr>
@@ -123,21 +135,21 @@ a.feat:hover {color: var(--color);}
       <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uC7mnpLPk4dfNhBypWdmQR">YouTube</a>&emsp;
       <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/utopian">Bandcamp</a>&emsp;
       <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/utopian-stems">Stems (Bandcamp)</a>
-	</div>
+    </div>
   </td>
 </tr></table>
 
-<table class="main"><tr>
-  <td class="art"><img src="../art/ChaseAnIdea.jpg"></td>
+<table class="album"><tr>
+  <td class="art"><img src="../art/Chase-an-Idea.jpg" alt="Chase an Idea album art"></td>
   <td class="info">
     <div class="date">JUNE 16, 2019</div>
     <div class="title">Chase an Idea</div><hr>
 	<div class="tracklist">Copper · Lesson · Volume · Budget · Impact · Legend · Embark · Memory · Health · Listen · Divide · Design · Symbol · Pigeon · Remark · Settle · Gallon · Proper · Object · Finger · Salmon · Patent · Detail · Decide · Rabbit · Circle · Answer · Choice · Strike · Mirror · Update · Engine · Temple · Strain · Social · Credit · Reward · Expand · Finale · Copper VIP</div>
     <div class="links">
-	  <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/chase-an-idea">Stream</a>&emsp;
-	  <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sRV7Kg337t4KXejk401Hrx">YouTube</a>&emsp;
-	  <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/chase-an-idea">Bandcamp</a>
-	</div>
+      <a class="link" target="_blank" href="https://distrokid.com/hyperfollow/astro3/chase-an-idea">Stream</a>&emsp;
+      <a class="link" target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sRV7Kg337t4KXejk401Hrx">YouTube</a>&emsp;
+      <a class="link" target="_blank" href="https://astronomy487.bandcamp.com/album/chase-an-idea">Bandcamp</a>
+    </div>
   </td>
 </tr></table>
 

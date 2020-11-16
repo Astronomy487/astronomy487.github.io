@@ -1,7 +1,13 @@
+/**font**/
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;800&display=swap');
-
 * {font-family: Work Sans;}
+
+/**color palette**/
 :root {--white: #F0F0F0; --black: #303841; --color: #ff2e63;}
 
+/**selected text**/
 ::selection {color:var(--white); background:var(--color);}
 ::-moz-selection {color:var(--white); background:var(--color);}
+
+/**home button**/
+.homebutton {position:fixed; font-size:24px; user-select:none; font-weight:normal; top:64px; left:64px;}
