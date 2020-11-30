@@ -10,4 +10,4 @@
 ::-moz-selection {color:var(--white); background:var(--color);}
 
 /**home button**/
-.homebutton {position:fixed; font-size:24px; user-select:none; font-weight:normal; top:64px; left:64px;}
+.homebutton {position:fixed; font-size:24px; user-select:none; font-weight:normal; top:64px; left:64px; text-decoration:none;}
