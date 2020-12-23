@@ -9,5 +9,13 @@
 ::selection {color:var(--white); background:var(--color);}
 ::-moz-selection {color:var(--white); background:var(--color);}
 
+/**scrollbar**/
+::-webkit-scrollbar { width: 15px;}
+::-webkit-scrollbar-thumb { background: var(--white);}
+
 /**home button**/
 .homebutton {position:fixed; font-size:24px; user-select:none; font-weight:normal; top:64px; left:64px; text-decoration:none;}
+
+/**other things**/
+b, a {color: var(--color); font-weight: bold; text-decoration: none;}
+a:hover {text-decoration: underline;}

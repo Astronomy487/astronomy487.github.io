@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="https://astronomy487.github.io/projects/doctemplate/style.css">
+  <link rel="stylesheet" href="style.css"> <!--https://astronomy487.github.io/projects/doctemplate/style.css-->
   <link rel="icon" href="https://astronomy487.github.io/icon.png">
-  <title>Document Template</title>
+  <title>Doc Template</title>
   <!-- I have excluded the <style> here because I want the default colors and font to override. -->
 </head>
 <body>
 <div class="main">
-<h1>Document Template</h1>
-<div class="sub">A document format template and a guide to its use created by <a href="https://astronomy487.github.io/" target="_blank">Astro</a> with JS from <a href="http://vrabbers.github.io/" target="_blank">Vrabbers</a>. You are free to use and modify this template for any need.</div>
+<h1>Doc Template</h1>
+<div class="sub">A document formatting template and a tutorial to its use created by <a href="https://astronomy487.github.io/" target="_blank">Astro</a> with JS from <a href="http://vrabbers.github.io/" target="_blank">Vrabbers</a>. You are free to use and modify this template for any need.</div>
 
 <hr>
 <h2>Table of Contents</h2>
@@ -59,14 +59,19 @@
 <p>In paragraphs, you can use <b>&lt;b&gt;</b> and <b>&lt;a&gt;</b>, both of which <b>look like this</b> (although <b>&lt;a&gt;</b>s are underlined when hovered, <a>like this</a>). In addition, <b>&lt;i&gt;</b> can be used for italics <i>like this</i>, but be aware that not all fonts have built-in italic fontfaces. <b>&lt;mark&gt;</b> produces text <mark>like this</mark>. For all inline markups, be mindful of the scenarios you use them in and what they indicate to the reader — inconsistent use ruins the point of a well-formatted document.
 <p>Although I haven't written any custom CSS for these, <b>&lt;ul&gt;</b>, <b>&lt;ol&gt;</b>, <b>&lt;dl&gt;</b>, <b>&lt;dt&gt;</b>, and <b>&lt;dd&gt;</b> should all work as you'd expect in any HTML.</p>
 <h3 class="linkhead">Block Elements</h3>
-<p><b>&lt;table&gt;</b> of course creates a table, within which you should put <b>&lt;tr&gt;</b>s for each row and, in turn, <b>&lt;td&gt;</b>s and <b>&lt;th&gt;</b>s inside those. There is also formatting for a <b>&lt;caption&gt;</b> before the first <b>&lt;tr&gt;</b>, but it is optional.</p>
-<table><caption>Populations of countries</caption>
+<p><b>&lt;table class="data"&gt;</b> creates a table fit for most purposes., within which you should put <b>&lt;tr&gt;</b>s for each row and, in turn, <b>&lt;td&gt;</b>s and <b>&lt;th&gt;</b>s inside those. There is also formatting for a <b>&lt;caption&gt;</b> before the first <b>&lt;tr&gt;</b>, but it is optional.</p>
+<table class="data"><caption>Populations of countries</caption>
 <tr>  <th>Country</th>        <th>Population</th> </tr>
 <tr>  <td>China</td>          <td>1,405 million</td> </tr>
 <tr>  <td>India</td>          <td>1,370 million</td> </tr>
 <tr>  <td>United States</td>  <td>330 million</td>  </tr>
 <tr>  <td>Indonesia</td>      <td>269 million</td>  </tr>
 <tr>  <td>Pakistan</td>       <td>220 million</td>  </tr>
+</table>
+<p>On the other hand, <b>&lt;table class="gloss"&gt;</b> is used for text in a gloss-like format used in translations.</p>
+<table class="gloss">
+<tr>  <td>I</td>  <td>like</td> <td>ice cream</td>  </tr>
+<tr>  <td>J'</td> <td>aime</td> <td>la glace</td>   </tr>
 </table>
 <p><b>&lt;code&gt;</b> creates a chunk of code. Within this snippet, however, you still have to use HTML like <b>&amp;lt;</b> and <b>&amp;gt;</b> instead of <b>&lt;</b> and <b>&gt;</b>, and <b>&lt;br&gt;</b> instead of a new line. They have no paritcular syntax highlighting. Code snippets looks like this:</p>
 <code>&lt;h3 class="linkhead"&gt;Block Elements&lt;/h3&gt;</code>
@@ -84,8 +89,6 @@
 <p>Alternatively, if you want to include a block image or video between two other block elements, the <b>&lt;img&gt;</b> and <b>&lt;video&gt;</b> tags can be used. Their maximum dimensions are 500px by 400px. There is also bare-bones CSS for <b>&lt;audio&gt;</b>, although video and audio are not customized beyond appropriate margins and size. Overall, non-figure media is discouraged.</p>
 
 <h2 class="linkhead">Using the Template</h2>
-<!--<h3 class="linkhead">Example</h3>
-<p>This tutorial is an example of the template in use! In addition to this tutorial, I have converted a <a href="https://en.wikipedia.org/wiki/Beatrice_Lennie" target="_blank">random Wikipedia article</a> to use this template, which you can view <a href="" target="_blank">here</a>.</p>-->
 <h3 class="linkhead">Obtaining and Editing</h3>
 Because I host the CSS and JS files, the only file you have to manage is the HTML. An blank HTML template ready to be edited can be found <a href="template.html" target="_blank">here</a>. Here is a full list of things you have to edit from this template yourself:
 <ul>
