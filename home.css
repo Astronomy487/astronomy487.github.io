@@ -4,7 +4,9 @@ body {
   user-select: none;
 }
 
-h3, h4, p, .sub, h1, .albumsub {user-select: text;}
+h3, h4, p, .sub, h1, .albumsub {
+  user-select: text;
+}
 
 .main {
   width: 500px;
@@ -62,7 +64,7 @@ hr {
 
 h4 {text-transform: uppercase; font-size: 16px; margin-bottom: 2px;}
 a.boxlink {text-align: center; padding: 8px 24px; color: var(--white); border-radius: 4px; line-height: 44px; white-space: nowrap; background-color: var(--color);}
-a.boxlink:hover {text-decoration: none}
+a.boxlink:hover {text-decoration: none;}
 
 a#spotify {background-color: #1DB954;}
 a#applemusic {background-color: #FA2D48;}
@@ -73,15 +75,11 @@ a#twitter {background-color: #1DA1F2;}
 a#discord {background-color: #7289DA;}
 a#other {background-color: var(--white); color: var(--black); font-weight: normal; padding: 8px;}
 
-a > img {width: 100%; border-radius: 2px; display: block;}
-a > img:hover {transform: translateY(-2px); box-shadow: 0px 2px 8px #30384180;}
+/**album select**/
+a > img {width: 100%; border-radius: 2px; display: block; transition: 0.1s;}
+a > img:hover {transform: scale(1.2); box-shadow: 0px 2px 8px #30384180;}
 
-/** old album pages
-.albumcontainer {padding: 40px;}
-.albumcontainer > h3, .albumcontainer > h4 {margin-top: 0px;}
-.albumart {width: 240px; height: 240px; display: block; margin: 20px auto; border-radius: 4px;}**/
-
-/**new album pages**/
+/**album pages**/
 .albummain {
   width: 500px;
   color: var(--black);
