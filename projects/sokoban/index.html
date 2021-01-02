@@ -13,25 +13,28 @@
     
     body {background-color: #F0F0F0; user-select: none;}
     #boardbody {position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background-color: #303841; border-collapse: collapse;}
-    td {width: 48px; height: 48px;}
     
     .e {background-color: inherit;}
-    .p {background-color: #FF2E63; background-size: cover; border-radius: 999px;}
+    .p {background-color: #FF2E63;}
     .w {background-color: #F0F0F0;}
-    .b {background-color: #FBD316; border-radius: 6px;}
-    .g {box-shadow: inset 0px 0px 0px 2px #F0F0F080; border-radius: 6px;}
+    .b {background-color: #FBD316;}
+    .g {box-shadow: inset 0px 0px 0px 3px #F0F0F080;}
+    .b.g {background-color: #eb9c34;}
+  </style>
+  <style id="sizestyle">
   </style>
 </head>
-<body>
+<body id="body">
   <div class="title">
     <h1>Sokoban</h1>
+    <h4 id="progress"></h2>
     <p>a version of sokoban i am making that runs on the web using js :D i'm trying to learn more about using js in 2021</p>
     <p>still in development !!! things i want to do with it:</p>
     <ul>
-      <li>prevent you from pushing boxes into other boxes</li>
-      <li>make the goals work</li>
       <li>load levels with an image</li>
       <li>load a series of levels</li>
+      <li>make a progress bar</li>
+      <li>make something happen when you win</li>
       <li>possibly create pixel art sprites instead of just color blocks</li>
       <li>create more tiles with more advanced behaviors ! doors....keys....buttons...who knows!! i think it would be fun to put a creative twist on sokoban</li>
       <li>multiple player pieces <img src="https://data.whicdn.com/images/342105838/original.jpg" class="emoji"></li>
@@ -39,29 +42,50 @@
     <p><a href="../../">go back to my home page</a></p>
   </div>
   <script>
-    let boardsize = 16;
-    let board = [
+    /*let board = [
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","b","b","e","e","e"],
       ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","b","b","b","e","e","e","e","e","e","e"],
       ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
       ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
       ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
       ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","g","g","g","e","e","e","e","e","e","e"],
+      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
+      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
       ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"]
+    ];*/
+    let board = [
+      ["w","w","e","e","e","w","w"],
+      ["e","e","b","e","e","w","w"],
+      ["w","w","e","b","e","w","w"],
+      ["e","w","w","b","e","w","w"],
+      ["e","w","e","e","e","w","w"],
+      ["b","e","b","b","b","e","w"],
+      ["e","e","e","e","e","e","w"]
     ];
-    
+    let boardsize = 7;
     let playX = 1;
     let playY = 1;
     board[playX][playY] = "p";
+    
+    let goal = [
+      [1,0],
+      [3,0],
+      [2,4],
+      [4,3],
+      [6,3],
+      [5,5],
+      [5,2]
+    ]
+    
+    let cellsize = Math.round(80/boardsize)*8
+    document.getElementById("sizestyle").innerHTML = "td {width: "+cellsize+"px; height: "+cellsize+"px;}";
     
     //every frame
     let x = setInterval(function() {
@@ -71,11 +95,27 @@
       for (let xIndex = 0; xIndex < boardsize; xIndex++) {
         bodyText += "<tr>";
         for (let yIndex = 0; yIndex < boardsize; yIndex++) {
-          bodyText += '<td class="'+board[xIndex][yIndex]+'"></td>';
+          bodyText += '<td class="'+board[xIndex][yIndex]+'" id="c'+xIndex+yIndex+'"></td>';
         }
         bodyText += "</tr>";
       }
       document.getElementById("boardbody").innerHTML = bodyText;
+      
+      //goals
+      let completed = 0;
+      for (let arrayIndex = 0; arrayIndex < goal.length; arrayIndex++) {
+        //set goal class to cells
+        document.getElementById("c"+goal[arrayIndex][0]+goal[arrayIndex][1]).setAttribute("class",board[goal[arrayIndex][0]][goal[arrayIndex][1]]+" g")
+        //check for win
+        if (board[goal[arrayIndex][0]][goal[arrayIndex][1]] == "b") {
+          completed++;
+        }
+      }
+      document.getElementById("progress").innerHTML = completed+" out of "+goal.length+" boxes in";
+      if (completed == goal.length) {
+        document.getElementById("progress").innerHTML += "<br>you win!!!";
+        document.getElementById("body").setAttribute("style","background-image: url('https://media2.giphy.com/media/lPoOHG39XAlV4it61H/source.gif'); background-size: cover; background-repeat: no-repeat;");
+      }
       
     }, 10);
     
@@ -99,7 +139,7 @@
           break
       }
       
-      tryToPush:
+      tryToMove:
       if ((0 <= targetX && targetX <= boardsize-1 && 0 <= targetY && targetY <= boardsize-1) && board[targetX][targetY] != "w") {
         //target is not wall
         
@@ -109,14 +149,16 @@
           
           //pushing box out of boundary? if so stop
           if (!(0 <= targetX*2-playX && targetX*2-playX <= boardsize-1 && 0 <= targetY*2-playY && targetY*2-playY <= boardsize-1)) {
-            break tryToPush;
+            break tryToMove;
           }
           
           let boxInto = board[targetX*2-playX][targetY*2-playY]; //what the box is pushing into
           if (boxInto == "e") { //pushing into empty space
             board[targetX*2-playX][targetY*2-playY] = "b";
           } else if (boxInto == "w") { //pushing into wall
-            break tryToPush;
+            break tryToMove;
+          } else if (boxInto == "b") { //pushing into another box
+            break tryToMove;
           }
         }
         
@@ -128,6 +170,8 @@
       }
     }
   </script>
-  <table><tbody id="boardbody"></tbody></table>
+  <table>
+    <tbody id="boardbody"></tbody>
+  </table>
 </body>
 </html>
