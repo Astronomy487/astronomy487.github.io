@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style id="hiderowsstyle"></style>
+  <title>ACNH Critter Sheet</title>
+</head>
+<body id="body">
+  <div class="menu">
+    <h1 id="current"></h1>
+    <h3>Has the time changed since then? Try refreshing.</h3>
+    <hr>
+    <h2>Species</h2>
+    <button onclick="openNew('bugs')" id="menubugs">Bugs</button>
+    <button onclick="openNew('fish')" id="menufish">Fish</button>
+    <button onclick="openNew('deep')" id="menudeep">Deep sea</button>
+    <h2>Filter</h2>
+    <button onclick="setDisplay('all')" id="menuall">All</button>
+    <button onclick="setDisplay('month')" id="menumonth">Today</button>
+    <button onclick="setDisplay('current')" id="menucurrent">Right now</button>
+    <h2>Hemisphere</h2>
+    <button onclick="hemi('north')" id="menunorth">North</button>
+    <button onclick="hemi('south')" id="menusouth">South</button>
+    <h2>Show availability</h2>
+    <button onclick="showNext(true)" id="menunexttrue">Next</button>
+    <button onclick="showNext(false)" id="menunextfalse">Schedules (may be slow)</button>
+    <hr>
+    <h2 class="right">ACNH Critter Sheet<br>(fanmade) by <a href="https://astronomy487.github.io/">Astro</a></h2>
+  </div>
+  <div class="tablespace">
+    <table class="speciestable">
+      <tbody id="speciesbody">
+      </tbody>
+    </table>
+  </div>
+  <script>let t = true; let f = false;</script>
+  <script src="bugcatalogue.js"></script>
+  <script src="fishcatalogue.js"></script>
+  <script src="deepcatalogue.js"></script>
+  <script src="generate.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="stylesheet" href="https://astronomy487.github.io/style.css">
   <title>Sokoban</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;800&display=swap');
-    * {font-family: Work Sans;}
-    ::selection{color:#F0F0F0;background:#FF2E63;}::-moz-selection{color:#F0F0F0;background:#FF2E63;}
-    .title {width: 300px; top: 0px; left: 0px; padding: 32px; user-select: text; color: #303841; font-size: 18px;}
+    :root {
+      --white: #F0F0F0;
+      --black: #303841;
+      --player: #FF2E63;
+      --goaloutline: #F0F0F080;
+      --box: #FBD316;
+      --boxgoal: #eb9c34;
+    }
+    
+    .title {width: 300px; top: 0px; left: 0px; padding: 32px; user-select: text; color: #var(--black); font-size: 18px;}
     h1 {font-weight: bold; font-size: 24px; margin-top: 12px;}
-    a {color: inherit; text-decoration: underline;}
-    .emoji {height: 32px; transition: 0.3s; border-radius: 2px;} .emoji:hover {transform: scale(3);}
+    a {color: inherit; font-weight: normal; text-decoration: underline;}
+    .emoji {height: 32px; transition: 0.5s; border-radius: 2px;} .emoji:hover {transform: scale(3);}
     
     body {background-color: #F0F0F0; user-select: none;}
-    #boardbody {position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background-color: #303841; border-collapse: collapse;}
+    #boardbody {position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background-color: var(--black); border-collapse: collapse;}
+    
+    #progressbar {height: 20px; width: 300px; position: absolute; left: 50%; transform: translate(-50%); bottom: 48px; border-collapse: collapse; border: solid 2px var(--black);}
+    #progressbar #progressfull {background-color: red; transition: 0.3s; background-color: var(--black);}
     
     .e {background-color: inherit;}
-    .p {background-color: #FF2E63;}
-    .w {background-color: #F0F0F0;}
-    .b {background-color: #FBD316;}
-    .g {box-shadow: inset 0px 0px 0px 3px #F0F0F080;}
-    .b.g {background-color: #eb9c34;}
+    .p {background-color: var(--player);}
+    .w {background-color: var(--white);}
+    .b {background-color: var(--box);}
+    .goal {box-shadow: inset 0px 0px 6px 3px var(--goaloutline);}
+    .b.goal {background-color: var(--boxgoal);}
   </style>
-  <style id="sizestyle">
-  </style>
+  <style id="sizestyle"></style>
 </head>
 <body id="body">
   <div class="title">
     <h1>Sokoban</h1>
-    <h4 id="progress"></h2>
     <p>a version of sokoban i am making that runs on the web using js :D i'm trying to learn more about using js in 2021</p>
     <p>still in development !!! things i want to do with it:</p>
     <ul>
@@ -41,51 +49,60 @@
     </ul>
     <p><a href="../../">go back to my home page</a></p>
   </div>
+  <table id="progressbar">
+    <caption id="progresscaption"></caption>
+    <td id="progressfull"></td>
+    <td id="progressempty"></td>
+  </table>
   <script>
-    /*let board = [
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","b","b","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","w","e","w","e","w","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"],
-      ["e","e","e","e","e","e","e","e","e","e","e","e","e","e","e","e"]
-    ];*/
+    //ALL BOARD PIECES
+    //these can be capitalized to indicate a goal beneath them (although it doesn't make sense for some tiles like walls)
+    
+    //e empty     E empty goal
+    //w wall      
+    //b box       B box goal
+    //p player    P player goal
+    
     let board = [
       ["w","w","e","e","e","w","w"],
-      ["e","e","b","e","e","w","w"],
-      ["w","w","e","b","e","w","w"],
-      ["e","w","w","b","e","w","w"],
-      ["e","w","e","e","e","w","w"],
-      ["b","e","b","b","b","e","w"],
-      ["e","e","e","e","e","e","w"]
+      ["E","p","b","e","e","w","w"],
+      ["w","w","e","b","E","w","w"],
+      ["E","w","w","b","e","w","w"],
+      ["e","w","e","E","e","w","w"],
+      ["b","e","B","b","b","E","w"],
+      ["e","e","e","E","e","e","w"]
     ];
-    let boardsize = 7;
-    let playX = 1;
-    let playY = 1;
-    board[playX][playY] = "p";
-    
-    let goal = [
-      [1,0],
-      [3,0],
-      [2,4],
-      [4,3],
-      [6,3],
-      [5,5],
-      [5,2]
-    ]
-    
+
+    //board size and cell size
+    let boardsize = board.length;
     let cellsize = Math.round(80/boardsize)*8
-    document.getElementById("sizestyle").innerHTML = "td {width: "+cellsize+"px; height: "+cellsize+"px;}";
+    document.getElementById("sizestyle").innerHTML = "#boardbody td {width: "+cellsize+"px; height: "+cellsize+"px;}";
+    
+    //find goals (and make them lowercase in array)
+    let goal = [];
+    for (let xIndex = 0; xIndex < boardsize; xIndex++) {
+      for (let yIndex = 0; yIndex < boardsize; yIndex++) {
+        if (board[xIndex][yIndex] == board[xIndex][yIndex].toUpperCase()) {
+          board[xIndex][yIndex] = board[xIndex][yIndex].toLowerCase();
+          goal.push([xIndex,yIndex]);
+        }
+      }
+    }
+    
+    //find player
+    let playX;
+    let playY;
+    lookForPlayer:
+    for (let xIndex = 0; xIndex < boardsize; xIndex++) {
+      for (let yIndex = 0; yIndex < boardsize; yIndex++) {
+        if (board[xIndex][yIndex] == "p") {
+          playX = xIndex;
+          playY = yIndex;
+          break lookForPlayer;
+        }
+      }
+    }
+    board[playX][playY] = "p";
     
     //every frame
     let x = setInterval(function() {
@@ -105,21 +122,18 @@
       let completed = 0;
       for (let arrayIndex = 0; arrayIndex < goal.length; arrayIndex++) {
         //set goal class to cells
-        document.getElementById("c"+goal[arrayIndex][0]+goal[arrayIndex][1]).setAttribute("class",board[goal[arrayIndex][0]][goal[arrayIndex][1]]+" g")
+        document.getElementById("c"+goal[arrayIndex][0]+goal[arrayIndex][1]).setAttribute("class",board[goal[arrayIndex][0]][goal[arrayIndex][1]]+" goal")
         //check for win
         if (board[goal[arrayIndex][0]][goal[arrayIndex][1]] == "b") {
           completed++;
         }
       }
-      document.getElementById("progress").innerHTML = completed+" out of "+goal.length+" boxes in";
-      if (completed == goal.length) {
-        document.getElementById("progress").innerHTML += "<br>you win!!!";
-        document.getElementById("body").setAttribute("style","background-image: url('https://media2.giphy.com/media/lPoOHG39XAlV4it61H/source.gif'); background-size: cover; background-repeat: no-repeat;");
-      }
+      document.getElementById("progressfull").setAttribute("style","width: "+Math.round(100*completed/goal.length)+"%;");
       
     }, 10);
     
     //inputs
+    inputs:
     document.onkeydown = function(e) {
       //set target coords
       let targetX = playX
@@ -136,7 +150,7 @@
           break;
         case 40: case 83:
           targetX++;
-          break
+          break;
       }
       
       tryToMove:
