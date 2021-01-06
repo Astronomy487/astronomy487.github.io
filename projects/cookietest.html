@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    input, button {font-size: 48px;}
+  </style>
+</head>
+<body>
+  <input type="text" id="textfield">
+  <button onclick="saveInput()">Save input</button>
+  <script>
+    let text = document.cookie.words;
+    console.log("old cookie loaded: "+text);
+    document.getElementById("textfield").setAttribute("value",text);
+    console.log("textfield set to cookie: "+text);
+    function saveInput() {
+      text = document.getElementById("textfield").value;
+      console.log("new text saved: "+text);
+      document.cookie = "words="+text+";";
+      console.log("new cookie saved: "+text);
+    }
+  </script>
+</body>
+</html>
