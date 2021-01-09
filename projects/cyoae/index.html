@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon.png">
+  <title>CYOA Engine</title>
+</head>
+<body>
+  <div id="main">
+    <h1 id="hometitle">Choose Your Own Adventure Engine</h1>
+    <p id="sub">made by <a href="https://astronomy487.github.io/">Astro</a></p>
+    <input placeholder="Adventure file URL" id="urlinput" onchange="loadURL()">
+    <button onclick="populate()" id="urlgo">Play</button>
+    <button onclick="openTutorial()">How do I write an adventure?</button>
+  </div>
+  <script>let state = []; let current;</script>
+  <script id="adventureinput"></script>
+  <script>
+    function loadURL() {
+      let jsURL;
+      jsURL = document.getElementById("urlinput").value;
+      document.getElementById("adventureinput").setAttribute("src",jsURL);
+    }
+    
+    function openTutorial() {
+      window.open("tutorial");
+    }
+    
+    function toState(x) {
+      current = x;
+      populate();
+    }
+
+    function populate() {
+      let newInner = "";
+      if (state[current].title != null) newInner += '<h1>'+state[current].title+'</h1>';
+      if (state[current].image != null) newInner += '<img src="'+state[current].image+'">';
+      if (state[current].desc != null) newInner += '<p>'+state[current].desc+'</p>';
+      if (state[current].option != null) {
+        for (i = 0; i < state[current].option.length; i++) {
+          newInner += '<button onclick="toState(\''+state[current].option[i].link+'\')">'+state[current].option[i].label+'</button>';
+        }
+      }
+      document.getElementById("main").innerHTML = newInner;
+    }
+  </script>
+</body>
+</html>
