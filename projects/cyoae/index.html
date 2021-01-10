@@ -6,20 +6,43 @@
   <title>CYOA Engine</title>
 </head>
 <body>
+  <div id="topleft"></div>
   <div id="main">
     <h1 id="hometitle">Choose Your Own Adventure Engine</h1>
     <p id="sub">made by <a href="https://astronomy487.github.io/">Astro</a></p>
-    <input placeholder="Adventure file URL" id="urlinput" onchange="loadURL()">
-    <button onclick="populate()" id="urlgo">Play</button>
+    <input placeholder="Adventure file URL" id="urlinput">
+    <button onclick="play()" id="urlgo">Play</button>
     <button onclick="openTutorial()">How do I write an adventure?</button>
+    <button onclick="playExample()">Play example adventure</button>
   </div>
   <script>let state = []; let current;</script>
   <script id="adventureinput"></script>
   <script>
+    let jsURL;
+    
     function loadURL() {
-      let jsURL;
-      jsURL = document.getElementById("urlinput").value;
+      jsURL = document.getElementById("urlinput").value.trim();
+      if (jsURL.startsWith("https://") && jsURL.endsWith(".js")) {
+        document.getElementById("adventureinput").setAttribute("src",jsURL);
+      }
+    }
+    
+    function play() {
+      loadURL();
+      setTimeout(function(){
+        if (jsURL.startsWith("https://") && jsURL.endsWith(".js")) {
+          populate();
+        } else {
+          document.getElementById("urlinput").value = "";
+          document.getElementById("urlinput").setAttribute("placeholder","That URL didn't work. Try again?");
+        }
+      },25);
+    }
+    
+    function playExample() {
+      jsURL = "https://cdn.discordapp.com/attachments/523666597492293634/797582358458662952/adventure.js";
       document.getElementById("adventureinput").setAttribute("src",jsURL);
+      setTimeout(function(){populate()},25);
     }
     
     function openTutorial() {
