@@ -86,7 +86,7 @@ function inspect(i) {
     let discoveryText = "has been known since prehistoric times";
     if (e[i].discovered != 0) discoveryText = "was discovered in "+e[i].discovered;
     eInfo += "<p>"+e[i].name+" ("+e[i].abbr+") is "+typeName[e[i].type]+" in group "+e[i].group+" and period "+e[i].period+" that "+discoveryText+". <a href=\"https://en.wikipedia.org/wiki/"+e[i].name+"\" target=\"_blank\">Read on Wikipedia...</a></p>";
-    eInfo += "<p>An atom of "+e[i].name+" contains "+i+" protons, and a neutral atom will contain "+i+" electrons. Its most stable isotope is "+e[i].abbr+"-"+2*i+", which has "+i+" neutrons.</p>";
+    eInfo += "<p>An atom of "+e[i].name+" contains "+i+" protons, and a neutral atom will contain "+i+" electrons.</p>";
     let state = "solid";
     if (e[i].melting < 295) state = "liquid";
     if (e[i].boiling < 295) state = "gas";
@@ -94,7 +94,7 @@ function inspect(i) {
     eInfo += "</div>";
     
     eInfo += "<div class=\"column\">";
-    eInfo += "<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Niobium_crystals_and_1cm3_cube.jpg/800px-Niobium_crystals_and_1cm3_cube.jpg\">"
+    //eInfo += "<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Niobium_crystals_and_1cm3_cube.jpg/800px-Niobium_crystals_and_1cm3_cube.jpg\">"
     //eInfo += "<div onclick=\"inspect(0)\" style=\"display: block; width: 100%; background-color: black; color: white; font-size: 24px; padding: 24px; border-radius: 6px; box-sizing: border-box; cursor: pointer; text-align: center;\">Leave</div>";
     eInfo += "</div>";
     
