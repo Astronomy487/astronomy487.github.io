@@ -419,6 +419,7 @@
     }
     
     function wordOrPhrase() {
+      if (word.includes(" ")) {
         return "phrase";
       } else {
         return "word";
