@@ -82,15 +82,15 @@ function inspect(i) {
     let eInfo = "";
     
     eInfo += "<div class=\"column\">";
-    eInfo += "<h1>"+e[i].name+"</h1>";
+    eInfo += "<h1>"+capitalize(e[i].name)+"</h1>";
     let discoveryText = "has been known since prehistoric times";
     if (e[i].discovered != 0) discoveryText = "was discovered in "+e[i].discovered;
-    eInfo += "<p>"+e[i].name+" ("+e[i].abbr+") is "+typeName[e[i].type]+" in group "+e[i].group+" and period "+e[i].period+" that "+discoveryText+". <a href=\"https://en.wikipedia.org/wiki/"+e[i].name+"\" target=\"_blank\">Read on Wikipedia...</a></p>";
+    eInfo += "<p>"+capitalize(e[i].name)+" ("+e[i].abbr+") is "+typeName[e[i].type]+" in group "+e[i].group+" and period "+e[i].period+" that "+discoveryText+". <a href=\"https://en.wikipedia.org/wiki/"+e[i].name+"\" target=\"_blank\">Read on Wikipedia...</a></p>";
     eInfo += "<p>An atom of "+e[i].name+" contains "+i+" protons, and a neutral atom will contain "+i+" electrons.</p>";
     let state = "solid";
     if (e[i].melting < 295) state = "liquid";
     if (e[i].boiling < 295) state = "gas";
-    eInfo += "<p>At room temperature, it's a "+state+". Its melting point is "+(e[i].melting-273.15).toFixed(1)+"&deg;C, and its boiling point is "+(e[i].boiling-273.15).toFixed(1)+"&deg;C.</p>";
+    eInfo += "<p>At room temperature, "+e[i].name+" is a "+state+". Its melting point is "+(e[i].melting-273.15).toFixed(1)+"&deg;C, and its boiling point is "+(e[i].boiling-273.15).toFixed(1)+"&deg;C.</p>";
     eInfo += "</div>";
     
     eInfo += "<div class=\"column\">";
@@ -102,10 +102,6 @@ function inspect(i) {
   }
 }
 
-document.addEventListener("keydown", function(event) {
-  switch (event.keyCode) {
-    case 27:
-      inspect(0);
-      break;
-  }
-});
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
