@@ -4,6 +4,11 @@
   <title>Hangman</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+    
+    html {
+      font-size: 20px;
+    }
+    
     * {
       font-family: "Nunito";
       font-weight: normal;
@@ -225,6 +230,7 @@
       left: 0;
       top: 0;
       animation: 0.5s ease-in-out enter;
+      z-index: 2;
     }
     
     #copy input {
@@ -252,6 +258,7 @@
       opacity: 1;
       transition: 0.3s;
       display: block;
+      height: 5rem;
     }
   </style>
 </head>
@@ -259,7 +266,7 @@
   <div id="copy">
     made by <a href="https://astronomy487.github.io/" target="_blank">Astro</a>
     <div id="encoding">
-      share with friends!
+      <div>share with friends!</div>
       <input type="text" oninput="updateURL()" contenteditable="true" spellcheck="false" id="url-input" placeholder="word or phrase"></input>
       <input type="text" oninput="updateURL()" id="url-output" contenteditable="true" placeholder="URL to share"></input>
     </div>
@@ -282,6 +289,7 @@
     
     if (location.search == "") {
       play(randomDefaultWord(),6);
+      //document.getElementById("container").innerHTML += "<br>"+wordOrPhrase()+" randomly chosen from my discography";
     } else {
       play(atob(location.search.substring(1)),6);
     }
@@ -385,12 +393,10 @@
     function win(isWin) {
       end = true;
       let resultContent = "";
-      let wordOrPhrase = "word";
-      if (word.includes(" ")) wordOrPhrase = "phrase"
       if (isWin) {
-        resultContent = "<h1>You won ! :D</h1><h3>The "+wordOrPhrase+" was <span>"+word.toUpperCase()+"</span></h3><button onclick=\"location.reload()\">Play again?</button>";
+        resultContent = "<h1>You won ! :D</h1><h3>The "+wordOrPhrase()+" was <span>"+word.toUpperCase()+"</span></h3><button onclick=\"location.reload()\">Play again?</button>";
       } else {
-        resultContent = "<h1>You lost :/</h1><h3>The "+wordOrPhrase+" was <span>"+word.toUpperCase()+"</span></h3><button onclick=\"location.reload()\">Try again?</button>";
+        resultContent = "<h1>You lost :/</h1><h3>The "+wordOrPhrase()+" was <span>"+word.toUpperCase()+"</span></h3><button onclick=\"location.reload()\">Try again?</button>";
       }
       document.getElementById("result-page").setAttribute("style","display: block;")
       document.getElementById("result-content").innerHTML = resultContent;
@@ -408,8 +414,15 @@
     }
     
     function randomDefaultWord() {
-      let songList = ["Copper", "Lesson", "Volume", "Budget", "Impact", "Legend", "Embark", "Memory", "Health", "Listen", "Divide", "Design", "Symbol", "Pigeon", "Remark", "Settle", "Gallon", "Proper", "Object", "Finger", "Salmon", "Patent", "Detail", "Decide", "Rabbit", "Circle", "Answer", "Choice", "Strike", "Mirror", "Update", "Engine", "Temple", "Strain", "Social", "Credit", "Reward", "Expand", "Finale", "Copper VIP", "A Hundred Years", "Fly Away", "Further from Free", "Air", "Final Breath", "Infancy of Home", "Forgotten Age", "Thank You in Advance", "We're Taking Everything Back", "After Centuries", "Coming Home", "If Only I Were Here", "Archaic", "Soft", "Yesterday", "Melancholy", "Macrophobia", "Entropy", "Terrestrial", "Remember", "Incredible", "Clear", "Simple", "Illusion", "Laughing", "Hopeful", "Overnight", "Underneath", "Eternal", "Temporary", "Time", "Elude", "Exist", "Under", "Solos", "Weird", "Group", "Coins", "Camps", "Honey", "Floor", "Shark", "Final", "Craft", "Blink", "Spoop", "Study", "Crabs", "Grill", "Fancy", "Write", "Cycle", "Small", "Price", "Short", "Scope", "Ratio", "Lunch", "Mercy", "Mouth", "Snail", "Delay", "Infinity", "Intensity", "Clarity", "Activity", "Credibility", "Mortality", "Trinity", "Purity", "Opportunity", "Possibility", "Utility", "Oddity", "Serenity", "Fatality", "Objectivity", "Callist", "Dione", "Europa", "Titan", "Oberon", "Charon", "Ganymede", "Iapetus", "Umbriel", "Tethys", "Ariel", "Miranda", "Mimas", "Enceladus", "Rhea", "Triton", "Io", "Titania", "Legacy", "My Collapse", "Myth", "Sustain", "In a Heartbeat", "Tragedy Immortal", "Unstable Dream", "The Fear", "Echo", "Promise", "Fractured Bliss", "Moral Complex", "Miracle Tears", "Villains", "Throne", "Endless I", "Hailstorm", "Incredibly Hot", "Death System", "Endless II", "Blood Everywhere", "Evil Thoughts", "When Everything Was Okay", "Fast", "Endless III", "Nausea", "Go Go Go Go", "Furious", "Late Night", "Run Away Really Fast", "Sincere"];
-      return songList[Math.floor(Math.random()*songList.length)];
+      let list = ["Copper", "Lesson", "Volume", "Budget", "Impact", "Legend", "Embark", "Memory", "Health", "Listen", "Divide", "Design", "Symbol", "Pigeon", "Remark", "Settle", "Gallon", "Proper", "Object", "Finger", "Salmon", "Patent", "Detail", "Decide", "Rabbit", "Circle", "Answer", "Choice", "Strike", "Mirror", "Update", "Engine", "Temple", "Strain", "Social", "Credit", "Reward", "Expand", "Finale", "Copper VIP", "A Hundred Years", "Fly Away", "Further from Free", "Air", "Final Breath", "Infancy of Home", "Forgotten Age", "Thank You in Advance", "We're Taking Everything Back", "After Centuries", "Coming Home", "If Only I Were Here", "Archaic", "Soft", "Yesterday", "Melancholy", "Macrophobia", "Entropy", "Terrestrial", "Remember", "Incredible", "Clear", "Simple", "Illusion", "Laughing", "Hopeful", "Overnight", "Underneath", "Eternal", "Temporary", "Time", "Elude", "Exist", "Under", "Solos", "Weird", "Group", "Coins", "Camps", "Honey", "Floor", "Shark", "Final", "Craft", "Blink", "Spoop", "Study", "Crabs", "Grill", "Fancy", "Write", "Cycle", "Small", "Price", "Short", "Scope", "Ratio", "Lunch", "Mercy", "Mouth", "Snail", "Delay", "Infinity", "Intensity", "Clarity", "Activity", "Credibility", "Mortality", "Trinity", "Purity", "Opportunity", "Possibility", "Utility", "Oddity", "Serenity", "Fatality", "Objectivity", "Callist", "Dione", "Europa", "Titan", "Oberon", "Charon", "Ganymede", "Iapetus", "Umbriel", "Tethys", "Ariel", "Miranda", "Mimas", "Enceladus", "Rhea", "Triton", "Io", "Titania", "Legacy", "My Collapse", "Myth", "Sustain", "In a Heartbeat", "Tragedy Immortal", "Unstable Dream", "The Fear", "Echo", "Promise", "Fractured Bliss", "Moral Complex", "Miracle Tears", "Villains", "Throne", "Endless I", "Hailstorm", "Incredibly Hot", "Death System", "Endless II", "Blood Everywhere", "Evil Thoughts", "When Everything Was Okay", "Fast", "Endless III", "Nausea", "Go Go Go Go", "Furious", "Late Night", "Run Away Really Fast", "Sincere"];
+      return list[Math.floor(Math.random()*list.length)];
+    }
+    
+    function wordOrPhrase() {
+        return "phrase";
+      } else {
+        return "word";
+      }
     }
   </script>
 </body>
