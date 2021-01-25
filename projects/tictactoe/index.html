@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap');
+    * {font-family: Krona One;}
+    a {color: inherit; text-decoration: underline;}
+    
+    :root {
+      --black: #303036;
+      --blue: #1EB5EB;
+      --red: #ED1D46;
+      --off: #F3DECE;
+      --white: #FBF4EF;
+    }
+    
+    body {
+      user-select: none;
+      background-color: var(--white);
+      animation: 0.5s ease-in-out enter;
+      margin: 0;
+      padding: 0;
+      overflow: hidden
+    }
+    
+    @keyframes enter {from {opacity: 0;} to {}}
+    
+    #board {
+      border-collapse: collapse;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      outline-width: 4px;
+      outline-style: solid;
+      outline-color: var(--off);
+      outline-offset: 32px;
+      transition: 0.5s;
+    }
+    
+    #board td {
+      font-family: Material Icons;
+      width: 200px;
+      height: 200px;
+      line-height: 200px;
+      font-size: 144px;
+      text-align: center;
+      border-radius: 0;
+      transition: 0.3s;
+    }
+    
+    #board td.x {
+      color: var(--blue);
+      text-shadow: 8px 8px var(--black);
+    }
+    
+    #board td.o {
+      color: var(--red);
+      text-shadow: 8px 8px var(--black);
+    }
+    
+    #board td.e {
+      background-color: var(--off);
+      color: var(--off);
+      transform: scale(0.1);
+      border-radius: 100%;
+    }
+    
+    #board td.e:hover:not(.ended) {
+      transform: scale(0.2);
+      cursor: pointer;
+    }
+    
+    #result {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 36px;
+      text-align: center;
+      animation: 0.5s ease-in-out enter;
+    }
+    
+    #result button {
+      font-size: 24px;
+      color: var(--white);
+      border: none;
+      display: block;
+      margin: 24px auto;
+      padding: 12px 24px;
+      border-radius: 6px;
+      transition: 0.3s;
+      cursor: pointer;
+      box-shadow: 0px 0px var(--black);
+    }
+    
+    #result button:focus {
+      outline: none;
+    }
+    
+    #result button:hover {
+      transform: translateY(-8px);
+      box-shadow: 0px 8px var(--black);
+    }
+  </style>
+  <style id="hover-dot-style"></style>
+</head>
+<body id="body">
+  <table id="board"></table>
+  <script>
+    let text = {
+      e: ".",
+      x: "clear",
+      o: "radio_button_unchecked"
+    };
+    let board = ["e","e","e","e","e","e","e","e","e"];
+    let winStates = [[0,3,6],[1,4,7],[2,5,8],[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6]];
+    let charToColor = {
+      e: "off",
+      x: "blue",
+      o: "red"
+    };
+    let currentTurn = "x";
+    let winner;
+    
+    generateBoard();
+    updateBoard();
+    
+    function generateBoard() {
+      let boardInner = "";
+      let a = 0;
+      for (i = 0; i < 3; i++) {
+        boardInner += "<tr>";
+        for (j = 0; j < 3; j++) {
+          boardInner += "<td id=\""+a+"\" onclick=\"playOn("+a+")\"></td>";
+          a++;
+        }
+        boardInner += "</tr>";
+      }
+      document.getElementById("board").innerHTML = boardInner;
+    }
+    
+    function updateBoard() {
+      for (i = 0; i < board.length; i++) {
+        let cell = document.getElementById(i);
+        cell.setAttribute("class",board[i]);
+        cell.innerText = text[board[i]];
+        if (board[i] != "e") cell.setAttribute("onclick","");
+      }
+      document.getElementById("hover-dot-style").innerHTML = "#board td.e:hover:not(.ended) {background-color: var(--"+charToColor[currentTurn]+"); color: var(--"+charToColor[currentTurn]+");}";
+      checkWin();
+    }
+    
+    function playOn(i) {
+      board[i] = currentTurn;
+      if (currentTurn == "x") {
+        currentTurn = "o";
+      } else {
+        currentTurn = "x";
+      }
+      updateBoard();
+    }
+    
+    function checkWin() {
+      for (w = 0; w < winStates.length; w++) {
+        let check = winStates[w];
+        //check is an array of positions we are now searching
+        if ((board[check[0]] == board[check[1]] && board[check[0]] == board[check[2]]) && board[check[0]] != "e") {
+          winner = board[check[0]];
+          let colorName;
+          if (winner == "x") {colorName = "blue";} else {colorName = "red";}
+          winWithColor(colorName);
+        }
+      }
+      if (!(board.includes("e")) && winner == null) {
+        winWithColor("off");
+      }
+    }
+    
+    function winWithColor (colorName) {
+      document.getElementById("board").setAttribute("style","outline-color: var(--"+colorName+"); outline-width: 32px;");
+      for (i = 0; i < board.length; i++) {
+        let cell = document.getElementById(i);
+        cell.setAttribute("onclick","");
+        if (cell.getAttribute("class") == "e") cell.setAttribute("class","e ended");
+      }
+      setTimeout(function() {
+        document.getElementById("board").setAttribute("style","outline-color: var(--"+colorName+"); outline-width: 32px; transform: translate(-50%,-50%) scale(2); opacity: 0;");
+        setTimeout(function() {
+          let textObject = {
+            off: "This game was a draw.",
+            red: "The <span style=\"color: var(--red);\">O</span>s won this game.",
+            blue: "The <span style=\"color: var(--blue);\">X</span>s won this game."
+          };
+          if (colorName == "off") {
+            document.getElementById("body").innerHTML = "<div id=\"result\">"+textObject[colorName]+"<button style=\"background-color: var(--black)\" onclick=\"location.reload()\">Play again?</button></div>";
+          } else {
+            document.getElementById("body").innerHTML = "<div id=\"result\">"+textObject[colorName]+"<button style=\"background-color: var(--"+colorName+")\" onclick=\"location.reload()\">Play again?</button></div>";
+          }
+        },500);
+      },500);
+    }
+  </script>
+</body>
+</html>
