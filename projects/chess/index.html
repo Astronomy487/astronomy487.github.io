@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chess</title>
+  <link rel="icon" href="icon.png">
+  <style>
+    @font-face {
+      font-family: 'Case Font';
+      src: url('CASEFONT.TTF');
+    }
+    
+    :root {
+      --black: #1C1D21;
+      --white: #FFF6F0;
+      --green: #3cb978;
+      --blue: #4a4de8;
+      --red: #e42535;
+      --yellow: #fec620;
+      --board1: #C1C3D7;
+      --board2: #635B9A;
+    }
+    
+    html {
+      font-size: 24px;
+    }
+    
+    body {
+      background-color: var(--white);
+      color: var(--black);
+      user-select: none;
+    }
+    
+    #board {
+      border-collapse: collapse;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+    
+    #board td {
+      width: 4rem;
+      height: 4rem;
+      font-size: 3rem;
+      line-height: 4rem;
+      text-align: center;
+      transition: 0.2s;
+      font-family: Case Font;
+    }
+    
+    .tile-black {
+      background-color: var(--board2);
+    }
+    
+    .tile-white {
+      background-color: var(--board1);
+    }
+    
+    .selectable:hover {
+      box-shadow: inset 0 0 1rem var(--blue);
+      cursor: pointer;
+    }
+    
+    .selected {
+      background-color: var(--blue);
+      cursor: pointer;
+    }
+    
+    .can-move {
+      box-shadow: inset 0 0 1rem var(--yellow);
+      cursor: pointer;
+    }
+    
+    .can-move:hover {
+      background-color: var(--yellow);
+    }
+    
+    .can-move.will-capture {
+      box-shadow: inset 0 0 1rem var(--red);
+    }
+    
+    .can-move.will-capture:hover {
+      background-color: var(--red);
+    }
+    
+    .piece-black {
+      color: var(--black);
+      /*text-shadow: 0 0 0.3rem var(--black);*/
+    }
+    
+    .piece-white {
+      color: var(--white);
+      /*text-shadow: 0 0 0.3rem var(--black);*/
+    }
+  </style>
+</head>
+<body>
+  <table id="board"></table>
+  <script>
+    let text = {
+      king: "&#x265A;",
+      queen: "&#x265B;",
+      rook: "&#x265C;",
+      bishop: "&#x265D;",
+      knight: "&#x265E;",
+      pawn: "&#x265F;"
+    };
+    
+    text = {
+      king: "k",
+      queen: "q",
+      rook: "r",
+      bishop: "b",
+      knight: "n",
+      pawn: "p"
+    };
+    
+    text = {
+      king: "l",
+      queen: "w",
+      rook: "t",
+      bishop: "v",
+      knight: "m",
+      pawn: "o"
+    }
+    
+    let board = [
+      [{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],
+      [{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,{piece:"rook",color:"white"},null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],
+      [{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]
+    ];
+    
+    let boardWidth = 8;
+    let boardHeight = 8;
+    let turn = "white";
+    let selected = null;
+    let canMove = [];
+    
+    makeBoard();
+    
+    function makeBoard() {
+      let html = "";
+      for (x = 0; x < boardWidth; x++) {
+        html += "<tr>";
+        for (y = 0; y < boardHeight; y++) {
+          html += "<td id=\"c"+x+y+"\" onclick=\"input("+x+","+y+")\"></td>";
+        }
+        html += "</tr>";
+      }
+      element("board").innerHTML = html;
+      updateBoard();
+    }
+    
+    function updateBoard() {
+      for (x = 0; x < boardWidth; x++) {
+        for (y = 0; y < boardHeight; y++) {
+          let itsClass;
+          if ((x+y)%2 == 0) {
+            itsClass = "tile-white";
+          } else {
+            itsClass = "tile-black";
+          }
+          if (selected != null && selected.xPos == x && selected.yPos == y) {
+            itsClass += " selected";
+          }
+          if (board[x][y] != null) {
+            itsClass += " piece-"+board[x][y].color;
+            if (board[x][y].color == turn && selected == null) {
+              itsClass += " selectable";
+            }
+          }
+          element("c"+x+y).setAttribute("class",itsClass);
+          if (board[x][y] == null) {
+            element("c"+x+y).innerHTML = "&nbsp;";
+          } else {
+            element("c"+x+y).innerHTML = text[board[x][y].piece];
+          }
+        }
+      }
+      if (selected != null) {
+        switch (board[selected.xPos][selected.yPos].piece) {
+          case "knight":
+            let relKnightSpots = [
+              {xPos:-2,yPos:-1},
+              {xPos:-1,yPos:-2},
+              {xPos:-2,yPos:1},
+              {xPos:-1,yPos:2},
+              {xPos:2,yPos:-1},
+              {xPos:1,yPos:-2},
+              {xPos:2,yPos:1},
+              {xPos:1,yPos:2}
+            ];
+            relKnightSpots.forEach(function(rel){
+              if (selected.xPos+rel.xPos < boardWidth && selected.xPos+rel.xPos >= 0 && selected.yPos+rel.yPos < boardHeight && selected.yPos+rel.yPos >= 0) { //if spot is in bounds
+                if (board[selected.xPos+rel.xPos][selected.yPos+rel.yPos] == null || board[selected.xPos+rel.xPos][selected.yPos+rel.yPos].color != turn) { //and if new spot isn't home piece
+                  canMove.push({xPos: selected.xPos+rel.xPos, yPos: selected.yPos+rel.yPos});
+                }
+              }
+            });
+            break;
+          case "king":
+            let relKingSpots = [
+              {xPos:-1,yPos:-1},
+              {xPos:-1,yPos:0},
+              {xPos:-1,yPos:1},
+              {xPos:0,yPos:-1},
+              {xPos:0,yPos:0},
+              {xPos:0,yPos:1},
+              {xPos:1,yPos:-1},
+              {xPos:1,yPos:0},
+              {xPos:1,yPos:1}
+            ];
+            relKingSpots.forEach(function(rel){
+              if (selected.xPos+rel.xPos < boardWidth && selected.xPos+rel.xPos >= 0 && selected.yPos+rel.yPos < boardHeight && selected.yPos+rel.yPos >= 0) { //if spot is in bounds
+                if (board[selected.xPos+rel.xPos][selected.yPos+rel.yPos] == null || board[selected.xPos+rel.xPos][selected.yPos+rel.yPos].color != turn) { //and if new spot isn't home piece
+                  canMove.push({xPos: selected.xPos+rel.xPos, yPos: selected.yPos+rel.yPos});
+                }
+              }
+            });
+            break;
+          case "pawn":
+            let dir;
+            if (board[selected.xPos][selected.yPos].color == "white") {
+              dir = -1;
+            } else {
+              dir = 1;
+            }
+            if (board[selected.xPos+dir][selected.yPos] == null) {
+              canMove.push({xPos: selected.xPos+dir, yPos: selected.yPos})
+              if (dir == -1 && selected.xPos == 6 && board[selected.xPos+dir+dir][selected.yPos] == null) {
+                canMove.push({xPos: selected.xPos+dir+dir, yPos: selected.yPos})
+              }
+              if (dir == 1 && selected.xPos == 1 && board[selected.xPos+dir+dir][selected.yPos] == null) {
+                canMove.push({xPos: selected.xPos+dir+dir, yPos: selected.yPos})
+              }
+            }
+            if (board[selected.xPos+dir][selected.yPos-1] != null && board[selected.xPos+dir][selected.yPos-1].color != turn) {
+              canMove.push({xPos: selected.xPos+dir, yPos: selected.yPos-1});
+            }
+            if (board[selected.xPos+dir][selected.yPos+1] != null && board[selected.xPos+dir][selected.yPos+1].color != turn) {
+              canMove.push({xPos: selected.xPos+dir, yPos: selected.yPos+1});
+            }
+            break;
+          case "rook": case "queen":
+            [-1,1].forEach(function(dir){
+              let dist;
+              dist = 1;
+              while (selected.xPos+(dir*dist) < boardWidth && selected.xPos+(dir*dist) >= 0 && board[selected.xPos+(dir*dist)][selected.yPos] == null) {
+                canMove.push({xPos: selected.xPos+(dir*dist), yPos: selected.yPos});
+                dist++;
+              }
+              if (selected.xPos+(dir*dist) < boardWidth && selected.xPos+(dir*dist) >= 0 && board[selected.xPos+(dir*dist)][selected.yPos].color != turn) {
+                canMove.push({xPos: selected.xPos+(dir*dist), yPos: selected.yPos});
+              }
+              dist = 1;
+              while (selected.yPos+(dir*dist) < boardHeight && selected.yPos+(dir*dist) >= 0 && board[selected.xPos][selected.yPos+(dir*dist)] == null) {
+                canMove.push({xPos: selected.xPos, yPos: selected.yPos+(dir*dist)});
+                dist++;
+              }
+              if (selected.yPos+(dir*dist) < boardHeight && selected.yPos+(dir*dist) >= 0 && board[selected.xPos][selected.yPos+(dir*dist)].color != turn) {
+                canMove.push({xPos: selected.xPos, yPos: selected.yPos+(dir*dist)});
+              }
+            });
+        }
+        canMove.forEach(function(spot){
+          let theCell = element("c"+spot.xPos+spot.yPos);
+          theCell.setAttribute("class",theCell.getAttribute("class")+" can-move");
+          if (board[spot.xPos][spot.yPos] != null && board[spot.xPos][spot.yPos].color != turn) {
+            theCell.setAttribute("class",theCell.getAttribute("class")+" will-capture");
+            if (board[spot.xPos][spot.yPos].piece == "king") {
+              theCell.setAttribute("class",theCell.getAttribute("class")+" will-win");
+            }
+          }
+        });
+      } else canMove = [];
+    }
+    
+    function input(x,y) {
+      if (selected == null && (board[x][y] != null && board[x][y].color == turn)) { //choosing new piece to move
+        selected = {
+          xPos: x,
+          yPos: y
+        };
+      } else if (selected.xPos == x && selected.yPos == y) { //deselecting position
+        selected = null;
+      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-move")) { //moving piece to valid spot
+        board[x][y] = board[selected.xPos][selected.yPos];
+        board[selected.xPos][selected.yPos] = null;
+        selected = null;
+        if (turn == "white") {turn = "black";} else {turn = "white";}
+      }
+      updateBoard();
+    }
+    
+    function element(id) {
+      return document.getElementById(id);
+    }
+  </script>
+</body>
+</html>
