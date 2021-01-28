@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://astronomy487.github.io/style.css">
+  <style>
+    body {
+      background-color: var(--black);
+      color: var(--white);
+    }
+    
+    #catalogue {
+      padding: 2rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      width: 40rem;
+      background-color: var(--white);
+      color: var(--black);
+      border-radius: 1rem;
+    }
+    
+    #catalogue a {
+      display: block;
+      margin: 0.5rem;
+      border: solid 0 #00000000;
+      border-width: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 2rem;
+      color: inherit;
+      transition: 0.2s;
+      text-decoration: none;
+      font-weight: normal;
+      text-align: center;
+    }
+    
+    #catalogue a:hover {
+      border-width: 0 5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="catalogue"></div>
+  <script>
+    let content = "";
+    [
+      {link:"doctemplate",name:"Doc Template",color:"FF2E63"},
+      {link:"sokoban",name:"Sokoban",color:"FBD316"},
+      {link:"acnh",name:"ACNH Critter Sheet",color:"493D31"},
+      {link:"cyoae",name:"CYOA Engine",color:"000000"},
+      {link:"periodic",name:"Interactive Periodic Table",color:"D23040"},
+      {link:"hangman",name:"Hangman",color:"6930C3"},
+      {link:"tictactoe",name:"Tic Tac Toe",color:"1EB5EB"},
+      {link:"chess",name:"Chess",color:"635B9A"}
+    ].forEach(function(project){
+      content += "<a href=\""+project.link+"\" style=\"border-color:#"+project.color+"\">"+project.name+"</a>";
+    });
+    document.getElementById("catalogue").innerHTML = content;
+  </script>
+</body>
+</html>
