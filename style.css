@@ -1,21 +1,89 @@
-/**font**/
+/*setup*/
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;800&display=swap');
 * {font-family: Work Sans;}
-
-/**color palette**/
 :root {--white: #F0F0F0; --black: #303841; --color: #ff2e63;}
-
-/**selected text**/
 ::selection {color:var(--white); background:var(--color);}
 ::-moz-selection {color:var(--white); background:var(--color);}
+::-webkit-scrollbar {width: 0;}
+a {color: inherit; text-decoration: none;}
+@keyframes fadeIn {from {opacity: 0;}}
 
-/**scrollbar**/
-::-webkit-scrollbar { width: 15px;}
-::-webkit-scrollbar-thumb { background: var(--white);}
+body {
+  background-color: var(--white);
+  user-select: none;
+  margin: 0;
+}
 
-/**home button**/
-.homebutton {position:fixed; font-size:24px; user-select:none; font-weight:normal; top:64px; left:64px; text-decoration:none;}
+h3, h4, p, h1, .albumsub {
+  user-select: text;
+}
 
-/**other things**/
-b, a {color: var(--color); font-weight: bold; text-decoration: none;}
-a:hover {text-decoration: underline;}
+/*box links*/
+a.boxlink {font-weight: bold; text-align: center; padding: 0.5rem 1.5rem; color: var(--white); border-radius: 0.25rem; line-height: 2.5rem; white-space: nowrap; background-color: var(--color);}
+a#spotify {background-color: #1DB954;}
+a#applemusic {background-color: #FA2D48;}
+a#youtube {background-color: #FF0000;}
+a#bandcamp {background-color: #1DA0C3;}
+a#amazon {background-color: #FF9900;}
+a#twitter {background-color: #1DA1F2;}
+a#discord {background-color: #7289DA;}
+a#other {background-color: var(--white); color: var(--black); font-weight: normal; padding: 0.5rem;}
+
+/*album page structure*/
+.albummain {
+  width: 32rem;
+  color: var(--black);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: 0.667s fadeIn;
+}
+.art {width: 100%; margin: 1rem auto; border-radius: 0.5rem;}
+.albumsect {text-align: center; padding: 1rem;}
+.albumsect h4 {color: var(--white); margin: 0; font-weight: normal; text-transform: uppercase; font-size: 1rem;}
+.albumsect h1 {color: var(--white); margin: 0; font-size: 2rem; font-weight: normal;}
+.albumsub {text-align: center; font-size: 1rem; color: var(--white);}
+
+/*home page*/
+.albummain.home {
+  width: 48rem;
+  height: 35rem;
+}
+.albummain.primary {
+  width: 32rem;
+}
+.catalogue {
+  width: 14rem;
+  height: 100%;
+  float: right;
+  margin-left: 2rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border-radius: 0.5rem;
+  display: block;
+}
+.cataloguespace {
+  height: 0.75rem;
+}
+a.albumselect {
+  display: block;
+  padding: 0;
+}
+a.albumselect > img {
+  width: 14rem;
+  height: 14rem;
+  border-radius: 0.5rem;
+  display: block;
+}
+iframe {
+  border-radius: 0.5rem;
+}
+p {
+  font-size: 1.25rem;
+  margin: 0 0 1rem 0;
+  text-align: left;
+}
+.black {
+  color: var(--black);
+}

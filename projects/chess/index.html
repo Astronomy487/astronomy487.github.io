@@ -1,9 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chess</title>
+  <title id="doc-title">Chess</title>
   <link rel="icon" href="icon.png">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;700&display=swap');
+    * {font-family: Oswald;}
+    @font-face {
+      font-family: 'Case';
+      src: url('CASEFONT.ttf');
+    }
+    #board td, .piece-example div {font-family: Case;}
+    
+    *:focus {outline: none;}
+    @keyframes fadeIn {from {opacity: 0;}}
+    
+    :root {
+      --black: #1C1D21;
+      --semiblack: #1C1D2180;
+      --white: #FFF6F0;
+      --green: #3cb978;
+      --blue: #4a4de8;
+      --red: #e42535;
+      --yellow: #fec620;
+      --board1: #C1C3D7;
+      --board2: #635B9A;
+    }
+
+    .tile-black {
+      background-color: var(--board2);
+    }
+
+    .tile-white {
+      background-color: var(--board1);
+    }
+
+    .selectable:hover {
+      box-shadow: inset 0 0 1rem var(--blue);
+      cursor: pointer;
+    }
+
+    .selected {
+      background-color: var(--blue);
+      cursor: pointer;
+    }
+
+    .can-move {box-shadow: inset 0 0 1rem var(--yellow); cursor: pointer;}
+    .can-move:hover {background-color: var(--yellow);}
+    .can-kill{box-shadow: inset 0 0 1rem var(--red); cursor: pointer;}
+    .can-kill:hover {background-color: var(--red);}
+    .can-ranged{box-shadow: inset 0 0 1rem var(--green); cursor: pointer;}
+    .can-ranged:hover {background-color: var(--green);}
+    .can-convert{box-shadow: inset 0 0 1rem var(--blue); cursor: pointer;}
+    .can-convert:hover {background-color: var(--blue);}
+    
+    .piece-black {
+      color: var(--black);
+    }
+
+    .piece-white {
+      color: var(--white);
+    }
+
     html {
       font-size: 24px;
     }
@@ -12,7 +70,7 @@
       background-color: var(--white);
       color: var(--black);
       user-select: none;
-      overflow: none;
+      overflow: hidden;
       margin: 0;
     }
     
@@ -30,125 +88,340 @@
       font-size: 3rem;
       line-height: 4rem;
       text-align: center;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+    
+    #piece-list {
+      width: 13.5rem;
+      margin: 1rem 1.5rem;
+      display: inline-block;
+      transition: 0.2s;
+      max-height: calc(100vh - 2rem);
+      overflow-y: scroll;
+      box-shadow: 0 0.25rem var(--black), 0 -0.25rem var(--black);
+    }
+    
+    ::-webkit-scrollbar {
+      width: 0;
+    }
+    
+    .piece-example {
+      margin: 1rem 0;
+      width: 12rem;
       transition: 0.2s;
     }
+    
+    .piece-example:not(.add-piece):not(.make-piece):hover {
+      padding-left: 0.5rem;
+      border-left: solid 0.25rem var(--black);
+    }
+    
+    .add-piece {
+      background-color: var(--black);
+      color: var(--white);
+      width: 100%;
+      height: 3rem;
+      line-height: 3rem;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+    
+    .piece-example div {
+      text-align: center;
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      float: left;
+      margin: 0;
+      margin-right: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    
+    .piece-example h1 {
+      display: block;
+      margin: 0;
+      font-size: 1.5rem;
+      height: 2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    
+    .piece-example h2 {
+      display: block;
+      margin: 0;
+      margin-top: -0.5rem;
+      font-weight: normal;
+      font-size: 1rem;
+      height: 1.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: left;
+    }
+    
+    #menu {
+      animation: 0.5s fadeIn;
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      z-index: 1;
+      background-color: var(--white);
+      transition: 0.5s;
+    }
+    
+    #menu .menu-content {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      text-align: center;
+      animation: 0.5s ease-in-out fadeIn;
+    }
+    
+    .gamemode-choose {
+      width: 12rem;
+      height: 16rem;
+      background-color: var(--black);
+      color: var(--white);
+      display: inline-block;
+      margin: 1rem;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      transition: 0.5s;
+    }
+    
+    .gamemode-choose:hover {
+      box-shadow: 0 0 2rem var(--semiblack);
+      transform: scale(1.05);
+    }
+    
+    .gamemode-choose h1 {
+      margin-top: 3.5rem;
+    }
+    
+    .gamemode-choose p {
+      margin: 0 2rem;
+    }
+    
+    .piece-example.make-piece {
+      width: 12.5rem;
+      display: inline-block;
+      transform: scale(2);
+      border: solid 0 var(--black);
+      padding: 0.5rem 0;
+      box-shadow: 0 0.167rem var(--black), 0 -0.167rem var(--black);
+    }
+    
+    #submit-button {
+      margin-top: 2rem;
+      background-color: var(--black);
+      color: var(--white);
+      width: 12.5rem;
+      height: 3rem;
+      line-height: 3rem;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 0.25rem;
+      display: inline-block;
+      cursor: pointer;
+    }
   </style>
-  <link rel="stylesheet" id="design-link" href="modern/style.css">
 </head>
-<body>
-  <button onclick="setStyle('modern')">Modern</button>
-  <button onclick="setStyle('drawn')">Drawn</button>
-  <table id="board"></table>
+<body id="body">
+  <div id="menu">
+    <div class="menu-content">
+      <div class="gamemode-choose" onclick="beginGame('standard')"><h1>Standard</h1><p>Chess with standard pieces, rules, and board.</p></div>
+      <div class="gamemode-choose" onclick="beginGame('fairy')"><h1>Fairy</h1><p>A mostly standard game with several common fairy pieces.</p></div>
+      <div class="gamemode-choose" onclick="beginGame('points')"><h1>Points</h1><p>Allocate points to custom pieces with custom movesets.</p></div>
+      <div class="gamemode-choose" onclick="beginGame('sandbox')"><h1>Sandbox</h1><p>Change the pieces, rules, and board as you play.</p></div>
+    </div>
+  </div>
+  <div id="piece-list"><div></div></div>
+  <table id="board"></div>
   <script>
-    let piece = {
-      king: {
-        textChar: "l",
-        textCode: "&#x265A;",
-        leaper: [
-          {xGo: 1, yGo: 1},
-          {xGo: 1, yGo: 0},
-          {xGo: 1, yGo: -1},
-          {xGo: 0, yGo: 1},
-          {xGo: 0, yGo: 0},
-          {xGo: 0, yGo: -1},
-          {xGo: -1, yGo: 1},
-          {xGo: -1, yGo: 0},
-          {xGo: -1, yGo: -1}
-        ],
-        moveLikePawn: false
+    let piece = {};
+    
+    let invest = {
+      white: {
+        rookie: {wazir: 2, ferz: 0, dabbaba: 0, knight: 0, alfil: 0},
+        knittie: {wazir: 0, ferz: 0, dabbaba: 0, knight: 1, alfil: 0},
+        bishie: {wazir: 0, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
+        kinnie: {wazir: 2, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
+        royalty: {wazir: 1, ferz: 1, dabbaba: 0, knight: 0, alfil: 0}
       },
-      queen: {
-        textChar: "w",
-        textCode: "&#x265B;",
-        rider: [
-          {xGo: 1, yGo: 0},
-          {xGo: -1, yGo: 0},
-          {xGo: 0, yGo: 1},
-          {xGo: 0, yGo: -1},
-          {xGo: 1, yGo: 1},
-          {xGo: -1, yGo: 1},
-          {xGo: 1, yGo: -1},
-          {xGo: -1, yGo: -1}
-        ],
-        moveLikePawn: false
-      },
-      rook: {
-        textChar: "t",
-        textCode: "&#x265C;",
-        rider: [
-          {xGo: 1, yGo: 0},
-          {xGo: -1, yGo: 0},
-          {xGo: 0, yGo: 1},
-          {xGo: 0, yGo: -1}
-        ],
-        moveLikePawn: false
-      },
-      bishop: {
-        textChar: "v",
-        textCode: "&#x265D;",
-        rider: [
-          {xGo: 1, yGo: 1},
-          {xGo: -1, yGo: 1},
-          {xGo: 1, yGo: -1},
-          {xGo: -1, yGo: -1}
-        ],
-        moveLikePawn: false
-      },
-      knight: {
-        textChar: "m",
-        textCode: "&#x265E;",
-        leaper: [
-          {xGo: 2, yGo: 1},
-          {xGo: 2, yGo: -1},
-          {xGo: -2, yGo: 1},
-          {xGo: -2, yGo: -1},
-          {xGo: 1, yGo: 2},
-          {xGo: 1, yGo: -2},
-          {xGo: -1, yGo: 2},
-          {xGo: -1, yGo: -2}
-        ],
-        moveLikePawn: false
-      },
-      pawn: {
-        textChar: "o",
-        textCode: "&#x265F;",
-        moveLikePawn: true
+      black: {
+        rookie: {wazir: 2, ferz: 0, dabbaba: 0, knight: 0, alfil: 0},
+        knittie: {wazir: 0, ferz: 0, dabbaba: 0, knight: 1, alfil: 0},
+        bishie: {wazir: 0, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
+        kinnie: {wazir: 2, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
+        royalty: {wazir: 1, ferz: 1, dabbaba: 0, knight: 0, alfil: 0}
       }
     }
-    let boardWidth = 8;
-    let boardHeight = 8;
     
-    let textRef;
-    function setStyle(style) {
-      textRef = {modern: "textChar", drawn: "textCode"}[style];
-      makeBoard();
-      element("design-link").setAttribute("href",style+"/style.css");
+    function investToPieces() {
+      //reset piece
+      piece = {pawn: {name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}};
+      ["white","black"].forEach(function(color){
+        piece["rookie"+color] = {name:"rook***",category:color+" only",textChar:"t",moves:[]};
+        piece["knittie"+color] = {name:"knight***",category:color+" only",textChar:"m",moves:[]};
+        piece["bishie"+color] = {name:"bishop***",category:color+" only",textChar:"v",moves:[]};
+        piece["kinnie"+color] = {name:"queen***",category:color+" only",textChar:"w",moves:[]};
+        piece["royalty"+color] = {name:"king***",category:color+" only",textChar:"l",moves:[]};
+      });
+      
+      //for every color and piece
+      ["white","black"].forEach(function(color){
+        ["rookie","knittie","bishie","kinnie","royalty"].forEach(function(species){
+          let investment = invest[color][species]; //investment.wazir, investment.ferz, etc
+          [{move:"wazir",m:1,n:0},{move:"ferz",m:1,n:1},{move:"dabbaba",m:2,n:0},{move:"knight",m:2,n:1},{move:"alfil",m:2,n:2}].forEach(function(item){
+            let thisInvestment = investment[item.move];
+            let m = item.m;
+            let n = item.n;
+            let max = thisInvestment;
+            if (thisInvestment == 2) {max = null;}
+            piece[species+color].moves.push({xGo: m, yGo: n, when: "both", max: max});
+            piece[species+color].moves.push({xGo: m, yGo: -n, when: "both", max: max});
+            piece[species+color].moves.push({xGo: -m, yGo: n, when: "both", max: max});
+            piece[species+color].moves.push({xGo: -m, yGo: -n, when: "both", max: max});
+            if (species == "knittie") {
+              piece[species+color].moves.push({xGo: n, yGo: m, when: "both", max: max});
+              piece[species+color].moves.push({xGo: n, yGo: -m, when: "both", max: max});
+              piece[species+color].moves.push({xGo: -n, yGo: m, when: "both", max: max});
+              piece[species+color].moves.push({xGo: -n, yGo: -m, when: "both", max: max});
+            }
+          });
+        });
+      });
     }
     
     function element(id) {
       return document.getElementById(id);
     }
     
+    function pieceList() {
+      let content = "";
+      Object.keys(piece).forEach(function(pieceType){
+        content += "<div class=\"piece-example\">";
+        content += "<div>"+piece[pieceType].textChar+"</div>";
+        content += "<h1>"+piece[pieceType].name+"</h1>";
+        content += "<h2>"+piece[pieceType].category+"</h2>";
+        content += "</div>";
+      });
+      if (sandbox) {
+        content += "<div class=\"add-piece piece-example\" onclick=\"makeNewPiece()\">ADD</div>"
+        content += "<div class=\"add-piece piece-example\" onclick=\"removePiece()\">REMOVE</div>"
+      }
+      element("piece-list").innerHTML = content;
+    }
+    
     let board = [
-      [{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],
-      [{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],
       [null,null,null,null,null,null,null,null],
       [null,null,null,null,null,null,null,null],
       [null,null,null,null,null,null,null,null],
       [null,null,null,null,null,null,null,null],
-      [{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],
-      [{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null]
     ];
+    let boardSize = board.length;
+    
+    let sandbox = false;
+    
     let turn = "white";
     let selected = null;
     let canMove = [];
-    setStyle("modern");
+    let canKill = [];
+    let canRanged = [];
+    let canConvert = [];
+    
+    function makeNewPiece() {
+      let content = "";
+      content += "<div id=\"menu\"><div class=\"menu-content\">";
+      
+      content += "<div class=\"make-piece piece-example\">";
+      content += "<div id=\"make-piece-icon\" contenteditable=\"plaintext-only\" spellcheck=\"false\" oninput=\"element('make-piece-icon').innerText = element('make-piece-icon').innerText.charAt(0)\">l</div>";
+      content += "<h1 id=\"make-piece-name\" contenteditable=\"plaintext-only\" spellcheck=\"false\">king</h1>";
+      content += "<h2 id=\"make-piece-category\" contenteditable=\"plaintext-only\" spellcheck=\"false\">standard</h2>";
+      content += "</div>";
+      
+      content += "<table id=\"make-piece-moves\"><tbody id=\"make-piece-tbody\">";
+      content += "</tbody></table>"
+      
+      content += "<div onclick=\"submitNewPiece()\" id=\"submit-button\">ADD</div>";
+      
+      content += "</div></div>";
+      element("body").innerHTML = content + element("body").innerHTML;
+    }
+    
+    function submitNewPiece() {
+      piece[element("make-piece-name").innerText] = {name: element("make-piece-name").innerText, textChar: element("make-piece-icon").innerText, category: element("make-piece-category").innerText};
+      pieceList();
+      element("menu").setAttribute("style","opacity: 0;");
+      setTimeout(function(){
+        element("menu").remove();
+      },500);
+    }
+    
+    function removePiece() {
+      let toRemove = window.prompt("The name of the piece to be removed:");
+      console.log(toRemove);
+      if (toRemove != null && Object.keys(piece).includes(toRemove)) {
+        delete piece[toRemove];
+      }
+      pieceList();
+    }
+    
+    function beginGame(mode) {
+      switch (mode) {
+        case "standard":
+          piece={king:{name:"king",category:"standard",textChar:"l",royalty:!0,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}};
+          pieceList();
+          board = [[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]];
+          break;
+        case "fairy":
+          piece.wizard = {name:"wizard",textChar:"v",moves:[{xGo:1,yGo:0,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"convert",max:3}]};
+          piece.pawn = {name:"pawn",textChar:"o",moves:[]};
+          board[4][4] = {piece:"wizard",color:"white"};
+          board[1][3] = {piece:"pawn",color:"black"};
+          board[1][4] = {piece:"pawn",color:"black"};
+          board[1][5] = {piece:"pawn",color:"black"};
+          break;
+        case "points":
+          board = [[{piece:"rookieblack",color:"black"},{piece:"knittieblack",color:"black"},{piece:"bishieblack",color:"black"},{piece:"kinnieblack",color:"black"},{piece:"royaltyblack",color:"black"},{piece:"bishieblack",color:"black"},{piece:"knittieblack",color:"black"},{piece:"rookieblack",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rookiewhite",color:"white"},{piece:"knittiewhite",color:"white"},{piece:"bishiewhite",color:"white"},{piece:"kinniewhite",color:"white"},{piece:"royaltywhite",color:"white"},{piece:"bishiewhite",color:"white"},{piece:"knittiewhite",color:"white"},{piece:"rookiewhite",color:"white"}]];
+          investToPieces();
+          break;
+        case "sandbox":
+          sandbox = true;
+          pieceList();
+          break;
+      }
+      boardSize = board.length;
+      turn = "white";
+      selected = null;
+      canMove = [];
+      canKill = [];
+      canRanged = [];
+      canConvert = [];
+      makeBoard();
+      element("doc-title").innerHTML = (mode.charAt(0).toUpperCase()+mode.slice(1))+" Chess";
+      element("menu").setAttribute("style","opacity: 0;");
+      setTimeout(function(){
+        element("menu").remove();
+      },500);
+    }
     
     function makeBoard() {
       let html = "";
-      for (x = 0; x < boardWidth; x++) {
+      for (x = 0; x < boardSize; x++) {
         html += "<tr>";
-        for (y = 0; y < boardHeight; y++) {
+        for (y = 0; y < boardSize; y++) {
           html += "<td id=\"c"+x+y+"\" onclick=\"input("+x+","+y+")\"></td>";
         }
         html += "</tr>";
@@ -158,8 +431,8 @@
     }
     
     function updateBoard() {
-      for (x = 0; x < boardWidth; x++) {
-        for (y = 0; y < boardHeight; y++) {
+      for (x = 0; x < boardSize; x++) {
+        for (y = 0; y < boardSize; y++) {
           let itsClass;
           if ((x+y)%2 == 0) {
             itsClass = "tile-white";
@@ -178,80 +451,70 @@
           element("c"+x+y).setAttribute("class",itsClass);
           if (board[x][y] == null) {
             element("c"+x+y).innerHTML = "&nbsp;";
+            element("c"+x+y).setAttribute("title","abcdefg".charAt(y)+(8-x));
           } else {
-            element("c"+x+y).innerHTML = piece[board[x][y].piece][textRef];
+            element("c"+x+y).innerHTML = piece[board[x][y].piece].textChar;
+            element("c"+x+y).setAttribute("title",board[x][y].color+" "+piece[board[x][y].piece].name+" at "+"abcdefg".charAt(y)+(8-x));
           }
         }
       }
       if (selected != null) {
+        //if something is selected, figure out canMove[] and canKill[] and canRanged[]
+        canMove = [];
+        canKill = [];
+        canRanged = [];
+        canConvert = [];
         let thePiece = piece[board[selected.xPos][selected.yPos].piece];
-        if (thePiece.moveLikePawn) findMovesPawn(selected.xPos,selected.yPos);
-        if (thePiece.rider != null) {
-          for (i = 0; i < thePiece.rider.length; i++) {
-            findMovesRider(selected.xPos,selected.yPos,thePiece.rider[i].xGo,thePiece.rider[i].yGo);
-          }
+        let theColor = board[selected.xPos][selected.yPos].color;
+        if (thePiece.moves != null) {
+          thePiece.moves.forEach(function(motion){
+            let max = motion.max;
+            let when = motion.when;
+            let yStep = motion.yGo;
+            let xStep = motion.xGo;
+            if (theColor == "black") xStep = xStep * -1;
+            let distance = 1;
+            let testY = selected.yPos+yStep*distance;
+            let testX = selected.xPos+xStep*distance;
+            while (isInBounds(testX,testY) && board[testX][testY] == null && (distance <= max || max == null)) {
+              if (when == "move" || when == "both") canMove.push({xPos: testX, yPos: testY});
+              distance++;
+              testY = selected.yPos+yStep*distance;
+              testX = selected.xPos+xStep*distance;
+            }
+            if (isInBounds(testX,testY) && board[testX][testY] != null && board[testX][testY].color != turn && (when == "kill" || when == "both") && (distance <= max || max == null)) canKill.push({xPos: testX, yPos: testY});
+            if (isInBounds(testX,testY) && board[testX][testY] != null && board[testX][testY].color != turn && when == "ranged" && (distance <= max || max == null)) canRanged.push({xPos: testX, yPos: testY});
+            if (isInBounds(testX,testY) && board[testX][testY] != null && board[testX][testY].color != turn && when == "convert" && (distance <= max || max == null)) canConvert.push({xPos: testX, yPos: testY});
+          });
         }
-        if (thePiece.leaper != null) {
-          for (i = 0; i < thePiece.leaper.length; i++) {
-            findMovesLeaper(selected.xPos,selected.yPos,thePiece.leaper[i].xGo,thePiece.leaper[i].yGo);
-          }
-        }
+        
+        //assign can-move, can-kill, and can-ranged classes to elements
         canMove.forEach(function(spot){
           let theCell = element("c"+spot.xPos+spot.yPos);
-          theCell.setAttribute("class",theCell.getAttribute("class")+" can-move");
-          if (board[spot.xPos][spot.yPos] != null && board[spot.xPos][spot.yPos].color != turn) {
-            theCell.setAttribute("class",theCell.getAttribute("class")+" will-capture");
-            if (board[spot.xPos][spot.yPos].piece == "king") {
-              theCell.setAttribute("class",theCell.getAttribute("class")+" will-win");
-            }
-          }
+          element("c"+spot.xPos+spot.yPos).setAttribute("class",theCell.getAttribute("class")+" can-move");
         });
-      } else canMove = [];
-    }
-    
-    function findMovesLeaper(xOrigin,yOrigin,xGo,yGo) {
-      if (isInBounds(xOrigin+xGo,yOrigin+yGo) && (board[xOrigin+xGo][yOrigin+yGo] == null || board[xOrigin+xGo][yOrigin+yGo].color != turn)) {
-        canMove.push({xPos: xOrigin+xGo, yPos: yOrigin+yGo});
-      }
-    }
-    
-    function findMovesRider(xOrigin,yOrigin,xGo,yGo) {
-      let distance = 1;
-      while (isInBounds(xOrigin+xGo*distance,yOrigin+yGo*distance) && board[xOrigin+xGo*distance][yOrigin+yGo*distance] == null) {
-        canMove.push({xPos: xOrigin+xGo*distance, yPos: yOrigin+yGo*distance});
-        distance++;
-      }
-      if (isInBounds(xOrigin+xGo*distance,yOrigin+yGo*distance) && board[xOrigin+xGo*distance][yOrigin+yGo*distance].color != turn) {
-        canMove.push({xPos: xOrigin+xGo*distance, yPos: yOrigin+yGo*distance});
-      }
-    }
-    
-    function findMovesPawn(xOrigin,yOrigin) {
-      let dir;
-      if (board[xOrigin][yOrigin].color == "white") {
-        dir = -1;
+        canKill.forEach(function(spot){
+          let theCell = element("c"+spot.xPos+spot.yPos);
+          element("c"+spot.xPos+spot.yPos).setAttribute("class",theCell.getAttribute("class")+" can-kill");
+        });
+        canRanged.forEach(function(spot){
+          let theCell = element("c"+spot.xPos+spot.yPos);
+          element("c"+spot.xPos+spot.yPos).setAttribute("class",theCell.getAttribute("class")+" can-ranged");
+        });
+        canConvert.forEach(function(spot){
+          let theCell = element("c"+spot.xPos+spot.yPos);
+          element("c"+spot.xPos+spot.yPos).setAttribute("class",theCell.getAttribute("class")+" can-convert");
+        });
       } else {
-        dir = 1;
-      }
-      if (board[xOrigin+dir][yOrigin] == null) {
-        canMove.push({xPos: xOrigin+dir, yPos: yOrigin})
-        if (dir == -1 && xOrigin == 6 && board[xOrigin+dir+dir][yOrigin] == null) {
-          canMove.push({xPos: xOrigin+dir+dir, yPos: yOrigin})
-        }
-        if (dir == 1 && xOrigin == 1 && board[xOrigin+dir+dir][yOrigin] == null) {
-          canMove.push({xPos: xOrigin+dir+dir, yPos: yOrigin})
-        }
-      }
-      if (board[xOrigin+dir][yOrigin-1] != null && board[xOrigin+dir][yOrigin-1].color != turn) {
-        canMove.push({xPos: xOrigin+dir, yPos: yOrigin-1});
-      }
-      if (board[xOrigin+dir][yOrigin+1] != null && board[xOrigin+dir][yOrigin+1].color != turn) {
-        canMove.push({xPos: xOrigin+dir, yPos: yOrigin+1});
+        canMove = [];
+        canKill = [];
+        canRanged = [];
+        canConvert = [];
       }
     }
     
     function isInBounds(x,y) {
-      return (x >= 0 && x < boardWidth && y >= 0 && y < boardHeight);
+      return (x >= 0 && x < boardSize && y >= 0 && y < boardSize);
     }
     
     function input(x,y) {
@@ -260,16 +523,25 @@
           xPos: x,
           yPos: y
         };
+      } else if (selected == null) {
       } else if (selected.xPos == x && selected.yPos == y) { //deselecting position
         selected = null;
-      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-move")) { //moving piece to valid spot
+      } else if (selected != null && (element("c"+x+y).getAttribute("class").includes("can-move") || element("c"+x+y).getAttribute("class").includes("can-kill"))) { //can move or kill
         board[x][y] = board[selected.xPos][selected.yPos];
         board[selected.xPos][selected.yPos] = null;
         selected = null;
         if (turn == "white") {turn = "black";} else {turn = "white";}
+      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-ranged")) { //can ranged kill
+        board[x][y] = null;
+        selected = null;
+        if (turn == "white") {turn = "black";} else {turn = "white";}
+      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-convert")) { //can ranged kill
+        board[x][y].color = board[selected.xPos][selected.yPos].color;
+        selected = null;
+        if (turn == "white") {turn = "black";} else {turn = "white";}
       }
       updateBoard();
-    }
+    }    
   </script>
 </body>
 </html>

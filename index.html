@@ -7,72 +7,37 @@
   <title>Astro</title>
 </head>
 <body>
-  <div class="main">
-    <div class="tab">
-      <button class="tablinks" onclick="openCity(event, 'About')" id="defaultOpen">About</button>
-      <button class="tablinks" onclick="openCity(event, 'Music')">Music</button>
-      <button class="tablinks" onclick="openCity(event, 'Links')">Links</button>
+  <div class="home albummain">
+    <div class="catalogue">
+      <a class="albumselect" href="10kdegrees" target="_blank"><img src="10kdegrees/10kdegrees.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="nexuscondition" target="_blank"><img src="nexuscondition/nexuscondition.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="exosphere" target="_blank"><img src="exosphere/exosphere.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="pulsewidth" target="_blank"><img src="pulsewidth/pulsewidth.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="emerge" target="_blank"><img src="emerge/emerge.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="asymmetricsilhouette" target="_blank"><img src="asymmetricsilhouette/asymmetricsilhouette.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="utopian" target="_blank"><img src="utopian/utopian.jpg"></a>
+      <div class="cataloguespace"></div>
+      <a class="albumselect" href="chaseanidea" target="_blank"><img src="chaseanidea/chaseanidea.jpg"></a>
     </div>
-    <div id="About" class="tabcontent">
-      <h3>About</h3>
-      <hr>
-      <p>I am Astro (pronouns: he/him), formerly Astronomy487, an amateur musician and producer who distributes my music on <a href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5" target="_blank">Spotify</a>, <a href="https://music.apple.com/artist/astro/1468743818" target="_blank">Apple Music</a>, <a href="https://www.youtube.com/astronomy487" target="_blank">YouTube</a>, <a href="https://astronomy487.bandcamp.com" target="_blank">Bandcamp</a>, Amazon, and other streaming platforms.</p>
-      <p>In addition to music, I have interests in graphic design, web design, conlanging, worldbuilding, and video games. I talk about both music and these interests on my social medias, <a href="https://twitter.com/astronomy487" target="_blank">Twitter</a> and <a href="https://discord.gg/ZnMsetP" target="_blank">Discord</a>.</p>
-      <p>You can contact me via any of my socials, or by my email, <b>astronomy487[at]gmail[dot]com</b>.</p>
+    <div class="primary">
+      <p>I am Astro (pronouns: he/him), formerly Astronomy487, an amateur musician and producer who distributes my music on Spotify, Apple Music, YouTube, Bandcamp, Amazon, and other streaming platforms.</p>
+      <iframe width="512" height="288" src="https://www.youtube.com/embed/ndiSjojUb4g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div class="albumsect">
+        <a target="_blank" class="boxlink" id="twitter" href="https://twitter.com/astronomy487">Twitter</a>
+        <a target="_blank" class="boxlink" id="discord" href="https://discord.gg/ZnMsetP">Discord</a>
+        <a target="_blank" class="boxlink" id="spotify" href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">Spotify</a>
+        <a target="_blank" class="boxlink" id="applemusic" href="https://music.apple.com/artist/astro/1468743818">Apple Music</a>
+        <a target="_blank" class="boxlink" id="youtube" href="https://www.youtube.com/astronomy487">YouTube</a>
+        <a target="_blank" class="boxlink" id="bandcamp" href="https://astronomy487.bandcamp.com/">Bandcamp</a>
+      </div>
+      <div class="black albumsub">&copy; Astro (Astronomy487)</div>
     </div>
-    <div id="Music" class="tabcontent">
-      <h3>Music</h3>
-      <hr>
-      <table>
-        <tr>
-          <td><a target="_blank" href="10kdegrees"><img src="./10kdegrees/10kdegrees.jpg"></a></td>
-          <td><a target="_blank" href="nexuscondition"><img src="./nexuscondition/nexuscondition.jpg"></a></td>
-          <td><a target="_blank" href="exosphere"><img src="./exosphere/exosphere.jpg"></a></td>
-          <td><a target="_blank" href="pulsewidth"><img src="./pulsewidth/pulsewidth.jpg"></a></td>
-        </tr>
-        <tr>
-          <td><a target="_blank" href="emerge"><img src="./emerge/emerge.jpg"></a></td>
-          <td><a target="_blank" href="asymmetricsilhouette"><img src="./asymmetricsilhouette/asymmetricsilhouette.jpg"></a></td>
-          <td><a target="_blank" href="utopian"><img src="./utopian/utopian.jpg"></a></td>
-          <td><a target="_blank" href="chaseanidea"><img src="./chaseanidea/chaseanidea.jpg"></a></td>
-        </tr>
-      </table>
-    </div>
-    <div id="Links" class="tabcontent">
-      <h3>Links</h3>
-      <hr>
-      <h4>Streaming</h4>
-      <a target="_blank" class="boxlink" id="spotify" href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">Spotify</a>
-      <a target="_blank" class="boxlink" id="applemusic" href="https://music.apple.com/artist/astro/1468743818">Apple Music</a>
-      <a target="_blank" class="boxlink" id="youtube" href="https://www.youtube.com/astronomy487">YouTube</a>
-      <a target="_blank" class="boxlink" id="bandcamp" href="https://astronomy487.bandcamp.com">Bandcamp</a>
-      <h4>Social</h4>
-      <a target="_blank" class="boxlink" id="twitter" href="https://twitter.com/astronomy487">Twitter</a>
-      <a target="_blank" class="boxlink" id="discord" href="https://discord.gg/ZnMsetP">Discord</a>
-      <h4>Projects</h4>
-      <a target="_blank" class="boxlink" href="projects/doctemplate">Doc Template</a>
-      <a target="_blank" class="boxlink" href="projects/sokoban">Sokoban</a>
-    </div>
-    <div class="sub">&copy; Astro (Astronomy487)</div>
   </div>
-  <script>
-    //https://www.w3schools.com/howto/howto_js_tabs.asp
-    //thank you w3schools you are carrying me
-    document.getElementById("defaultOpen").click();
-    
-    function openCity(evt, cityName) {
-      var i, tabcontent, tablinks;
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-      tablinks = document.getElementsByClassName("tablinks");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-      document.getElementById(cityName).style.display = "block";
-      evt.currentTarget.className += " active";
-    }
-</script>
 </body>
 </html>
