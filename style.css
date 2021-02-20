@@ -19,7 +19,7 @@ h3, h4, p, h1, .albumsub {
 }
 
 /*box links*/
-a.boxlink {font-weight: bold; text-align: center; padding: 0.5rem 1.5rem; color: var(--white); border-radius: 0.25rem; line-height: 2.5rem; white-space: nowrap; background-color: var(--color);}
+a.boxlink {font-weight: bold; text-align: center; padding: 0.5rem 1.5rem; color: var(--white); border-radius: 0.25rem; line-height: 2.5rem; white-space: nowrap; background-color: var(--color); text-transform: uppercase;}
 a#spotify {background-color: #1DB954;}
 a#applemusic {background-color: #FA2D48;}
 a#youtube {background-color: #FF0000;}
@@ -63,12 +63,13 @@ a#other {background-color: var(--white); color: var(--black); font-weight: norma
   border-radius: 0.5rem;
   display: block;
 }
-.cataloguespace {
-  height: 0.75rem;
-}
 a.albumselect {
+  margin-top: 0.75rem;
   display: block;
   padding: 0;
+}
+a.albumselect:first-child {
+  margin-top: 0;
 }
 a.albumselect > img {
   width: 14rem;

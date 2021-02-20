@@ -6,15 +6,13 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;700&display=swap');
     * {font-family: Oswald;}
+    a {color: inherit; text-decoration: inherit;}
     @font-face {
       font-family: 'Case';
       src: url('CASEFONT.ttf');
     }
-    #board td, .piece-example div {font-family: Case;}
-    
     *:focus {outline: none;}
     @keyframes fadeIn {from {opacity: 0;}}
-    
     :root {
       --black: #1C1D21;
       --semiblack: #1C1D2180;
@@ -26,6 +24,8 @@
       --board1: #C1C3D7;
       --board2: #635B9A;
     }
+    
+    #board td, .piece-example div {font-family: Case;}
 
     .tile-black {
       background-color: var(--board2);
@@ -80,6 +80,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%,-50%);
+      animation: 0.5s fadeIn;
     }
     
     #board td {
@@ -174,38 +175,13 @@
       transition: 0.5s;
     }
     
-    #menu .menu-content {
+    #menu #menu-content {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
       width: 100%;
       text-align: center;
       animation: 0.5s ease-in-out fadeIn;
-    }
-    
-    .gamemode-choose {
-      width: 12rem;
-      height: 16rem;
-      background-color: var(--black);
-      color: var(--white);
-      display: inline-block;
-      margin: 1rem;
-      cursor: pointer;
-      border-radius: 0.5rem;
-      transition: 0.5s;
-    }
-    
-    .gamemode-choose:hover {
-      box-shadow: 0 0 2rem var(--semiblack);
-      transform: scale(1.05);
-    }
-    
-    .gamemode-choose h1 {
-      margin-top: 3.5rem;
-    }
-    
-    .gamemode-choose p {
-      margin: 0 2rem;
     }
     
     .piece-example.make-piece {
@@ -231,73 +207,92 @@
       display: inline-block;
       cursor: pointer;
     }
+    
+    .gamemode-pick {
+      margin: 0.5rem auto;
+      text-align: left;
+      width: 16rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: solid 0 var(--black);
+      overflow: hidden;
+      display: block;
+    }
+    
+    @keyframes gamemodeListEnter {from {transform: translateX(-3rem);}}
+    .gamemode-pick > * {
+      margin: 0;
+      animation: 0.6s gamemodeListEnter;
+    }
+    
+    .gamemode-pick.unfinished span {
+      color: var(--red);
+    }
+    
+    .gamemode-pick:hover {
+      border-width: 0 0.5rem;
+    }
   </style>
 </head>
 <body id="body">
   <div id="menu">
-    <div class="menu-content">
-      <div class="gamemode-choose" onclick="beginGame('standard')"><h1>Standard</h1><p>Chess with standard pieces, rules, and board.</p></div>
-      <div class="gamemode-choose" onclick="beginGame('fairy')"><h1>Fairy</h1><p>A mostly standard game with several common fairy pieces.</p></div>
-      <div class="gamemode-choose" onclick="beginGame('points')"><h1>Points</h1><p>Allocate points to custom pieces with custom movesets.</p></div>
-      <div class="gamemode-choose" onclick="beginGame('sandbox')"><h1>Sandbox</h1><p>Change the pieces, rules, and board as you play.</p></div>
-    </div>
+    <div id="menu-content"></div>
   </div>
-  <div id="piece-list"><div></div></div>
+  <div id="piece-list"></div>
   <table id="board"></div>
+  <script id="custom-gamemode"></script>
   <script>
     let piece = {};
+    let board = [
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null],
+      [null,null,null,null,null,null,null,null]
+    ];
+    let boardSizeX = board.length;
+    let boardSizeY = board[0].length;
+    let turn = "white";
+    let selected = null;
+    let canMove = [];
+    let canKill = [];
+    let canRanged = [];
+    let canConvert = [];
     
-    let invest = {
-      white: {
-        rookie: {wazir: 2, ferz: 0, dabbaba: 0, knight: 0, alfil: 0},
-        knittie: {wazir: 0, ferz: 0, dabbaba: 0, knight: 1, alfil: 0},
-        bishie: {wazir: 0, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
-        kinnie: {wazir: 2, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
-        royalty: {wazir: 1, ferz: 1, dabbaba: 0, knight: 0, alfil: 0}
-      },
-      black: {
-        rookie: {wazir: 2, ferz: 0, dabbaba: 0, knight: 0, alfil: 0},
-        knittie: {wazir: 0, ferz: 0, dabbaba: 0, knight: 1, alfil: 0},
-        bishie: {wazir: 0, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
-        kinnie: {wazir: 2, ferz: 2, dabbaba: 0, knight: 0, alfil: 0},
-        royalty: {wazir: 1, ferz: 1, dabbaba: 0, knight: 0, alfil: 0}
-      }
-    }
+    let gamemodes = {
+      standard: {name:"Standard",desc:"Chess with standard pieces, rules, and board.",piece:{king:{name:"king",category:"standard",textChar:"l",royalty:true,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:0,when:"move",max:2,previousUses:0},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}},board:[[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]]},
+      tiny: {name:"Tiny",desc:"standard chess except it's tiny :)",piece:{king:{name:"king",category:"standard",textChar:"l",royalty:true,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:0,when:"move",max:2,previousUses:0},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}},board:[[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]]},
+      fairy: {name:"Fairy",desc:"Chess with several common fairy pieces such as the amazon and nightrider.",piece:{wazir:{name:"wazir",category:"fairy",textChar:"r",moves:[{xGo:-1,yGo:0,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1}]},rook:{name:"rook",category:"fairy",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},ferz:{name:"ferz",category:"fairy",textChar:"b",moves:[{xGo:-1,yGo:-1,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:1,yGo:1,when:"both",max:1}]},bishop:{name:"bishop",category:"fairy",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},nightrider:{name:"nightrider",category:"fairy",textChar:"m",moves:[{xGo:2,yGo:1,when:"both"},{xGo:2,yGo:-1,when:"both"},{xGo:-2,yGo:1,when:"both"},{xGo:-2,yGo:-1,when:"both"},{xGo:1,yGo:2,when:"both"},{xGo:1,yGo:-2,when:"both"},{xGo:-1,yGo:2,when:"both"},{xGo:-1,yGo:-2,when:"both"}]},king:{name:"king",category:"standard",textChar:"l",royalty:!0,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},amazon:{name:"amazon",category:"fairy",textChar:"w",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"},{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]}},board:[[{piece:"rook",color:"black"},{piece:"nightrider",color:"black"},{piece:"bishop",color:"black"},{piece:"amazon",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"nightrider",color:"black"},{piece:"rook",color:"black"}],[{piece:"wazir",color:"black"},{piece:"wazir",color:"black"},{piece:"ferz",color:"black"},{piece:"ferz",color:"black"},{piece:"ferz",color:"black"},{piece:"ferz",color:"black"},{piece:"wazir",color:"black"},{piece:"wazir",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"wazir",color:"white"},{piece:"wazir",color:"white"},{piece:"ferz",color:"white"},{piece:"ferz",color:"white"},{piece:"ferz",color:"white"},{piece:"ferz",color:"white"},{piece:"wazir",color:"white"},{piece:"wazir",color:"white"}],[{piece:"rook",color:"white"},{piece:"nightrider",color:"white"},{piece:"bishop",color:"white"},{piece:"amazon",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"nightrider",color:"white"},{piece:"rook",color:"white"}]]},
+      manypawns: {name:"So Many Pawns",desc:"",piece:{king:{name:"king",category:"standard",textChar:"l",royalty:true,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:0,when:"move",max:2,previousUses:0},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}},board:[[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]]},
+      manyqueens: {name:"So Many Queens",desc:"",piece:{king:{name:"king",category:"standard",textChar:"l",royalty:true,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:0,when:"move",max:2,previousUses:0},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}},board:[[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"}],[{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"}],[{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"},{piece:"queen",color:"black"}],[{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"}],[{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"}],[{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"},{piece:"queen",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]]}
+    };
     
-    function investToPieces() {
-      //reset piece
-      piece = {pawn: {name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}};
-      ["white","black"].forEach(function(color){
-        piece["rookie"+color] = {name:"rook***",category:color+" only",textChar:"t",moves:[]};
-        piece["knittie"+color] = {name:"knight***",category:color+" only",textChar:"m",moves:[]};
-        piece["bishie"+color] = {name:"bishop***",category:color+" only",textChar:"v",moves:[]};
-        piece["kinnie"+color] = {name:"queen***",category:color+" only",textChar:"w",moves:[]};
-        piece["royalty"+color] = {name:"king***",category:color+" only",textChar:"l",moves:[]};
-      });
-      
-      //for every color and piece
-      ["white","black"].forEach(function(color){
-        ["rookie","knittie","bishie","kinnie","royalty"].forEach(function(species){
-          let investment = invest[color][species]; //investment.wazir, investment.ferz, etc
-          [{move:"wazir",m:1,n:0},{move:"ferz",m:1,n:1},{move:"dabbaba",m:2,n:0},{move:"knight",m:2,n:1},{move:"alfil",m:2,n:2}].forEach(function(item){
-            let thisInvestment = investment[item.move];
-            let m = item.m;
-            let n = item.n;
-            let max = thisInvestment;
-            if (thisInvestment == 2) {max = null;}
-            piece[species+color].moves.push({xGo: m, yGo: n, when: "both", max: max});
-            piece[species+color].moves.push({xGo: m, yGo: -n, when: "both", max: max});
-            piece[species+color].moves.push({xGo: -m, yGo: n, when: "both", max: max});
-            piece[species+color].moves.push({xGo: -m, yGo: -n, when: "both", max: max});
-            if (species == "knittie") {
-              piece[species+color].moves.push({xGo: n, yGo: m, when: "both", max: max});
-              piece[species+color].moves.push({xGo: n, yGo: -m, when: "both", max: max});
-              piece[species+color].moves.push({xGo: -n, yGo: m, when: "both", max: max});
-              piece[species+color].moves.push({xGo: -n, yGo: -m, when: "both", max: max});
-            }
-          });
+    showGamemodes();
+    function showGamemodes() {
+      if (location.search == "") {
+        let content = "";
+        Object.keys(gamemodes).forEach(function(gamemodeId){
+          let gamemode = gamemodes[gamemodeId];
+          let shortClass = "";
+          if (gamemode.unfinished) shortClass = " unfinished"
+          content += "<div class=\"gamemode-pick"+shortClass+"\" onclick=\"beginGame('"+gamemodeId+"')\">";
+          content += "<h3>"+gamemode.name+"</h3>"
+          content += "<p>"+gamemode.desc;
+          if (gamemode.unfinished) content += " <span>This mode is unfinished.<span>";
+          content += "</p>";
+          content += "</div>";
         });
-      });
+        content += "<a class=\"gamemode-pick\" href=\"tutorial\" target=\"_blank\"><p>How can I make my own?</p></a>"
+        element("menu-content").innerHTML = content;
+      } else {
+        element("menu").remove();
+        let url = location.search.substring(1);
+        element("custom-gamemode").setAttribute("src",url);
+      }
     }
     
     function element(id) {
@@ -313,96 +308,19 @@
         content += "<h2>"+piece[pieceType].category+"</h2>";
         content += "</div>";
       });
-      if (sandbox) {
-        content += "<div class=\"add-piece piece-example\" onclick=\"makeNewPiece()\">ADD</div>"
-        content += "<div class=\"add-piece piece-example\" onclick=\"removePiece()\">REMOVE</div>"
-      }
       element("piece-list").innerHTML = content;
     }
     
-    let board = [
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null],
-      [null,null,null,null,null,null,null,null]
-    ];
-    let boardSize = board.length;
-    
-    let sandbox = false;
-    
-    let turn = "white";
-    let selected = null;
-    let canMove = [];
-    let canKill = [];
-    let canRanged = [];
-    let canConvert = [];
-    
-    function makeNewPiece() {
-      let content = "";
-      content += "<div id=\"menu\"><div class=\"menu-content\">";
-      
-      content += "<div class=\"make-piece piece-example\">";
-      content += "<div id=\"make-piece-icon\" contenteditable=\"plaintext-only\" spellcheck=\"false\" oninput=\"element('make-piece-icon').innerText = element('make-piece-icon').innerText.charAt(0)\">l</div>";
-      content += "<h1 id=\"make-piece-name\" contenteditable=\"plaintext-only\" spellcheck=\"false\">king</h1>";
-      content += "<h2 id=\"make-piece-category\" contenteditable=\"plaintext-only\" spellcheck=\"false\">standard</h2>";
-      content += "</div>";
-      
-      content += "<table id=\"make-piece-moves\"><tbody id=\"make-piece-tbody\">";
-      content += "</tbody></table>"
-      
-      content += "<div onclick=\"submitNewPiece()\" id=\"submit-button\">ADD</div>";
-      
-      content += "</div></div>";
-      element("body").innerHTML = content + element("body").innerHTML;
-    }
-    
-    function submitNewPiece() {
-      piece[element("make-piece-name").innerText] = {name: element("make-piece-name").innerText, textChar: element("make-piece-icon").innerText, category: element("make-piece-category").innerText};
-      pieceList();
-      element("menu").setAttribute("style","opacity: 0;");
-      setTimeout(function(){
-        element("menu").remove();
-      },500);
-    }
-    
-    function removePiece() {
-      let toRemove = window.prompt("The name of the piece to be removed:");
-      console.log(toRemove);
-      if (toRemove != null && Object.keys(piece).includes(toRemove)) {
-        delete piece[toRemove];
-      }
-      pieceList();
-    }
-    
     function beginGame(mode) {
-      switch (mode) {
-        case "standard":
-          piece={king:{name:"king",category:"standard",textChar:"l",royalty:!0,moves:[{xGo:1,yGo:1,when:"both",max:1},{xGo:1,yGo:0,when:"both",max:1},{xGo:1,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:0,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:-1,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:-1,yGo:-1,when:"both",max:1}]},queen:{name:"queen",category:"standard",textChar:"w",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"},{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},rook:{name:"rook",category:"standard",textChar:"t",moves:[{xGo:-1,yGo:0,when:"both"},{xGo:1,yGo:0,when:"both"},{xGo:0,yGo:-1,when:"both"},{xGo:0,yGo:1,when:"both"}]},bishop:{name:"bishop",category:"standard",textChar:"v",moves:[{xGo:-1,yGo:-1,when:"both"},{xGo:1,yGo:-1,when:"both"},{xGo:-1,yGo:1,when:"both"},{xGo:1,yGo:1,when:"both"}]},knight:{name:"knight",category:"standard",textChar:"m",moves:[{xGo:2,yGo:1,when:"both",max:1},{xGo:2,yGo:-1,when:"both",max:1},{xGo:-2,yGo:1,when:"both",max:1},{xGo:-2,yGo:-1,when:"both",max:1},{xGo:1,yGo:2,when:"both",max:1},{xGo:1,yGo:-2,when:"both",max:1},{xGo:-1,yGo:2,when:"both",max:1},{xGo:-1,yGo:-2,when:"both",max:1}]},pawn:{name:"pawn",category:"standard",textChar:"o",moves:[{xGo:-1,yGo:0,when:"move",max:1},{xGo:-1,yGo:-1,when:"kill",max:1},{xGo:-1,yGo:1,when:"kill",max:1}]}};
-          pieceList();
-          board = [[{piece:"rook",color:"black"},{piece:"knight",color:"black"},{piece:"bishop",color:"black"},{piece:"queen",color:"black"},{piece:"king",color:"black"},{piece:"bishop",color:"black"},{piece:"knight",color:"black"},{piece:"rook",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rook",color:"white"},{piece:"knight",color:"white"},{piece:"bishop",color:"white"},{piece:"queen",color:"white"},{piece:"king",color:"white"},{piece:"bishop",color:"white"},{piece:"knight",color:"white"},{piece:"rook",color:"white"}]];
-          break;
-        case "fairy":
-          piece.wizard = {name:"wizard",textChar:"v",moves:[{xGo:1,yGo:0,when:"both",max:1},{xGo:-1,yGo:0,when:"both",max:1},{xGo:0,yGo:-1,when:"both",max:1},{xGo:0,yGo:1,when:"both",max:1},{xGo:-1,yGo:0,when:"convert",max:3}]};
-          piece.pawn = {name:"pawn",textChar:"o",moves:[]};
-          board[4][4] = {piece:"wizard",color:"white"};
-          board[1][3] = {piece:"pawn",color:"black"};
-          board[1][4] = {piece:"pawn",color:"black"};
-          board[1][5] = {piece:"pawn",color:"black"};
-          break;
-        case "points":
-          board = [[{piece:"rookieblack",color:"black"},{piece:"knittieblack",color:"black"},{piece:"bishieblack",color:"black"},{piece:"kinnieblack",color:"black"},{piece:"royaltyblack",color:"black"},{piece:"bishieblack",color:"black"},{piece:"knittieblack",color:"black"},{piece:"rookieblack",color:"black"}],[{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"},{piece:"pawn",color:"black"}],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"},{piece:"pawn",color:"white"}],[{piece:"rookiewhite",color:"white"},{piece:"knittiewhite",color:"white"},{piece:"bishiewhite",color:"white"},{piece:"kinniewhite",color:"white"},{piece:"royaltywhite",color:"white"},{piece:"bishiewhite",color:"white"},{piece:"knittiewhite",color:"white"},{piece:"rookiewhite",color:"white"}]];
-          investToPieces();
-          break;
-        case "sandbox":
-          sandbox = true;
-          pieceList();
-          break;
-      }
-      boardSize = board.length;
+      piece = gamemodes[mode].piece;
+      board = gamemodes[mode].board;
+      board.forEach(function(row){
+        row.forEach(function(tile){
+          if (tile != null) tile.uses = 0;
+        });
+      });
+      boardSizeX = board.length;
+      boardSizeY = board[0].length;
       turn = "white";
       selected = null;
       canMove = [];
@@ -410,18 +328,20 @@
       canRanged = [];
       canConvert = [];
       makeBoard();
-      element("doc-title").innerHTML = (mode.charAt(0).toUpperCase()+mode.slice(1))+" Chess";
-      element("menu").setAttribute("style","opacity: 0;");
-      setTimeout(function(){
-        element("menu").remove();
-      },500);
+      element("doc-title").innerHTML = "Chess ("+gamemodes[mode].name+")";
+      if (element("menu") != null) {
+        element("menu").setAttribute("style","opacity: 0;");
+        setTimeout(function(){
+          element("menu").remove();
+        },500);
+      }
     }
     
     function makeBoard() {
       let html = "";
-      for (x = 0; x < boardSize; x++) {
+      for (x = 0; x < boardSizeX; x++) {
         html += "<tr>";
-        for (y = 0; y < boardSize; y++) {
+        for (y = 0; y < boardSizeY; y++) {
           html += "<td id=\"c"+x+y+"\" onclick=\"input("+x+","+y+")\"></td>";
         }
         html += "</tr>";
@@ -431,8 +351,8 @@
     }
     
     function updateBoard() {
-      for (x = 0; x < boardSize; x++) {
-        for (y = 0; y < boardSize; y++) {
+      for (x = 0; x < boardSizeX; x++) {
+        for (y = 0; y < boardSizeY; y++) {
           let itsClass;
           if ((x+y)%2 == 0) {
             itsClass = "tile-white";
@@ -451,15 +371,15 @@
           element("c"+x+y).setAttribute("class",itsClass);
           if (board[x][y] == null) {
             element("c"+x+y).innerHTML = "&nbsp;";
-            element("c"+x+y).setAttribute("title","abcdefg".charAt(y)+(8-x));
+            element("c"+x+y).setAttribute("title","abcdefghijklmnopqrstuvwxyz".charAt(y)+(boardSizeX-x));
           } else {
             element("c"+x+y).innerHTML = piece[board[x][y].piece].textChar;
-            element("c"+x+y).setAttribute("title",board[x][y].color+" "+piece[board[x][y].piece].name+" at "+"abcdefg".charAt(y)+(8-x));
+            element("c"+x+y).setAttribute("title",board[x][y].color+" "+piece[board[x][y].piece].name+" at "+"abcdefghijklmnopqrstuvwxyz".charAt(y)+(boardSizeX-x));
           }
         }
       }
       if (selected != null) {
-        //if something is selected, figure out canMove[] and canKill[] and canRanged[]
+        //if something is selected, figure out canMove[] and canKill[] and canRanged[] and canConvert[]
         canMove = [];
         canKill = [];
         canRanged = [];
@@ -469,6 +389,7 @@
         if (thePiece.moves != null) {
           thePiece.moves.forEach(function(motion){
             let max = motion.max;
+            let previousUses = motion.previousUses
             let when = motion.when;
             let yStep = motion.yGo;
             let xStep = motion.xGo;
@@ -476,7 +397,7 @@
             let distance = 1;
             let testY = selected.yPos+yStep*distance;
             let testX = selected.xPos+xStep*distance;
-            while (isInBounds(testX,testY) && board[testX][testY] == null && (distance <= max || max == null)) {
+            while (isInBounds(testX,testY) && board[testX][testY] == null && (distance <= max || max == null) && (board[selected.xPos][selected.yPos].uses <= previousUses || previousUses == null)) {
               if (when == "move" || when == "both") canMove.push({xPos: testX, yPos: testY});
               distance++;
               testY = selected.yPos+yStep*distance;
@@ -514,7 +435,7 @@
     }
     
     function isInBounds(x,y) {
-      return (x >= 0 && x < boardSize && y >= 0 && y < boardSize);
+      return (x >= 0 && x < boardSizeX && y >= 0 && y < boardSizeY);
     }
     
     function input(x,y) {
@@ -527,15 +448,18 @@
       } else if (selected.xPos == x && selected.yPos == y) { //deselecting position
         selected = null;
       } else if (selected != null && (element("c"+x+y).getAttribute("class").includes("can-move") || element("c"+x+y).getAttribute("class").includes("can-kill"))) { //can move or kill
+        board[selected.xPos][selected.yPos].uses++;
         board[x][y] = board[selected.xPos][selected.yPos];
         board[selected.xPos][selected.yPos] = null;
         selected = null;
         if (turn == "white") {turn = "black";} else {turn = "white";}
       } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-ranged")) { //can ranged kill
+        board[selected.xPos][selected.yPos].uses++;
         board[x][y] = null;
         selected = null;
         if (turn == "white") {turn = "black";} else {turn = "white";}
-      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-convert")) { //can ranged kill
+      } else if (selected != null && element("c"+x+y).getAttribute("class").includes("can-convert")) { //can convert
+        board[selected.xPos][selected.yPos].uses++;
         board[x][y].color = board[selected.xPos][selected.yPos].color;
         selected = null;
         if (turn == "white") {turn = "black";} else {turn = "white";}
