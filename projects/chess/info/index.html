@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="../icon.png">
+  <link rel="stylesheet" href="../all.css">
+  <title>Chess (Info)</title>
+  <style>
+    article {
+      width: 40rem;
+      margin: 6rem auto;
+      font-size: 1.25rem;
+      animation: 0.6s fadeIn;
+    }
+    
+    h2 {
+      font-weight: normal;
+      line-height: 2rem;
+      margin: 0;
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: underline;
+      transition: 0.2s;
+    }
+    
+    a:hover {
+      color: var(--blue);
+    }
+    
+    h2, p, ul {
+      user-select: text;
+    }
+    
+    
+  </style>
+</head>
+<body>
+  <article>
+    <h2>What is this?</h2>
+    <p><a href="../" target="_blank">This</a> is a game of chess I've been working on to prctice JavaScript. It doesn't have full functionality yet: you can't yet promote, castle, or en passant. There is no check/checkmate detection for the current board state or for moves (trust me I tried really hard), so the objective is to actually capture the opponent's king. If you're looking for a fuller chess experience right now, go to <a href="https://www.chess.com/" target="_blank">chess.com</a> or something.</p>
+    <p>Instead, my version of chess designed to be customizable and allow for alternative chess modes with alternative pieces or board arrangements.</p>
+    <h2>How do I make a gamemode?</h2>
+    <p>I intend to make a proper editor in the future, but for now you have to write a .js file that contains the gamemode's pieces, starting board, and list of teams (as of right now, only 2-team games really work). If you want a .js file to model yours after, use <a href="../rules-standard.js" target="_blank">rules-standard.js</a>.</p>
+    <p>To then play a gamemode you wrote, enter its URL after a question mark, like <u>https://astronomy487.github.io/projects/chess?rules-standard.js</u>.</p>
+    <p>Here are some extra gamemodes I've made to show how it works:</p>
+    <ul>
+      <li><a href="https://astronomy487.github.io/projects/chess?rules-tiny.js" target="_blank">tiny</a></li>
+      <li><a href="https://astronomy487.github.io/projects/chess?rules-pawns.js" target="_blank">pawn swarm</a></li>
+      <li><a href="https://astronomy487.github.io/projects/chess?rules-queens.js" target="_blank">queen swarm</a></li>
+    </ul>
+  </article>
+</body>
+</html>

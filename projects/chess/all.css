@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400&display=swap');
+* {font-family: Shippori Mincho;}
+
+:root {
+  --black: #1C1D21;
+  --semiblack: #1C1D2140;
+  --white: #FFF6F0;
+  --green: #3cb978;
+  --blue: #4a4de8;
+  --red: #e42535;
+  --yellow: #fec620;
+  --board1: #C1C3D7;
+  --board2: #635B9A;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--black);
+  user-select: none;
+}
+
+::selection {
+  color: var(--white);
+  background: var(--black);
+}
+
+@keyframes fadeIn {from {opacity: 0;}}
