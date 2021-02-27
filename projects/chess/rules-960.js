@@ -1,13 +1,17 @@
 game.board = [
-  [{piece:"rook",team:1},{piece:"knight",team:1},{piece:"bishop",team:1},{piece:"queen",team:1},{piece:"king",team:1},{piece:"bishop",team:1},{piece:"knight",team:1},{piece:"rook",team:1}],
+  [null,null,null,null,null,null,null,null],
   [{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1}],
   [null,null,null,null,null,null,null,null],
   [null,null,null,null,null,null,null,null],
   [null,null,null,null,null,null,null,null],
   [null,null,null,null,null,null,null,null],
   [{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0}],
-  [{piece:"rook",team:0},{piece:"knight",team:0},{piece:"bishop",team:0},{piece:"queen",team:0},{piece:"king",team:0},{piece:"bishop",team:0},{piece:"knight",team:0},{piece:"rook",team:0}]
+  [null,null,null,null,null,null,null,null],
 ];
+
+//shoutout to this person from stack overflow https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(t){let f=t.length,n,o;for(;0!==f;)o=Math.floor(Math.random()*f),--f,n=t[f],t[f]=t[o],t[o]=n;return t}
+let n=[],t=!1;for(;0==t;){t=!0,n=shuffle(["king","queen","rook","rook","bishop","bishop","knight","knight"]);let o=0;for(i=0;i<n.length;i++)"rook"==n[i]&&0==o&&(o=1),"king"==n[i]&&1==o&&(o=2),"rook"==n[i]&&2==o&&(o=3);3!=o&&(t=!1);let e=[!1,!1];for(i=0;i<n.length;i++)"bishop"==n[i]&&(e[i%2]=!0);e[0]&&e[1]||(t=!1)}[0,1].forEach(function(o){for(i=0;i<n.length;i++)game.board[-7*o+7][i]={piece:n[i],team:o}})
 
 game.piece = {
   king: {

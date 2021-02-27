@@ -12,9 +12,12 @@
       top: 50%;
       position: absolute;
       transform: translate(-50%,-50%);
+      overflow: hidden;
+      border-radius: 0.5rem;
     }
     
     #board td {
+      overflow: hidden;
       width: 6rem;
       height: 6rem;
       font-size: 4rem;
@@ -137,7 +140,7 @@
                 classes += " selected";
               }
           } else {
-          
+            classes += " empty"
           }
           for (i = 0; i < game.can.length; i++) {
             if (game.can[i].x == x && game.can[i].y == y) {
@@ -165,12 +168,15 @@
       for (i = 0; i < game.can.length; i++) {
         if (game.can[i].x == x && game.can[i].y == y) {
           game.board[game.select.x][game.select.y].uses++;
+          if (game.board[x][y] != null && game.board[x][y].team != game.currentTeam && game.piece[game.board[x][y].piece].royalty) console.log(game.team[game.currentTeam].color+" wins");
           switch (game.can[i].type) {
             case "kill":
             case "move":
-              if (game.board[x][y] != null && game.board[x][y].team != game.currentTeam && game.piece[game.board[x][y].piece].royalty) console.log(game.team[game.currentTeam].color+" wins")
               game.board[x][y] = game.board[game.select.x][game.select.y];
               game.board[game.select.x][game.select.y] = null;
+              break;
+            case "convert":
+              game.board[x][y].team = game.currentTeam;
               break;
           }
           switchTurn();
@@ -203,7 +209,7 @@
             tryY = y + (motion.y * distance);
           }
           if (isInBounds(tryX,tryY) && game.board[tryX][tryY] != null && (distance <= motion.max || motion.max == null) && game.board[tryX][tryY].team != game.currentTeam) {
-            if (motion.end != "none") game.can.push({x:tryX,y:tryY,type:motion.end});
+            if (motion.end != null) game.can.push({x:tryX,y:tryY,type:motion.end});
           }
         }
       });

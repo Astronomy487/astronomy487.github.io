@@ -76,8 +76,8 @@ game.piece = {
     text: "P",
     royalty: false,
     move: [
-      {x: 1, y: 0, max: 1, move: true, end: "none"},
-      {x: 1, y: 0, max: 2, move: true, end: "none", maxPreviousUses: 0},
+      {x: 1, y: 0, max: 1, move: true},
+      {x: 1, y: 0, max: 2, move: true, maxPreviousUses: 0},
       {x: 1, y: -1, max: 1, move: false, end: "kill"},
       {x: 1, y: 1, max: 1, move: false, end: "kill"}
     ]
