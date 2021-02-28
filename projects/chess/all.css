@@ -5,6 +5,7 @@
   --black: #1C1D21;
   --semiblack: #1C1D2140;
   --white: #FFF6F0;
+  --semiwhite: #FFF6F040;
   --green: #3cb978;
   --blue: #4a4de8;
   --red: #e42535;
@@ -14,14 +15,14 @@
 }
 
 body {
-  background-color: var(--white);
-  color: var(--black);
+  background-color: var(--black);
+  color: var(--white);
   user-select: none;
 }
 
 ::selection {
-  color: var(--white);
-  background: var(--black);
+  color: var(--black);
+  background: var(--white);
 }
 
 @keyframes fadeIn {from {opacity: 0;}}

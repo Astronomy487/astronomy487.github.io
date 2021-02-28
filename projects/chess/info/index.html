@@ -28,28 +28,45 @@
       color: var(--blue);
     }
     
-    h2, p, ul {
+    h2, p {
       user-select: text;
     }
     
+    #modes-container a {
+      display: block;
+      background-color: var(--black);
+      transition: 0.2s;
+      margin: .5rem 0;
+      text-align: center;
+      padding: 1rem 0;
+      border-radius: .25rem;
+      color: inherit;
+      text-decoration: none;
+    }
     
+    #modes-container a:hover {
+      background-color: var(--semiwhite);
+    }
   </style>
 </head>
 <body>
   <article>
     <h2>What is this?</h2>
-    <p><a href="../" target="_blank">This</a> is a game of chess I've been working on to practice JavaScript. It doesn't have full functionality yet: you can't yet promote, castle, or en passant. There is no check/checkmate detection for the current board state or for moves (trust me I tried really hard), so the objective is to actually capture the opponent's king. If you're looking for a fuller chess experience right now, go to <a href="https://www.chess.com/" target="_blank">chess.com</a> or something.</p>
+    <p><a href="../">This</a> is a game of chess I've been working on to practice JavaScript. It doesn't have full functionality yet: you can't yet promote, castle, or en passant. There is no check/checkmate detection for the current board state or for moves (trust me I tried really hard), so the objective is to actually capture the opponent's king. If you're looking for a fuller chess experience right now, go to <a href="https://www.chess.com/">chess.com</a> or something.</p>
     <p>Instead, my version of chess designed to be customizable and allow for alternative chess modes with alternative pieces or board arrangements.</p>
     <h2>How do I make a gamemode?</h2>
-    <p>I intend to make a proper editor in the future, but for now you have to write a .js file that contains the gamemode's pieces, starting board, and list of teams (as of right now, only 2-team games really work). If you want a .js file to model yours after, use <a href="../rules-standard.js" target="_blank">rules-standard.js</a>.</p>
-    <p>To then play a gamemode you wrote, enter its URL after a question mark, like <u>https://astronomy487.github.io/projects/chess?rules-standard.js</u>.</p>
+    <p>I intend to make a proper editor in the future, but for now you have to write a .js file that contains the gamemode's pieces, starting board, and list of teams (as of right now, you can only rotate teams 180&deg;). If you want a .js file to model yours after, use <a href="../rules-standard.js">rules-standard.js</a>.</p>
+    <p>To then play a gamemode you wrote, enter its URL after a question mark, like <a href="https://astronomy487.github.io/projects/chess?rules-960.js">https://astronomy487.github.io/projects/chess?rules-960.js</a>.</p>
     <p>Here are some extra gamemodes I've made to show how it works:</p>
-    <ul>
-      <li><a href="https://astronomy487.github.io/projects/chess?rules-960.js" target="_blank">chess960</a></li>
-      <li><a href="https://astronomy487.github.io/projects/chess?rules-tiny.js" target="_blank">tiny</a></li>
-      <li><a href="https://astronomy487.github.io/projects/chess?rules-pawns.js" target="_blank">pawn swarm</a></li>
-      <li><a href="https://astronomy487.github.io/projects/chess?rules-queens.js" target="_blank">queen swarm</a></li>
-    </ul>
+    <div id="modes-container">
+      <a href="https://astronomy487.github.io/projects/chess?rules-960.js">chess960</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-balbo.js">balbo's game</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-4player.js">4 players</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-tiny.js">tiny</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-pawns.js">pawn swarm</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-queens.js">queen swarm</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-random.js">100% random piece distribution</a>
+    </div>
   </article>
 </body>
 </html>

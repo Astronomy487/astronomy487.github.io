@@ -1,12 +1,14 @@
 game.board = [
-  [{piece:"rook",team:1},{piece:"knight",team:1},{piece:"bishop",team:1},{piece:"queen",team:1},{piece:"king",team:1},{piece:"bishop",team:1},{piece:"knight",team:1},{piece:"rook",team:1}],
-  [{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1}],
-  [null,null,null,null,null,null,null,null],
-  [null,null,null,null,null,null,null,null],
-  [null,null,null,null,null,null,null,null],
-  [null,null,null,null,null,null,null,null],
-  [{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0}],
-  [{piece:"rook",team:0},{piece:"knight",team:0},{piece:"bishop",team:0},{piece:"queen",team:0},{piece:"king",team:0},{piece:"bishop",team:0},{piece:"knight",team:0},{piece:"rook",team:0}]
+  [0,0,0,0,{piece:"king",team:1},{piece:"bishop",team:1},{piece:"queen",team:1},0,0,0,0],
+  [0,0,0,{piece:"rook",team:1},{piece:"knight",team:1},{piece:"bishop",team:1},{piece:"knight",team:1},{piece:"rook",team:1},0,0,0],
+  [0,0,{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},0,0],
+  [0,null,null,null,null,null,null,null,null,null,0],
+  [null,null,null,null,null,null,null,null,null,null,null],
+  [null,null,null,null,null,null,null,null,null,null,null],
+  [0,null,null,null,null,null,null,null,null,null,0],
+  [0,0,{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},0,0],
+  [0,0,0,{piece:"rook",team:0},{piece:"knight",team:0},{piece:"bishop",team:0},{piece:"knight",team:0},{piece:"rook",team:0},0,0,0],
+  [0,0,0,0,{piece:"king",team:0},{piece:"bishop",team:0},{piece:"queen",team:0},0,0,0,0]
 ];
 
 game.piece = {
@@ -84,10 +86,5 @@ game.piece = {
   }
 };
 
-game.team = [{color:"white",rotate:2},{color:"black",rotate:0}];
-//rotate 0: pawns move down (black)
-//rotate 2: pawns move up (white)
-//rotate 1: pawns move right
-//rotate 3: pawns move left
-//this also rotates horizontal moves (a leftward move would be queenside for white and kingside for black)
+game.team = [{color:"white",forwardX:-1},{color:"black",forwardX:1}];
 start();
