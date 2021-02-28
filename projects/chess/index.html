@@ -21,31 +21,29 @@
       font-size: 4rem;
       text-align: center;
       transition: 0.2s;
+      text-shadow: 0 0 0.25rem var(--semiblack);
+      font-family: 'Case';
     }
     
-    .team-white {color: var(--white);}
-    .team-black {color: var(--black);}
-    .team-blue {color: var(--blue);}
-    .team-red {color: var(--red);}
-    .team-green {color: var(--green);}
-    .team-yellow {color: var(--yellow);}
+    .team-white {color: var(--awhite);}
+    .team-black {color: var(--ablack);}
+    .team-blue {color: var(--ablue);}
+    .team-red {color: var(--ared);}
+    .team-green {color: var(--agreen);}
+    .team-yellow {color: var(--ayellow);}
+    .team-cyan {color: var(--acyan);}
+    .team-purple {color: var(--apurple);}
+    .team-magenta {color: var(--amagenta);}
     
-    #board .pick:hover {box-shadow: inset 0 0 1rem var(--blue); cursor: pointer;}
-    #board .selected {background-color: var(--blue);}
-    #board .can-move {box-shadow: inset 0 0 1rem var(--blue); cursor: pointer;}
-    #board .can-move:hover {background-color: var(--blue);}
-    #board .can-kill {box-shadow: inset 0 0 1rem var(--red); cursor: pointer;}
-    #board .can-kill:hover {background-color: var(--red);}
-    #board .can-ranged {box-shadow: inset 0 0 1rem var(--red); cursor: pointer;}
-    #board .can-ranged:hover {background-color: var(--red);}
-    #board .can-convert {box-shadow: inset 0 0 1rem var(--red); cursor: pointer;}
-    #board .can-convert:hover {background-color: var(--red);}
+    #board .pick:hover {box-shadow: inset 0 0 1rem var(--board3); cursor: pointer;}
+    #board .selected {background-color: var(--board3);}
+    #board .valid-action {box-shadow: inset 0 0 1rem var(--board3); cursor: pointer;}
+    #board .valid-action:hover {background-color: var(--board3);}
     
     tr:nth-child(2n) :nth-child(2n) {background-color: var(--board1);}
     tr:nth-child(2n) :nth-child(2n+1) {background-color: var(--board2);}
     tr:nth-child(2n+1) :nth-child(2n) {background-color: var(--board2);}
     tr:nth-child(2n+1) :nth-child(2n+1) {background-color: var(--board1);}
-    
     #board tr td.oob {background-color: #00000000;}
     
     #info {
@@ -73,6 +71,7 @@
 </head>
 <body id="body">
   <a id="info" href="info">i</a>
+  <div id="unicode-chars" style="position: fixed; bottom: 3rem; left: 3rem; width: 18rem; background-color: var(--semiwhite); padding: 1rem; border-radius: 0.5rem; cursor: pointer; animation: 0.6s fadeIn;" onclick="game.piece.king.text='&#x265A;';game.piece.queen.text='&#x265B;';game.piece.rook.text='&#x265C;';game.piece.bishop.text='&#x265D;';game.piece.knight.text='&#x265E;';game.piece.pawn.text='&#x265F;';updateBoard();element('unicode-chars').remove();">Are the pieces showing up as letters? Sorry :( I've been trying to fix that. Click this box and I'll replace the piece icons with their Unicode chars.</div>
   <table id="board"></table>
   <script id="gamemode-script"></script>
   <script>
@@ -154,7 +153,7 @@
           }
           for (i = 0; i < game.can.length; i++) {
             if (game.can[i].x == x && game.can[i].y == y) {
-              classes += " can-"+game.can[i].type;
+              classes += " valid-action";
             }
           }
           element(name(x,y)).setAttribute("class",classes);

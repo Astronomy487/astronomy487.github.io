@@ -8,7 +8,7 @@ game.board = [
 
 game.piece = {
   king: {
-    text: "K",
+    text: "l",
     royalty: true,
     move: [
       {x: -1, y: -1, max: 1, move: true, end: "kill"},
@@ -22,7 +22,7 @@ game.piece = {
     ]
   },
   queen: {
-    text: "Q",
+    text: "w",
     royalty: false,
     move: [
       {x: -1, y: -1, move: true, end: "kill"},
@@ -36,7 +36,7 @@ game.piece = {
     ]
   },
   rook:{
-    text: "R",
+    text: "t",
     royalty: false,
     move: [
       {x: 0, y: -1, move: true, end: "kill"},
@@ -46,7 +46,7 @@ game.piece = {
     ]
   },
   bishop: {
-    text: "B",
+    text: "v",
     royalty: false,
     move: [
       {x: -1, y: -1, move: true, end: "kill"},
@@ -56,7 +56,7 @@ game.piece = {
     ]
   },
   knight: {
-    text: "N",
+    text: "m",
     royalty: false,
     move: [
       {x: -2, y: -1, max: 1, move: true, end: "kill"},
@@ -70,7 +70,7 @@ game.piece = {
     ]
   },
   pawn: {
-    text: "P",
+    text: "o",
     royalty: false,
     move: [
       {x: 1, y: 0, max: 1, move: true},
@@ -81,5 +81,5 @@ game.piece = {
   }
 };
 
-game.team = [{color:"white",forwardX:-1},{color:"black",forwardX:1}];
+game.team = [{color:"white",rotate:2},{color:"black",rotate:0}];
 start();
