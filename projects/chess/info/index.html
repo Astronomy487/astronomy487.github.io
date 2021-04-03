@@ -16,6 +16,8 @@
       font-weight: normal;
       line-height: 2rem;
       margin: 0;
+      border-left: solid 2rem var(--white);
+      padding-left: 1rem;
     }
     
     a {
@@ -25,27 +27,33 @@
     }
     
     a:hover {
-      color: var(--blue);
+      color: var(--board2);
     }
     
     h2, p {
       user-select: text;
     }
     
+    #modes-container {
+      margin: 3rem 0;
+    }
+    
     #modes-container a {
       display: block;
       background-color: var(--black);
       transition: 0.2s;
-      margin: .5rem 0;
+      margin: 0rem auto;
       text-align: center;
-      padding: 1rem 0;
+      padding: 0.5rem 0;
       border-radius: .25rem;
       color: inherit;
       text-decoration: none;
+      width: 60%;
     }
     
     #modes-container a:hover {
-      background-color: var(--semiwhite);
+      background-color: var(--board2);
+      width: 70%;
     }
   </style>
 </head>
@@ -55,18 +63,18 @@
     <p><a href="../">This</a> is a game of chess I've been working on to practice JavaScript. It doesn't have full functionality yet: you can't yet promote, castle, or en passant. There is no check/checkmate detection for the current board state or for moves (trust me I tried really hard), so the objective is to actually capture the opponent's king. If you're looking for a fuller chess experience right now, go to <a href="https://www.chess.com/">chess.com</a> or something.</p>
     <p>Instead, my version of chess designed to be customizable and allow for alternative chess modes with alternative pieces or board arrangements.</p>
     <h2>How do I make a gamemode?</h2>
-    <p>I intend to make a proper editor in the future, but for now you have to write a .js file that contains the gamemode's pieces, starting board, and list of teams (as of right now, you can only rotate teams 180&deg;). If you want a .js file to model yours after, use <a href="../rules-standard.js">rules-standard.js</a>.</p>
+    <p>I intend to make a proper editor in the future, but for now you have to write a .js file that contains the gamemode's pieces, starting board, and list of teams. If you want a .js file to model yours after, use <a href="../rules-standard.js">rules-standard.js</a>.</p>
     <p>To then play a gamemode you wrote, enter its URL after a question mark, like <a href="https://astronomy487.github.io/projects/chess?rules-960.js">https://astronomy487.github.io/projects/chess?rules-960.js</a>.</p>
     <p>Here are some extra gamemodes I've made to show how it works:</p>
     <div id="modes-container">
       <a href="https://astronomy487.github.io/projects/chess?rules-960.js">chess960</a>
+      <a href="https://astronomy487.github.io/projects/chess?rules-random.js">100% random piece distribution</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-4player.js">4 players</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-balbo.js">balbo's game</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-tiny.js">tiny (8x5)</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-mini.js">mini (4x4)</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-pawns.js">pawn swarm</a>
       <a href="https://astronomy487.github.io/projects/chess?rules-queens.js">queen swarm</a>
-      <a href="https://astronomy487.github.io/projects/chess?rules-random.js">100% random piece distribution</a>
     </div>
   </article>
 </body>

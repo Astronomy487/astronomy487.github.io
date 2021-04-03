@@ -89,7 +89,10 @@
       game.can = [];
       for (x = 0; x < game.width; x++) {
         for (y = 0; y < game.height; y++) {
-          if (game.board[x][y] != null) game.board[x][y].uses = 0;
+          if (game.board[x][y] != null) {
+            if (game.board[x][y].uses == null) game.board[x][y].uses = 0;
+            if (game.board[x][y].rotate == null) game.board[x][y].rotate = game.team[game.board[x][y].team].rotate;
+          }
         }
       }
       console.log(game);
@@ -175,6 +178,7 @@
       //picking a move
       for (i = 0; i < game.can.length; i++) {
         if (game.can[i].x == x && game.can[i].y == y) {
+          //we found a valid move and are going to take it
           game.board[game.select.x][game.select.y].uses++;
           if (game.board[x][y] != null && game.board[x][y].team != game.currentTeam && game.piece[game.board[x][y].piece].royalty) console.log(game.team[game.currentTeam].color+" wins");
           switch (game.can[i].type) {
@@ -187,6 +191,8 @@
               game.board[x][y].team = game.currentTeam;
               break;
           }
+          //check for promotion
+          console.log(board[x][y]);
           switchTurn();
         }
       }
@@ -212,7 +218,7 @@
           while (isInBounds(tryPos.x,tryPos.y) && game.board[tryPos.x][tryPos.y] == null && (distance <= motion.max || motion.max == null)) {
             if (motion.move) game.can.push({x:tryPos.x,y:tryPos.y,type:"move"});
             distance++;
-            tryPos = findPos(x, y, motion.x, motion.y, distance, game.board[x][y].team);
+            tryPos = findPos(x, y, motion.x, motion.y, distance);
           }
           if (isInBounds(tryPos.x,tryPos.y) && game.board[tryPos.x][tryPos.y] != null && (distance <= motion.max || motion.max == null) && game.board[tryPos.x][tryPos.y].team != game.currentTeam) {
             if (motion.end != null) game.can.push({x:tryPos.x,y:tryPos.y,type:motion.end});
@@ -224,7 +230,7 @@
     function findPos(startX, startY, motionX, motionY, distance, team) {
       motionX *= distance;
       motionY *= distance;
-      switch (game.team[team].rotate%4) {
+      switch (game.board[startX][startY].rotate%4) {
         case 0: return {x:startX+motionX,y:startY+motionY}; break;
         case 1: return {x:startX-motionY,y:startY+motionX}; break;
         case 2: return {x:startX-motionX,y:startY-motionY}; break;

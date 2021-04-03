@@ -9,6 +9,17 @@ game.board = [
   [{piece:"rook",team:0},{piece:"knight",team:0},{piece:"bishop",team:0},{piece:"queen",team:0},{piece:"king",team:0},{piece:"bishop",team:0},{piece:"knight",team:0},{piece:"rook",team:0}]
 ];
 
+game.board = [
+  [null,null,null,null,null,null,null,null],
+  [null,null,{piece:"pawn",team:0},null,null,null,null,null],
+  [null,null,null,null,null,null,null,null],
+  [null,null,null,null,null,null,null,null],
+  [null,null,null,null,null,null,null,null],
+  [null,null,null,null,null,null,null,null],
+  [{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0},{piece:"pawn",team:0}],
+  [{piece:"rook",team:0},{piece:"knight",team:0},{piece:"bishop",team:0},{piece:"queen",team:0},{piece:"king",team:0},{piece:"bishop",team:0},{piece:"knight",team:0},{piece:"rook",team:0}]
+];
+
 game.piece = {
   king: {
     text: "l",
@@ -75,6 +86,7 @@ game.piece = {
   pawn: {
     text: "o",
     royalty: false,
+    promote: ["queen","rook","bishop","knight"],
     move: [
       {x: 1, y: 0, max: 1, move: true},
       {x: 1, y: 0, max: 2, move: true, maxPreviousUses: 0},
@@ -90,5 +102,6 @@ game.team = [{color:"white",rotate:2},{color:"black",rotate:0}];
 //rotate 1: pawns move right
 //rotate 3: pawns move left
 //this also rotates horizontal moves (a leftward move would be queenside for white and kingside for black)
+//individual pieces on the board can have a unique rotate too, but if unspecified they'll just inherit the team rotation
 //supported colors: "white", "black", "red", "yellow", "green", "blue", "cyan", "purple", "magenta"
 start();

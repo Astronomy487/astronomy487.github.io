@@ -2,8 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;800&display=swap');
 * {font-family: Work Sans;}
 :root {--white: #F0F0F0; --black: #303841; --color: #ff2e63;}
-::selection {color:var(--white); background:var(--color);}
-::-moz-selection {color:var(--white); background:var(--color);}
+::selection {color:var(--black); background:var(--white);}
 ::-webkit-scrollbar {width: 0;}
 a {color: inherit; text-decoration: none;}
 @keyframes fadeIn {from {opacity: 0;}}
@@ -50,6 +49,7 @@ a#other {background-color: var(--white); color: var(--black); font-weight: norma
   width: 48rem;
   height: 35rem;
 }
+.albummain.home ::selection {color:var(--white); background:var(--black);}
 .albummain.primary {
   width: 32rem;
 }

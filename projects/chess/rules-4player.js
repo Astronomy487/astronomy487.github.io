@@ -81,6 +81,7 @@ game.piece = {
   pawn: {
     text: "o",
     royalty: false,
+    promote: ["queen","rook","bishop","knight"],
     move: [
       {x: 1, y: 0, max: 1, move: true},
       {x: 1, y: 0, max: 2, move: true, maxPreviousUses: 0},
