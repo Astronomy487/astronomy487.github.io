@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="icon.png">
+  <title>Complex</title>
+  <style>
+    body {
+      background-color: #1B0038;
+    }
+    canvas {
+      background-color: white;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="200" height="100"></canvas>
+  <script>
+    let pi = Math.PI;
+    let complex = {
+      add: function(a, b) {
+        return [a[0]+b[0],a[1]+b[1]];
+      },
+      mult: function(a, b) {
+        return [a[0]*b[0]-a[1]*b[1],a[1]*b[0]+a[0]*b[1]];
+      },
+      r: function(a) {
+        return Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+      },
+      theta: function(a) {
+        if (a[0] == 0) {
+          if (a[1] > 0) return pi/2;
+          if (a[1] < 0) return 3*pi/2;
+          return 0;
+        } else {
+          return Math.atan(a[1]/a[0]);
+        }
+      },
+      polar: function(r,theta) {
+        return [r*Math.cos(theta),r*Math.sin(theta)];
+      },
+      power: function(a,k) {
+        return complex.polar(Math.pow(complex.r(a),k),k*complex.theta(a));
+      }
+    };
+    let brot = {
+      escape(z,c,maxIterations) {
+        let i = 0;
+        while (i < maxIterations) {
+          z = complex.mult(z, z);
+          z = complex.add(z, c);
+          if (complex.r(z) > 2) return i;
+          i++;
+        }
+        return null;
+      }
+    };
+  </script>
+  <script>
+    let s = {
+      minX: -2, //bounds in number space
+      maxX: 2,
+      minY: -2,
+      maxY: 2,
+      divX: 720, //how many pixels
+      divY: 720,
+      visX: 720, //canvas size
+      visY: 720,
+      palette: ["1B0038","2A0057","390075","2A0057"], //colors
+      setColor: "6300cc", //fill color
+      z: function(i,j) {return [0,0];}, //how z is determined
+      c: function(i,j) {return [i,j];}, //how c is determined
+      depth: 20 //max iterations
+    };
+    s.stepX = (s.maxX-s.minX)/s.divX;
+    s.stepY = (s.maxY-s.minY)/s.divY;
+    
+    let canvas = document.getElementById("myCanvas");
+    let context = canvas.getContext("2d");
+    draw();
+    function draw() {
+      canvas.setAttribute("width",s.visX);
+      canvas.setAttribute("height",s.visY);
+      for (i = s.minX; i < s.maxX; i += s.stepX) {
+        for (j = s.minY; j < s.maxY; j += s.stepY) {
+          let z = s.z(i,j);
+          let c = s.c(i,j);
+          let iterations = brot.escape(z,c,s.depth);
+          let color = s.setColor;
+          if (iterations == null) {
+            //non escaped
+          } else {
+            //escaped
+            iterations %= s.palette.length;
+            color = s.palette[iterations];
+          }
+          pixel([i,j],color);
+        }
+      }
+    }
+    function pixel(a,color) {
+      let x = a[0];
+      let y = a[1];
+      let coordX = s.visX*(x-s.minX)/(s.maxX-s.minX);
+      let coordY = s.visY*(1-(y-s.minY)/(s.maxY-s.minY));
+      context.fillStyle = "#"+color;
+      context.fillRect(coordX, coordY, s.stepX*s.visX/(s.maxX-s.minX), s.stepY*s.visY/(s.maxY-s.minY));
+    }
+  </script>
+</body>
+</html>
