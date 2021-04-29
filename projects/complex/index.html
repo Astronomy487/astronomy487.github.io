@@ -48,72 +48,76 @@
         return complex.polar(Math.pow(complex.r(a),k),k*complex.theta(a));
       }
     };
-    function escape(z,c,maxIterations) {
-      let i = 0;
-      while (i < maxIterations) {
-        z = s.iterate(z,c);
-        if (complex.r(z) > 2) return i;
-        i++;
-      }
-      return null;
-    }
   </script>
   <script>
-    let preset = {};
-    preset["Burning Ship"]={minX:-1.8,maxX:-1.7,minY:-.08,maxY:.02,divX:1440,divY:1440,visX:720,visY:720,palette:["ff0000","ff2a00","ff5500","ff8000","ffaa00","ffd500","ffff00","d4ff00","aaff00","80ff00","55ff00","2bff00","00ff00","00ff2a","00ff55","00ff80","00ffaa","00ffd5","00ffff","00d5ff","00aaff","0080ff","0055ff","002aff","0000ff","2b00ff","5500ff","8000ff","aa00ff","d400ff","ff00ff","ff00d4","ff00aa","ff0080","ff0055","ff002b"],setColor:"FFFFFF",z:function(f,a){return[0,0]},c:function(f,a){return[f,a]},iterate:function(f,a){return f[0]=Math.abs(f[0]),f[1]=Math.abs(f[1]),complex.add(complex.mult(f,f),a)},depth:50};
-    let s = {
-      minX: -1.5, //bounds in number space
-      maxX: 1.5,
-      minY: -1.5,
-      maxY: 1.5,
-      divX: 720, //how many pixels
-      divY: 720,
-      visX: 720, //canvas size
-      visY: 720,
-      palette: ["ff0000","ff2a00","ff5500","ff8000","ffaa00","ffd500","ffff00","d4ff00","aaff00","80ff00","55ff00","2bff00","00ff00","00ff2a","00ff55","00ff80","00ffaa","00ffd5","00ffff","00d5ff","00aaff","0080ff","0055ff","002aff","0000ff","2b00ff","5500ff","8000ff","aa00ff","d400ff","ff00ff","ff00d4","ff00aa","ff0080","ff0055","ff002b"], //colors
-      setColor: "FFFFFF", //fill color
-      z: function(i,j) {return [i,j];}, //how z is determined
-      c: function(i,j) {return [0.35,0.355];}, //how c is determined
-      iterate: function(z,c) {return complex.add(complex.mult(z,z),c);},
-      depth: 1000 //max iterations
-    };
-    //s = preset["Burning Ship"];
+    //thank u iykury+vrab for all the help ( ´ ▽ ` )ﾉ
     
-    s.stepX = (s.maxX-s.minX)/s.divX;
-    s.stepY = (s.maxY-s.minY)/s.divY;
+    let s = {
+      centerX: 0,
+      centerY: 0,
+      zoom: 1,
+      depth: 100,
+      sizeX: 720,
+      sizeY: 720,
+      z: function(p) {return [0,0];},
+      iterate: function(z,p) {return complex.add(complex.mult(z,z),p);}
+    };
+    
+    if (location.search != "") {
+      let info = location.search.substring(1);
+      info = info.split("&");
+      for (i = 0; i < info.length; i++) {
+        let val = info[i].split("=");
+        s[val[0]] = parseFloat(val[1]);
+      }
+    }
+    
+    s.radX = (s.sizeX/s.sizeY)*2**(2-s.zoom);
+    s.radY = 2**(2-s.zoom);
+    s.minX = s.centerX - s.radX;
+    s.maxX = s.centerX + s.radX;
+    s.minY = s.centerY - s.radY;
+    s.maxY = s.centerY + s.radY;
+    
+    let palette = ["ff0000","ff2a00","ff5500","ff8000","ffaa00","ffd500","ffff00","d4ff00","aaff00","80ff00","55ff00","2bff00","00ff00","00ff2a","00ff55","00ff80","00ffaa","00ffd5","00ffff","00d5ff","00aaff","0080ff","0055ff","002aff","0000ff","2b00ff","5500ff","8000ff","aa00ff","d400ff","ff00ff","ff00d4","ff00aa","ff0080","ff0055","ff002b"];
+    let setColor = "FFFFFF";
     
     let canvas = document.getElementById("myCanvas");
     let context = canvas.getContext("2d");
     draw();
     function draw() {
-      canvas.setAttribute("width",s.visX);
-      canvas.setAttribute("height",s.visY);
-      for (i = s.minX; i < s.maxX; i += s.stepX) {
-        for (j = s.minY; j < s.maxY; j += s.stepY) {
-        
-          let z = s.z(i,j);
-          let c = s.c(i,j);
-          let iterations = escape(z,c,s.depth);
-          
-          let color = s.setColor;
+      canvas.setAttribute("width",s.sizeX);
+      canvas.setAttribute("height",s.sizeY);
+      console.log(s.z);
+      for (x = 0; x < s.sizeX; x++) {
+        for (y = 0; y < s.sizeY; y++) {
+          let iterations = escape(displayToNumber([x,y]));
           if (iterations == null) {
-            //non escaped
+            iterations = setColor;
           } else {
-            //escaped
-            iterations %= s.palette.length;
-            color = s.palette[iterations];
+            iterations %= palette.length;
+            iterations = palette[iterations];
           }
-          pixel([i,j],color);
+          drawPixel([x,y],iterations);
         }
       }
     }
-    function pixel(a,color) {
-      let x = a[0];
-      let y = a[1];
-      let coordX = s.visX*(x-s.minX)/(s.maxX-s.minX);
-      let coordY = s.visY*(y-s.minY)/(s.maxY-s.minY);
+    function drawPixel(p,color) {
       context.fillStyle = "#"+color;
-      context.fillRect(coordX, coordY, s.stepX*s.visX/(s.maxX-s.minX), s.stepY*s.visY/(s.maxY-s.minY));
+      context.fillRect(p[0],p[1],1,1);
+    }
+    function displayToNumber(p) {
+      let a = p[0];
+      let b = p[1];
+      return [(2*s.radX*a/s.sizeX)+s.minX, (2*s.radY*(1-(b/s.sizeY)))+s.minY];
+    }
+    function escape(p) {
+      let z = s.z(p);
+      for (i = 1; i < s.depth; i++) {
+        z = s.iterate(z,p);
+        if (complex.r(z) > 2) return i;
+      }
+      return null;
     }
   </script>
 </body>
