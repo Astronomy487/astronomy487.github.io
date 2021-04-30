@@ -5,51 +5,50 @@
   <title>Complex</title>
   <style>
     body {
-      background-color: white;
+      background-color: #222;
+      color: #eee;
     }
     
     canvas {
       background-color: white;
+      border-radius: 0.5rem;
       position: fixed;
       left: 50%;
       top: 50%;
       transform: translate(-50%,-50%);
-      border-radius: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <canvas id="myCanvas" width="0" height="0"></canvas>
+  <canvas id="display" width="0" height="0"></canvas>
   <script>
-    let pi = Math.PI;
-    let e = Math.E;
     let complex = {
-      add: function(a, b) {
-        return [a[0]+b[0],a[1]+b[1]];
+      add: function(z, w) {
+        return [z[0]+w[0],z[1]+w[1]];
       },
-      mult: function(a, b) {
-        return [a[0]*b[0]-a[1]*b[1],a[1]*b[0]+a[0]*b[1]];
+      mult: function(z, w) {
+        return [z[0]*w[0]-z[1]*w[1],z[1]*w[0]+z[0]*w[1]];
       },
-      r: function(a) {
-        return Math.sqrt(a[0]*a[0]+a[1]*a[1]);
+      r: function(z) {
+        return Math.sqrt(z[0]*z[0]+z[1]*z[1]);
       },
-      theta: function(a) {
-        if (a[0] == 0) {
-          if (a[1] > 0) return pi/2;
-          if (a[1] < 0) return 3*pi/2;
+      theta: function(z) {
+        if (z[0] == 0) {
+          if (z[1] > 0) return Math.PI/2;
+          if (z[1] < 0) return 3*Math.PI/2;
           return 0;
         } else {
-          return Math.atan(a[1]/a[0]);
+          return Math.atan(z[1]/z[0]);
         }
       },
       polar: function(r,theta) {
         return [r*Math.cos(theta),r*Math.sin(theta)];
       },
       eto: function(z) {
-        return [Math.cos(z[1])*(e**z[0]),Math.sin(z[1])*(e**z[0])];
+        return [Math.cos(z[1])*(Math.E**z[0]),Math.sin(z[1])*(Math.E**z[0])];
       },
-      power: function(a,k) {
-        return complex.polar(Math.pow(complex.r(a),k),k*complex.theta(a));
+      power: function(z,p) {
+        return complex.polar(Math.pow(complex.r(z),p),p*complex.theta(z));
       },
       exponent: function(z,w) {
         if (complex.r(z) == 0) {
@@ -59,6 +58,9 @@
           return [0,0];
         }
         return complex.eto(complex.mult(w,[Math.log(complex.r(z)),complex.theta(z)]));
+      },
+      ln: function(z) {
+        return [Math.log(complex.r(z)),complex.theta(z)];
       }
     };
   </script>
@@ -89,7 +91,7 @@
     let palette = ["ff0000","ff2a00","ff5500","ff8000","ffaa00","ffd500","ffff00","d4ff00","aaff00","80ff00","55ff00","2bff00","00ff00","00ff2a","00ff55","00ff80","00ffaa","00ffd5","00ffff","00d5ff","00aaff","0080ff","0055ff","002aff","0000ff","2b00ff","5500ff","8000ff","aa00ff","d400ff","ff00ff","ff00d4","ff00aa","ff0080","ff0055","ff002b"];
     let setColor = "FFFFFF";
     
-    let canvas = document.getElementById("myCanvas");
+    let canvas = document.getElementById("display");
     let context = canvas.getContext("2d");
     draw();
     function draw() {
@@ -116,7 +118,13 @@
         }
       }
       now = (new Date().getTime())-now;
-      console.log({time:now/1000+"s",depth:s.depth,pixels:(s.sizeX*s.sizeY).toExponential(),zoom:s.zoom,radius:s.radY.toExponential()});
+      console.log({
+        time: now/1000,
+        depth: s.depth,
+        resolution: [s.sizeX,s.sizeY],
+        zoom: s.zoom,
+        radius: s.radY
+      });
     }
     function displayToNumber(p) {
       return [(2*s.radX*p[0]/s.sizeX)+s.minX, (2*s.radY*(1-(p[1]/s.sizeY)))+s.minY];
