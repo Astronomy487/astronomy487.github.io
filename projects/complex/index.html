@@ -22,6 +22,7 @@
   <canvas id="myCanvas" width="0" height="0"></canvas>
   <script>
     let pi = Math.PI;
+    let e = Math.E;
     let complex = {
       add: function(a, b) {
         return [a[0]+b[0],a[1]+b[1]];
@@ -44,8 +45,20 @@
       polar: function(r,theta) {
         return [r*Math.cos(theta),r*Math.sin(theta)];
       },
+      eto: function(z) {
+        return [Math.cos(z[1])*(e**z[0]),Math.sin(z[1])*(e**z[0])];
+      },
       power: function(a,k) {
         return complex.polar(Math.pow(complex.r(a),k),k*complex.theta(a));
+      },
+      exponent: function(z,w) {
+        if (complex.r(z) == 0) {
+          if (complex.r(w) == 0) {
+            return [1,0];
+          }
+          return [0,0];
+        }
+        return complex.eto(complex.mult(w,[Math.log(complex.r(z)),complex.theta(z)]));
       }
     };
   </script>
@@ -59,6 +72,7 @@
       depth: 100,
       sizeX: 720,
       sizeY: 720,
+      threshold: 2,
       z: function(p) {return [0,0];},
       iterate: function(z,p) {return complex.add(complex.mult(z,z),p);}
     };
@@ -72,16 +86,6 @@
       }
     }
     
-    determineExtraSettings();
-    function determineExtraSettings() {
-      s.radX = (s.sizeX/s.sizeY)*2**(2-s.zoom);
-      s.radY = 2**(2-s.zoom);
-      s.minX = s.centerX - s.radX;
-      s.maxX = s.centerX + s.radX;
-      s.minY = s.centerY - s.radY;
-      s.maxY = s.centerY + s.radY;
-    }
-    
     let palette = ["ff0000","ff2a00","ff5500","ff8000","ffaa00","ffd500","ffff00","d4ff00","aaff00","80ff00","55ff00","2bff00","00ff00","00ff2a","00ff55","00ff80","00ffaa","00ffd5","00ffff","00d5ff","00aaff","0080ff","0055ff","002aff","0000ff","2b00ff","5500ff","8000ff","aa00ff","d400ff","ff00ff","ff00d4","ff00aa","ff0080","ff0055","ff002b"];
     let setColor = "FFFFFF";
     
@@ -89,9 +93,15 @@
     let context = canvas.getContext("2d");
     draw();
     function draw() {
+      let now = new Date().getTime();
+      s.radX = (s.sizeX/s.sizeY)*2**(2-s.zoom);
+      s.radY = 2**(2-s.zoom);
+      s.minX = s.centerX - s.radX;
+      s.maxX = s.centerX + s.radX;
+      s.minY = s.centerY - s.radY;
+      s.maxY = s.centerY + s.radY;
       canvas.setAttribute("width",s.sizeX);
       canvas.setAttribute("height",s.sizeY);
-      console.log(s.z);
       for (x = 0; x < s.sizeX; x++) {
         for (y = 0; y < s.sizeY; y++) {
           let iterations = escape(displayToNumber([x,y]));
@@ -101,24 +111,21 @@
             iterations %= palette.length;
             iterations = palette[iterations];
           }
-          drawPixel([x,y],iterations);
+          context.fillStyle = "#"+iterations;
+          context.fillRect(x,y,1,1);
         }
       }
-    }
-    function drawPixel(p,color) {
-      context.fillStyle = "#"+color;
-      context.fillRect(p[0],p[1],1,1);
+      now = (new Date().getTime())-now;
+      console.log({time:now/1000+"s",depth:s.depth,pixels:(s.sizeX*s.sizeY).toExponential(),zoom:s.zoom,radius:s.radY.toExponential()});
     }
     function displayToNumber(p) {
-      let a = p[0];
-      let b = p[1];
-      return [(2*s.radX*a/s.sizeX)+s.minX, (2*s.radY*(1-(b/s.sizeY)))+s.minY];
+      return [(2*s.radX*p[0]/s.sizeX)+s.minX, (2*s.radY*(1-(p[1]/s.sizeY)))+s.minY];
     }
     function escape(p) {
       let z = s.z(p);
       for (i = 1; i < s.depth; i++) {
         z = s.iterate(z,p);
-        if (complex.r(z) > 2) return i;
+        if (complex.r(z) > s.threshold) return i;
       }
       return null;
     }
