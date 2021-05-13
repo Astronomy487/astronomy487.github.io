@@ -25,7 +25,7 @@ a#youtube {background-color: #FF0000;}
 a#bandcamp {background-color: #1DA0C3;}
 a#amazon {background-color: #FF9900;}
 a#twitter {background-color: #1DA1F2;}
-a#discord {background-color: #7289DA;}
+a#discord {background-color: #5865F2;}
 a#other {background-color: var(--white); color: var(--black); font-weight: normal; padding: 0.5rem;}
 
 /*album page structure*/
