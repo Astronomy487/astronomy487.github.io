@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="icon.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Work+Sans:ital,wght@0,400;0,800;1,400;1,800&display=swap');
+    * {font-family: Work Sans;}
+    nav a, h2 {font-family: Dela Gothic One; font-weight: normal;}
+    ::selection {color:var(--white); background:var(--color);}
+    ::-webkit-scrollbar {width: 0;}
+    
+    :root {
+      --white: #FCFCFC;
+      --semiwhite: #FCFCFC80;
+      --color: #5153ad;
+      --black: #45404F;
+      --semiblack: #45404F20;
+    }
+    
+    body {
+      background-color: var(--color);
+      color: var(--white);
+      font-size: 1.25rem;
+    }
+    
+    #main {
+      width: 60rem;
+      margin: 4rem auto;
+      padding: 0rem;
+    }
+    
+    nav {
+      text-align: right;
+      width: 12rem;
+      text-transform: uppercase;
+      color: var(--semiwhite);
+      padding: 2rem;
+      padding-left: 0;
+      float: left;
+      position: fixed;
+      user-select: none;
+      animation: 0.5s ease-in-out enterLeft;
+    }
+    
+    nav a {
+      display: block;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    
+    nav a:hover {
+      color: var(--white);
+    }
+    
+    @keyframes enterLeft {from {opacity: 0; transform: translateX(-1rem);}}
+    
+    article {
+      background-color: var(--white);
+      color: var(--black);
+      float: right;
+      width: 38rem;
+      padding: 2rem 4rem;
+      display: none;
+      overflow: hidden;
+      margin-bottom: 4rem;
+      animation: 0.5s ease-in-out enterLeft;
+      border-radius: 0.5rem;
+    }
+    
+    article h2 {
+      margin: 0;
+      margin-top: 2rem;
+    }
+    
+    article p {
+      text-align: justify;
+    }
+    
+    article a {
+      text-decoration: none;
+      color: var(--color);
+      font-weight: bold;
+    }
+    
+    article b {
+      text-decoration: none;
+      color: var(--color);
+      font-weight: bold;
+    }
+    
+    article a:hover {
+      text-decoration: underline;
+    }
+    
+    article .center {
+      text-align: center;
+    }
+    
+    article .center .ss {
+      display: inline-block;
+      font-size: 1rem;
+      line-height: 87%;
+      vertical-align: bottom;
+    }
+    
+    article table {
+      width: 80%;
+      margin: 1rem auto;
+      border-collapse: collapse;
+    }
+    
+    article table td, article table th {
+      text-align: center;
+      padding: 0.25rem 0;
+    }
+    
+    article table th {
+      background-color: var(--color);
+      color: var(--white);
+    }
+    
+    article table tr:nth-child(2n+1) td {background-color: var(--semiblack);}
+    
+    .b {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+    
+    #copy {
+      clear: both;
+      margin-bottom: 4rem;
+      text-align: right;
+      animation: 0.5s ease-in-out enterLeft;
+    }
+  </style>
+  <title>Folte</title>
+</head>
+<body>
+  <div id="main">
+    <nav id="navigation">
+    </nav>
+    <article id="article-about">
+      <h2>What is Folte?</h2>
+      <p>Folte is a minimalist logical language made by <a href="http://astronomy487.github.io/" target="_blank">me (Astro)</a> and inspired by Toki Pona, Toaq, Lojban and other languages like those three. This is just a fun project of mine that makes me think about communication in new ways.</p>
+      <p>Folte’s primary mode of expression is what I call “math” notation, a set of symbols to describe the grammar behind a piece of text in the language, and it looks like this:</p>
+      <div class="center b">N(AC<span class="ss">1<br>2</span>)<span class="ss">2<br>&nbsp;</span>(FH<span class="ss">2<br>1</span>)<span class="ss">3<br>&nbsp;</span>(D)<span class="ss">4<br>&nbsp;</span></div>
+      <p>This is the mode Folte is primarily designed for, and other modes are just an abstraction of this math notation.</p>
+      <p>This language is logical in that it uses boolean logic- and predicate logic-like principles to guide how the grammar works, how words are derived, and how ideas are conveyed. It is about arguments satisfying conditions to communicate meaning instead of following conventions from natural languages.</p>
+      <p>It is alike Toki Pona in that it is minimalist and achieves full depth and meaning through as few structures as possible (really just four structures), but its sentences are usually more complex and hierarchical than Toki Pona (and there are certainly more words).</p>
+    </article>
+    <article id="article-grammar">
+      <h2>Clauses</h2>
+      <p>A clause states that a relationship exists among a group of objects. Folte uses naming conventions of analogue structures in natural languages, so those objects will be called nouns, and the type of relationship among the nouns is defined by the verb. The verb comes first in the clause, and any number of nouns may come after. Let's look at an example definition of a verb:</p>
+      <div class="center">Message: sender<sup>1</sup> sends message<sup>2</sup> containing content<sup>3</sup> to recipient<sup>4</sup></div>
+      <p>Each of those nouns fill in the spots with superscript: sender, message, content, and recipient. These four slots are similar to cases, just that there are only four of them, they are numbered, and their use in a clause is defined by the verb. Not all cases need to be filled, and multiple nouns can have the same case in a clause.</p>
+      <p>For use in math notation, a verb is just a string of letters or symbols whose first character is a capital letter.</p>
+      <h2>Simple Nouns</h2>
+      <p>Because all words in the dictionary are naturally verbs, nouns are created through verbs. Simple nouns can be created from one case of a verb. Sender, message, content, and recipient are all simple nouns you could make out of the verb "message". You'd say those nouns are from cases 1, 2, 3, or 4 of "message".</p>
+      <p>Simple nouns also need to be marked with the case they take in the new clause.</p>
+      <p>In math notation, simple nouns looks like this:</p>
+      <div class="center b">Message<span class="ss">1<br>3</span>&emsp;Message<span class="ss">4<br>2</span></div>
+      <p>The subscript indicates the case it is defined from, and the superscript defines its case in the new clause. The first segment above means "content" in case 1, and the second segment means "message" in case 4.</p>
+      <h2>Clause Nouns</h2>
+      <p>More intricate nouns are created by turning an entire clause into a noun, similar to nominal clauses or relative clauses. This structure also can give sentences more nuanced meanings.</p>
+      <p>An entire clause is surrounded by parentheses and a superscript is placed outside to indicate its new case. "I want to see you" might look like this:</p>
+      <div class="center b">Want Me<span class="ss">1<br>1</span> (See You<span class="ss">1<br>1</span>)<span class="ss">2<br>&nbsp;</span></div>
+      <p>It is also possible to not nominalize the entire clause, but pick out a noun from within it. This is how adjectives and relative clauses are formed: you describe a noun that also happens to satisfy another verb. "I know the big dog" might look like this:</p>
+      <div class="center b">Know Me<span class="ss">1<br>1</span> (Big Dog<span class="ss">1<br>1</span>)<span class="ss">2<br>1</span></div>
+      <p>That subscript 1 indicates it is discussing noun 1 of the inner clause (the dog), and the superscript 2 indicates it goes into case 2 of "know".</p>
+      <h2>Mappings and Structures</h2>
+      <p>The grammar is defined in math notation, which is useful for conveying structures, but it doesn't sound very language-like to me. Any language-like forms of Folte will exist as some transformation from the math notation to a set of sounds and symbols.</p>
+      <p>Any mapping requires a word form to be defined for every verb.</p>
+      <p>There are a couple ways a full list of structures could be defined, but here's what I think makes the most sense for a mapping:</p>
+      <ul>
+        <li>Verb</li>
+        <li>Verb with sub- and superscript</li>
+        <li>Verb opening a clause noun</li>
+        <li>Clause noun closing with superscript</li>
+      </ul>
+    </article>
+    <article id="article-dictionary">
+      <p><b>Acidic</b>: (chem) acid<sup>1</sup> is an amount<sup>2</sup> of an acid with PH<sup>3</sup> of composition<sup>4</sup>. <b>Alkali</b>: (chem) alkali metal<sup>1</sup> is an amount<sup>2</sup> of an alkali metal in form<sup>3</sup> in period<sup>4</sup>. <b>Alkaline</b>: (chem) alkaline earth metal<sup>1</sup> is an amount<sup>2</sup> of an alkaline earth metal in form<sup>3</sup> in period<sup>4</sup>. <b>Alloy</b>: (chem) alloy<sup>1</sup> is an amount<sup>2</sup> of an allow in form<sup>3</sup> of composition<sup>4</sup>. <b>Aluminum</b>: (chem) aluminum<sup>1</sup> is an amount<sup>2</sup> of aluminum in form<sup>3</sup> in conditions<sup>4</sup>. <b>Art</b>: art<sup>1</sup> has been made by artist<sup>2</sup> belonging to album<sup>3</sup> of medium<sup>4</sup>. <b>Basic</b>: (chem) base<sup>1</sup> is an amount<sup>2</sup> of a base with PH<sup>3</sup> of composition<sup>4</sup>. <b>Bovine</b>: (animal) bovine<sup>1</sup> of species<sup>2</sup> lives in habitat<sup>3</sup>. <b>Carbon</b>: (chem) carbon<sup>1</sup> is an amount<sup>2</sup> of carbon in form<sup>3</sup> in conditions<sup>4</sup>. <b>Child</b>: child<sup>1</sup> is the child of parent<sup>2</sup> forming family<sup>3</sup> through connection<sup>4</sup>. <b>Clean</b>: mess<sup>1</sup> is cleaned by cleaner<sup>2</sup> through means<sup>3</sup> making it clean<sup>4</sup>. <b>Code</b>: method<sup>1</sup> encodes original<sup>2</sup> into an encoding<sup>3</sup> for purpose<sup>4</sup>. <b>Color</b>: color<sup>1</sup> is seen from object<sup>2</sup> by pigment<sup>3</sup> according to observer<sup>4</sup>. <b>Contain</b>: container<sup>1</sup> holds contents<sup>2</sup> from outside<sup>3</sup> by barrier<sup>4</sup>. <b>Copper</b>: (chem) copper<sup>1</sup> is an amount<sup>2</sup> of copper in form<sup>3</sup> in conditions<sup>4</sup>. <b>Doubt</b>: truth<sup>1</sup> is suspicious because of fact<sup>2</sup> to doubter<sup>3</sup> who instead believes counter<sup>4</sup>. <b>Drink</b>: beverage<sup>1</sup> is drank by drinker<sup>2</sup> in amount<sup>3</sup> from container<sup>4</sup>. <b>Element</b>: (chem) element<sup>1</sup> is an amount<sup>2</sup> in form<sup>3</sup> of element number Z<sup>4</sup>. <b>Environment</b>: environment<sup>1</sup> surrounds subject<sup>2</sup> in space<sup>3</sup> of medium<sup>4</sup>. <b>Exceed</b>: major<sup>1</sup> exceeds minor<sup>2</sup> by amount<sup>3</sup> in property<sup>4</sup>. <b>Fail</b>: subject<sup>1</sup> fails to accomplish task<sup>2</sup> without condition<sup>3</sup> happening inflicting punishment<sup>4</sup>. <b>First</b>: in sequence<sup>1</sup> the first<sup>2</sup> item is first, the middle<sup>3</sup> item(s) are in the middle, and the last<sup>4</sup> item is last. <b>Function</b>: function<sup>1</sup> uses mapping<sup>2</sup> to relate domain<sup>3</sup> to range<sup>4</sup>. <b>Game</b>: game<sup>1</sup> is played by players<sup>2</sup> with objective<sup>3</sup> and prize<sup>4</sup>. <b>Garden</b>: garden<sup>1</sup> grows crops<sup>2</sup> for purpose<sup>3</sup> tended by farmer<sup>4</sup>. <b>Go</b>: traveler<sup>1</sup> goes to destination<sup>2</sup> from origin<sup>3</sup> by path<sup>4</sup>. <b>Gold</b>: (chem) gold<sup>1</sup> is an amount<sup>2</sup> of gold in form<sup>3</sup> in conditions<sup>4</sup>. <b>Guess</b>: predictions<sup>1</sup> of guesser<sup>2</sup> align with expected<sup>3</sup> but go against unexpected<sup>4</sup>. <b>Halogen</b>: (chem) halogen<sup>1</sup> is an amount<sup>2</sup> of a halogen in form<sup>3</sup> in period<sup>4</sup>. <b>Hate</b>: hater<sup>1</sup> hates hated<sup>2</sup> for reason<sup>3</sup>. <b>House</b>: house<sup>1</sup> houses inhabitants<sup>2</sup>. <b>Hydrogen</b>: (chem) hydrogen<sup>1</sup> is an amount<sup>2</sup> of hydrogen in form<sup>3</sup> in conditions<sup>4</sup>. <b>Image</b>: image<sup>1</sup> appears from subject<sup>2</sup> to observer<sup>3</sup> because of phenomenon<sup>4</sup>. <b>Iron</b>: (chem) iron<sup>1</sup> is an amount<sup>2</sup> of iron in form<sup>3</sup> in conditions<sup>4</sup>. <b>Language</b>: language<sup>1</sup> is used by speakers<sup>2</sup> to express content<sup>3</sup> in medium<sup>4</sup>. <b>Logic</b>: logic<sup>1</sup> is an internally consistent system bounded by rules<sup>2</sup> with consequences<sup>3</sup>. <b>Look</b>: looker<sup>1</sup> sees object<sup>2</sup> in spot<sup>3</sup> under conditions<sup>4</sup>. <b>Marry</b>: spouse<sup>1</sup> is married to partner<sup>2</sup>. <b>Mercury</b>: (chem) mercury<sup>1</sup> is an amount<sup>2</sup> of mercury in form<sup>3</sup> in conditions<sup>4</sup>. <b>Message</b>: sender<sup>1</sup> sends message<sup>2</sup> containing content<sup>3</sup> to recipient<sup>4</sup>. <b>Metal</b>: (chem) metal<sup>1</sup> is an amount<sup>2</sup> of a metal in form<sup>3</sup> of composition<sup>4</sup>. <b>Meter</b>: (unit) meters<sup>1</sup> measure length<sup>2</sup> of which object<sup>3</sup> is amount<sup>4</sup>. <b>More</b>: addition<sup>1</sup> is an extension of original<sup>2</sup> by amount<sup>3</sup> in property<sup>4</sup>. <b>N0</b>: (number) object<sup>1</sup> is zero units<sup>2</sup> of property<sup>3</sup>. <b>N1</b>: (number) object<sup>1</sup> is one unit<sup>2</sup> of property<sup>3</sup>. <b>N10</b>: (number) object<sup>1</sup> is ten units<sup>2</sup> of property<sup>3</sup>. <b>N100</b>: (number) object<sup>1</sup> is one hundred units<sup>2</sup> of property<sup>3</sup>. <b>N2</b>: (number) object<sup>1</sup> is two units<sup>2</sup> of property<sup>3</sup>. <b>N3</b>: (number) object<sup>1</sup> is three units<sup>2</sup> of property<sup>3</sup>. <b>N4</b>: (number) object<sup>1</sup> is four units<sup>2</sup> of property<sup>3</sup>. <b>N5</b>: (number) object<sup>1</sup> is five units<sup>2</sup> of property<sup>3</sup>. <b>N6</b>: (number) object<sup>1</sup> is six units<sup>2</sup> of property<sup>3</sup>. <b>N7</b>: (number) object<sup>1</sup> is seven units<sup>2</sup> of property<sup>3</sup>. <b>N8</b>: (number) object<sup>1</sup> is eight units<sup>2</sup> of property<sup>3</sup>. <b>N9</b>: (number) object<sup>1</sup> is nine units<sup>2</sup> of property<sup>3</sup>. <b>Ne-12</b>: (number) object<sup>1</sup> is one trillionth units<sup>2</sup> of property<sup>3</sup>. <b>Ne-15</b>: (number) object<sup>1</sup> is one quadrillionth units<sup>2</sup> of property<sup>3</sup>. <b>Ne-18</b>: (number) object<sup>1</sup> is one quintillionth units<sup>2</sup> of property<sup>3</sup>. <b>Ne-3</b>: (number) object<sup>1</sup> is one thousandth units<sup>2</sup> of property<sup>3</sup>. <b>Ne-6</b>: (number) object<sup>1</sup> is one millionth units<sup>2</sup> of property<sup>3</sup>. <b>Ne-9</b>: (number) object<sup>1</sup> is one billionth units<sup>2</sup> of property<sup>3</sup>. <b>Ne12</b>: (number) object<sup>1</sup> is one trillion units<sup>2</sup> of property<sup>3</sup>. <b>Ne15</b>: (number) object<sup>1</sup> is one quadrillion units<sup>2</sup> of property<sup>3</sup>. <b>Ne18</b>: (number) object<sup>1</sup> is one quintillion units<sup>2</sup> of property<sup>3</sup>. <b>Ne3</b>: (number) object<sup>1</sup> is one thousand units<sup>2</sup> of property<sup>3</sup>. <b>Ne6</b>: (number) object<sup>1</sup> is one million units<sup>2</sup> of property<sup>3</sup>. <b>Ne9</b>: (number) object<sup>1</sup> is one billion units<sup>2</sup> of property<sup>3</sup>. <b>Nickel</b>: (chem) nickel<sup>1</sup> is an amount<sup>2</sup> of nickel in form<sup>3</sup> in conditions<sup>4</sup>. <b>Nitrogen</b>: (chem) nitrogen<sup>1</sup> is an amount<sup>2</sup> of nitrogen in form<sup>3</sup> in conditions<sup>4</sup>. <b>Noblegas</b>: (chem) noble gas<sup>1</sup> is an amount<sup>2</sup> of a noble gas in form<sup>3</sup> in period<sup>4</sup>. <b>Nqty</b>: (number) quantity<sup>1</sup> has negative<sup>2</sup> and inverse<sup>3</sup> and inverse negative<sup>4</sup> quantities. <b>Occur</b>: event<sup>1</sup> occurs at time<sup>2</sup> for duration<sup>3</sup>. <b>Oppress</b>: oppressor<sup>1</sup> subjugates oppressed<sup>2</sup> by means<sup>3</sup> in struggle<sup>4</sup>. <b>Other</b>: object<sup>1</sup> is different from other<sup>2</sup> in aspect<sup>3</sup> due to feature<sup>4</sup>. <b>Oxygen</b>: (chem) oxygen<sup>1</sup> is an amount<sup>2</sup> of oxygen in form<sup>3</sup> in conditions<sup>4</sup>. <b>Path</b>: path<sup>1</sup> connects nodes<sup>2</sup> of graph<sup>3</sup>. <b>Person</b>: person<sup>1</sup> exists at place<sup>2</sup>. <b>Phosphorus</b>: (chem) phosphorus<sup>1</sup> is an amount<sup>2</sup> of phosphorus in form<sup>3</sup> in conditions<sup>4</sup>. <b>Possible</b>: state<sup>1</sup> is possible under conditions<sup>2</sup> but not under conditions<sup>3</sup>. <b>Present</b>: item<sup>1</sup> exists at location<sup>2</sup> for purpose<sup>3</sup>. <b>Reaction</b>: stimulus<sup>1</sup> causes reaction<sup>2</sup> from agent<sup>3</sup> under conditions<sup>4</sup>. <b>Resource</b>: resource<sup>1</sup> is extracted by method<sup>2</sup> from source<sup>3</sup> for use<sup>4</sup>. <b>Search</b>: seeker<sup>1</sup> searches for object<sup>2</sup> in set<sup>3</sup>. <b>Second</b>: (unit) seconds<sup>1</sup> measure time<sup>2</sup> of which object<sup>3</sup> is amount<sup>4</sup>. <b>Sell</b>: seller<sup>1</sup> sells good<sup>2</sup> to buyer<sup>3</sup> for cost<sup>4</sup>. <b>Sequence</b>: item<sup>1</sup> belongs to ordered sequence<sup>2</sup> and comes after previous<sup>3</sup> and before next<sup>4</sup>. <b>Set</b>: member<sup>1</sup> belongs to unordered set<sup>2</sup> among others<sup>3</sup>. <b>Silicon</b>: (chem) silicon<sup>1</sup> is an amount<sup>2</sup> of silicon in form<sup>3</sup> in conditions<sup>4</sup>. <b>Silver</b>: (chem) silver<sup>1</sup> is an amount<sup>2</sup> of silver in form<sup>3</sup> in conditions<sup>4</sup>. <b>Spy</b>: spy<sup>1</sup> secretly watches subject<sup>2</sup> from location<sup>3</sup> deceiving enemy<sup>4</sup>. <b>Suggest</b>: advisor<sup>1</sup> suggests idea<sup>2</sup> for issue<sup>3</sup> to audience<sup>4</sup>. <b>Sulfur</b>: (chem) sulfur<sup>1</sup> is an amount<sup>2</sup> of sulfur in form<sup>3</sup> in conditions<sup>4</sup>. <b>Teach</b>: professor<sup>1</sup> teaches concept<sup>2</sup> to students<sup>3</sup> with method<sup>4</sup>. <b>Text</b>: text<sup>1</sup> is written by author<sup>2</sup> in medium<sup>3</sup> using tool<sup>4</sup>. <b>Think</b>: thinker<sup>1</sup> thinks thoughts<sup>2</sup>. <b>Threat</b>: threat<sup>1</sup> endangers victim<sup>2</sup> which savior<sup>3</sup> saves by means<sup>4</sup>. <b>Tin</b>: (chem) tin<sup>1</sup> is an amount<sup>2</sup> of tin in form<sup>3</sup> in conditions<sup>4</sup>. <b>Tragic</b>: event<sup>1</sup> is tragic for victim<sup>2</sup> in way<sup>3</sup>. <b>Treatment</b>: patient<sup>1</sup> with illness<sup>2</sup> is treated by doctor<sup>3</sup> by remedy<sup>4</sup>. <b>Use</b>: user<sup>1</sup> uses object<sup>2</sup> for purpose<sup>3</sup>. <b>Wait</b>: waiter<sup>1</sup> waits in stasis<sup>2</sup> until stimulus<sup>3</sup> before continuing with procedure<sup>4</sup>. <b>Want</b>: desire<sup>1</sup> is wanted by person<sup>2</sup> for purpose<sup>3</sup>. <b>Water</b>: (chem) water<sup>1</sup> is an amount<sup>2</sup> of water in form<sup>3</sup> in conditions<sup>4</sup>. <b>Watt</b>: (unit) watts<sup>1</sup> (kg·m<sup>2</sup>·s<sup>-3</sup>) measure power<sup>2</sup> of which object<sup>3</sup> is amount<sup>4</sup>. <b>What</b>: unknown<sup>1</sup> is unknown to source<sup>2</sup> because of feature<sup>3</sup> or because of barrier<sup>4</sup>. <b>Win</b>: subject<sup>1</sup> succeeds in task<sup>2</sup> from effort<sup>3</sup>. <b>Zinc</b>: (chem) zinc<sup>1</sup> is an amount<sup>2</sup> of zinc in form<sup>3</sup> in conditions<sup>4</sup>.</p>
+    </article>
+  </div>
+  <script>
+    const pages = ["about","grammar","dictionary"];
+    
+    let html = "";
+    pages.forEach(function(pageName){
+      html += "<a onclick=\"page('"+pageName+"')\" id=\"nav-"+pageName+"\">"+pageName+"</a>"
+    });
+    document.getElementById("navigation").innerHTML = html;
+    
+    page(pages[0]);
+    function page(destination) {
+      pages.forEach(function(pageName){
+        document.getElementById("article-"+pageName).setAttribute("style","display: none;");
+        document.getElementById("nav-"+pageName).setAttribute("style","");
+      });
+      document.getElementById("article-"+destination).setAttribute("style","display: block;");
+      document.getElementById("nav-"+destination).setAttribute("style","color: var(--white);");
+    }
+  </script>
+</body>
+</html>

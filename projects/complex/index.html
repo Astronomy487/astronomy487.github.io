@@ -2,6 +2,7 @@
 <html>
 <head>
   <link rel="icon" href="icon.png">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Complex</title>
   <style>
     body {
@@ -16,10 +17,40 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%,-50%);
+      cursor: pointer;
+    }
+    
+    #menu {
+      display: inline-block;
+      margin: 1rem;
+      user-select: none;
+    }
+    
+    #menu div {
+      transition: 0.2s;
+      cursor: pointer;
+      display: inline-block;
+      margin: 0.125rem;
+      width: 2rem;
+      height: 2rem;
+      color: #777;
+      text-align: center;
+      line-height: 2rem;
+      font-size: 2rem;
+      font-family:Material Icons;
+    }
+    
+    #menu div:hover {
+      color: white;
     }
   </style>
 </head>
 <body>
+  <div id="menu">
+    <div onclick="s.zoom++; draw()" title="zoom in">zoom_in</div>
+    <div onclick="s.zoom--; draw()" title="zoom out">zoom_out</div>
+    <div onclick="s.zoom=1; s.z=function(p){return p;}; let c = [s.centerX,s.centerY]; s.iterate=function(z,p){return complex.add(complex.mult(z,z),c);}; s.centerX=0; s.centerY=0; draw()" title="generate julia set">new_releases</div>
+  </div>
   <canvas id="display" width="0" height="0"></canvas>
   <script>
     let complex = {
@@ -86,6 +117,13 @@
       iterate: function(z,p) {return complex.add(complex.mult(z,z),p);}
     };
     
+    /*s.z=function(p){return p;};
+    let c = [0,0];
+    s.iterate=function(z,p){
+      c = complex.add(c,[0.05,0.02]);
+      return complex.add(complex.mult(z,z),c);
+    };*/ //CODE FOR C-CHANGING JULIA SET. if you want to make c-changing mandelbrot, s.z returns 0 and c += p instead of a constant
+    
     if (location.search != "") {
       let info = location.search.substring(1);
       info = info.split("&");
@@ -134,6 +172,10 @@
               //r = 50-25*((10*Math.E**(-r))%1);
               context.fillStyle = "hsl("+theta+",100%,"+r+"%)";
               break;
+            case 2:
+              let num = s.iterate(displayToNumber([x,y]),displayToNumber([x,y]));
+              context.fillStyle = "rgb("+255*(Math.E**num[0])/(Math.E**num[0]+Math.E**(-num[0]))+","+255*(Math.E**num[1])/(Math.E**num[1]+Math.E**(-num[1]))+",255)";
+              break;
           }
           context.fillRect(x,y,1,1);
         }
@@ -152,12 +194,21 @@
     }
     function escape(p) {
       let z = s.z(p);
+      //c = [0,0]; //THIS IS FOR C-CHANGING FRACTALS
       for (i = 1; i < s.depth; i++) {
         z = s.iterate(z,p);
         if (complex.r(z) > s.threshold) return i;
       }
       return null;
     }
+    canvas.addEventListener("mousedown", function(e) {
+      //canvas.setAttribute("style","cursor: wait;");
+      let r = canvas.getBoundingClientRect();
+      let newZ = displayToNumber([event.clientX-r.left,event.clientY-r.top]);
+      s.centerX=newZ[0];
+      s.centerY=newZ[1];
+      draw();
+    });
   </script>
 </body>
 </html>
