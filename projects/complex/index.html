@@ -5,9 +5,12 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Complex</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+    
     body {
       background-color: #222;
       color: #eee;
+      font-family: Roboto;
     }
     
     canvas {
@@ -43,14 +46,20 @@
     #menu div:hover {
       color: white;
     }
+    
+    #math {
+      margin: 0 1.5rem;
+    }
   </style>
 </head>
 <body>
   <div id="menu">
     <div onclick="s.zoom++; draw()" title="zoom in">zoom_in</div>
     <div onclick="s.zoom--; draw()" title="zoom out">zoom_out</div>
-    <div onclick="s.zoom=1; s.z=function(p){return p;}; let c = [s.centerX,s.centerY]; s.iterate=function(z,p){return complex.add(complex.mult(z,z),c);}; s.centerX=0; s.centerY=0; draw()" title="generate julia set">new_releases</div>
+    <div onclick="s.zoom=1; s.z=function(p){return p;}; let c = [s.centerX,s.centerY]; s.iterate=function(z,p){return complex.add(complex.mult(z,z),c);}; s.centerX=0; s.centerY=0; draw(); document.getElementById('math').innerHTML='z<sub>1</sub>=p, f(z)=z<sup>2</sup>'+(c[0]<0?'':'+')+c[0].toFixed(3)+(c[1]<0?'':'+')+c[1].toFixed(3)+'i'+'<br>Julia Set for c='+c[0].toFixed(3)+(c[1]<0?'':'+')+c[1].toFixed(3)" title="generate julia set">new_releases</div>
+    <div onclick="window.open('about:blank').document.write(&quot;<img src='&quot; + canvas.toDataURL(&quot;image/png&quot;) + &quot;'>&quot;);">launch</div>
   </div>
+  <div id="math">z<sub>1</sub>=0, f(z)=z<sup>2</sup>+p<br>Mandelbrot Set</div>
   <canvas id="display" width="0" height="0"></canvas>
   <script>
     let complex = {

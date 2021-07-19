@@ -6,65 +6,95 @@
   <title>CYOA Engine</title>
 </head>
 <body>
-  <div id="topleft"></div>
   <div id="main">
-    <h1 id="hometitle">Choose Your Own Adventure Engine</h1>
-    <p id="sub">made by <a href="https://astronomy487.github.io/">Astro</a></p>
-    <input placeholder="Adventure file URL" id="urlinput">
-    <button onclick="play()" id="urlgo">Play</button>
-    <button onclick="openTutorial()">How do I write an adventure?</button>
-    <button onclick="playExample()">Play example adventure</button>
+    <div id="input" contenteditable="plaintext-only">QHdha2UKI1lvdSB3b2tlIHVwLgoqaHR0cHM6Ly9tZWRpYTAuZ2lwaHkuY29tL21lZGlhLzd6TXZTRFdsM1JrRFNwT2pCQy9naXBoeS1kb3duc2l6ZWQtbGFyZ2UuZ2lmCj5Hb29kIG1vcm5pbmcKL3p6ei9HbyBiYWNrIHRvIHNsZWVwCi9vdXQgb2YgYmVkL0dldCBvdXQgb2YgYmVkCgpAenp6CiNZb3Ugd2VudCBiYWNrIHRvIGJlZAoqaHR0cHM6Ly9pLnBpbmltZy5jb20vb3JpZ2luYWxzLzJjL2JiL2JkLzJjYmJiZGZmNjJlNWZhYmE1Yzc2MWQ3YzQ4YzE5NTdlLmdpZgo+enp6enp6enogeW91J3JlIHNsZWVwaW5nCi93YWtlL3p6ei4uLgoKQG91dCBvZiBiZWQKI1lvdSBkaWVkLgovd2FrZS90cnkgYWdhaW4=</div>
+    <a onclick="interpret()">Start adventure</a>
+    <a href="info">How do I write an adventure?</a>
   </div>
-  <script>let state = []; let current;</script>
-  <script id="adventureinput"></script>
   <script>
-    let jsURL;
+    let s = {};
     
-    function loadURL() {
-      jsURL = document.getElementById("urlinput").value.trim();
-      if (jsURL.startsWith("https://") && jsURL.endsWith(".js")) {
-        document.getElementById("adventureinput").setAttribute("src",jsURL);
+    function build(state) {
+      let i = 0;
+      state = s[state];
+      let main = document.getElementById("main");
+      main.innerHTML = "";
+      
+      state.forEach(function(element){
+        switch (element.type) {
+          case "head":
+            main.innerHTML += "<h1 id=\"i"+i+"\"></h1>";
+            document.getElementById("i"+i).innerText = element.content;
+            i++;
+            break;
+          case "img":
+            main.innerHTML += "<img src=\""+element.content+"\" id=\"i"+i+"\">";
+            i++;
+            break;
+          case "par":
+            main.innerHTML += "<p id=\"i"+i+"\"></p>";
+            document.getElementById("i"+i).innerText = element.content;
+            i++;
+            break;
+          case "pick":
+            main.innerHTML += "<a onclick=\"build('"+element.content.to+"')\" id=\"i"+i+"\"></a>";
+            document.getElementById("i"+i).innerText = element.content.text;
+            i++;
+            break;
+        }
+      });
+    }
+    
+    function interpret() {
+      let code = atob(document.getElementById("input").innerText);
+      code = parse(code);
+      if (typeof code == "object") {
+        s = code.states;
+        build(code.start);
+      } else {
+        document.getElementById("input").innerText = code;
       }
     }
     
-    function play() {
-      loadURL();
-      setTimeout(function(){
-        if (jsURL.startsWith("https://") && jsURL.endsWith(".js")) {
-          populate();
-        } else {
-          document.getElementById("urlinput").value = "";
-          document.getElementById("urlinput").setAttribute("placeholder","That URL didn't work. Try again?");
-        }
-      },50);
-    }
-    
-    function playExample() {
-      jsURL = "https://cdn.discordapp.com/attachments/523666597492293634/797582358458662952/adventure.js";
-      document.getElementById("adventureinput").setAttribute("src",jsURL);
-      setTimeout(function(){populate()},25);
-    }
-    
-    function openTutorial() {
-      window.open("tutorial");
-    }
-    
-    function toState(x) {
-      current = x;
-      populate();
-    }
-
-    function populate() {
-      let newInner = "";
-      if (state[current].title != null) newInner += '<h1>'+state[current].title+'</h1>';
-      if (state[current].image != null) newInner += '<img src="'+state[current].image+'">';
-      if (state[current].desc != null) newInner += '<p>'+state[current].desc+'</p>';
-      if (state[current].option != null) {
-        for (i = 0; i < state[current].option.length; i++) {
-          newInner += '<button onclick="toState(\''+state[current].option[i].link+'\')">'+state[current].option[i].label+'</button>';
+    function parse(string) {
+      let make = {};
+      string = string.split("\n");
+      let editing = "";
+      let start = "";
+      for (i = 0; i < string.length; i++) {
+        if (string[i] != "") {
+          let line = string[i].substring(1);
+          switch (string[i].charAt(0)) {
+            case "@":
+              editing = line;
+              if (start == "") start = line;
+              make[editing] = [];
+              break;
+            case "#":
+              if (editing == "") return "no state selected at line "+i;
+              make[editing].push({type: "head", content: line});
+              break;
+            case "*":
+              if (editing == "") return "no state selected at line "+i;
+              make[editing].push({type: "img", content: line});
+              break;
+            case ">":
+              if (editing == "") return "no state selected at line "+i;
+              make[editing].push({type: "par", content: line});
+              break;
+            case "/":
+              if (editing == "") return "no state selected at line "+i;
+              line = line.split("/");
+              make[editing].push({type: "pick", content: {to: line[0], text: line[1]}});
+              break;
+            //this too. so much repeated code but i am independent and can do whatever i want
+            default:
+              return "idk what command is at line "+i; //oops there was issue at line i
+              break;
+          }
         }
       }
-      document.getElementById("main").innerHTML = newInner;
+      return {states: make, start: start};
     }
   </script>
 </body>

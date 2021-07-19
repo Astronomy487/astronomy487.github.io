@@ -12,6 +12,8 @@
       top: 50%;
       position: absolute;
       transform: translate(-50%,-50%);
+      border-radius: 0.25rem;
+      overflow: hidden;
     }
     
     #board td {
@@ -192,7 +194,7 @@
               break;
           }
           //check for promotion
-          console.log(board[x][y]);
+          //console.log(board[x][y]);
           switchTurn();
         }
       }

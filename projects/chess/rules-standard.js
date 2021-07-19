@@ -10,8 +10,8 @@ game.board = [
 ];
 
 game.board = [
-  [null,null,null,null,null,null,null,null],
-  [null,null,{piece:"pawn",team:0},null,null,null,null,null],
+  [{piece:"rook",team:1},{piece:"knight",team:1},{piece:"bishop",team:1},{piece:"queen",team:1},{piece:"king",team:1},{piece:"bishop",team:1},{piece:"knight",team:1},{piece:"rook",team:1}],
+  [{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1},{piece:"pawn",team:1}],
   [null,null,null,null,null,null,null,null],
   [null,null,null,null,null,null,null,null],
   [null,null,null,null,null,null,null,null],
