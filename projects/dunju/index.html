@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dunjū</title>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <article>
+    <h1>Dunjū</h1>
+    <h2>About</h2>
+    <p>Dunjū is a minimalist logical language I designed as a fun project. Though minimalism and logic may seem to be contradictory goals, I think their design philosophies go hand in hand. Dunjū is primarily inspired by Toaq, Toki Pona, and Lojban.</p>
+    <p>Dunjū is in progress.</p>
+    <h2>Phono</h2>
+    <p>Dunjū is phonoaesthetically based primarily on Mandarin. It is a tonal and monosyllabic language.</p>
+    <table>
+      <tr><th></th><th>Labial</th><th>Alveolar</th><th>Post-Alveolar</th><th>Velar</th></tr>
+      <tr><th>Nasal</th><td>m</td><td>n</td><td></td><td>ng</td></tr>
+      <tr><th>Plosive</th><td>p b</td><td>t d</td><td></td><td>k g</td></tr>
+      <tr><th>Affricate</th><td></td><td>c z</td><td>q j</td><td></td></tr>
+      <tr><th>Fricative</th><td>f</td><td>s</td><td>x</td><td>h</td></tr>
+      <tr><th>Approximant</th><td></td><td>l</td><td></td><td></td></tr>
+      <tr><th>Tap</th><td></td><td>r</td><td></td><td></td></tr>
+    </table>
+    <p>The consonants are taken from Mandarin with ⟨r⟩ moved to a tap, and the retroflex and alveolo-palatal series merged into a single post-alveolar series. Plosives and affricates are ideally distinguished both by voicing and aspiration.</p>
+    <table>
+      <tr><th></th><th>Front</th><th>Central</th><th>Back</th></tr>
+      <tr><th>Close</th><td>i</td><td></td><td>u</td></tr>
+      <tr><th>Mid</th><td>e*</td><td>e*</td><td>o</td></tr>
+      <tr><th>Open</th><td>a</td><td></td><td></td></tr>
+    </table>
+    <p>*/ə/ never has a coda and is written ⟨e⟩. If ⟨e⟩ has a coda, it is /e/; /e/ without a coda is written ⟨ei⟩.</p>
+    <p>Each syllable consists of one initial consonant (other than the velar nasal), a final (monophthong or diphthong, optionally followed by n or ng), and one of four tones: high (ā), low (a), falling (à), or rising (á). <a target="_blank" href="syllables">This table</a> shows the set of all possible syllables.</p>
+    <p>Punctuation and capitalization are outside the scope of grammar, so use them according to preference, so long as a reader's comprehension wouldn't be hindered.</p>
+    <h2>Grammar</h2>
+    <p>Each word in Dunjū covers a range of related meanings, often vague and metaphorical, like in Toki Pona. Whereas Toki Pona differentiates concepts like "eat" and "food" through pragmatic context or the word's location in the sentence, Dunjū separates them via tone: miūn means "food", and miùn means "eat", for example. These forms are different degrees of the same word, "miun". The degree of a word indicates the number of other concepts the word describes: "eat" requires two arguments, and "food" requires none. High tone is degree 0, low tone is degree 1, falling tone is degree 2, and rising tone is degree 3.</p>
+    <p>A complete phrase in Dunjū consists of a word of degree n (the head) and n complete phrases after (the arguments). The head acts like a function of information, information which can be even be passed into higher statements if such a head exists. For instance, "xe" is the negation particle, and it can accept an entire clause worth of information to negate. As long as the degree of each word is known, the tree-like structure of the language can always be determined from text. If tone information is lost, the vibes of the words still convey most of the semantic information.</p>
+    <p>Because each word can have any degree, it's very easy to form phrases for concepts using existing morphemes; "always" could be its own word, but it can be perfectly described using the phrase "qeikuō A". These phrases might still take arguments, and arbitrarily many (you could stack as many binary or ternary relationships as you would like into a phrase).</p>
+    <p>The in-progress wordlist can be found <a target="_blank" href="dictionary">here</a>.</p>
+  </article>
+</body>
+</html>
