@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap');
+
+    body {
+      font-family: "Outfit", sans-serif;
+      background-color: #333;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 1rem;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: white;
+    }
+
+    ::selection {
+      color: #333;
+      background-color: white;
+    }
+    
+    #main {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 2rem;
+    }
+    
+    #main h1 {
+      font-weight: normal;
+      font-size: 2rem;
+      text-align: center;
+    }
+    
+    #main p {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    #link-list {
+      text-align: center;
+    }
+    
+    #link-list a img {
+      height: 1.5rem;
+    }
+    
+    #link-list a {
+      margin: 0 1rem;
+      transition: 0.2s;
+      opacity: 0.5;
+    }
+    
+    #link-list a:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <h1>hi! i'm astro</h1>
+    <p>stream mindests</p>
+    <div id="link-list">
+      <a target="_blank" href="twitter"><img src="socialicons/twitter.png"></a>
+      <a target="_blank" href="discord"><img src="socialicons/discord.png"></a>
+      <a target="_blank" href="spotify"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="youtube"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="bandcamp"><img src="socialicons/bandcamp.png"></a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,36 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" type="image/png" href="./icon.png">
-  <link rel="stylesheet" href="./style.css">
-  <title>Astro</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+    
+    body {
+      background-image: url("shiny.png");
+      background-size: cover;
+      backdrop-filter: blur(12rem);
+      height: 100vh;
+      margin: 0;
+      user-select: none;
+      font-family: "Outfit";
+    }
+    
+    #img, canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 720px;
+      height: 720px;
+    }
+    
+    canvas {
+      mix-blend-mode: screen;
+    }
+    
+    #save-canvas {
+      top: 0;
+      top: 0;
+      transform: none;
+    }
+    
+    #erase {
+      text-align: center;
+      color: white;
+      font-size: 1.5rem;
+      width: 5rem;
+      padding: 2rem;
+    }
+    
+    #erase span {
+      width: 4rem;
+      display: block;
+      transition: 0.2s;
+      cursor: pointer;
+      padding: 1rem;
+      text-align: left;
+    }
+    
+    #save:not(:hover) {
+      opacity: 0.25;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="icon.png">
+  <title>f(x)</title>
 </head>
-<body>
-  <div class="home albummain">
-    <div class="catalogue">
-      <a class="albumselect" href="mindsets" target="_blank"><img src="mindsets/mindsets.jpg"></a>
-      <a class="albumselect" href="10kdegrees" target="_blank"><img src="10kdegrees/10kdegrees.jpg"></a>
-      <a class="albumselect" href="nexuscondition" target="_blank"><img src="nexuscondition/nexuscondition.jpg"></a>
-      <a class="albumselect" href="exosphere" target="_blank"><img src="exosphere/exosphere.jpg"></a>
-      <a class="albumselect" href="pulsewidth" target="_blank"><img src="pulsewidth/pulsewidth.jpg"></a>
-      <a class="albumselect" href="emerge" target="_blank"><img src="emerge/emerge.jpg"></a>
-      <a class="albumselect" href="asymmetricsilhouette" target="_blank"><img src="asymmetricsilhouette/asymmetricsilhouette.jpg"></a>
-      <a class="albumselect" href="utopian" target="_blank"><img src="utopian/utopian.jpg"></a>
-      <a class="albumselect" href="chaseanidea" target="_blank"><img src="chaseanidea/chaseanidea.jpg"></a>
-    </div>
-    <div class="primary">
-      <p>I am Astro (pronouns: he/him), formerly Astronomy487, an amateur musician and producer who distributes my music on Spotify, Apple Music, YouTube, Bandcamp, Amazon, and other streaming platforms.</p>
-      <iframe width="512" height="288" src="https://www.youtube.com/embed/6LxM-6c7O24" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <div class="albumsect">
-        <a target="_blank" class="boxlink" id="twitter" href="https://twitter.com/astronomy487">Twitter</a>
-        <a target="_blank" class="boxlink" id="discord" href="https://discord.gg/ZnMsetP">Discord</a>
-        <a target="_blank" class="boxlink" id="spotify" href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">Spotify</a>
-        <a target="_blank" class="boxlink" id="applemusic" href="https://music.apple.com/artist/astro/1468743818">Apple Music</a>
-        <a target="_blank" class="boxlink" id="youtube" href="https://www.youtube.com/astronomy487">YouTube</a>
-        <a target="_blank" class="boxlink" id="bandcamp" href="https://astronomy487.bandcamp.com/">Bandcamp</a>
-      </div>
-      <div class="black albumsub">&copy; Astro (Astronomy487)</div>
-    </div>
+<body id="body">
+  <div id="erase">
+    <span id="erase-erase" onclick="erase(true)">❌erase</span>
+    <span id="erase-pencil" onclick="erase(false)">✏️draw</span>
+    <!--<span id="save" onclick="save()">💾 save</span></div>-->
+  <img id="img" src="shiny.png" oncontextmenu="return false;">
+  <canvas id="canvas" width="720" height="720"></canvas>
   </div>
+  <script>
+    //a lot of this code was taken from / modified from this https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse thank u Matej Pokorny
+    let canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    let eraseMode = false;
+    erase(false);
+    let ctx = canvas.getContext('2d');
+    let pos = {x: 0, y: 0};
+    let offset = {x: 0, y: 0};
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', draw);
+    document.addEventListener('mousedown', setPosition);
+    document.addEventListener('mouseenter', setPosition);
+    function setPosition(e) {
+      pos.x = e.clientX - offset.x;
+      pos.y = e.clientY - offset.y;
+    }
+    function resize(firstTime) {
+      ctx.canvas.width = 720;
+      ctx.canvas.height = 720;
+      offset = canvas.getBoundingClientRect();
+      offset = {x: offset.left, y: offset.top};
+    }
+    function draw(e) {
+      if (e.buttons !== 1) return;
+      if (eraseMode) {
+        ctx.lineWidth = 32;
+        ctx.strokeStyle = 'black';
+      } else {
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = 'white';
+      }
+      ctx.beginPath();
+      ctx.lineCap = 'round';
+      ctx.moveTo(pos.x, pos.y);
+      setPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+    function erase(x) {
+      eraseMode = x;
+      document.getElementById("erase-pencil").setAttribute("style","opacity: "+(eraseMode ? 0.25 : 1));
+      document.getElementById("erase-erase").setAttribute("style","opacity: "+(!eraseMode ? 0.25 : 1));
+    }
+    /*function save() { //this does not work at all :skull emoji: just take a screenshot
+      document.getElementById("body").innerHTML += "<canvas id=\"save-canvas\" width=\"720\" height=\"720\"></canvas>";
+      let saveCanvas = document.getElementById("save-canvas");
+      let sctx = saveCanvas.getContext('2d');
+      sctx.drawImage(canvas, 0, 0);
+    }*/
+  </script>
 </body>
 </html>

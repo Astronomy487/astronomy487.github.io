@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap');
+
+body {
+  font-family: "Outfit", sans-serif;
+  user-select: none;
+}
+
+::selection {
+  color: black;
+  background-color: white;
+}
+
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+.albummain {
+  width: 36rem;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: 0.667s fadeIn;
+  animation: 0.5s ease-in-out in;
+}
+
+.art {
+  width: 100%;
+  margin: 1rem auto;
+  border-radius: 0.5rem;
+}
+
+.albumsect {
+  text-align: center;
+  padding: 1rem;
+}
+
+.links a {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2rem;
+  margin: 0;
+  float: right;
+  opacity: 0.5;
+  transition: 0.2s;
+}
+
+.links a:hover {
+  opacity: 1;
+}
+
+.links a img {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.5rem;
+}
+
+h2 {
+  font-weight: normal;
+  line-height: 2rem;
+  padding-top: 0.25rem;
+  font-size: 1.5rem;
+  margin: 0;
+  vertical-align: center;
+  user-select: text;
+}
