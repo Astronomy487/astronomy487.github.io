@@ -1,121 +1,290 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="icon" type="image/png" href="icon.png">
+  <title>ASTRO</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@100;500;900&display=swap');
+    
+    @keyframes shake { 0% { transform: translate(1px, 1px)} 10% { transform: translate(-1px, -2px)} 20% { transform: translate(-3px, 0px);} 30% { transform: translate(3px, 2px); } 40% { transform: translate(1px, -1px); } 50% { transform: translate(-1px, 2px); } 60% { transform: translate(-3px, 1px); } 70% { transform: translate(3px, 1px); } 80% { transform: translate(-1px, -1px); } 90% { transform: translate(1px, 2px); } 100% { transform: translate(1px, 1px); } }
     
     body {
-      background-image: url("shiny.png");
-      background-size: cover;
-      backdrop-filter: blur(12rem);
-      height: 100vh;
+      font-family: Overpass, sans-serif;
       margin: 0;
-      user-select: none;
-      font-family: "Outfit";
+      overflow-x: hidden;
+      overflow-y: scroll;
+      background-color: #222;
     }
     
-    #img, canvas {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 720px;
-      height: 720px;
-    }
-    
-    canvas {
-      mix-blend-mode: screen;
-    }
-    
-    #save-canvas {
-      top: 0;
-      top: 0;
-      transform: none;
-    }
-    
-    #erase {
-      text-align: center;
+    section {
+      height: 100vh;
       color: white;
-      font-size: 1.5rem;
-      width: 5rem;
+      transition: 0.2s;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+    }
+    
+    nav {
       padding: 2rem;
     }
     
-    #erase span {
-      width: 4rem;
-      display: block;
-      transition: 0.2s;
-      cursor: pointer;
-      padding: 1rem;
-      text-align: left;
+    nav a.album-title {
+      text-transform: uppercase;
+      color: white;
+      text-decoration: none;
+      font-weight: normal;
+      display: inline-block;
+      font-size: 1.25rem;
+      margin: 0;
+      margin-left: 1rem;
+      transition: 0.3s;
+      transform: translateY(-0.8rem); /**doing this feels wrong but i literally cant get this to be inline w the images**/
     }
     
-    #save:not(:hover) {
-      opacity: 0.25;
+    nav a:not(.album-title) {
+      width: 2.5rem;
+      opacity: 0.5;
+      transition: 0.2s;
     }
+
+    nav a:not(.album-title):hover {
+      opacity: 1;
+    }
+
+    nav a:not(.album-title) img {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0.5rem;
+    }
+    
+    nav p.info {
+      display: inline;
+      position: absolute;
+      font-size: 1rem;
+      opacity: 0.5;
+      right: 3rem;
+      font-weight: bold;
+      transform: translateY(-0.25rem); /**see above comment**/
+    }
+    
+    #secret-asset-loader {
+      position: fixed;
+    }
+    
+    #footer-section {
+      height: auto;
+      text-align: center;
+    }
+    
+    #footer-section nav {
+      margin-top: 4rem;
+    }
+    
+    #footer-section p {
+      margin: 2rem auto;
+      font-size: 1.25rem;
+      width: 40rem;
+      user-select: text;
+      color: #EEE;
+    }
+    
+    #footer-section p.quiet {
+      color: #555;
+      font-size: 1.125rem;
+    }
+    
+    #other-albums {
+      width: 50rem;
+      margin: auto;
+      text-align: center;
+    }
+    
+    #other-albums a img {
+      width: 12rem;
+      height: 12rem;
+      margin: 1rem;
+      border-radius: 0.25rem;
+      transition: 0.3s;
+      box-shadow: 0 0 0.5rem #222;
+    }
+    
+    #other-albums a:hover img {
+      transform: translateY(-0.5rem);
+      box-shadow: 0 0.5rem 0.5rem black;
+    }
+    
+    #footer-logo {
+      width: 2rem;
+      margin-bottom: 8rem;
+    }
+    
+    ::selection {background-color: #314cd4; color: white;}
+    
+    @keyframes shinyByeHi {from {} 49.9% {opacity: 0; transform: translateY(-5rem);} 51.1% {opacity: 0; transform: translateY(5rem);} to {}}
+    section#fofx {
+      background-repeat: no-repeat;
+      background-size: 100%;
+      background-position: center;
+      transition: 1.5s;
+    }
+    #fofx-doodle {
+      width: 32rem;
+      animation: 5s ease-in-out shake infinite;
+      position: absolute;
+      left: calc(50% - 16rem);
+      top: calc(50% - 16rem);
+      transition: 1s;
+    }
+    #fofx-doodle:hover {
+      width: 34rem;
+      left: calc(50% - 17rem);
+      top: calc(50% - 17rem);
+    }
+    section#fofx button {
+      padding: 2rem;
+      margin: 2rem;
+      bottom: 0;
+      font-size: 3rem;
+      position: absolute;
+      background-color: transparent;
+      border: none;
+      color: white;
+      opacity: 0.5;
+      transition: 0.3s;
+      cursor: pointer;
+      mix-blend-mode: normal;
+    }
+    section#fofx button:hover {
+      opacity: 1;
+    }
+    section #fofx button:focus {outline: none;}
+    section#fofx button.left {left: 0;}
+    section#fofx button.right {right: 0;}
   </style>
-  <link rel="icon" type="image/png" href="icon.png">
-  <title>f(x)</title>
 </head>
-<body id="body">
-  <div id="erase">
-    <span id="erase-erase" onclick="erase(true)">❌erase</span>
-    <span id="erase-pencil" onclick="erase(false)">✏️draw</span>
-    <!--<span id="save" onclick="save()">💾 save</span></div>-->
-  <img id="img" src="shiny.png" oncontextmenu="return false;">
-  <canvas id="canvas" width="720" height="720"></canvas>
-  </div>
-  <script>
-    //a lot of this code was taken from / modified from this https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse thank u Matej Pokorny
-    let canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
-    let eraseMode = false;
-    erase(false);
-    let ctx = canvas.getContext('2d');
-    let pos = {x: 0, y: 0};
-    let offset = {x: 0, y: 0};
-    resize();
-    window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', draw);
-    document.addEventListener('mousedown', setPosition);
-    document.addEventListener('mouseenter', setPosition);
-    function setPosition(e) {
-      pos.x = e.clientX - offset.x;
-      pos.y = e.clientY - offset.y;
-    }
-    function resize(firstTime) {
-      ctx.canvas.width = 720;
-      ctx.canvas.height = 720;
-      offset = canvas.getBoundingClientRect();
-      offset = {x: offset.left, y: offset.top};
-    }
-    function draw(e) {
-      if (e.buttons !== 1) return;
-      if (eraseMode) {
-        ctx.lineWidth = 32;
-        ctx.strokeStyle = 'black';
-      } else {
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = 'white';
+<body>
+  <section id="fofx">
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/watch?v=3SmFRTjVUxY"><img src="socialicons/fullmix.png"></a>
+      <a target="_blank" href="https://open.spotify.com/album/412l2rFq8cpZUhxvNoQlZu"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/f-of-x"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5s1QROaTL14MiQw30lIJ1uW"><img src="socialicons/youtube.png"></a>
+      <a class="album-title" href="fofx">☀️ F of X</a>
+      <p class="info">2021.12.31, IV. ★ 46'37", 12</p>
+    </nav>
+    <img id="fofx-doodle">
+    <button onclick="updateShinyDisplay(-1);" class="left">◀</button>
+    <button onclick="updateShinyDisplay(1);" class="right">▶</button>
+  </section>
+  <!--<section id="mindsets">
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://open.spotify.com/album/5xSVB0mGxlFpkWqO4gXZeC"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
+      <a class="album-title" href="fofx">🌟 Mindsets</a>
+      <p class="info">2021.5.1 ★ 41'48"</p>
+    </nav>
+  </section>
+  <section id="kdegrees">
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://open.spotify.com/album/5xSVB0mGxlFpkWqO4gXZeC"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
+      <a class="album-title" href="fofx">💠 10k Degrees</a>
+    </nav>
+  </section>
+  <section id="nexuscondition">
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://open.spotify.com/album/5xSVB0mGxlFpkWqO4gXZeC"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
+      <a class="album-title" href="fofx">☁️ Nexus Condition</a>
+    </nav>
+  </section>-->
+  <section id="footer-section">
+    <nav>
+      <a target="_blank" href="twitter"><img src="socialicons/twitter.png"></a>
+      <a target="_blank" href="discord"><img src="socialicons/discord.png"></a>
+      <a target="_blank" href="spotify"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="youtube"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="bandcamp"><img src="socialicons/bandcamp.png"></a>
+    </nav>
+    <p>hi! i'm astro, and i make electronic music. i also make web games and other javascript projects sometimes. here's my discography:</p>
+    <div id="other-albums">
+      <a href="mindsets"><img src="fofx/fofx.jpg"></a>
+      <a href="mindsets"><img src="mindsets/mindsets.jpg"></a>
+      <a href="mindsets"><img src="10kdegrees/10kdegrees.jpg"></a>
+      <a href="mindsets"><img src="nexuscondition/nexuscondition.jpg"></a>
+      <a href="mindsets"><img src="exosphere/exosphere.jpg"></a>
+      <a href="mindsets"><img src="pulsewidth/pulsewidth.jpg"></a>
+      <a href="mindsets"><img src="emerge/emerge.jpg"></a>
+      <a href="mindsets"><img src="asymmetricsilhouette/asymmetricsilhouette.jpg"></a>
+      <a href="mindsets"><img src="utopian/utopian.jpg"></a>
+      <a href="mindsets"><img src="chaseanidea/chaseanidea.jpg"></a>
+    </div>
+    <p class="quiet">(I hope to turn more of these into album spreads like at the top of the page...)</p>
+    <img src="icon.png" id="footer-logo">
+  </section>
+  <div id="secret-asset-loader"></div>
+  <script id="js-fofx">
+    //hosting images on discord lololol
+    let shinyBackgrounds = [
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274505238839317/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274534728966244/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274553376862309/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274575405338694/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274602110472313/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274624147345428/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274641960562809/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274673757585418/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274690689986600/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274728933621760/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274748017709076/unknown.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985274764492931092/unknown.png"
+    ];
+    let shinyDoodles = [
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277012497301514/000.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277012715401257/001.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277009351565322/002.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277011754889366/003.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277012014923846/004.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277012312743956/005.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277024195207218/006.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277024383926372/007.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277024568496210/008.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277024874663976/009.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277023738007603/010.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985277023968722985/011.png"
+    ];
+    let currentShiny = 0;
+    let shinyReady = true; //cooldown
+    let fofxSection = document.getElementById("fofx");
+    let fofxDoodle = document.getElementById("fofx-doodle");
+    updateShinyDisplay(0);
+    function updateShinyDisplay(dx) {
+      if (shinyReady) {
+        shinyReady = false;
+        currentShiny = (currentShiny + dx + 12)%12;
+        fofxSection.style.backgroundImage = "url('"+shinyBackgrounds[currentShiny]+"')";
+        fofxDoodle.style.animation = "1s shinyByeHi"; //start 1s animation
+        setTimeout(function(){
+          fofxDoodle.setAttribute("src", shinyDoodles[currentShiny]); //after 0.5s, change image
+          setTimeout(function(){
+            fofxDoodle.style.animation = "5s ease-in-out shake infinite"; //end of 1s animation; back to normal animation
+            shinyReady = true;
+          }, 500);
+        }, 500);
       }
-      ctx.beginPath();
-      ctx.lineCap = 'round';
-      ctx.moveTo(pos.x, pos.y);
-      setPosition(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
     }
-    function erase(x) {
-      eraseMode = x;
-      document.getElementById("erase-pencil").setAttribute("style","opacity: "+(eraseMode ? 0.25 : 1));
-      document.getElementById("erase-erase").setAttribute("style","opacity: "+(!eraseMode ? 0.25 : 1));
-    }
-    /*function save() { //this does not work at all :skull emoji: just take a screenshot
-      document.getElementById("body").innerHTML += "<canvas id=\"save-canvas\" width=\"720\" height=\"720\"></canvas>";
-      let saveCanvas = document.getElementById("save-canvas");
-      let sctx = saveCanvas.getContext('2d');
-      sctx.drawImage(canvas, 0, 0);
-    }*/
+    let html = "";
+    for (url of shinyBackgrounds) html += "<img src=\""+url+"\">";
+    for (url of shinyDoodles) html += "<img src=\""+url+"\">";
+    document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
   </script>
 </body>
 </html>
