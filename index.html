@@ -27,13 +27,6 @@
     
     nav {
       padding: 2rem;
-      background-color: #0000;
-      transition: 0.2s;
-    }
-    
-    nav:hover:not(#special-nav) {
-      background-color: #00000020;
-      backdrop-filter: blur(0.25rem);
     }
     
     /**nav .contrast-bar {
@@ -185,7 +178,7 @@
     section#fofx button.right {right: 0;}
     
     section#mindsets {
-      background: url("https://cdn.discordapp.com/attachments/958860935232106529/985352476645556224/00.png") no-repeat;
+      background-repeat: no-repeat;
       background-size: 100%;
       background-position: center;
       transition: 1s;
@@ -216,7 +209,6 @@
       cursor: default;
     }
     .mindsets-bubble:hover:not(.active) {
-      /**background-color: var(--mindsets-bubble-transparent);**/
       background: linear-gradient(#FFF5, #FFF0);
     }
     .mindsets-bubble:hover {
@@ -251,19 +243,46 @@
     .nexuscondition-full > div:nth-child(2n) img {transform: rotate(0deg);}
     .nexuscondition-full > div:nth-child(2n+1) img {transform: rotate(180deg);}
     .nexuscondition-full img:hover {filter: blur(1rem);}
-    #nexuscondition iframe {
+    #nexuscondition-video {
       width: 48rem;
-      height: 27rem;
+      height: 0;
       border-width: 0;
       position: absolute;
-      transition: 0.3s;
+      transition: box-shadow 0.3s, height 1s;
       left: calc(50% - 24rem);
       top: calc(50% - 13.5rem);
       box-shadow: 0 0 white, 0 0 white, 0 0 white, 0 0 white;
       border-radius: 0.25rem;
+      background-color: #6EB3FF;
     }
-    #nexuscondition iframe:hover {
+    #nexuscondition-video:hover {
       box-shadow: -1rem -1rem white, 1rem -1rem white, -1rem 1rem white, 1rem 1rem white;
+    }
+    #nexuscondition-logo {
+      position: absolute;
+      width: 5rem;
+      left: calc(50% - 2.5rem);
+      bottom: calc(50% - 2.5rem);
+      opacity: 0.5;
+      transition: opacity 0.3s, bottom 1s;
+      cursor: pointer;
+    }
+    #nexuscondition-logo:hover {
+      opacity: 1;
+    }
+    #nexuscondition-text-container {
+      position: absolute;
+      margin: 4rem 2rem;
+      line-height: 0;
+      letter-spacing: 1.5rem;
+      font-size: 1.25rem;
+      font-family: serif;
+      font-style: italic;
+      bottom: 0;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+    #nexuscondition-text-container p:hover {
     }
   </style>
   <style id="mindsets-define-color">:root {--mindsets-bubble: #FFF;}</style>
@@ -293,21 +312,21 @@
       <p class="info">2021.5.1, IV. ★ 41'48", 14×</p>
     </nav>
     <div id="mindsets-container">
+      <div class="mindsets-bubble" onclick="mindsetsActive(0);" id="mindsets-bubble-0">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(1);" id="mindsets-bubble-1">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(2);" id="mindsets-bubble-2">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(3);" id="mindsets-bubble-3">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(4);" id="mindsets-bubble-4">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(5);" id="mindsets-bubble-5">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(6);" id="mindsets-bubble-6">&nbsp;</div>
-      <div class="mindsets-bubble" onclick="mindsetsActive(7);" id="mindsets-bubble-7">&nbsp;</div>
       <div class="mindsets-bubble mindsets-invis">A</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(7);" id="mindsets-bubble-7">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(8);" id="mindsets-bubble-8">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(9);" id="mindsets-bubble-9">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(10);" id="mindsets-bubble-10">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(11);" id="mindsets-bubble-11">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(12);" id="mindsets-bubble-12">&nbsp;</div>
       <div class="mindsets-bubble" onclick="mindsetsActive(13);" id="mindsets-bubble-13">&nbsp;</div>
-      <div class="mindsets-bubble" onclick="mindsetsActive(14);" id="mindsets-bubble-14">&nbsp;</div>
     </div>
   </section>
   <!--<section id="kdegrees">
@@ -331,7 +350,13 @@
     <div class="nexuscondition-full" id="nexuscondition-gif-container"></div>
     <img class="nexuscondition-full soft-light" src="https://cdn.discordapp.com/attachments/958860935232106529/985384673435852831/unknown.png">
     <img class="nexuscondition-full lighten" src="https://cdn.discordapp.com/attachments/958860935232106529/985384691567837245/unknown.png">
-    <iframe src="https://www.youtube.com/embed/xOhmPz9cMIA" title="Astro - Nexus Condition" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/embed/xOhmPz9cMIA" title="Astro - Nexus Condition" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="nexuscondition-video"></iframe>
+    <img id="nexuscondition-logo" onclick="nexusconditionToggle();" src="https://cdn.discordapp.com/attachments/958860935232106529/985442837531344916/N.png">
+    <div id="nexuscondition-text-container">
+      <p>—In a heartbeat,</p>
+      <p>you could set the</p>
+      <p> sky on fire. &lt;N&gt;</p>
+    </div>
   </section>
   <section id="footer-section">
     <nav id="special-nav">
@@ -361,9 +386,7 @@
     let html;
     let documentTitle = document.getElementById("document-title");
     let sectionTitles = [];
-    for (element of document.getElementsByClassName("album-title")) {
-      sectionTitles.push(element.innerText);
-    }
+    for (element of document.getElementsByClassName("album-title")) sectionTitles.push(element.innerText);
     setInterval(function(){
       let scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; //lol https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
       let num = Math.round(scrollTop/(window.innerHeight*1.01)); //*1.01 bc each screen is 101vh
@@ -432,8 +455,7 @@
     document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
   </script>
   <script>
-    let mindsetsBackgrounds = [
-      "https://cdn.discordapp.com/attachments/958860935232106529/985352476645556224/00.png",
+    let mindsetsBackgroundsLight = [
       "https://cdn.discordapp.com/attachments/958860935232106529/985352477375361064/01.png",
       "https://cdn.discordapp.com/attachments/958860935232106529/985352477882863686/02.png",
       "https://cdn.discordapp.com/attachments/958860935232106529/985352478511996968/03.png",
@@ -449,31 +471,45 @@
       "https://cdn.discordapp.com/attachments/958860935232106529/985352490759368754/13.png",
       "https://cdn.discordapp.com/attachments/958860935232106529/985352491296231425/14.png"
     ];
+    let mindsetsBackgroundsDark = [
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399833340833872/01.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399834020298802/02.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399834750111784/03.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399835719008306/04.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399837556088903/06.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399836729827359/05.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399837556088903/06.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399832455831592/07.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399845382672414/08.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399845923745902/09.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399846481563719/10.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399847022633060/11.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399847576285214/12.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399847999897651/13.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985399844933885962/14.png"
+    ];
     let mindsetsSection = document.getElementById("mindsets");
     let mindsetsReady = true;
+    mindsetsActive(1);
     function mindsetsActive(n) {
       if (mindsetsReady) {
         mindsetsReady = false;
-        for (let i = 1; i <= 14; i++) {
+        for (let i = 0; i < 14; i++) {
           if (i == n) {
             document.getElementById("mindsets-bubble-"+i).setAttribute("class", "mindsets-bubble active");
           } else {
             document.getElementById("mindsets-bubble-"+i).setAttribute("class", "mindsets-bubble");
           }
         }
-        mindsetsSection.style.backgroundImage = "url('"+mindsetsBackgrounds[n]+"')";
-        if (n == 0) {
-          document.getElementById("mindsets-define-color").innerHTML = ":root {--mindsets-bubble: #FFF;}";
-        } else {
-          document.getElementById("mindsets-define-color").innerHTML = ":root {--mindsets-bubble: #1A162E;}";
-        }
+        mindsetsSection.style.backgroundImage = "url('"+mindsetsBackgroundsDark[n]+"')";
+        //document.getElementById("mindsets-define-color").innerHTML = ":root {--mindsets-bubble: #1A162E;}";
         setTimeout(function(){
           mindsetsReady = true;
         }, 1100);
       }
     }
     html = "";
-    for (url of mindsetsBackgrounds) html += "<img src=\""+url+"\">";
+    for (url of mindsetsBackgroundsDark) html += "<img src=\""+url+"\">";
     document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
   </script>
   <script>
@@ -491,6 +527,17 @@
       html += "<div><img src=\""+nexusconditionGifs[i]+"\"></div>"
     }
     document.getElementById("nexuscondition-gif-container").innerHTML = html; //we dont have to preload these in secret-asset-loader bc they are all already in the page
+    let nexusconditionVideoOpen = false;
+    function nexusconditionToggle() {
+      if (nexusconditionVideoOpen) {
+        document.getElementById("nexuscondition-video").style.height = "0";
+        document.getElementById("nexuscondition-logo").style.bottom = "calc(50% - 2.5rem)";
+      } else {
+        document.getElementById("nexuscondition-video").style.height = "27rem";
+        document.getElementById("nexuscondition-logo").style.bottom = "5rem";
+      }
+      nexusconditionVideoOpen = !nexusconditionVideoOpen;
+    }
   </script>
 </body>
 </html>
