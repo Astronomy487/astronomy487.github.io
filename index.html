@@ -2,7 +2,7 @@
 <html>
 <head>
   <link rel="icon" type="image/png" href="icon.png">
-  <title>ASTRO</title>
+  <title id="document-title">ASTRO</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@100;500;900&display=swap');
     
@@ -17,7 +17,7 @@
     }
     
     section {
-      height: 100vh;
+      height: 101vh;
       color: white;
       transition: 0.2s;
       overflow: hidden;
@@ -27,7 +27,23 @@
     
     nav {
       padding: 2rem;
+      background-color: #0000;
+      transition: 0.2s;
     }
+    
+    nav:hover:not(#special-nav) {
+      background-color: #00000020;
+      backdrop-filter: blur(0.25rem);
+    }
+    
+    /**nav .contrast-bar {
+      background: linear-gradient(#00000038, #0000);
+      position: absolute;
+      width: 100%;
+      left: 0;
+      top: 0;
+      height: 7rem;
+    }**/
     
     nav a.album-title {
       text-transform: uppercase;
@@ -45,7 +61,7 @@
     nav a:not(.album-title) {
       width: 2.5rem;
       opacity: 0.5;
-      transition: 0.2s;
+      transition: 0.3s;
     }
 
     nav a:not(.album-title):hover {
@@ -110,9 +126,14 @@
       box-shadow: 0 0 0.5rem #222;
     }
     
-    #other-albums a:hover img {
-      transform: translateY(-0.5rem);
-      box-shadow: 0 0.5rem 0.5rem black;
+    #other-albums a:hover:nth-child(2n) img {
+      transform: translateY(-0.5rem) rotate(2deg);
+      box-shadow: 0.25rem 0.5rem black;
+    }
+    
+    #other-albums a:hover:nth-child(2n+1) img {
+      transform: translateY(-0.5rem) rotate(-2deg);
+      box-shadow: -0.25rem 0.5rem black;
     }
     
     #footer-logo {
@@ -130,17 +151,17 @@
       transition: 1.5s;
     }
     #fofx-doodle {
-      width: 32rem;
+      width: 30rem;
       animation: 5s ease-in-out shake infinite;
       position: absolute;
-      left: calc(50% - 16rem);
-      top: calc(50% - 16rem);
+      left: calc(50% - 15rem);
+      top: calc(50% - 15rem);
       transition: 1s;
     }
     #fofx-doodle:hover {
-      width: 34rem;
-      left: calc(50% - 17rem);
-      top: calc(50% - 17rem);
+      width: 36rem;
+      left: calc(50% - 18rem);
+      top: calc(50% - 18rem);
     }
     section#fofx button {
       padding: 2rem;
@@ -162,7 +183,90 @@
     section #fofx button:focus {outline: none;}
     section#fofx button.left {left: 0;}
     section#fofx button.right {right: 0;}
+    
+    section#mindsets {
+      background: url("https://cdn.discordapp.com/attachments/958860935232106529/985352476645556224/00.png") no-repeat;
+      background-size: 100%;
+      background-position: center;
+      transition: 1s;
+    }
+    #mindsets-container {
+      position: absolute;
+      top: calc(50vh - 2rem);
+      text-align: center;
+      width: 100%;
+    }
+    .mindsets-bubble {
+      display: inline-block;
+      width: 4rem;
+      height: 4rem;
+      background-color: transparent;
+      border: solid 0.375rem var(--mindsets-bubble);
+      border-radius: 4rem;
+      margin: 0 0.375rem;
+      cursor: pointer;
+      transition: 0.3s;
+      transform: rotate(-360deg);
+    }
+    .mindsets-bubble.active {
+      background-color: var(--mindsets-bubble);
+    }
+    .mindsets-bubble.mindsets-invis {
+      opacity: 0;
+      cursor: default;
+    }
+    .mindsets-bubble:hover:not(.active) {
+      /**background-color: var(--mindsets-bubble-transparent);**/
+      background: linear-gradient(#FFF5, #FFF0);
+    }
+    .mindsets-bubble:hover {
+      transform: rotate(0deg) scale(1.2);
+    }
+    
+    #nexuscondition {
+    }
+    .nexuscondition-full {
+      position: absolute;
+      display: block;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      z-index: -1;
+      line-height: 0;
+    }
+    .nexuscondition-full.soft-light {mix-blend-mode: soft-light;}
+    .nexuscondition-full.lighten {mix-blend-mode: lighten;}
+    #nexuscondition-gif-container {
+    }
+    #nexuscondition-gif-container > div {
+      width: calc(100% / 7);
+      height: 100%;
+      overflow: hidden;
+      display: inline-block;
+    }
+    #nexuscondition-gif-container > div img {
+      min-width: 100%;
+      min-height: 100%;
+    }
+    .nexuscondition-full > div:nth-child(2n) img {transform: rotate(0deg);}
+    .nexuscondition-full > div:nth-child(2n+1) img {transform: rotate(180deg);}
+    .nexuscondition-full img:hover {filter: blur(1rem);}
+    #nexuscondition iframe {
+      width: 48rem;
+      height: 28rem;
+      border-width: 0;
+      position: absolute;
+      transition: 0.3s;
+      left: calc(50% - 24rem);
+      top: calc(50% - 14rem);
+      box-shadow: 0 0 white, 0 0 white, 0 0 white, 0 0 white;
+      border-radius: 0.25rem;
+    }
+    #nexuscondition iframe:hover {
+      box-shadow: -1rem -1rem white, 1rem -1rem white, -1rem 1rem white, 1rem 1rem white;
+    }
   </style>
+  <style id="mindsets-define-color">:root {--mindsets-bubble: #FFF;}</style>
 </head>
 <body>
   <section id="fofx">
@@ -171,24 +275,42 @@
       <a target="_blank" href="https://open.spotify.com/album/412l2rFq8cpZUhxvNoQlZu"><img src="socialicons/spotify.png"></a>
       <a target="_blank" href="https://astronomy487.bandcamp.com/album/f-of-x"><img src="socialicons/bandcamp.png"></a>
       <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5s1QROaTL14MiQw30lIJ1uW"><img src="socialicons/youtube.png"></a>
+      <a target="_blank" href="fofx/draw"><img src="socialicons/pencil.png"></a>
       <a class="album-title" href="fofx">☀️ F of X</a>
-      <p class="info">2021.12.31, IV. ★ 46'37", 12</p>
+      <p class="info">2021.12.31, IV. ★ 46'37", 12×</p>
     </nav>
     <img id="fofx-doodle">
     <button onclick="updateShinyDisplay(-1);" class="left">◀</button>
     <button onclick="updateShinyDisplay(1);" class="right">▶</button>
   </section>
-  <!--<section id="mindsets">
+  <section id="mindsets">
     <nav>
-      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
-      <a target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition"><img src="socialicons/bandcamp.png"></a>
-      <a target="_blank" href="https://open.spotify.com/album/5xSVB0mGxlFpkWqO4gXZeC"><img src="socialicons/spotify.png"></a>
-      <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
+      <a target="_blank" href="https://www.youtube.com/watch?v=6LxM-6c7O24"><img src="socialicons/fullmix.png"></a>
+      <a target="_blank" href="https://open.spotify.com/album/2p9UhZSDg19dzHyuaMDu9P"><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/mindsets"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5utH7AwjP-R7psvJNwQ5lbC"><img src="socialicons/youtube.png"></a>
       <a class="album-title" href="fofx">🌟 Mindsets</a>
-      <p class="info">2021.5.1 ★ 41'48"</p>
+      <p class="info">2021.5.1, IV. ★ 41'48", 14×</p>
     </nav>
+    <div id="mindsets-container">
+      <div class="mindsets-bubble" onclick="mindsetsActive(1);" id="mindsets-bubble-1">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(2);" id="mindsets-bubble-2">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(3);" id="mindsets-bubble-3">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(4);" id="mindsets-bubble-4">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(5);" id="mindsets-bubble-5">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(6);" id="mindsets-bubble-6">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(7);" id="mindsets-bubble-7">&nbsp;</div>
+      <div class="mindsets-bubble mindsets-invis">A</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(8);" id="mindsets-bubble-8">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(9);" id="mindsets-bubble-9">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(10);" id="mindsets-bubble-10">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(11);" id="mindsets-bubble-11">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(12);" id="mindsets-bubble-12">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(13);" id="mindsets-bubble-13">&nbsp;</div>
+      <div class="mindsets-bubble" onclick="mindsetsActive(14);" id="mindsets-bubble-14">&nbsp;</div>
+    </div>
   </section>
-  <section id="kdegrees">
+  <!--<section id="kdegrees">
     <nav>
       <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
       <a target="_blank" href="https://astronomy487.bandcamp.com/album/nexus-condition"><img src="socialicons/bandcamp.png"></a>
@@ -196,7 +318,7 @@
       <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
       <a class="album-title" href="fofx">💠 10k Degrees</a>
     </nav>
-  </section>
+  </section>-->
   <section id="nexuscondition">
     <nav>
       <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5uNAW8JD3kEkrGRqnRr9lc9"><img src="socialicons/youtube.png"></a>
@@ -204,10 +326,15 @@
       <a target="_blank" href="https://open.spotify.com/album/5xSVB0mGxlFpkWqO4gXZeC"><img src="socialicons/spotify.png"></a>
       <a target="_blank" href="https://www.youtube.com/watch?v=xOhmPz9cMIA"><img src="socialicons/fullmix.png"></a>
       <a class="album-title" href="fofx">☁️ Nexus Condition</a>
+      <p class="info">2020.3.27, IV. ★ 47'16", 14×</p>
     </nav>
-  </section>-->
+    <div class="nexuscondition-full" id="nexuscondition-gif-container"></div>
+    <img class="nexuscondition-full soft-light" src="https://cdn.discordapp.com/attachments/958860935232106529/985384673435852831/unknown.png">
+    <img class="nexuscondition-full lighten" src="https://cdn.discordapp.com/attachments/958860935232106529/985384691567837245/unknown.png">
+    <iframe src="https://www.youtube.com/embed/xOhmPz9cMIA" title="Astro - Nexus Condition" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </section>
   <section id="footer-section">
-    <nav>
+    <nav id="special-nav">
       <a target="_blank" href="twitter"><img src="socialicons/twitter.png"></a>
       <a target="_blank" href="discord"><img src="socialicons/discord.png"></a>
       <a target="_blank" href="spotify"><img src="socialicons/spotify.png"></a>
@@ -227,11 +354,27 @@
       <a href="utopian"><img src="utopian/utopian.jpg"></a>
       <a href="chaseanidea"><img src="chaseanidea/chaseanidea.jpg"></a>
     </div>
-    <p class="quiet">(I hope to turn more of these into album spreads like at the top of the page...)</p>
     <img src="icon.png" id="footer-logo">
   </section>
   <div id="secret-asset-loader"></div>
-  <script id="js-fofx">
+  <script>
+    let html;
+    let documentTitle = document.getElementById("document-title");
+    let sectionTitles = [];
+    for (element of document.getElementsByClassName("album-title")) {
+      sectionTitles.push(element.innerText);
+    }
+    setInterval(function(){
+      let scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; //lol https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
+      let num = Math.round(scrollTop/(window.innerHeight*1.01)); //*1.01 bc each screen is 101vh
+      if (num < sectionTitles.length) {
+        documentTitle.innerHTML = "ASTRO "+sectionTitles[num];
+      } else {
+        documentTitle.innerHTML = "ASTRO";
+      }
+    }, 100);
+  </script>
+  <script>
     //hosting images on discord lololol
     let shinyBackgrounds = [
       "https://cdn.discordapp.com/attachments/958860935232106529/985274505238839317/unknown.png",
@@ -276,15 +419,78 @@
           fofxDoodle.setAttribute("src", shinyDoodles[currentShiny]); //after 0.5s, change image
           setTimeout(function(){
             fofxDoodle.style.animation = "5s ease-in-out shake infinite"; //end of 1s animation; back to normal animation
-            shinyReady = true;
+            setTimeout(function(){
+              shinyReady = true; //even LATER, make it ready again
+            }, 500);
           }, 500);
-        }, 500);
+        }, 500); //idk if im supposed to nest these like these but i am
       }
     }
-    let html = "";
+    html = "";
     for (url of shinyBackgrounds) html += "<img src=\""+url+"\">";
     for (url of shinyDoodles) html += "<img src=\""+url+"\">";
     document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
+  </script>
+  <script>
+    let mindsetsBackgrounds = [
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352476645556224/00.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352477375361064/01.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352477882863686/02.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352478511996968/03.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352478990139402/04.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352474900709446/05.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352475613728778/06.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352476112859156/07.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352491866681395/08.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352492336427058/09.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352488834183228/10.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352489765331004/11.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352490197348372/12.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352490759368754/13.png",
+      "https://cdn.discordapp.com/attachments/958860935232106529/985352491296231425/14.png"
+    ];
+    let mindsetsSection = document.getElementById("mindsets");
+    let mindsetsReady = true;
+    function mindsetsActive(n) {
+      if (mindsetsReady) {
+        mindsetsReady = false;
+        for (let i = 1; i <= 14; i++) {
+          if (i == n) {
+            document.getElementById("mindsets-bubble-"+i).setAttribute("class", "mindsets-bubble active");
+          } else {
+            document.getElementById("mindsets-bubble-"+i).setAttribute("class", "mindsets-bubble");
+          }
+        }
+        mindsetsSection.style.backgroundImage = "url('"+mindsetsBackgrounds[n]+"')";
+        if (n == 0) {
+          document.getElementById("mindsets-define-color").innerHTML = ":root {--mindsets-bubble: #FFF;}";
+        } else {
+          document.getElementById("mindsets-define-color").innerHTML = ":root {--mindsets-bubble: #1A162E;}";
+        }
+        setTimeout(function(){
+          mindsetsReady = true;
+        }, 1100);
+      }
+    }
+    html = "";
+    for (url of mindsetsBackgrounds) html += "<img src=\""+url+"\">";
+    document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
+  </script>
+  <script>
+    let nexusconditionGifs = [
+      "https://i.pinimg.com/originals/aa/96/97/aa9697a3f7a61389675b8dc109518753.gif",
+      "https://thumbs.gfycat.com/FarMediocreJuliabutterfly-size_restricted.gif",
+      "https://media3.giphy.com/media/HoUgegTjteXCw/giphy.gif",
+      "https://thumbs.gfycat.com/BrownIllegalChafer-max-1mb.gif",
+      "https://thumbs.gfycat.com/AdeptJampackedElephant-size_restricted.gif",
+      "https://thumbs.gfycat.com/AdventurousDecimalBallpython-size_restricted.gif",
+      "https://img.wattpad.com/story_parts/1045805729/images/166fe19f2714a5ed987998931854.gif"
+    ];
+    html = "";
+    for (let i = 0; i < 7; i++) {
+      html += "<div><img src=\""+nexusconditionGifs[i]+"\"></div>"
+    }
+    document.getElementById("nexuscondition-gif-container").innerHTML = html; //we dont have to preload these in secret-asset-loader bc they are all already in the page
   </script>
 </body>
 </html>
