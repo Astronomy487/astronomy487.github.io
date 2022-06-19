@@ -24,8 +24,9 @@
       position: relative;
       user-select: none;
       background-repeat: no-repeat;
-      background-size: cover;
+      background-size: 200%;
       background-position: center;
+      animation: 1s enter;
     }
     
     nav {
@@ -123,12 +124,12 @@
     }
     
     #other-albums a:hover:nth-child(2n) img {
-      transform: translateY(-0.5rem) rotate(2deg);
+      transform: translateY(-0.5rem) rotate(2deg) scale(1.05);
       box-shadow: 0.25rem 0.5rem black;
     }
     
     #other-albums a:hover:nth-child(2n+1) img {
-      transform: translateY(-0.5rem) rotate(-2deg);
+      transform: translateY(-0.5rem) rotate(-2deg) scale(1.05);
       box-shadow: -0.25rem 0.5rem black;
     }
     
@@ -138,6 +139,41 @@
     }
     
     ::selection {background-color: #314cd4; color: white;}
+    
+    @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
+    #toomuch {
+      background-image: url("https://cdn.discordapp.com/attachments/958860935232106529/986991677237522472/unknown.png");
+      background-position: 0 -500px;
+      transition: 0;
+    }
+    .toomuch-full.the-text {
+      text-align: center;
+      transform: scaleY(1);
+      font-size: 6rem;
+      font-family: "Shippori Mincho";
+      font-weight: normal;
+      letter-spacing: -0.85rem;
+    }
+    .toomuch-full.the-text span {
+      transition: 0.3s;
+      opacity: 0;
+    }
+    .toomuch-full.the-text span.activator {
+      cursor: pointer;
+    }
+    .toomuch-full.the-text span:hover {
+      opacity: 1;
+    }
+    #toomuch-video {
+      width: 48rem;
+      height: 0;
+      border-width: 0;
+      position: absolute;
+      transition: height 1s;
+      left: calc(50% - 24rem);
+      top: calc(50% - 13.5rem);
+      border-radius: 0.25rem;
+    }
     
     @keyframes shinyByeHi {from {} 49.9% {opacity: 0; transform: translateY(-5rem);} 51.1% {opacity: 0; transform: translateY(5rem);} to {}}
     section#fofx {
@@ -250,7 +286,6 @@
       top: calc(50% - 13.5rem);
       box-shadow: 0 0 white, 0 0 white, 0 0 white, 0 0 white;
       border-radius: 0.25rem;
-      background-color: #6EB3FF;
     }
     #nexuscondition-video:hover {
       box-shadow: -1rem -1rem white, 1rem -1rem white, -1rem 1rem white, 1rem 1rem white;
@@ -285,6 +320,20 @@
   <style id="mindsets-define-color">:root {--mindsets-bubble: #FFF;}</style>
 </head>
 <body>
+  <section id="toomuch">
+    <div class="toomuch-full hue" style="background-color: red;"></div>
+    <div class="toomuch-full overlay" style="background-color: #1193E4;"></div>
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/watch?v=m61R4T2IQS0"><img src="socialicons/fullmix.png"></a>
+      <!--<a target="_blank" href="https://open.spotify.com/album/412l2rFq8cpZUhxvNoQlZu"><img src="socialicons/spotify.png"></a>-->
+      <a target="_blank" href="https://astronomy487.bandcamp.com/album/too-much"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5sbjYWX7Kp4xl3MruHsY53u"><img src="socialicons/youtube.png"></a>
+      <a class="album-title" href="toomuch">🎆 Too much!!</a>
+      <p class="info">2022.6.19, IV. ★ 1°00'05", 9×</p>
+    </nav>
+    <div class="toomuch-full the-text"><span>T</span><span>O</span><span>O</span>&nbsp;&nbsp;&nbsp;<span>M</span><span>U</span><span>C</span><span>H</span>&nbsp;<span onclick="toomuchToggle();" class="activator">!</span>&nbsp;<span onclick="toomuchToggle();" class="activator">!</span></div>
+    <iframe src="https://www.youtube.com/embed/m61R4T2IQS0" title="🎆Too much!!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="toomuch-video"></iframe>
+  </section>
   <section id="fofx">
     <nav>
       <a target="_blank" href="https://www.youtube.com/watch?v=3SmFRTjVUxY"><img src="socialicons/fullmix.png"></a>
@@ -365,6 +414,7 @@
     </nav>
     <p>hi! i'm astro, and i make electronic music. i also make web games and other javascript projects sometimes. here's my discography:</p>
     <div id="other-albums">
+      <a href="toomuch"><img src="toomuch/toomuch.jpg"></a>
       <a href="fofx"><img src="fofx/fofx.jpg"></a>
       <a href="mindsets"><img src="mindsets/mindsets.jpg"></a>
       <a href="10kdegrees"><img src="10kdegrees/10kdegrees.jpg"></a>
@@ -379,21 +429,6 @@
     <img src="icon.png" id="footer-logo">
   </section>
   <div id="secret-asset-loader"></div>
-  <script>
-    let html;
-    let documentTitle = document.getElementById("document-title");
-    let sectionTitles = [];
-    for (element of document.getElementsByClassName("album-title")) sectionTitles.push(element.innerText);
-    setInterval(function(){
-      let scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; //lol https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
-      let num = Math.round(scrollTop/(window.innerHeight*1.01)); //*1.01 bc each screen is 101vh
-      if (num < sectionTitles.length) {
-        documentTitle.innerHTML = "ASTRO "+sectionTitles[num];
-      } else {
-        documentTitle.innerHTML = "ASTRO";
-      }
-    }, 100);
-  </script>
   <script>
     //hosting images on discord lololol
     let shinyBackgrounds = [
@@ -535,6 +570,47 @@
       }
       nexusconditionVideoOpen = !nexusconditionVideoOpen;
     }
+  </script>
+  <script>
+    let toomuchSection = document.getElementById("toomuch");
+    let toomuchVideoOpen = false;
+    function updateTooMuchScroll(scroll) {
+      toomuchSection.style.backgroundPosition = "0 calc(0vh - "+scroll*0.2+"px)";
+    }
+    function toomuchToggle() {
+      if (toomuchVideoOpen) {
+        document.getElementById("toomuch-video").style.height = "0";
+        //document.getElementById("nexuscondition-logo").style.bottom = "calc(50% - 2.5rem)";
+      } else {
+        document.getElementById("toomuch-video").style.height = "27rem";
+        //document.getElementById("nexuscondition-logo").style.bottom = "5rem";
+      }
+      toomuchVideoOpen = !toomuchVideoOpen;
+    }
+  </script>
+  <script>
+    let html;
+    let documentTitle = document.getElementById("document-title");
+    let sectionTitles = [];
+    for (element of document.getElementsByClassName("album-title")) sectionTitles.push(element.innerText);
+    
+    document.addEventListener('scroll', function(e) {
+      onScroll();
+    });
+    
+    onScroll();
+    function onScroll() {
+      let scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; //lol 
+      let num = Math.round(scroll/(window.innerHeight*1.01)); //*1.01 bc each screen is 101vh
+      if (num < sectionTitles.length) {
+        documentTitle.innerHTML = "ASTRO "+sectionTitles[num];
+      } else {
+        documentTitle.innerHTML = "ASTRO";
+      }
+      updateTooMuchScroll(scroll);
+    }
+    console.log("ignore how bad the code is");
+    setTimeout(function(){console.log("↑↑↑ if there r error messages pretend u dont see them")},4000);
   </script>
 </body>
 </html>
