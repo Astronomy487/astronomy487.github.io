@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root {
+      --blue: #1FA2FF;
+      --green: #40C982;
+      --yellow: #FBB13C;
+      --purple: #B75295;
+      --orange: #FE6A48;
+      --red: #ED1D58;
+      --white: #FCFAFA;
+      --semiwhite: #FCFAFA20;
+      --black: #24262E;
+    }
+    
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      margin: 0;
+      user-select: none;
+      font-family: Impact;
+    }
+    
+    #button-container {
+      text-align: left;
+      width: 85rem;
+      margin: auto;
+      padding-top: 5rem;
+    }
+    
+    #button-container button {
+      border-width: 0.25rem;
+      background-color: var(--black);
+      border-style: solid;
+      width: 15rem;
+      height: 5rem;
+      margin: 1rem;
+      border-radius: 0.5rem;
+      transition: 0.1s;
+      cursor: pointer;
+      color: white;
+      font-size: 1.5rem;
+      font-family: Impact;
+      text-transform: uppercase;
+    }
+    
+    #button-container button:hover {
+      background-color: var(--semiwhite);
+    }
+    
+    #button-container button.active {
+      color: var(--white);
+    }
+    
+    #button-container button.kick {border-color: var(--blue);}
+    #button-container button.cymbal {border-color: var(--green);}
+    #button-container button.percussion {border-color: var(--yellow);}
+    #button-container button.bass {border-color: var(--purple);}
+    #button-container button.chord {border-color: var(--orange);}
+    #button-container button.lead {border-color: var(--red);}
+    
+    #button-container button.kick[active="true"] {background-color: var(--blue);}
+    #button-container button.cymbal[active="true"] {background-color: var(--green);}
+    #button-container button.percussion[active="true"] {background-color: var(--yellow);}
+    #button-container button.bass[active="true"] {background-color: var(--purple);}
+    #button-container button.chord[active="true"] {background-color: var(--orange);}
+    #button-container button.lead[active="true"] {background-color: var(--red);}
+    
+    #button-container button:focus {
+      outline: none;
+    }
+    
+    #launch-button {
+      width: 100%;
+      height: 100%;
+      background-color: var(--white);
+      color: var(--black);
+      position: fixed;
+      text-align: center;
+      padding: 6rem 0;
+      font-size: 2rem;
+    }
+    
+    #meter {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+    }
+    
+    #meter div {
+      color: #ffffff00;
+      background-color: var(--semiwhite);
+      display: inline;
+    }
+    
+    #meter div.active {
+      background-color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div id="meter"></div>
+  <div id="launch-button" onclick="start()">hello this is my drum machine DEMO<br>it doesnt really work because javascript is weird.<br>maybe i'll make it work one day<br><br>click anywhere to start</div>
+  <div id="button-container"></div>
+  <div id="audio-container"></div>
+  <script>
+    let intervalTime = 7500;
+    let meterDivisions = 16;
+    let loops = [
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826272240799744/les_loops_aux_garage_-_Track_1.wav", name: "kick 1", type: "kick", active: false, incompatible: [1, 2] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826272526024776/les_loops_aux_garage_-_Track_2.wav", name: "kick 2", type: "kick", active: false, incompatible: [0, 2] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826272844783636/les_loops_aux_garage_-_Track_3.wav", name: "kick 3", type: "kick", active: false, incompatible: [0, 1] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826273125793803/les_loops_aux_garage_-_Track_4.wav", name: "808hat syncop.", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826273423605840/les_loops_aux_garage_-_Track_5.wav", name: "lil pickup hihat", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826273780125746/les_loops_aux_garage_-_Track_6.wav", name: "closed hat", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826274174373928/les_loops_aux_garage_-_Track_7.wav", name: "shuffly hats", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826271322243092/les_loops_aux_garage_-_Track_8.wav", name: "crash", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826271666192467/les_loops_aux_garage_-_Track_9.wav", name: "rides", type: "cymbal", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826271959785563/les_loops_aux_garage_-_Track_10.wav", name: "...hitting object", type: "percussion", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826311684046858/les_loops_aux_garage_-_Track_11.wav", name: "offbeat fun snare", type: "percussion", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826311981846639/les_loops_aux_garage_-_Track_12.wav", name: "fill thing", type: "percussion", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826312480948285/les_loops_aux_garage_-_Track_13.wav", name: "clap 1", type: "percussion", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826312824901692/les_loops_aux_garage_-_Track_14.wav", name: "clap 2", type: "percussion", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826313114292254/les_loops_aux_garage_-_Track_15.wav", name: "sub", type: "bass", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826313437257889/les_loops_aux_garage_-_Track_16.wav", name: "organ bass", type: "bass", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826310014718033/les_loops_aux_garage_-_Track_17.wav", name: "square pluck", type: "bass", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826310358630440/les_loops_aux_garage_-_Track_18.wav", name: "rhodes", type: "chord", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826310899716247/les_loops_aux_garage_-_Track_19.wav", name: "fast pluck chords", type: "chord", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826311277187102/les_loops_aux_garage_-_Track_20.wav", name: "phasy ott chords", type: "chord", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826318948585503/les_loops_aux_garage_-_Track_21.wav", name: "faster high chords", type: "chord", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826319208616006/les_loops_aux_garage_-_Track_22.wav", name: "offbeat stab", type: "chord", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826319510609951/les_loops_aux_garage_-_Track_23.wav", name: "skyfall motif", type: "lead", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826317635756032/les_loops_aux_garage_-_Track_24.wav", name: "1", type: "lead", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826317971312650/les_loops_aux_garage_-_Track_25.wav", name: "mindsets/dxx motif", type: "lead", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826318281682954/les_loops_aux_garage_-_Track_26.wav", name: "small motif", type: "lead", active: false, incompatible: [] },
+      { url: "https://cdn.discordapp.com/attachments/958860935232106529/999826318621425807/les_loops_aux_garage_-_Track_27.wav", name: "copper motif", type: "lead", active: false, incompatible: [] },
+    ];
+    //^^ if u wanna make ur own loop sets GO AHEAD!!! if i ever improve this thing to make it work i'll probably make some actual system?interface?something to facilitate making ur own loop sets
+    //until then uhhh just make object array as shown above
+    //also i should like mix it better. bc there isn't a way to make sidechain (other than some hidden system that stores several copies of melodic loops that swap for one another depending on which kick pattern plays. yeah that sounds like an unecessary amount of work BUt also sidechain sounds cool. so who knows!)
+    
+    for (let i = 0; i < meterDivisions; i++) document.getElementById("meter").innerHTML += "<div class=\"\" id=\"meter-"+i+"\">|||</div>";
+    
+    let audioContainerElement = document.getElementById("audio-container");
+    let buttonContainerElement = document.getElementById("button-container");
+    for (let i = 0; i < loops.length; i++) {
+      audioContainerElement.innerHTML += "<audio id=\"audio-"+i+"\" src=\""+loops[i].url+"\" class=\"loop-audio\" preload=\"auto\"></audio>";
+      buttonContainerElement.innerHTML += "<button id=\"button-"+i+"\" class=\""+loops[i].type+"\" onclick=\"smack("+i+")\">"+loops[i].name+"</button>";
+    }
+    function smack(i) {
+      if (loops[i].active) {
+        loops[i].active = false;
+        document.getElementById("button-"+i).setAttribute("active", "false");
+        //document.getElementById("audio-"+i).volume = 0;
+      } else {
+        loops[i].active = true;
+        document.getElementById("button-"+i).setAttribute("active", "true");
+        //document.getElementById("audio-"+i).volume = 1;
+        for (j of loops[i].incompatible) {
+          loops[j].active = false;
+          document.getElementById("button-"+j).setAttribute("active", "false");
+          //document.getElementById("audio-"+j).volume = 0;
+        }
+      }
+    }
+    function start() {
+      document.getElementById("launch-button").remove();
+      let arr = document.getElementsByClassName("loop-audio");
+      for (audio of arr) {
+        //audio.volume = 0; //i tried preloading these things by doing audio.volume = tiny number But there are still sync issues :sobbing:
+        /*possible solution: just make*/
+        audio.currentTime=0;
+        //audio.play();
+      }
+      //setup waits for the intervals
+      for (let i = 0; i < meterDivisions; i++) {
+        setTimeout(function(){
+          document.getElementById("meter-"+i).setAttribute("class", "active");
+          setTimeout(function(){
+            document.getElementById("meter-"+i).setAttribute("class", "");
+          }, intervalTime/meterDivisions);
+        }, intervalTime/meterDivisions*i);
+      }
+      setInterval(function(){
+        //play active audios
+        for (let i = 0; i < loops.length; i++) {
+          if (loops[i].active) {
+            arr[i].currentTime=0;
+            arr[i].play();
+          }
+        }
+        //setup waits for the intervals
+        for (let i = 0; i < meterDivisions; i++) {
+          setTimeout(function(){
+            document.getElementById("meter-"+i).setAttribute("class", "active");
+            setTimeout(function(){
+              document.getElementById("meter-"+i).setAttribute("class", "");
+            }, intervalTime/meterDivisions);
+          }, intervalTime/meterDivisions*i);
+        }
+      }, intervalTime);
+    }
+  </script>
+</body>
+</html>
