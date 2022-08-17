@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="all.css">
+  <title>Chess</title>
+  <style>
+    #board {
+      animation: 0.6s fadeIn;
+      border-collapse: collapse;
+      left: 50%;
+      top: 50%;
+      position: absolute;
+      transform: translate(-50%,-50%);
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+    
+    #board td {
+      overflow: hidden;
+      width: 6rem;
+      height: 6rem;
+      font-size: 4rem;
+      text-align: center;
+      transition: 0.2s;
+      text-shadow: 0 0 0.25rem var(--semiblack);
+      font-family: 'Case';
+    }
+    
+    .team-white {color: var(--awhite);}
+    .team-black {color: var(--ablack);}
+    .team-blue {color: var(--ablue);}
+    .team-red {color: var(--ared);}
+    .team-green {color: var(--agreen);}
+    .team-yellow {color: var(--ayellow);}
+    .team-cyan {color: var(--acyan);}
+    .team-purple {color: var(--apurple);}
+    .team-magenta {color: var(--amagenta);}
+    
+    #board .pick:hover {box-shadow: inset 0 0 1rem var(--board3); cursor: pointer;}
+    #board .selected {background-color: var(--board3);}
+    #board .valid-action {box-shadow: inset 0 0 1rem var(--board3); cursor: pointer;}
+    #board .valid-action:hover {background-color: var(--board3);}
+    
+    tr:nth-child(2n) :nth-child(2n) {background-color: var(--board1);}
+    tr:nth-child(2n) :nth-child(2n+1) {background-color: var(--board2);}
+    tr:nth-child(2n+1) :nth-child(2n) {background-color: var(--board2);}
+    tr:nth-child(2n+1) :nth-child(2n+1) {background-color: var(--board1);}
+    #board tr td.oob {background-color: #00000000;}
+    
+    #info {
+      display: block;
+      text-decoration: none;
+      width: 3rem;
+      height: 3rem;
+      background-color: var(--semiwhite);
+      color: var(--black);
+      line-height: 3rem;
+      text-align: center;
+      font-size: 2rem;
+      border-radius: 100%;
+      cursor: pointer;
+      transition: 0.2s;
+      margin: 2rem;
+      animation: 0.6s fadeIn;
+      position: fixed;
+    }
+    
+    #info:hover {
+      background-color: var(--white);
+    }
+  </style>
+</head>
+<body id="body">
+  <a id="info" href="info">i</a>
+  <table id="board"></table>
+  <script id="gamemode-script"></script>
+  <script>
+    let game = {};
+    let files = "abcdefghijklmnopqrstuvwxyz".split("");
+    
+    function element(id) {
+      return document.getElementById(id);
+    }
+    
+    function start() {
+      game.width = game.board.length;
+      game.height = game.board[0].length;
+      game.currentTeam = 0;
+      game.select = null;
+      game.can = [];
+      for (x = 0; x < game.width; x++) {
+        for (y = 0; y < game.height; y++) {
+          if (game.board[x][y] != null) {
+            if (game.board[x][y].uses == null) game.board[x][y].uses = 0;
+            if (game.board[x][y].rotate == null) game.board[x][y].rotate = game.team[game.board[x][y].team].rotate;
+          }
+        }
+      }
+      console.log(game);
+      generateBoard();
+      updateBoard();
+    }
+    
+    function generateBoard() {
+      let content = "";
+      content += "<tbody>";
+      for (x = 0; x < game.width; x++) {
+        content += "<tr>";
+        for (y = 0; y < game.height; y++) {
+          content += "<td id=\""+name(x,y)+"\" onclick=\"input("+x+","+y+")\"></td>";
+        }
+        content += "</tr>";
+      }
+      content += "</tbody>";
+      element("board").innerHTML = content;
+    }
+    
+    function updateBoard() {
+      updateBoardPieces();
+      updateBoardColors();
+    }
+    
+    function updateBoardPieces() {
+      for (x = 0; x < game.width; x++) {
+        for (y = 0; y < game.height; y++) {
+          if (game.board[x][y] == null) {
+            element(name(x,y)).innerHTML = "";
+            element(name(x,y)).setAttribute("title",name(x,y));
+          } else if (game.board[x][y] == 0) {
+            element(name(x,y)).innerHTML = "";
+            element(name(x,y)).setAttribute("title","");
+          } else {
+            element(name(x,y)).innerHTML = game.piece[game.board[x][y].piece].text;
+            element(name(x,y)).setAttribute("title",game.team[game.board[x][y].team].color+" "+game.board[x][y].piece+" at "+name(x,y));
+          }
+        }
+      }
+    }
+    
+    function updateBoardColors() {
+      for (x = 0; x < game.width; x++) {
+        for (y = 0; y < game.height; y++) {
+          let classes = "";
+          if (game.board[x][y] == null) {
+            classes += " empty";
+          } else if (game.board[x][y] == 0) {
+            classes += " oob";
+          } else {
+            classes += " team-"+game.team[game.board[x][y].team].color;
+            if (game.board[x][y].team == game.currentTeam) {
+              classes += " pick";
+            }
+            if (game.select != null && x == game.select.x && y == game.select.y) {
+              classes += " selected";
+            }
+          }
+          for (i = 0; i < game.can.length; i++) {
+            if (game.can[i].x == x && game.can[i].y == y) {
+              classes += " valid-action";
+            }
+          }
+          element(name(x,y)).setAttribute("class",classes);
+        }
+      }
+    }
+    
+    function input(x,y) {
+      //hitting our own piece?
+      if (game.board[x][y] != null && game.board[x][y].team == game.currentTeam) {
+        //deselecting + selecting
+        if (game.select != null && game.select.x == x && game.select.y == y) {
+          game.select = null;
+          game.can = [];
+        } else {
+          game.select = {x:x,y:y};
+          findMoves();
+        }
+      }
+      //picking a move
+      for (i = 0; i < game.can.length; i++) {
+        if (game.can[i].x == x && game.can[i].y == y) {
+          //we found a valid move and are going to take it
+          game.board[game.select.x][game.select.y].uses++;
+          if (game.board[x][y] != null && game.board[x][y].team != game.currentTeam && game.piece[game.board[x][y].piece].royalty) console.log(game.team[game.currentTeam].color+" wins");
+          switch (game.can[i].type) {
+            case "kill":
+            case "move":
+              game.board[x][y] = game.board[game.select.x][game.select.y];
+              game.board[game.select.x][game.select.y] = null;
+              break;
+            case "convert":
+              game.board[x][y].team = game.currentTeam;
+              break;
+          }
+          //check for promotion
+          //console.log(board[x][y]);
+          switchTurn();
+        }
+      }
+      updateBoard();
+    }
+    
+    function switchTurn() {
+      game.select = null;
+      game.can = [];
+      game.currentTeam++;
+      game.currentTeam %= game.team.length;
+      updateBoard();
+    }
+    
+    function findMoves() {
+      game.can = [];
+      let x = game.select.x;
+      let y = game.select.y;
+      game.piece[game.board[x][y].piece].move.forEach(function(motion){
+        if (game.board[x][y].uses <= motion.maxPreviousUses || motion.maxPreviousUses == null) { //check if motion is allowed on this piece at all
+          let distance = 1;
+          let tryPos = findPos(x, y, motion.x, motion.y, distance, game.board[x][y].team);
+          while (isInBounds(tryPos.x,tryPos.y) && game.board[tryPos.x][tryPos.y] == null && (distance <= motion.max || motion.max == null)) {
+            if (motion.move) game.can.push({x:tryPos.x,y:tryPos.y,type:"move"});
+            distance++;
+            tryPos = findPos(x, y, motion.x, motion.y, distance);
+          }
+          if (isInBounds(tryPos.x,tryPos.y) && game.board[tryPos.x][tryPos.y] != null && (distance <= motion.max || motion.max == null) && game.board[tryPos.x][tryPos.y].team != game.currentTeam) {
+            if (motion.end != null) game.can.push({x:tryPos.x,y:tryPos.y,type:motion.end});
+          }
+        }
+      });
+    }
+    
+    function findPos(startX, startY, motionX, motionY, distance, team) {
+      motionX *= distance;
+      motionY *= distance;
+      switch (game.board[startX][startY].rotate%4) {
+        case 0: return {x:startX+motionX,y:startY+motionY}; break;
+        case 1: return {x:startX-motionY,y:startY+motionX}; break;
+        case 2: return {x:startX-motionX,y:startY-motionY}; break;
+        case 3: return {x:startX+motionY,y:startY-motionX}; break;
+      }
+    }
+    
+    function name(x,y) {
+      return files[y]+(game.width-x);
+    }
+    
+    function isInBounds(x,y) {
+      return (0 <= x && x < game.width && 0 <= y && y < game.height && game.board[x][y] != 0);
+    }
+    
+    if (location.search == "") {
+      element("gamemode-script").setAttribute("src","rules-standard.js");
+    } else {
+      element("gamemode-script").setAttribute("src",location.search.substring(1));
+    }
+  </script>
+</body>
+</html>

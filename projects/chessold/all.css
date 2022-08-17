@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400&display=swap');
+* {font-family: Shippori Mincho;}
+
+@font-face {
+  font-family: "Case";
+  src: url('CASEFONT.TTF') format('truetype');
+}
+
+:root {
+  --black: #1C1D21;
+  --semiblack: #1C1D2180;
+  --white: #FFF6F0;
+  --semiwhite: #FFF6F040;
+  --board1: #C1C3D7;
+  --board2: #635B9A;
+  --board3: #EEEC99;
+  --ablack: #1C1D21;
+  --awhite: #EDEFFD;
+  --ablue: #4A4DE8;
+  --ared: #E42535;
+  --agreen: #3CB978;
+  --ayellow: #FEC620;
+  --acyan: #54D3F3;
+  --apurple: #A954F3;
+  --amagenta: #E642F8;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+  user-select: none;
+}
+
+::selection {
+  color: var(--black);
+  background: var(--white);
+}
+
+@keyframes fadeIn {from {opacity: 0;}}

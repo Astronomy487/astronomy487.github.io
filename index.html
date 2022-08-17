@@ -32,6 +32,9 @@
     nav {
       padding: 2rem;
     }
+    nav:not(#special-nav) {
+      background: linear-gradient(#00000020, #0000);
+    }
     
     /**nav .contrast-bar {
       background: linear-gradient(#00000038, #0000);
@@ -140,7 +143,29 @@
     
     ::selection {background-color: #314cd4; color: white;}
     
-    @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
+    #somewhereinthemilkyway {
+      background: url("") no-repeat center bottom fixed;
+      background-size: cover;
+      transition: 0.5s;
+    }
+    #somewhereinthemilkyway-radio {
+      left: 4rem;
+      bottom: 8rem;
+      position: absolute;
+      font-size: 1.5rem;
+      letter-spacing: 0.75rem;
+      opacity: 0.75;
+      transition: 0.2s;
+      text-decoration: none;
+      color: white;
+      animation: 5s ease-in-out shake infinite;
+    }
+    #somewhereinthemilkyway-radio:hover {
+      opacity: 1;
+      letter-spacing: 0.8rem;
+    }
+    
+    /**@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
     #toomuch {
       background-image: url("https://cdn.discordapp.com/attachments/958860935232106529/986991677237522472/unknown.png");
       background-position: 0 -500px;
@@ -173,7 +198,7 @@
       left: calc(50% - 24rem);
       top: calc(50% - 13.5rem);
       border-radius: 0.25rem;
-    }
+    }**/
     
     @keyframes shinyByeHi {from {} 49.9% {opacity: 0; transform: translateY(-5rem);} 51.1% {opacity: 0; transform: translateY(5rem);} to {}}
     section#fofx {
@@ -320,7 +345,18 @@
   <style id="mindsets-define-color">:root {--mindsets-bubble: #FFF;}</style>
 </head>
 <body>
-  <section id="toomuch">
+  <section id="somewhereinthemilkyway" style="background-image: url('https://cdn.discordapp.com/attachments/958860935232106529/1006967740755611668/photo1.jpg')">
+    <nav>
+      <a target="_blank" href="https://www.youtube.com/playlist?list=PL3RK0M75ja5umE3JtnGghaOiuN9wt9W1u"><img src="socialicons/youtube.png"></a>
+      <!--<a target="_blank" href="https://astronomy487.bandcamp.com/album/somewhere-in-the-milky-way"><img src="socialicons/bandcamp.png"></a>
+      <a target="_blank" href=""><img src="socialicons/spotify.png"></a>
+      <a target="_blank" href=""><img src="socialicons/fullmix.png"></a>-->
+      <a class="album-title" href="somewhereinthemilkyway">🌓 somewhere in the milky way</a>
+      <p class="info">2022.8.17, IV. ★ 2°00'00", 24×</p>
+    </nav>
+    <a id="somewhereinthemilkyway-radio" href="somewhereinthemilkyway/radio">open<br>somewhere<br>radio</a>
+  </section>
+  <!--<section id="toomuch">
     <div class="toomuch-full hue" style="background-color: red;"></div>
     <div class="toomuch-full overlay" style="background-color: #1193E4;"></div>
     <nav>
@@ -333,7 +369,7 @@
     </nav>
     <div class="toomuch-full the-text"><span>T</span><span>O</span><span>O</span>&nbsp;&nbsp;&nbsp;<span>M</span><span>U</span><span>C</span><span>H</span>&nbsp;<span onclick="toomuchToggle();" class="activator">!</span>&nbsp;<span onclick="toomuchToggle();" class="activator">!</span></div>
     <iframe src="https://www.youtube.com/embed/m61R4T2IQS0" title="🎆Too much!!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="toomuch-video"></iframe>
-  </section>
+  </section>--> <!-- i commented out too much!! bc it was kinda lame. like 10k degrees never got a section bc i couldnt think of smth good so why should this too-->
   <section id="fofx">
     <nav>
       <a target="_blank" href="https://www.youtube.com/watch?v=3SmFRTjVUxY"><img src="socialicons/fullmix.png"></a>
@@ -414,6 +450,7 @@
     </nav>
     <p>hi! i'm astro, and i make electronic music. i also make web games and other javascript projects sometimes. here's my discography:</p>
     <div id="other-albums">
+      <a href="somewhereinthemilkyway"><img src="somewhereinthemilkyway/somewhereinthemilkyway.jpg"></a>
       <a href="toomuch"><img src="toomuch/toomuch.jpg"></a>
       <a href="fofx"><img src="fofx/fofx.jpg"></a>
       <a href="mindsets"><img src="mindsets/mindsets.jpg"></a>
@@ -429,6 +466,35 @@
     <img src="icon.png" id="footer-logo">
   </section>
   <div id="secret-asset-loader"></div>
+  <script>
+    let somewhereCurrentPhoto = 0;
+    let somewherePhotos = ["https://cdn.discordapp.com/attachments/958860935232106529/1006967740755611668/photo1.jpg","https://cdn.discordapp.com/attachments/958860935232106529/1006954212132917419/photo2.jpg","https://cdn.discordapp.com/attachments/958860935232106529/1006954212569137152/photo3.jpg","https://cdn.discordapp.com/attachments/958860935232106529/1006954213101797386/photo4.jpg"];
+    html = "";
+    for (url of somewherePhotos) html += "<img src=\""+url+"\">";
+    document.getElementById("secret-asset-loader").innerHTML += html; //generate html for the asset loader things
+    setInterval(function(){
+      somewhereCurrentPhoto = (somewhereCurrentPhoto+1)%4;
+      let thePhotoURL = somewherePhotos[somewhereCurrentPhoto];
+      document.getElementById("somewhere").setAttribute("style","background-image: url('"+thePhotoURL+"')");
+    }, 10000);
+  </script>
+  <!--<script>
+    let toomuchSection = document.getElementById("toomuch");
+    let toomuchVideoOpen = false;
+    function updateTooMuchScroll(scroll) {
+      toomuchSection.style.backgroundPosition = "0 calc(0vh - "+scroll*0.2+"px)";
+    }
+    function toomuchToggle() {
+      if (toomuchVideoOpen) {
+        document.getElementById("toomuch-video").style.height = "0";
+        //document.getElementById("nexuscondition-logo").style.bottom = "calc(50% - 2.5rem)";
+      } else {
+        document.getElementById("toomuch-video").style.height = "27rem";
+        //document.getElementById("nexuscondition-logo").style.bottom = "5rem";
+      }
+      toomuchVideoOpen = !toomuchVideoOpen;
+    }
+  </script>-->
   <script>
     //hosting images on discord lololol
     let shinyBackgrounds = [
@@ -569,23 +635,6 @@
         document.getElementById("nexuscondition-logo").style.bottom = "5rem";
       }
       nexusconditionVideoOpen = !nexusconditionVideoOpen;
-    }
-  </script>
-  <script>
-    let toomuchSection = document.getElementById("toomuch");
-    let toomuchVideoOpen = false;
-    function updateTooMuchScroll(scroll) {
-      toomuchSection.style.backgroundPosition = "0 calc(0vh - "+scroll*0.2+"px)";
-    }
-    function toomuchToggle() {
-      if (toomuchVideoOpen) {
-        document.getElementById("toomuch-video").style.height = "0";
-        //document.getElementById("nexuscondition-logo").style.bottom = "calc(50% - 2.5rem)";
-      } else {
-        document.getElementById("toomuch-video").style.height = "27rem";
-        //document.getElementById("nexuscondition-logo").style.bottom = "5rem";
-      }
-      toomuchVideoOpen = !toomuchVideoOpen;
     }
   </script>
   <script>
