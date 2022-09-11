@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    @keyframes load {from {opacity: 0;}}
+    @keyframes roll {from {transform: translateY(0.75rem) translateX(-3rem) rotate(-90deg);} 50% {transform: translateY(0.75rem) translateX(0.25rem) rotate(7.5deg);}}
+    
+    body {
+      background-color: #202020;
+      color: #dddddd;
+      font-size: 0;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      width: 24rem;
+      font-family: "Inter";
+      user-select: none;
+      animation: 1s load;
+      overflow: hidden;
+    }
+    
+    h1 {
+      color: #dddddd;
+      font-weight: bold;
+      margin: 0;
+      font-size: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: solid 0.125rem #505050;
+      user-select: text;
+    }
+    
+    h1 span {
+      color: #202020;
+      cursor: default;
+      opacity: 0;
+      transition: 0.1s;
+    }
+    
+    h1 span:hover {
+      opacity: 1;
+    }
+    
+    h1 img {
+      height: 3rem;
+      transform: translateY(0.75rem);
+      margin-right: 1rem;
+      border-radius: 2rem;
+      animation: 1.5s roll;
+    }
+    
+    p {
+      color: #dddddd;
+      font-size: 1rem;
+      user-select: text;
+    }
+    
+    p span {
+      color: #888888;
+    }
+    
+    nav {
+      user-select: none;
+      text-align: right;
+      float: right;
+    }
+
+    nav a {
+      margin-left: 1rem;
+    }
+
+    nav a img {
+      opacity: 0.47;
+      height: 1.5rem;
+      transition: 0.1s;
+    }
+
+    nav a:hover img {
+      opacity: 0.85;
+    }
+    
+    ::selection {
+      background: #dddddd;
+      color: #202020;
+    }
+    
+    #light-mode {
+      background-color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 1000%;
+      height: 1000%;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <h1><img src="https://f4.bcbits.com/img/0018244792_20.jpg">Astro<span>nomy487</span></h1>
+  <p>hello! i am an electronica music producer creating whichever sounds i find most interesting.</p>
+  <nav>
+    <a href="https://twitter.com/astronomy487" target="_blank"><img src="socialicons/twitter.png"></a>
+    <a href="https://discord.gg/ZnMsetP" target="_blank"><img src="socialicons/discord.png"></a>
+    <a href="https://www.youtube.com/astronomy487" target="_blank"><img src="socialicons/youtube.png"></a>
+    <a href="https://astronomy487.bandcamp.com/" target="_blank"><img src="socialicons/bandcamp.png"></a>
+  </nav>
+  <p><span>he/him. 17</span></p>
+  <p>scroll down to listen through my discography!</p>
+</body>
+</html>

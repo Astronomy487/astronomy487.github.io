@@ -1,71 +1,104 @@
-@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+@keyframes load {from {opacity: 0;}}
 
 body {
-  font-family: "Overpass", sans-serif;
-  user-select: none;
+	background-color: #202020;
+	color: #dddddd;
+	font-size: 0;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	width: 80rem;
+	font-family: "Inter";
+	user-select: none;
+	animation: 1s load;
+}
+
+iframe {
+	width: 24rem;
+	height: 32rem;
+	display: inline-block;
+	border: 0;
+}
+
+.info {
+	width: 24rem;
+	height: 32rem;
+	display: inline-block;
+	vertical-align: top;
+	user-select: text;
 }
 
 ::selection {
-  color: black;
-  background-color: white;
+	background: #dddddd;
+	color: #202020;
 }
 
-@keyframes in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.95);
-  }
+.info h1 {
+	font-size: 1.5rem;
+	margin: 1rem;
+	margin-bottom: 0;
 }
 
-.albummain {
-  width: 36rem;
-  color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: 0.667s fadeIn;
-  animation: 0.5s ease-in-out in;
+.info h2 {
+	font-size: 1rem;
+	margin: 1rem;
+	margin-top: 0;
+	color: #888888;
+	font-weight: normal;
 }
 
-.art {
-  width: 100%;
-  margin: 1rem auto;
-  border-radius: 0.5rem;
+hr {
+	outline: none;
+	border: none;
+	height: 0.125rem;
+	background-color: #505050;
+	margin: 1rem 0;
+	margin-left: 1rem;
 }
 
-.albumsect {
-  text-align: center;
-  padding: 1rem;
+.info p {
+	font-size: 1rem;
+	margin-left: 1rem;
 }
 
-.links a {
-  display: inline-block;
-  width: 2.5rem;
-  height: 2rem;
-  margin: 0;
-  float: right;
-  opacity: 0.5;
-  transition: 0.2s;
+.info p span {
+	color: #888888;
 }
 
-.links a:hover {
-  opacity: 1;
+p a {
+	color: inherit;
+	text-decoration: underline;
+	transition: 0.1s;
 }
 
-.links a img {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  padding: 0.5rem;
+p a:hover {
+	color: #dddddd;
 }
 
-h2 {
-  font-weight: normal;
-  line-height: 2rem;
-  padding-top: 0.25rem;
-  font-size: 1.5rem;
-  margin: 0;
-  vertical-align: center;
-  user-select: text;
+img.art {
+	display: inline-block;
+	width: 32rem;
+}
+
+nav {
+	right: 1rem;
+	bottom: 1rem;
+	position: absolute;
+	user-select: none;
+}
+
+nav a {
+	margin-left: 1rem;
+}
+
+nav a img {
+	opacity: 0.47;
+	height: 1.5rem;
+	transition: 0.1s;
+}
+
+nav a:hover img {
+	opacity: 0.85;
 }
