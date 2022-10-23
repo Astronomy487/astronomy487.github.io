@@ -28,11 +28,12 @@
       background: #888;
     }
   </style>
+  <style id="mobilecss"></style>
   <title>ASTRO</title>
   <link rel="icon" type="image/x-icon" href="icon.png">
 </head>
 <body>
-  <iframe style="height: 100vh;" src="i.html"></iframe>
+  <iframe style="height: 100vh;" src="i.html" id="about-page"></iframe>
   <iframe src="somewhereinthemilkyway/index.html"></iframe>
   <iframe src="toomuch/index.html"></iframe>
   <iframe src="fofx/index.html"></iframe>
@@ -45,5 +46,8 @@
   <iframe src="asymmetricsilhouette/index.html"></iframe>
   <iframe src="utopian/index.html"></iframe>
   <iframe src="chaseanidea/index.html"></iframe>
+  <script>
+    if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "iframe {height: 128rem;}";
+  </script>
 </body>
 </html>

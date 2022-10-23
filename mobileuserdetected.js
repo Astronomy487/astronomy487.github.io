@@ -1,0 +1,1 @@
+if (screen.width < 1280) document.getElementById("mobilecss").setAttribute("href", "../styles-mobile.css");

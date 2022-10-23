@@ -96,6 +96,7 @@
       transform: translate(-50%, -50%);
     }
   </style>
+  <style id="mobilecss"></style>
 </head>
 <body>
   <h1><img src="https://f4.bcbits.com/img/0018244792_20.jpg">Astro<span>nomy487</span></h1>
@@ -108,5 +109,6 @@
   </nav>
   <p><span>he/him. 17</span></p>
   <p>scroll down to listen through my discography!</p>
+  <script>if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "html {font-size: 32px;}";</script>
 </body>
 </html>
