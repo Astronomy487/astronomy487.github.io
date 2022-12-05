@@ -2,6 +2,15 @@
 <html>
 <head>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    :root {
+      --yellow: #FFD400; /* for support */
+      --red: #D90368; /* for links */
+      --black: #2f2a4c; /*  for bg */
+      --white: #F1E9DA; /* for text */
+      --gray: #6A6286; /* for faded stuff */
+    }
+    
     iframe {
       width: 100%;
       height: 48rem;
@@ -11,7 +20,7 @@
     
     body {
       margin: 0;
-      background-color: #202020;
+      background-color: var(--black);
       user-select: none;
     }
     
@@ -20,12 +29,39 @@
     }
     
     ::-webkit-scrollbar-thumb {
-      background: #505050;
+      background: var(--gray);
       border-radius: 1rem;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-      background: #888;
+      background: var(--white);
+    }
+    
+    #other-albums {
+      text-align: center;
+      margin: 0 auto;
+      margin-top: 16rem;
+      margin-bottom: 24rem;
+      max-width: 64rem;
+      font-size: 0;
+    }
+    
+    #other-albums a {
+      background-color: blue;
+    }
+    
+    #other-albums img {
+      width: 16rem;
+      height: 16rem;
+      margin: 2rem;
+      border-radius: 0.5rem;
+    }
+    
+    #other-albums h1 {
+      font-size: 1rem;
+      font-family: "Inter", sans-serif;
+      color: var(--gray);
+      letter-spacing: 0.5rem;
     }
   </style>
   <style id="mobilecss"></style>
@@ -40,12 +76,15 @@
   <iframe src="mindsets/index.html"></iframe>
   <iframe src="10kdegrees/index.html"></iframe>
   <iframe src="nexuscondition/index.html"></iframe>
-  <iframe src="exosphere/index.html"></iframe>
-  <iframe src="pulsewidth/index.html"></iframe>
-  <iframe src="emerge/index.html"></iframe>
-  <iframe src="asymmetricsilhouette/index.html"></iframe>
-  <iframe src="utopian/index.html"></iframe>
-  <iframe src="chaseanidea/index.html"></iframe>
+  <div id="other-albums">
+    <h1>PRE SERIES IV ALBUMS</h1>
+    <a href="exosphere"><img src="exosphere/exosphere.jpg"></a>
+    <a href="pulsewidth"><img src="pulsewidth/pulsewidth.jpg"></a>
+    <a href="emerge"><img src="emerge/emerge.jpg"></a>
+    <a href="asymmetricsilhouette"><img src="asymmetricsilhouette/asymmetricsilhouette.jpg"></a>
+    <a href="utopian"><img src="utopian/utopian.jpg"></a>
+    <a href="chaseanidea"><img src="chaseanidea/chaseanidea.jpg"></a>
+  </div>
   <script>
     if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "iframe {height: 128rem;}";
   </script>

@@ -3,12 +3,20 @@
 <head>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    :root {
+      --yellow: #FFD400; /* for support */
+      --red: #D90368; /* for links */
+      --black: #2f2a4c; /*  for bg */
+      --white: #F1E9DA; /* for text */
+      --gray: #6A6286; /* for faded stuff */
+    }
+    
     @keyframes load {from {opacity: 0;}}
     @keyframes roll {from {transform: translateY(0.75rem) translateX(-3rem) rotate(-90deg);} 50% {transform: translateY(0.75rem) translateX(0.25rem) rotate(7.5deg);}}
     
     body {
-      background-color: #202020;
-      color: #dddddd;
+      background-color: var(--black);
+      color: var(--white);
       font-size: 0;
       left: 50%;
       top: 50%;
@@ -22,17 +30,17 @@
     }
     
     h1 {
-      color: #dddddd;
+      color: var(--white);
       font-weight: bold;
       margin: 0;
       font-size: 2rem;
       padding-bottom: 2rem;
-      border-bottom: solid 0.125rem #505050;
+      border-bottom: solid 0.125rem var(--gray);
       user-select: text;
     }
     
     h1 span {
-      color: #202020;
+      color: var(--black);
       cursor: default;
       opacity: 0;
       transition: 0.1s;
@@ -48,16 +56,17 @@
       margin-right: 1rem;
       border-radius: 2rem;
       animation: 1.5s roll;
+      user-select: none;
     }
     
     p {
-      color: #dddddd;
+      color: var(--white);
       font-size: 1rem;
       user-select: text;
     }
     
     p span {
-      color: #888888;
+      color: var(--gray);
     }
     
     nav {
@@ -81,19 +90,8 @@
     }
     
     ::selection {
-      background: #dddddd;
-      color: #202020;
-    }
-    
-    #light-mode {
-      background-color: white;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 1000%;
-      height: 1000%;
-      mix-blend-mode: difference;
-      transform: translate(-50%, -50%);
+      background: var(--white);
+      color: var(--black);
     }
   </style>
   <style id="mobilecss"></style>

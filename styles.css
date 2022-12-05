@@ -1,9 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+:root {
+	--yellow: #FFD400; /* for support */
+	--red: #D90368; /* for links */
+	--black: #2f2a4c; /*  for bg */
+	--white: #F1E9DA; /* for text */
+	--gray: #6A6286; /* for faded stuff */
+}
+
 @keyframes load {from {opacity: 0;}}
 
 body {
-	background-color: #202020;
-	color: #dddddd;
+	background-color: var(--black);
+	color: var(--white);
 	font-size: 0;
 	left: 50%;
 	top: 50%;
@@ -20,6 +28,7 @@ iframe {
 	height: 32rem;
 	display: inline-block;
 	border: 0;
+	font-family: "Inter" !important;
 }
 
 .info {
@@ -31,8 +40,8 @@ iframe {
 }
 
 ::selection {
-	background: #dddddd;
-	color: #202020;
+	background: var(--white);
+	color: var(--black);
 }
 
 .info h1 {
@@ -44,16 +53,17 @@ iframe {
 .info h2 {
 	font-size: 1rem;
 	margin: 1rem;
-	margin-top: 0;
-	color: #888888;
+	margin-top: 0.5rem;
+	color: var(--gray);
 	font-weight: normal;
+	text-transform: uppercase;
 }
 
 hr {
 	outline: none;
 	border: none;
 	height: 0.125rem;
-	background-color: #505050;
+	background-color: var(--gray);
 	margin: 1rem 0;
 	margin-left: 1rem;
 }
@@ -64,17 +74,17 @@ hr {
 }
 
 .info p span {
-	color: #888888;
+	color: var(--yellow);
 }
 
 p a {
-	color: inherit;
-	text-decoration: underline;
+	color: var(--red);
 	transition: 0.1s;
+	text-decoration: none;
 }
 
 p a:hover {
-	color: #dddddd;
+	text-decoration: underline;
 }
 
 img.art {
