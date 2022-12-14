@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 :root {
-	--yellow: #FFD400; /* for support */
-	--red: #D90368; /* for links */
-	--black: #2f2a4c; /*  for bg */
-	--white: #F1E9DA; /* for text */
-	--gray: #6A6286; /* for faded stuff */
+	--support: #888888; /* for support */
+	--accent: #24cc46; /* for links */
+	--background: #ffffff; /*  for bg */
+	--text: #000000; /* for text */
+	--muted: #888888; /* for faded stuff */
 }
 
 @keyframes load {from {opacity: 0;}}
 
 body {
-	background-color: var(--black);
-	color: var(--white);
+	background-color: var(--background);
+	color: var(--text);
 	font-size: 0;
 	left: 50%;
 	top: 50%;
@@ -40,8 +40,8 @@ iframe {
 }
 
 ::selection {
-	background: var(--white);
-	color: var(--black);
+	background: var(--accent);
+	color: var(--background);
 }
 
 .info h1 {
@@ -54,7 +54,7 @@ iframe {
 	font-size: 1rem;
 	margin: 1rem;
 	margin-top: 0.5rem;
-	color: var(--gray);
+	color: var(--muted);
 	font-weight: normal;
 	text-transform: uppercase;
 }
@@ -63,7 +63,8 @@ hr {
 	outline: none;
 	border: none;
 	height: 0.125rem;
-	background-color: var(--gray);
+	width: 25%;
+	background-color: var(--muted);
 	margin: 1rem 0;
 	margin-left: 1rem;
 }
@@ -74,12 +75,12 @@ hr {
 }
 
 .info p span {
-	color: var(--yellow);
+	color: var(--support);
 }
 
 p a {
-	color: var(--red);
-	transition: 0.1s;
+	color: var(--accent);
+	font-weight: bold;
 	text-decoration: none;
 }
 
@@ -90,6 +91,11 @@ p a:hover {
 img.art {
 	display: inline-block;
 	width: 32rem;
+	transition: box-shadow 0.2s;
+}
+
+img.art:hover {
+	box-shadow: -1rem 1rem var(--accent);
 }
 
 nav {
@@ -104,11 +110,11 @@ nav a {
 }
 
 nav a img {
-	opacity: 0.47;
+	opacity: 0.5;
 	height: 1.5rem;
 	transition: 0.1s;
 }
 
 nav a:hover img {
-	opacity: 0.85;
+	opacity: 1;
 }

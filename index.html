@@ -2,13 +2,13 @@
 <html>
 <head>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     :root {
-      --yellow: #FFD400; /* for support */
-      --red: #D90368; /* for links */
-      --black: #2f2a4c; /*  for bg */
-      --white: #F1E9DA; /* for text */
-      --gray: #6A6286; /* for faded stuff */
+      --support: #888888; /* for support */
+      --accent: #24cc46; /* for links */
+      --background: #ffffff; /*  for bg */
+      --text: #000000; /* for text */
+      --muted: #888888; /* for faded stuff */
     }
     
     iframe {
@@ -20,8 +20,9 @@
     
     body {
       margin: 0;
-      background-color: var(--black);
+      background-color: var(--background);
       user-select: none;
+      font-family: "Inter", sans-serif;
     }
     
     ::-webkit-scrollbar {
@@ -29,19 +30,18 @@
     }
     
     ::-webkit-scrollbar-thumb {
-      background: var(--gray);
-      border-radius: 1rem;
+      background: var(--muted);
     }
     
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--white);
+      background: var(--text);
     }
     
     #other-albums {
       text-align: center;
       margin: 0 auto;
       margin-top: 16rem;
-      margin-bottom: 24rem;
+      margin-bottom: 8rem;
       max-width: 64rem;
       font-size: 0;
     }
@@ -54,14 +54,17 @@
       width: 16rem;
       height: 16rem;
       margin: 2rem;
-      border-radius: 0.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    #other-albums a:hover img {
+      transform: scale(1.025);
+      box-shadow: -0.5rem 0.5rem var(--accent);
     }
     
     #other-albums h1 {
       font-size: 1rem;
       font-family: "Inter", sans-serif;
-      color: var(--gray);
-      letter-spacing: 0.5rem;
     }
   </style>
   <style id="mobilecss"></style>

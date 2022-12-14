@@ -2,21 +2,21 @@
 <html>
 <head>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     :root {
-      --yellow: #FFD400; /* for support */
-      --red: #D90368; /* for links */
-      --black: #2f2a4c; /*  for bg */
-      --white: #F1E9DA; /* for text */
-      --gray: #6A6286; /* for faded stuff */
+      --support: #888888; /* for support */
+      --accent: #24cc46; /* for links */
+      --background: #ffffff; /*  for bg */
+      --text: #000000; /* for text */
+      --muted: #888888; /* for faded stuff */
     }
     
     @keyframes load {from {opacity: 0;}}
     @keyframes roll {from {transform: translateY(0.75rem) translateX(-3rem) rotate(-90deg);} 50% {transform: translateY(0.75rem) translateX(0.25rem) rotate(7.5deg);}}
     
     body {
-      background-color: var(--black);
-      color: var(--white);
+      background-color: var(--background);
+      color: var(--text);
       font-size: 0;
       left: 50%;
       top: 50%;
@@ -30,17 +30,18 @@
     }
     
     h1 {
-      color: var(--white);
+      color: var(--text);
       font-weight: bold;
       margin: 0;
       font-size: 2rem;
       padding-bottom: 2rem;
-      border-bottom: solid 0.125rem var(--gray);
+      margin-bottom: 1.5rem;
+      border-bottom: solid 0.125rem var(--muted);
       user-select: text;
     }
     
     h1 span {
-      color: var(--black);
+      color: var(--background);
       cursor: default;
       opacity: 0;
       transition: 0.1s;
@@ -57,16 +58,32 @@
       border-radius: 2rem;
       animation: 1.5s roll;
       user-select: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    h1 img:hover {
+      transform: translateY(0.75rem) scale(1.1);
+      box-shadow: -0.5rem 0.5rem var(--accent);
     }
     
     p {
-      color: var(--white);
+      color: var(--text);
       font-size: 1rem;
       user-select: text;
     }
     
     p span {
-      color: var(--yellow);
+      color: var(--muted);
+    }
+    
+    p a {
+      color: var(--accent);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    p a:hover {
+      text-decoration: underline;
     }
     
     nav {
@@ -80,33 +97,53 @@
     }
 
     nav a img {
-      opacity: 0.47;
+      opacity: 0.5;
       height: 1.5rem;
       transition: 0.1s;
     }
 
     nav a:hover img {
-      opacity: 0.85;
+      opacity: 1;
     }
     
     ::selection {
-      background: var(--white);
-      color: var(--black);
+      background: var(--accent);
+      color: var(--background);
+    }
+    
+    button {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.5rem 0;
+      border: 0;
+      background-color: var(--text);
+      color: var(--background);
+      width: 9.5rem;
+      float: right;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      box-shadow: -0.5rem 0.5rem var(--accent);
     }
   </style>
   <style id="mobilecss"></style>
 </head>
 <body>
   <h1><img src="https://f4.bcbits.com/img/0018244792_20.jpg">Astro<span>nomy487</span></h1>
-  <p>hello! i am an electronica music producer creating whichever sounds i find most interesting.</p>
+  <p>hello! i am an electronica music producer creating whichever sounds i find most interesting. i'm also an occasional programmer and fun haver</p>
   <nav>
     <a href="https://twitter.com/astronomy487" target="_blank"><img src="socialicons/twitter.png"></a>
     <a href="https://discord.gg/ZnMsetP" target="_blank"><img src="socialicons/discord.png"></a>
     <a href="https://www.youtube.com/astronomy487" target="_blank"><img src="socialicons/youtube.png"></a>
     <a href="https://astronomy487.bandcamp.com/" target="_blank"><img src="socialicons/bandcamp.png"></a>
   </nav>
-  <p><span>he/him. 18</span></p>
-  <p>scroll down to listen through my discography!</p>
+  <p><span>he him 18</span></p>
+  <p style="text-align: center; margin-top: 4rem; font-weight: bold;">scroll to listen through my discography!</p>
+  <div style="text-align: center; user-select: none;"><span style="font-size: 1.25rem; background-color: var(--accent); color: var(--background); display: inline-block; width: 2rem; height: 2rem; line-height: 2rem; border-radius: 2rem; font-weight: bold;">↓</span></div>
+  <!--<button>PROJECTS</button>-->
   <script>if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "html {font-size: 32px;}";</script>
 </body>
 </html>
