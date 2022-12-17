@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Modular calculator</title>
+  <style>
+    body {
+      margin: 0;
+      user-select: none;
+      background-color: #333;
+      font-family: Inter;
+      font-weight: bold;
+      --accent: #888;
+    }
+    
+    /* @keyframes node_enter {from {opacity: 0; transform: scale(0.9) translateY(2rem);}} */
+    @keyframes node_enter {from {opacity: 0; transform: translateY(50vh)} 60% {transform: translateY(-0.5vh)}}
+    
+    .node {
+      background-color: var(--accent);
+      color: white;
+      display: inline-block;
+      position: fixed;
+      width: 16rem;
+      padding-bottom: 2px;
+      animation: node_enter 1s;
+      border-radius: 0.25rem;
+      box-shadow: 0 0 0.5rem #111;
+      transition: box-shadow 0.1s;
+    }
+    
+    *[category=math] {--accent: #14bc36;}
+    *[category=constant] {--accent: #EA780D;}
+    *[category=stats] {--accent: #0FC1EC;}
+    *[category=random] {--accent: #975CE0;}
+    *[category=lists] {--accent: #bc1436;}
+    *[category=dark] {--accent: #1446cc;}
+    
+    .node[dragging=true] {
+      box-shadow: 0 0 1rem black;
+    }
+    
+    .node header {
+      padding: 0.5rem 2px;
+      text-align: center;
+      text-transform: uppercase;
+      cursor: move;
+    }
+    
+    .node section {
+      background-color: #222;
+      padding: 0.5rem 0;
+      margin: 2px;
+      margin-bottom: 0;
+      border-radius: 0.125rem 0.125rem 0 0;
+    }
+    
+    .node section:last-child {
+      border-radius: 0.125rem;
+    }
+    
+    .node-inputs {
+      width: 50%;
+      vertical-align: top;
+      display: inline-block;
+    }
+    
+    .node-input div {
+      display: inline-block;
+      background-color: #222;
+      color: #222;
+      outline: solid 2px var(--accent);
+      width: 1rem;
+      height: 1rem;
+      line-height: 1rem;
+      text-align: center;
+      border-radius: 1rem;
+      transform: translateX(-9px);
+      transition: 0.1s;
+      text-transform: uppercase;
+    }
+    
+    .node-input[connected="true"] div {
+      background-color: var(--accent);
+      border-radius: 0;
+    }
+    
+    .node-input[connected="true"] div:hover {
+      background-color: white;
+      outline-color: white;
+      color: black;
+      border-radius: 0;
+    }
+    
+    .node-input label {
+      color: #888;
+      height: 0;
+      display: block;
+      width: 6.25rem;
+      text-align: right;
+      transform: translate(-116px, -22px);
+      cursor: text;
+    }
+    
+    .node-input label::before {content: ' ';}
+    
+    .node-input label:focus {
+      outline: none;
+      color: white;
+    }
+    
+    .node-output label {
+      color: #888;
+      transition: color 0.1s;
+      height: 0;
+      display: block;
+      max-width: 6.25rem;
+      text-align: left;
+      transform: translate(138px, -22px);
+    }
+    
+    .node-outputs {
+      width: 50%;
+      display: inline-block;
+      vertical-align: top;
+    }
+    
+    .node-output {
+      text-align: right;
+    }
+    
+    .node-input, .node-output {
+      transition: 0.1s;
+      text-transform: lowercase;
+    }
+    
+    .node-input span, .node-output span {
+      display: inline-block;
+      width: 6.375rem;
+      padding: 2px 4px;
+      transition: 0.1s;
+    }
+    
+    .node-output span:hover, .node-input span:hover {
+      background-color: #444;
+      cursor: pointer;
+      color: white;
+    }
+    
+    .node-output[selected=true] span, .node-input[selected=true] span {
+      background-color: white;
+      color: var(--accent);
+    }
+    
+    .node-output div {
+      display: inline-block;
+      background-color: var(--accent);
+      width: 0.75rem;
+      height: 0.75rem;
+      line-height: 0.75rem;
+      text-align: center;
+      border-radius: 1rem;
+      transform: translateX(7px);
+      margin-left: 2px;
+      transition: 0.1s;
+    }
+    
+    .node-buttons {
+      margin: 0 2px;
+      background-color: #222;
+      text-align: center;
+      overflow: hidden;
+      border-radius: 0 0 0.125rem 0.125rem;
+      border-top: solid 0.125rem var(--accent);
+    }
+    
+    .node-buttons button {
+      font-family: inherit;
+      background-color: inherit;
+      border: none;
+      color: #888;
+      text-transform: lowercase;
+      padding: 0.5rem 0;
+      display: block;
+      width: 100%;
+      font-weight: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    
+    .node-buttons button:hover {
+      background-color: #444;
+      color: white;
+    }
+    
+    nav {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      font-size: 0;
+    }
+    
+    nav a {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+      background-color: #666;
+      color: #333;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: 0.1s;
+      margin-right: 0.5rem;
+    }
+    
+    nav a:hover {
+      background-color: #ddd;
+    }
+    
+    #hr-container {
+      position: fixed;
+      z-index: -1;
+    }
+    
+    #hr-container hr {
+      position: fixed;
+      border: none;
+      height: 0.125rem;
+      background-color: #555;
+    }
+    
+    @keyframes modal-container-enter {from {opacity: 0}}
+    #modal-container {
+      background-color: #00000088;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      z-index: 99999999;
+      animation: modal-container-enter 0.3s;
+    }
+    
+    #modal-container[active=false] {
+      display: none;
+    }
+    
+    @keyframes modal-enter {from {transform: translate(-50%, -50%) translateY(1rem)}}
+    #modal {
+      width: 32rem;
+      height: calc(75vh - 4rem);
+      padding: 2rem;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      background-color: #444;
+      border: solid 0.125rem #888;
+      color: white;
+      border-radius: 0.25rem;
+      animation: modal-enter 0.3s;
+      overflow-y: scroll;
+    }
+    
+    #modal h1 {
+      font-size: 2rem;
+      margin: 0;
+      margin-top: 2rem;
+      text-transform: uppercase;
+    }
+    
+    #modal h2 {
+      text-transform: uppercase;
+    }
+    
+    #modal > h2 {
+      margin-top: 2.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: solid 0.125rem #666;
+    }
+    
+    #modal div h2 {
+      margin: 0 0.25rem;
+    }
+    
+    #modal div {
+      border-left: solid 0.25rem var(--accent);
+      padding: 0.25rem 0;
+      padding-left: 1rem;
+      margin: 1rem 0;
+    }
+    
+    #modal button {
+      font-family: inherit;
+      font-weight: inherit;
+      font-size: 1rem;
+      padding: 0.5rem 1.5rem;
+      background-color: #222;
+      border: none;
+      color: white;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+      cursor: pointer;
+      transition: 0.1s;
+      border-radius: 0.25rem;
+    }
+    
+    #modal button:hover {
+      background-color: var(--accent);
+    }
+    
+    #modal p {
+      line-height: 150%;
+      user-select: text;
+    }
+    
+    #modal a {
+      color: #999;
+      transition: color 0.1s;
+    }
+    
+    #modal a:hover {
+      color: #eee;
+    }
+    
+    #modal span {
+      color: #999;
+    }
+    
+    @keyframes special-message-enter {from {transform: translate(-50%, -50%) translateY(0.5rem) scale(0.95); opacity: 0;}}
+    #special-message {
+      transform: translate(-50%, -50%);
+      color: #888;
+      font-size: 1.5rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      animation: 1s special-message-enter;
+    }
+  </style>
+  <style id="custom-css"></style>
+</head>
+<body>
+  <nav>
+    <a onclick="prompt_info()">?</a>
+  </nav>
+  <div id="special-message">right click to add a node</div>
+  <main id="main"></main> <!-- contains all the nodes -->
+  <div id="hr-container"></div> <!-- contains all the lines lol i hate drawing lines w html -->
+  <div id="modal-container" active="false" onclick="close_modal()"><div id="modal" onclick="event.stopPropagation()"></div></div>
+  <script>
+    let nodes = {}; //master list that you always have to reference
+    /*let nodes_history = [nodes]; //history of all past states of nodes
+    function commit_node_history() {
+      //commited when USER changes something (not on any old update
+      nodes_history.push(nodes);
+      if (nodes_history.length > 100) {
+        nodes_history.shift();
+      }
+    }
+    function undo_node_history() {
+      if (nodes_history.length > 1) {
+        nodes_history.pop();
+        nodes = nodes_history[nodes.length-1];
+        for (uuid of Object.keys(nodes))
+          update(uuid, 99);
+      }
+    }*/
+    
+    //TODO:
+    // - undo history (history of all ${nodes})
+    // - system to trash existing nodes (how do u handle its links?)
+    // - filter manual node inputs instead of using json.parse
+    // - better error checking in general :\
+    // - only propagate changes if node output has actually changed (requires custom equality function)
+    // - dont allow user to set input for linked inputs
+    
+    //instead of memory address pointers, everything is uuids
+    let occupied_uuids = [];
+    function get_uuid() {
+      let txt = "";
+      for (let i = 0; i < 8; i++)
+        txt += ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"][Math.floor(Math.random()*16)];
+      if (occupied_uuids.includes(txt)) txt = get_uuid();
+      occupied_uuids.push(txt);
+      return txt;
+    }
+    
+    //preparations for before-input before-output
+    function update(uuid, recursion_level) {
+      if (recursion_level < 0) {
+        prompt_toomuchrecursion();
+        return;
+      }
+      //if (recursion_level == 100) commit_node_history();
+      //first, fetch its inputs into i
+      let inputs = [];
+      for (let i = 0; i < nodes[uuid].inputs.length; i++) {
+        if (nodes[uuid].inputs[i].source_address == null) {
+          inputs.push(nodes[uuid].inputs[i].val);
+        } else {
+          inputs.push(nodes[nodes[uuid].inputs[i].source_address].outputs[nodes[uuid].inputs[i].source_number]);
+        }
+      }
+      //next, call its calculate function
+      let outputs = nodes[uuid].calculate(inputs, nodes[uuid].internal_state);
+      nodes[uuid].internal_state = outputs[1];
+      outputs = outputs[0];
+      //then, return those o[] into the output variables
+      for (let i = 0; i < nodes[uuid].outputs.length; i++) {
+        nodes[uuid].outputs[i] = outputs[i];
+        document.getElementById(uuid+"-output-label-"+i).innerText = reformat(outputs[i], true);
+      }
+      //propagate to anyone else
+      for (let i = 0; i < nodes[uuid].recipients.length; i++) {
+        update(nodes[uuid].recipients[i], recursion_level-1); //TODO: only propagate if our outputs had any meaningful changes lol
+      }
+      //update our labels
+      for (let i = 0; i < nodes[uuid].inputs.length; i++) {
+        document.getElementById(uuid+"-input-label-"+i).innerText = reformat(inputs[i], true);
+        document.getElementById(uuid+"-input-"+i).setAttribute("connected", nodes[uuid].inputs[i].source_address != null);
+      }
+      for (let i = 0; i < nodes[uuid].outputs.length; i++)
+        document.getElementById(uuid+"-output-label-"+i).innerText = reformat(outputs[i], true);
+    }
+    function reformat(val, truncate) {
+      if (typeof(val) == "number") {
+        if (Math.abs(val) < 0.0000001) val = 0;
+        val = ""+val;
+      } else {
+        let txt = "[";
+        for (let i = 0; i < val.length; i++) {
+          if (i >0) txt += ", ";
+          txt += reformat(val[i], truncate);
+        }
+        txt += "]";
+        val = txt;
+      }
+      if (truncate && val.length > 12)
+        return val.substring(0, 9) + "...";
+      return val;
+    }
+    
+    //creates a node from catalogue
+    function make_node(catalogue_entry, x, y) {
+      //create an actual node object from catalogue_entry
+      let node = {};
+      node.category = catalogue_entry.category;
+      node.name = catalogue_entry.name;
+      node.inputs = [];
+      if (catalogue_entry.inputs != undefined) for (input of catalogue_entry.inputs) {
+        node.inputs.push({name: input.name, val: input.val, source_address: null, source_number: null});
+      }
+      node.outputs = [];
+      if (catalogue_entry.outputs != undefined) for (output of catalogue_entry.outputs) {
+        node.outputs.push({name: output.name, val: undefined});
+      }
+      node.buttons = [];
+      if (catalogue_entry.buttons != undefined) for (button of catalogue_entry.buttons) {
+        node.buttons.push({name: button.name, action: button.action});
+      }
+      node.calculate = catalogue_entry.calculate; //steal their function definition :3
+      node.recipients = [];
+      node.internal_state = (catalogue_entry.internal_state == null) ? {} : catalogue_entry.internal_state; //free for each node implementation to use
+      //establish uuid
+      let uuid = get_uuid();
+      node.uuid = uuid;
+      nodes[uuid] = node;
+      //make element
+      let html = '<div class="node" category="'+node.category+'" id="'+uuid+'" style="top: '+y+'px; left: '+x+'px;" onmouseup="click_header_up(\''+uuid+'\')">';
+      html += '<header onmousedown="click_header_down(\''+uuid+'\')">'+node.name+'</header>';
+      html += '<section><div class="node-inputs">';
+      for (let i = 0; i < node.inputs.length; i++) {
+        html += '<div class="node-input" connected="false" id="'+uuid+'-input-'+i+'"><div onclick="input_circle_click(\''+uuid+'\', '+i+')" id="'+uuid+'-input-jack-'+i+'">–</div><span onclick="io_click(\''+uuid+'\', true, '+i+')">'+node.inputs[i].name+'</span><label id="'+uuid+'-input-label-'+i+'" contenteditable="true" onfocusin="input_label_focusin(\''+uuid+'\', '+i+');" onfocusout="input_label_focusout(\''+uuid+'\', '+i+');"></label></div>';
+      }
+      html += '</div><div class="node-outputs">';
+      for (let i = 0; i < node.outputs.length; i++) {
+        html += '<div class="node-output" id="'+uuid+'-output-'+i+'"><span onclick="io_click(\''+uuid+'\', false, '+i+')">'+node.outputs[i].name+'</span><div id="'+uuid+'-output-jack-'+i+'">&nbsp;</div><label id="'+uuid+'-output-label-'+i+'"></label></div>';
+      }
+      html += '</div></section>';
+      if (node.buttons.length > 0) {
+        html += '<div class="node-buttons">';
+        for (let i = 0; i < node.buttons.length; i++) {
+          html += '<button onclick="button_click(\''+uuid+'\', '+i+')">'+node.buttons[i].name+'</button>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      document.getElementById("main").insertAdjacentHTML("beforeend", html);
+      update(uuid, 100);
+      document.getElementById("special-message").style.display = "none";
+    }
+    //establishes output-to-input connection
+    let last_connection_made = {uuid: null, num: null};
+    function connect(origin_uuid, origin_number, destination_uuid, destination_number) {
+      //store in case of infinite loop
+      last_connection_made = {uuid: destination_uuid, num: destination_number};
+      //setup number links
+      nodes[destination_uuid].inputs[destination_number].source_address = origin_uuid;
+      nodes[destination_uuid].inputs[destination_number].source_number = origin_number;
+      nodes[origin_uuid].recipients.push(destination_uuid);
+      update(destination_uuid, 100);
+      //create visual line
+      if (all_lines[destination_uuid+"-"+destination_number] != undefined) {
+        all_lines[destination_uuid+"-"+destination_number].remove();
+        delete all_lines[destination_uuid+"-"+destination_number];
+      }
+      let line_element = document.createElement("hr");
+      line_element.id = destination_uuid + "-hr-" + destination_number;
+      document.getElementById("hr-container").appendChild(line_element);
+      all_lines[destination_uuid + "-" + destination_number] = line_element;
+      recalibrate_line(destination_uuid, destination_number);
+    }
+    //removes a connection by the wire's destination. returns input to using default
+    function remove_connection(destination_uuid, destination_number) {
+      if (nodes[destination_uuid].inputs[destination_number].source_address != null) {
+        console.log("removing connection to " + nodes[destination_uuid].name + " input " + destination_number);
+        let origin_uuid = nodes[destination_uuid].inputs[destination_number].source_address;
+        let origin_number = nodes[destination_uuid].inputs[destination_number].source_number;
+        nodes[destination_uuid].inputs[destination_number].source_address = null;
+        nodes[destination_uuid].inputs[destination_number].source_number = null;
+        nodes[origin_uuid].recipients = nodes[origin_uuid].recipients.filter(function(val, index, arr){return val != destination_uuid;});
+        if (all_lines[destination_uuid+"-"+destination_number] != undefined) {
+          all_lines[destination_uuid+"-"+destination_number].remove();
+          delete all_lines[destination_uuid+"-"+destination_number];
+        }
+        update(destination_uuid, 100);
+      }
+    }
+    //removes a NODE
+    function remove_node(uuid) {
+      //if anyone cares about us, just remove their input source and update them
+      for (recipient of nodes[uuid].recipients) {
+        for (let i = 0; i < nodes[recipient].inputs.length; i++) {
+          if (nodes[recipient].inputs[i].source_address == uuid) {
+            /*nodes[recipient].inputs[i].source_address = null;
+            nodes[recipient].inputs[i].source_number = null;
+            all_lines[recipient+"-"+i].remove();
+            delete all_lines[recipient+"-"+i];*/
+            remove_connection(recipient, i);
+          }
+        }
+        update(recipient, 99);
+      }
+      document.getElementById(uuid).remove();
+      delete nodes[uuid];
+      if (Object.keys(nodes).length == 0) document.getElementById("special-message").style.display = "block";
+    }
+    
+    let io_selected_input = null;
+    let io_selected_output = null;
+    function io_click(uuid, is_input, num) {
+      //console.log([uuid, is_input, num]);
+      let el = document.getElementById(uuid+"-"+(is_input?"input":"output")+"-"+num);
+      if (is_input) {
+        //if this is already selected, unselect it. otherwise unselect it
+        if (io_selected_input != null && io_selected_input[0] == uuid && io_selected_input[1] == num) {
+          io_selected_input = null;
+          el.setAttribute("selected", "false");
+        } else {
+          if (io_selected_input != null) //switching case: let old know it's no longer selected
+            document.getElementById(io_selected_input[0]+"-input-"+io_selected_input[1]).setAttribute("selected", "false");
+          io_selected_input = [uuid, num];
+          el.setAttribute("selected", "true");
+        }
+      } else {
+        //if this is already selected, unselect it. otherwise unselect it
+        if (io_selected_output != null && io_selected_output[0] == uuid && io_selected_output[1] == num) {
+          io_selected_output = null;
+          el.setAttribute("selected", "false");
+        } else {
+          if (io_selected_output != null) //switching case: let old know it's no longer selected
+            document.getElementById(io_selected_output[0]+"-output-"+io_selected_output[1]).setAttribute("selected", "false");
+          io_selected_output = [uuid, num];
+          el.setAttribute("selected", "true");
+        }
+      }
+      if (io_selected_input != null && io_selected_output != null) {
+        document.getElementById(io_selected_input[0]+"-input-"+io_selected_input[1]).setAttribute("selected", "false");
+        document.getElementById(io_selected_input[0]+"-input-"+io_selected_input[1]).setAttribute("connected", "true");
+        document.getElementById(io_selected_output[0]+"-output-"+io_selected_output[1]).setAttribute("selected", "false");
+        connect(io_selected_output[0], io_selected_output[1], io_selected_input[0], io_selected_input[1]);
+        io_selected_input = null;
+        io_selected_output = null;
+      }
+    }
+    function input_circle_click(uuid, num) { //for clicking the little adjacent orb
+      if (nodes[uuid].inputs[num].source_address != null) {
+        /*nodes[uuid].inputs[num].source_address == null;
+        nodes[uuid].inputs[num].source_number == null;*/
+        remove_connection(uuid, num);
+        document.getElementById(uuid+"-input-"+num).setAttribute("connected", "false");
+        update(uuid, 100);
+      }
+    }
+    function button_click(uuid, num) {
+      nodes[uuid].internal_state = nodes[uuid].buttons[num].action(nodes[uuid].internal_state);
+      update(uuid);
+    }
+    let all_lines = {}; //indexed by uuid+"-"+input_num. when link established, hr made. when node moves, recalc all involved lines. when link undone, remove line
+    function recalibrate_line(destination_uuid, destination_number) {
+      let element = all_lines[destination_uuid+"-"+destination_number];
+      //stupid element stuff
+      let origin_uuid = nodes[destination_uuid].inputs[destination_number].source_address;
+      let origin_number = nodes[destination_uuid].inputs[destination_number].source_number;
+      if (origin_uuid == null) return; //in case we recalibrate something that shouldnt exist
+      let origin_element = document.getElementById(origin_uuid + "-output-jack-" + origin_number);
+      let destination_element = document.getElementById(destination_uuid + "-input-jack-" + destination_number);
+      //find coordinates
+      let origin_rect = origin_element.getBoundingClientRect();
+      let destination_rect = destination_element.getBoundingClientRect();
+      let origin_x = origin_rect.right-6;
+      let origin_y = origin_rect.top-2;
+      let destination_x = destination_rect.left+6;
+      let destination_y = destination_rect.top-1;
+      //set line properties
+      let distance = Math.hypot(destination_y-origin_y, destination_x-origin_x);
+      let angle = Math.atan2(destination_y-origin_y, destination_x-origin_x);
+      let center_x = (origin_x + destination_x) / 2;
+      let center_y = (origin_y + destination_y) / 2;
+      element.style.width = distance + "px";
+      element.style.left = center_x + "px";
+      element.style.top = center_y + "px";
+      element.style.transform = "translate(-50%, -50%) rotate("+angle+"rad)";
+    }
+    let current_dragging = null;
+    let drag_z_index = 1;
+    let mouse = {x: 0, y: 0};
+    function click_header_down(uuid) {
+      let element = document.getElementById(uuid);
+      let og_x = parseInt(element.style.left);
+      let og_y = parseInt(element.style.top);
+      if (current_dragging == null) {
+        current_dragging = {uuid: uuid, og_x: og_x, og_y: og_y, mouse_x: mouse.x, mouse_y: mouse.y, element: element};
+      }
+      element.setAttribute("dragging", "true");
+      drag_z_index++;
+      element.style.zIndex = drag_z_index;
+    }
+    function click_header_up(uuid) {
+      let element = document.getElementById(uuid);
+      current_dragging = null;
+      element.setAttribute("dragging", "false");
+    }
+    addEventListener('mousemove', (event) => {
+      mouse = {x: event.x, y: event.y};
+      if (current_dragging != null) {
+        //determine change in mouse coords
+        let mouse_dx = mouse.x - current_dragging.mouse_x;
+        let mouse_dy = mouse.y - current_dragging.mouse_y;
+        //enforce changes to node
+        current_dragging.element.style.left = (current_dragging.og_x + mouse_dx) + "px";
+        current_dragging.element.style.top = (current_dragging.og_y + mouse_dy) + "px";
+        //now we have to update lines
+        let affected_nodes = [current_dragging.uuid];
+        for (recipient of nodes[current_dragging.uuid].recipients)
+          affected_nodes.push(recipient);
+        let affected_lines_uuid = [];
+        let affected_lines_num = [];
+        for (affected_node of affected_nodes) {
+          for (let i = 0; i < nodes[affected_node].inputs.length; i++) { //first, lines going to us
+            if (nodes[affected_node].inputs[i].source_address != null) {
+              affected_lines_uuid.push(affected_node);
+              affected_lines_num.push(nodes[affected_node].inputs[i].source_number);
+            }
+          }
+        }
+        for (let i = 0; i < affected_lines_uuid.length; i++) {
+          recalibrate_line(affected_lines_uuid[i], affected_lines_num[i]);
+        }
+      }
+    });
+    function input_label_focusout(uuid, num) {
+      let new_text = document.getElementById(uuid+"-input-label-"+num).innerText;
+      //TODO: replace the simple json.parse to something more robust such that no FUNNY inputs are given!
+      let val = JSON.parse(new_text);
+      nodes[uuid].inputs[num].val = val;
+      update(uuid, 100);
+    }
+    function input_label_focusin(uuid, num) {
+      document.getElementById(uuid+"-input-label-"+num).innerText = reformat(nodes[uuid].inputs[num].val, false);
+    }
+    //stuff for adding elements.
+    document.addEventListener?document.addEventListener("contextmenu",function(t){prompt_addition(),t.preventDefault()},!1):document.attachEvent("oncontextmenu",function(){prompt_addition(),window.event.returnValue=!1});
+    function prompt_addition() {
+      let mouse_x = mouse.x - 128;
+      let mouse_y = mouse.y - 16;
+      document.getElementById("modal-container").setAttribute("active", "true");
+      let html = "";
+      html += '<p style="text-align: center;">';
+      for (category of Object.keys(catalogue)) {
+        html += '<b category="'+category+'" style="width: 0.5rem; height: 0.5rem; background-color: var(--accent); display: inline-block; border-radius: 1rem; margin-right: 0.25rem;">&nbsp;</b>'
+      }
+      html += '</p>';
+      for (category of Object.keys(catalogue)) {
+        html += '<div category="'+category+'">';
+        let category_display_name = catalogue[category][Object.keys(catalogue[category])[0]].category;
+        html += '<h2>'+category_display_name+'</h2>'
+        for (node of Object.keys(catalogue[category])) {
+          html += '<button onclick="close_modal(); make_node(catalogue.'+category+'.'+node+', '+mouse_x+', '+mouse_y+')">'+catalogue[category][node].name+'</button>';
+        }
+        html += '</div>';
+      }
+      document.getElementById("modal").innerHTML = html;
+    }
+    function close_modal() {
+      document.getElementById('modal').innerHTML = '';
+      document.getElementById('modal-container').setAttribute('active', 'false');
+    }
+    function prompt_info() {
+      document.getElementById("modal-container").setAttribute("active", "true");
+      let html = "<h2>About this project</h2>";
+      html += "<p>Hi!</p>";
+      html += '<p>This is a modular graphing calculator. It is inspired by <a target="_blank" href="https://docs.blender.org/manual/en/2.79/render/blender_render/materials/nodes/introduction.html">those material nodes you see in Blender</a>, modular synthesis softwares like <a target="_blank" href="https://vcvrack.com/">VCV Rack</a>, and some of the tools I use in my statistics class.</p>';
+      html += '<p>The idea behind it is that each function is wrapped up in a node. All a user sees is its inputs and outputs. Nodes can also include buttons, which alter internal states.</p>';
+      html += '<p>You then chain the outputs from one node into the input of another node to create more complex functionality. My goal is to create a tool that visualizes the process of transforming data through functions (as you can get lost in data transformation on a normal graphing calculator).</p>';
+      html += '<p>Wanna try it out? Close this popup and start using it!</p>';
+      html += '<h2>Custom functions</h2>';
+      let catalogue_keys = Object.keys(catalogue);
+      html += '<p>Right now, this calculator is loaded with ' + catalogue_keys.length + ' libraries of functions: ';
+      for (let i = 0; i < catalogue_keys.length; i++) {
+        let category_display_name = catalogue[catalogue_keys[i]][Object.keys(catalogue[catalogue_keys[i]])[0]].category;
+        if (i > 0) html += ', ';
+        if (i == catalogue_keys.length-1) html += 'and ';
+        html += '<span category="'+catalogue_keys[i]+'" style="text-transform: uppercase; color: var(--accent);">'+category_display_name+'</span>';
+      }
+      html += '. But this can be extended!</p>';
+      html += '<p>Each node library is a fairly straight-forward .js file. Each node definition entered into the catalogue includes the following:</p>';
+      html += '<ul>';
+      html += '<li>category <span>(required)</span></li>';
+      html += '<li>name <span>(required)</span></li>';
+      html += '<li>internal_state</li>';
+      html += '<li>inputs</li>';
+      html += '<li>outputs</li>';
+      html += '<li>buttons <span>(each button defines an action(state) that returns how the internal state should be altered after the button runs)</span></li>';
+      html += '<li>calculate(i, state) <span>(required)</span> <span>(evaluates the function given inputs and current internal state. returns [output values array, new internal stats])</span></li>';
+      html += '</ul>';
+      html += '<p>Confused? Me too. Look here for examples:</p>';
+      html += '<ul>';
+      html += '<li><a target="_blank" href="catalogue_math.js">catalogue_math.js</a></li>';
+      html += '<li><a target="_blank" href="catalogue_constant.js">catalogue_constant.js</a></li>';
+      html += '<li><a target="_blank" href="catalogue_random.js">catalogue_random.js</a></li>';
+      html += '<li><a target="_blank" href="catalogue_stats.js">catalogue_stats.js</a></li>';
+      html += '<li><a target="_blank" href="catalogue_lists.js">catalogue_lists.js</a></li>';
+      html += '</ul>';
+      html += '<h2>&nbsp;</h2>';
+      html += '<p style="text-align: center;"><span>Made by <a target="_blank" href="https://astronomy487.github.io/">Astro</a></span></p>';
+      document.getElementById("modal").innerHTML = html;
+    }
+    function prompt_toomuchrecursion() {
+      document.getElementById("modal-container").setAttribute("active", "true");
+      let html = "<h1>Recursion</h1>";
+      html += "<p>You just formed an infinite loop.</p>";
+      html += "<p><span>A node's output eventually leads back into its own input.</span></p>";
+      html += "<p>I'm going to undo that change.</p>";
+      remove_connection(last_connection_made.uuid, last_connection_made.num);
+      document.getElementById("modal").innerHTML = html;
+    }
+    
+    //if a b are numbers, do f(a, b)
+    //otherwise, decompose a and b and return lists of f(a[], b[])
+    function recursive_binary(a, b, base_function) {
+      let a_num = typeof(a)=="number";
+      let b_num = typeof(b)=="number";
+      if (a_num && b_num) return base_function(a, b);
+      let arr = [];
+      let len = 99999999999999;
+      if (!a_num) len = Math.min(a.length, len);
+      if (!b_num) len = Math.min(b.length, len);
+      for (let j = 0; j < len; j++) {
+        if (a_num) {
+          arr.push(recursive_binary(a, b[j], base_function));
+        } else if (b_num) {
+          arr.push(recursive_binary(a[j], b, base_function));
+        } else {
+          arr.push(recursive_binary(a[j], b[j], base_function));
+        }
+      }
+      return arr;
+    }
+    function recursive_unary(a, base_function) {
+      if (typeof(a)=="number") return base_function(a);
+      for (let i = 0; i < a.length; i++)
+        a[i] = recursive_unary(a[i], base_function);
+      return a;
+    }
+    
+    function load_library(url) {
+      //put it into script
+      //let old_libraries = Object.keys(catalogue);
+      document.getElementById("library-loader").setAttribute("src", url);
+      /*setTimeout(function(){
+        //find which were added
+        let new_libraries = Object.keys(catalogue);
+        let additional = [];
+        for (new_library of new_libraries)
+          if (!old_libraries.includes(new_library))
+            additional.push(new_library);
+        console.log(additional);
+        //for each additional library, add their custom special unique color to the style
+        for (added of additional) {
+          console.log(added);
+          document.getElementById("custom-css").innerHTML += ":root{-accent:"+catalogue[added]._color+"}";
+          delete catalogue[added]._color;
+        }
+      }, 1000);*/
+    }
+    
+    //templates from which the actual node objects are constructed in make_node
+    let catalogue = {};
+  </script>
+  <script src="catalogue_math.js"></script>
+  <script src="catalogue_constant.js"></script>
+  <script src="catalogue_random.js"></script>
+  <script src="catalogue_stats.js"></script>
+  <script src="catalogue_lists.js"></script>
+  <script></script>
+  <script id="library-loader"></script>
+</body>
+</html>
