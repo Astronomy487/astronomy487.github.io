@@ -3,12 +3,14 @@
 <head>
   <title>Modular calculator</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+    
     body {
       margin: 0;
       user-select: none;
-      background-color: #333;
-      font-family: sans-serif, Inter;
-      font-weight: bold;
+      background-color: #222;
+      font-family: "Inter";
+      font-weight: normal;
       --accent: #888;
     }
     
@@ -24,16 +26,9 @@
       padding-bottom: 2px;
       animation: node_enter 1s;
       border-radius: 0.25rem;
-      box-shadow: 0 0 0.5rem #111;
-      transition: box-shadow 0.1s;
+      box-shadow: 0 0 0.5rem #000;
+      transition: box-shadow 0.1s, background-color 0.1s;
     }
-    
-    *[category=math] {--accent: #14bc36;}
-    *[category=constant] {--accent: #EA780D;}
-    *[category=stats] {--accent: #0FC1EC;}
-    *[category=random] {--accent: #975CE0;}
-    *[category=lists] {--accent: #bc1436;}
-    *[category=dark] {--accent: #1446cc;}
     
     .node[dragging=true] {
       box-shadow: 0 0 1rem black;
@@ -46,15 +41,18 @@
       cursor: move;
     }
     
+    .node[errored="true"] {
+      --accent: #666 !important;
+    }
+    .node[errored="true"] span {
+      color: red;
+    }
+    
     .node section {
-      background-color: #222;
+      background-color: #000;
       padding: 0.5rem 0;
       margin: 2px;
       margin-bottom: 0;
-      border-radius: 0.125rem 0.125rem 0 0;
-    }
-    
-    .node section:last-child {
       border-radius: 0.125rem;
     }
     
@@ -66,8 +64,8 @@
     
     .node-input div {
       display: inline-block;
-      background-color: #222;
-      color: #222;
+      background-color: #000;
+      color: #000;
       outline: solid 2px var(--accent);
       width: 1rem;
       height: 1rem;
@@ -92,7 +90,7 @@
     }
     
     .node-input label {
-      color: #888;
+      color: #777;
       height: 0;
       display: block;
       width: 6.25rem;
@@ -109,7 +107,7 @@
     }
     
     .node-output label {
-      color: #888;
+      color: #777;
       transition: color 0.1s;
       height: 0;
       display: block;
@@ -138,12 +136,15 @@
       width: 6.375rem;
       padding: 2px 4px;
       transition: 0.1s;
+      cursor: pointer;
     }
     
-    .node-output span:hover, .node-input span:hover {
-      background-color: #444;
-      cursor: pointer;
-      color: white;
+    .node-input[connected="true"] span {
+      color: var(--accent);
+    }
+    
+    .node-output span:hover, .node-input span:hover, .node-output span:focus, .node-input span:focus {
+      background-color: #333;
     }
     
     .node-output[selected=true] span, .node-input[selected=true] span {
@@ -166,10 +167,10 @@
     
     .node-buttons {
       margin: 0 2px;
-      background-color: #222;
+      background-color: #000;
       text-align: center;
       overflow: hidden;
-      border-radius: 0 0 0.125rem 0.125rem;
+      border-radius: 0.125rem;
       border-top: solid 0.125rem var(--accent);
     }
     
@@ -177,7 +178,7 @@
       font-family: inherit;
       background-color: inherit;
       border: none;
-      color: #888;
+      color: #bbb;
       text-transform: lowercase;
       padding: 0.5rem 0;
       display: block;
@@ -188,9 +189,37 @@
       transition: 0.1s;
     }
     
-    .node-buttons button:hover {
-      background-color: #444;
+    .node-buttons button:hover, .node-buttons button:focus {
+      background-color: #222;
       color: white;
+    }
+    
+    .node textarea {
+      background-color: #000;
+      margin: 0.125rem;
+      border: none;
+      color: white;
+      margin-bottom: 0;
+      resize: none;
+      width: calc(100% - 1.25rem);
+      border-radius: 0.125rem;
+      padding: 0.5rem 0.125rem;
+      font-family: inherit;
+      font-weight: inherit;
+      font-size: 0.875rem;
+      padding: 0.5rem;
+      overflow: hidden;
+      height: 6rem;
+      display: none;
+    }
+    
+    .node textarea:focus {
+      background-color: #222;
+      outline: none;
+    }
+    
+    .node:hover textarea {
+      display: none;
     }
     
     nav {
@@ -208,15 +237,16 @@
       text-align: center;
       font-size: 1.5rem;
       background-color: #666;
-      color: #333;
+      color: #222;
       border-radius: 1rem;
       cursor: pointer;
       transition: 0.1s;
       margin-right: 0.5rem;
     }
     
-    nav a:hover {
-      background-color: #ddd;
+    nav a:hover, nav a:focus {
+      background-color: #fff;
+      outline: none;
     }
     
     #hr-container {
@@ -228,7 +258,7 @@
       position: fixed;
       border: none;
       height: 0.125rem;
-      background-color: #555;
+      background-color: #444;
     }
     
     @keyframes modal-container-enter {from {opacity: 0}}
@@ -248,13 +278,14 @@
     @keyframes modal-enter {from {transform: translate(-50%, -50%) translateY(1rem)}}
     #modal {
       width: 32rem;
-      height: calc(75vh - 4rem);
+      height: calc(80vh - 4rem);
+      width: calc(80vh - 4rem);
       padding: 2rem;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
       position: absolute;
-      background-color: #444;
+      background-color: #222;
       border: solid 0.125rem #888;
       color: white;
       border-radius: 0.25rem;
@@ -276,26 +307,28 @@
     #modal > h2 {
       margin-top: 2.5rem;
       padding-bottom: 0.5rem;
-      border-bottom: solid 0.125rem #666;
+      border-bottom: solid 0.125rem #444;
     }
     
-    #modal div h2 {
-      margin: 0 0.25rem;
-    }
-    
-    #modal div {
+    @keyframes catalogue-div-enter {from {opacity: 0; transform: translateX(-1rem)}}
+    #modal .catalogue-div {
       border-left: solid 0.25rem var(--accent);
-      padding: 0.25rem 0;
       padding-left: 1rem;
       margin: 1rem 0;
+      animation: catalogue-div-enter 0.5s;
     }
     
-    #modal button {
+    #modal .catalogue-div p {
+      margin: 0;
+      margin-bottom: 0.5rem;
+    }
+    
+    #modal .catalogue-div button {
       font-family: inherit;
       font-weight: inherit;
       font-size: 1rem;
       padding: 0.5rem 1.5rem;
-      background-color: #222;
+      background-color: #111;
       border: none;
       color: white;
       text-transform: uppercase;
@@ -304,10 +337,15 @@
       cursor: pointer;
       transition: 0.1s;
       border-radius: 0.25rem;
+      
+      
+      width: 16rem;
+      padding: 0.5rem 0;
     }
     
-    #modal button:hover {
+    #modal .catalogue-div button:hover, #modal button:focus {
       background-color: var(--accent);
+      outline: none;
     }
     
     #modal p {
@@ -320,32 +358,81 @@
       transition: color 0.1s;
     }
     
-    #modal a:hover {
-      color: #eee;
+    #modal a:hover, #modal a:focus {
+      color: #fff;
+      outline: none;
     }
     
     #modal span {
-      color: #999;
+      color: #777;
     }
     
     @keyframes special-message-enter {from {transform: translate(-50%, -50%) translateY(0.5rem) scale(0.95); opacity: 0;}}
     #special-message {
       transform: translate(-50%, -50%);
-      color: #888;
+      color: #666;
       font-size: 1.5rem;
       position: absolute;
       left: 50%;
       top: 50%;
       animation: 1s special-message-enter;
     }
+    
+    #modal > input {
+      font-family: inherit;
+      background-color: inherit;
+      border: none;
+      color: white;
+      padding: 0.5rem;
+      width: 75%;
+      border: solid 0.125rem #333;
+      font-weight: inherit;
+      font-size: 1rem;
+      transition: background-color 0.1s;
+    }
+    
+    #modal > input:focus {
+      background-color: #333;
+      outline: none;
+    }
+    
+    #modal > button {
+      display: inline-block;
+      font-family: inherit;
+      font-size: inherit;
+      background-color: inherit;
+      border: none;
+      color: white;
+      padding: 0.5rem;
+      width: 4rem;
+      margin-left: 1rem;
+      border: solid 0.125rem #333;
+      font-weight: inherit;
+      text-transform: lowercase;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.1s;
+    }
+    
+    #modal > button:hover {
+      background-color: #333;
+    }
+    
+    #modal > hr {
+      border: none;
+      height: 0.125rem;
+      background-color: #444;
+      margin: 2rem 0;
+    }
   </style>
-  <style id="custom-css"></style>
+  <style id="custom-css"></style> <!-- updated whenever a new library hits the scene -->
 </head>
 <body>
   <nav>
     <a onclick="prompt_info()">?</a>
+    <a onclick="prompt_addition()">+</a>
   </nav>
-  <div id="special-message">right click to add a node</div>
+  <div id="special-message">right click to add a module</div>
   <main id="main"></main> <!-- contains all the nodes -->
   <div id="hr-container"></div> <!-- contains all the lines lol i hate drawing lines w html -->
   <div id="modal-container" active="false" onclick="close_modal()"><div id="modal" onclick="event.stopPropagation()"></div></div>
@@ -370,11 +457,29 @@
     
     //TODO:
     // - undo history (history of all ${nodes})
-    // - system to trash existing nodes (how do u handle its links?)
+    // - ui to trash existing nodes
     // - filter manual node inputs instead of using json.parse
-    // - better error checking in general :\
     // - only propagate changes if node output has actually changed (requires custom equality function)
     // - dont allow user to set input for linked inputs
+    
+    /*NODES TODO
+    
+    RANDOM
+    stuff for random on sphere
+
+    FUNCTION
+    polynomial evaluate
+    polynomial derivative
+
+    STATISTICS
+    min q1 med q3 max
+    linear regression
+    
+    LOGIC
+    all those logic operations (false = 0, true != 0)
+    
+    */
+    
     
     //instead of memory address pointers, everything is uuids
     let occupied_uuids = [];
@@ -393,7 +498,9 @@
         prompt_toomuchrecursion();
         return;
       }
-      //if (recursion_level == 100) commit_node_history();
+      //find its old outputs
+      let old_outputs = [];
+      for (output of nodes[uuid].outputs) old_outputs.push(output.val);
       //first, fetch its inputs into i
       let inputs = [];
       for (let i = 0; i < nodes[uuid].inputs.length; i++) {
@@ -404,9 +511,19 @@
         }
       }
       //next, call its calculate function
-      let outputs = nodes[uuid].calculate(inputs, nodes[uuid].internal_state);
-      nodes[uuid].internal_state = outputs[1];
-      outputs = outputs[0];
+      let outputs;
+      try {
+        outputs = nodes[uuid].calculate(inputs, nodes[uuid].internal_state);
+        nodes[uuid].internal_state = outputs[1];
+        outputs = outputs[0];
+      } catch {
+        document.getElementById(uuid).setAttribute("errored", "true");
+        nodes[uuid].errored = true;
+        return;
+      }
+      document.getElementById(uuid).setAttribute("errored", "false");
+      nodes[uuid].errored = false;
+      if (old_outputs == outputs) return; //if literally nothing has changed, so be it
       //then, return those o[] into the output variables
       for (let i = 0; i < nodes[uuid].outputs.length; i++) {
         nodes[uuid].outputs[i] = outputs[i];
@@ -443,10 +560,11 @@
     }
     
     //creates a node from catalogue
-    function make_node(catalogue_entry, x, y) {
+    function make_node(library_string, node_string, x, y) {
+      let catalogue_entry = catalogue[library_string][node_string];
       //create an actual node object from catalogue_entry
       let node = {};
-      node.category = catalogue_entry.category;
+      node.category = library_string; //this is used for category="" attributes. NOT necessarily same as the display name
       node.name = catalogue_entry.name;
       node.inputs = [];
       if (catalogue_entry.inputs != undefined) for (input of catalogue_entry.inputs) {
@@ -462,6 +580,7 @@
       }
       node.calculate = catalogue_entry.calculate; //steal their function definition :3
       node.recipients = [];
+      node.errored = false;
       node.internal_state = (catalogue_entry.internal_state == null) ? {} : catalogue_entry.internal_state; //free for each node implementation to use
       //establish uuid
       let uuid = get_uuid();
@@ -486,6 +605,7 @@
         }
         html += '</div>';
       }
+      html += '<textarea spellcheck="false" placeholder="module notes..."></textarea>';
       html += '</div>';
       document.getElementById("main").insertAdjacentHTML("beforeend", html);
       update(uuid, 100);
@@ -595,7 +715,16 @@
       }
     }
     function button_click(uuid, num) {
-      nodes[uuid].internal_state = nodes[uuid].buttons[num].action(nodes[uuid].internal_state);
+      let its_internal_state = nodes[uuid].internal_state;
+      let its_inputs = [];
+      for (input of nodes[uuid].inputs) {
+        if (input.source_address == null)
+          its_inputs.push(input.val);
+        else
+          its_inputs.push(nodes[input.source_address].outputs[input.source_number].val);
+      }
+      let its_button_action = nodes[uuid].buttons[num].action;
+      nodes[uuid].internal_state = its_button_action(its_inputs, its_internal_state);
       update(uuid);
     }
     let all_lines = {}; //indexed by uuid+"-"+input_num. when link established, hr made. when node moves, recalc all involved lines. when link undone, remove line
@@ -628,6 +757,7 @@
     let drag_z_index = 1;
     let mouse = {x: 0, y: 0};
     function click_header_down(uuid) {
+      //if (nodes[uuid].errored) return;
       let element = document.getElementById(uuid);
       let og_x = parseInt(element.style.left);
       let og_y = parseInt(element.style.top);
@@ -682,27 +812,58 @@
       document.getElementById(uuid+"-input-label-"+num).innerText = reformat(nodes[uuid].inputs[num].val, false);
     }
     //stuff for adding elements.
-    document.addEventListener?document.addEventListener("contextmenu",function(t){prompt_addition(),t.preventDefault()},!1):document.attachEvent("oncontextmenu",function(){prompt_addition(),window.event.returnValue=!1});
+    document.addEventListener?document.addEventListener("contextmenu",function(t){if (document.getElementById("modal-container").getAttribute("active")!="true")prompt_addition(),t.preventDefault()},!1):document.attachEvent("oncontextmenu",function(){if (document.getElementById("modal-container").getAttribute("active")!="true")prompt_addition(),window.event.returnValue=!1});
     function prompt_addition() {
+      if (mouse.x == 0 && mouse.y == 0) return;
       let mouse_x = mouse.x - 128;
       let mouse_y = mouse.y - 16;
       document.getElementById("modal-container").setAttribute("active", "true");
-      let html = "";
-      html += '<p style="text-align: center;">';
+      let html = "<h2>add module</h2>";
+      /*html += '<p style="text-align: center; user-select: none;">';
       for (category of Object.keys(catalogue)) {
         html += '<b category="'+category+'" style="width: 0.5rem; height: 0.5rem; background-color: var(--accent); display: inline-block; border-radius: 1rem; margin-right: 0.25rem;">&nbsp;</b>'
       }
-      html += '</p>';
+      html += '</p>';*/
+      html += '<input type="text" id="library-search-textfield" placeholder="search for module or library" oninput="catalogue_search_filter()">';
       for (category of Object.keys(catalogue)) {
-        html += '<div category="'+category+'">';
-        let category_display_name = catalogue[category][Object.keys(catalogue[category])[0]].category;
-        html += '<h2>'+category_display_name+'</h2>'
+        html += '<div category="'+category+'" class="catalogue-div" id="catalogue-div-'+category+'">';
+        /*html += '<h2>'+category_display_name+'</h2>';
+        html += '<p>'+catalogue[category]._description+'</p>';*/
+        html += '<p>'+catalogue[category]._name.toUpperCase()+'<span>: '+catalogue[category]._description.toLowerCase()+'</span></p>';
         for (node of Object.keys(catalogue[category])) {
-          html += '<button onclick="close_modal(); make_node(catalogue.'+category+'.'+node+', '+mouse_x+', '+mouse_y+')">'+catalogue[category][node].name+'</button>';
+          if (node.startsWith("_")) continue;
+          html += '<button onclick="close_modal(); make_node(\''+category+'\', \''+node+'\', '+mouse_x+', '+mouse_y+')" id="catalogue-button-'+category+'-'+node+'">'+catalogue[category][node].name+'</button>';
         }
         html += '</div>';
       }
+      html += '<p id="catalogue-search-noresults"><span>No results</span></p>';
+      html += '<h2>import library</h2><input type="text" id="library-import-textfield" placeholder="import library via url"><button onclick="user_load_library()" id="library-import-button">Add</button>';
+      html += '<p>Already loaded libraries</p><ul>';
+      for (url of loaded_libraries)
+        html += '<li><a target="_blank" href="'+url+'">'+url+'</a></li>';
+      html += '</ul>';
+      //html += '<p id="library-import-errormessage" style="display: none;"><span>that url doesn\'t work</span></p>';
       document.getElementById("modal").innerHTML = html;
+      document.getElementById("library-search-textfield").focus();
+      catalogue_search_filter();
+    }
+    function catalogue_search_filter() {
+      let textfield = document.getElementById("library-search-textfield");
+      let to_find = textfield.value;
+      let any_results = false;
+      for (category of Object.keys(catalogue)) {
+        let in_category_name = catalogue[category]._name.includes(to_find);
+        let in_any_node_name = false;
+        for (node of Object.keys(catalogue[category])) {
+          if (node.startsWith("_")) continue;
+          let in_node_name = catalogue[category][node].name.includes(to_find);
+          in_any_node_name = in_any_node_name || in_node_name;
+          document.getElementById("catalogue-button-"+category+"-"+node).style.display = (in_node_name||in_category_name ? "inline-block" : "none");
+        }
+        document.getElementById("catalogue-div-"+category).style.display = in_category_name||in_any_node_name ? "block" : "none";
+        any_results = any_results || in_category_name || in_any_node_name;
+      }
+      document.getElementById("catalogue-search-noresults").style.display = any_results ? "none" : "block";
     }
     function close_modal() {
       document.getElementById('modal').innerHTML = '';
@@ -712,21 +873,13 @@
       document.getElementById("modal-container").setAttribute("active", "true");
       let html = "<h2>About this project</h2>";
       html += "<p>Hi!</p>";
-      html += '<p>This is a modular graphing calculator. It is inspired by <a target="_blank" href="https://docs.blender.org/manual/en/2.79/render/blender_render/materials/nodes/introduction.html">those material nodes you see in Blender</a>, modular synthesis softwares like <a target="_blank" href="https://vcvrack.com/">VCV Rack</a>, and some of the tools I use in my statistics class.</p>';
-      html += '<p>The idea behind it is that each function is wrapped up in a node. All a user sees is its inputs and outputs. Nodes can also include buttons, which alter internal states.</p>';
-      html += '<p>You then chain the outputs from one node into the input of another node to create more complex functionality. My goal is to create a tool that visualizes the process of transforming data through functions (as you can get lost in data transformation on a normal graphing calculator).</p>';
+      html += '<p>This is a modular calculator. It is inspired by <a target="_blank" href="https://docs.blender.org/manual/en/2.79/render/blender_render/materials/nodes/introduction.html">those material nodes you see in Blender</a>, modular synthesis softwares like <a target="_blank" href="https://vcvrack.com/">VCV Rack</a>, and some of the tools I use in my statistics class.</p>';
+      html += '<p>The idea behind it is that each function is wrapped up in a module. All a user sees is its inputs and outputs. Modules can also include buttons, which alter internal states.</p>';
+      html += '<p>You then chain the outputs from one module into the input of another module to create more complex functionality. My goal is to create a tool that visualizes the process of transforming data through functions (as you can get lost in data transformation on a normal graphing calculator).</p>';
       html += '<p>Wanna try it out? Close this popup and start using it!</p>';
-      html += '<h2>Custom functions</h2>';
-      let catalogue_keys = Object.keys(catalogue);
-      html += '<p>Right now, this calculator is loaded with ' + catalogue_keys.length + ' libraries of functions: ';
-      for (let i = 0; i < catalogue_keys.length; i++) {
-        let category_display_name = catalogue[catalogue_keys[i]][Object.keys(catalogue[catalogue_keys[i]])[0]].category;
-        if (i > 0) html += ', ';
-        if (i == catalogue_keys.length-1) html += 'and ';
-        html += '<span category="'+catalogue_keys[i]+'" style="text-transform: uppercase; color: var(--accent);">'+category_display_name+'</span>';
-      }
-      html += '. But this can be extended!</p>';
-      html += '<p>Each node library is a fairly straight-forward .js file. Each node definition entered into the catalogue includes the following:</p>';
+      html += '<h2>Module libraries</h2>';
+      html += '<p>By default, this tool comes with 5 libraries, but you can import others via the dialog for adding modules. Each library is a simple .js file.';
+      html += '<p>Each module definition in a library includes the following:</p>';
       html += '<ul>';
       html += '<li>category <span>(required)</span></li>';
       html += '<li>name <span>(required)</span></li>';
@@ -781,41 +934,81 @@
     }
     function recursive_unary(a, base_function) {
       if (typeof(a)=="number") return base_function(a);
+      let x = [];
       for (let i = 0; i < a.length; i++)
-        a[i] = recursive_unary(a[i], base_function);
-      return a;
+        x[i] = recursive_unary(a[i], base_function);
+      return x;
     }
-    
-    function load_library(url) {
-      //put it into script
-      //let old_libraries = Object.keys(catalogue);
-      document.getElementById("library-loader").setAttribute("src", url);
-      /*setTimeout(function(){
-        //find which were added
-        let new_libraries = Object.keys(catalogue);
-        let additional = [];
-        for (new_library of new_libraries)
-          if (!old_libraries.includes(new_library))
-            additional.push(new_library);
-        console.log(additional);
-        //for each additional library, add their custom special unique color to the style
-        for (added of additional) {
-          console.log(added);
-          document.getElementById("custom-css").innerHTML += ":root{-accent:"+catalogue[added]._color+"}";
-          delete catalogue[added]._color;
-        }
-      }, 1000);*/
+    function equals(a, b) { //better equality function that recognizes list content
+      let a_list = typeof(a) != "number";
+      let b_list = typeof(b) != "number";
+      if (a_list != b_list) return false;
+      if (!a_list) return a == b;
+      if (a.length != b.length) return false;
+      for (let i = 0; i < a.length; i++)
+        if (!equals(a[i], b[i])) return false;
+      return true;
+    }
+    function includes(list, item) { //using better quality function
+      for (let i = 0; i < list.length; i++)
+        if (equals(list[i], item))
+          return true;
+      return false;
+    }
+    function copy(x) {
+      if (typeof(x) == "number") return x;
+      let k = [];
+      for (item of x)
+        k.push(copy(item));
+      return k;
     }
     
     //templates from which the actual node objects are constructed in make_node
     let catalogue = {};
+    let loaded_libraries = [];
+    function load_library(url, success, failure) {
+      //open script object
+      let el = document.createElement("script");
+      el.setAttribute("src", url);
+      el.setAttribute("type", "text/javascript");
+      el.setAttribute("async", false);
+      document.body.appendChild(el);
+      el.addEventListener("load", function(){
+        loaded_libraries.push(url);
+        try{success();}catch{}
+      });
+      el.addEventListener("error", function(er){
+        try{failure();}catch{}
+      });
+      //a bit later, update custom css to house all this
+      setTimeout(function(){
+        let css = "";
+        for (category of Object.keys(catalogue)) {
+          css += "*[category="+category+"]{--accent:"+catalogue[category]._color+"}";
+        }
+        document.getElementById("custom-css").innerHTML = css;
+      }, 100);
+    }
+    function user_load_library() {
+      let textfield = document.getElementById("library-import-textfield");
+      load_library(textfield.value, function() {
+        prompt_addition();
+        //document.getElementById("library-import-errormessage").style.display = "none";
+      }, function(){
+        textfield.value = "";
+        //document.getElementById("library-import-errormessage").style.display = "block";
+      });
+    }
+    
+    //load_library("catalogue_debug.js");
+    load_library("catalogue_math.js");
+    load_library("catalogue_constant.js");
+    load_library("catalogue_random.js");
+    load_library("catalogue_stats.js");
+    load_library("catalogue_lists.js");
+    load_library("catalogue_logic.js");
+    load_library("catalogue_sets.js");
   </script>
-  <script src="catalogue_math.js"></script>
-  <script src="catalogue_constant.js"></script>
-  <script src="catalogue_random.js"></script>
-  <script src="catalogue_stats.js"></script>
-  <script src="catalogue_lists.js"></script>
-  <script></script>
-  <script id="library-loader"></script>
+  <div id="library-loader"></div>
 </body>
 </html>

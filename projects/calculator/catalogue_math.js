@@ -1,7 +1,10 @@
-catalogue.math = {};
+catalogue.math = {
+	_name: "math",
+	_description: "common math operations",
+	_color: "#14bc36"
+};
 
 catalogue.math.add = {
-	category: "math",
 	name: "add",
 	inputs: [
 		{name: "addend 1", val: 0},
@@ -17,7 +20,6 @@ catalogue.math.add = {
 };
 
 catalogue.math.subtract = {
-	category: "math",
 	name: "subtract",
 	inputs: [
 		{name: "minuend", val: 0},
@@ -33,7 +35,6 @@ catalogue.math.subtract = {
 };
 
 catalogue.math.multiply = {
-	category: "math",
 	name: "multiply",
 	inputs: [
 		{name: "factor 1", val: 1},
@@ -49,7 +50,6 @@ catalogue.math.multiply = {
 };
 
 catalogue.math.divide = {
-	category: "math",
 	name: "divide",
 	inputs: [
 		{name: "numerator", val: 1},
@@ -65,7 +65,6 @@ catalogue.math.divide = {
 };
 
 catalogue.math.trig = {
-	category: "math",
 	name: "trig",
 	inputs: [
 		{name: "angle", val: 0}
@@ -85,7 +84,6 @@ catalogue.math.trig = {
 };
 
 catalogue.math.log = {
-	category: "math",
 	name: "log",
 	inputs: [
 		{name: "input", val: 1},
@@ -105,7 +103,6 @@ catalogue.math.log = {
 };
 
 catalogue.math.exponent = {
-	category: "math",
 	name: "exponent",
 	inputs: [
 		{name: "base", val: Math.E},
@@ -116,6 +113,34 @@ catalogue.math.exponent = {
 	],
 	calculate(i, state) {
 		let results = [recursive_binary(i[0], i[1], function(a, b) {return Math.pow(a, b)})];
+		return [results, {}];
+	}
+};
+
+catalogue.math.floor = {
+	name: "floor",
+	inputs: [
+		{name: "input", val: 0}
+	],
+	outputs: [
+		{name: "floored"}
+	],
+	calculate(i, state) {
+		let results = [recursive_unary(i[0], function(a) {return Math.floor(a)})];
+		return [results, {}];
+	}
+};
+
+catalogue.math.round = {
+	name: "round",
+	inputs: [
+		{name: "input", val: 0}
+	],
+	outputs: [
+		{name: "rounded"}
+	],
+	calculate(i, state) {
+		let results = [recursive_unary(i[0], function(a) {return Math.round(a)})];
 		return [results, {}];
 	}
 };

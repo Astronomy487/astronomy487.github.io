@@ -1,7 +1,10 @@
-catalogue.stats = {};
+catalogue.stats = {
+	_name: "statistics",
+	_description: "statistical analysis",
+	_color: "#0FC1EC"
+};
 
 catalogue.stats.stats = {
-	category: "stats",
 	name: "stats",
 	inputs: [
 		{name: "data", val: [0]}
@@ -29,7 +32,6 @@ catalogue.stats.stats = {
 };
 
 catalogue.stats.normal_distribution = {
-	category: "stats",
 	name: "normal distribution",
 	inputs: [
 		{name: "data", val: [0]}
