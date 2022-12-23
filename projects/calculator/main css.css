@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+body {
+	margin: 0;
+	user-select: none;
+	background-color: #222;
+	font-family: "Inter";
+	font-weight: normal;
+	--accent: #888;
+}
+
+/* @keyframes node_enter {from {opacity: 0; transform: scale(0.9) translateY(2rem);}} */
+@keyframes node_enter {from {opacity: 0; transform: translateY(50vh)} 60% {transform: translateY(-0.5vh)}}
+
+.node {
+	background-color: var(--accent);
+	color: white;
+	display: inline-block;
+	position: fixed;
+	width: 16rem;
+	padding-bottom: 2px;
+	animation: node_enter 1s;
+	border-radius: 0.25rem;
+	box-shadow: 0 0 0.5rem black;
+	transition: box-shadow 0.1s;
+}
+
+.node[dragging=true] {
+	box-shadow: 0 0 1rem black;
+}
+
+.node header {
+	padding: 0.5rem 2px;
+	text-align: center;
+	text-transform: uppercase;
+	cursor: move;
+}
+
+.node header div {
+	display: none;
+	font-size: 0.75rem;
+	text-transform: lowercase;
+}
+
+.node[errored="true"] {
+	--accent: #666 !important;
+}
+.node[errored="true"] span {
+	color: red;
+}
+
+.node section {
+	background-color: #000;
+	margin: 2px;
+	margin-bottom: 0;
+	border-radius: 0.125rem;
+}
+
+.node section.inputs-outputs {
+	padding: 0.5rem 0;
+}
+
+.node-inputs {
+	width: 50%;
+	vertical-align: top;
+	display: inline-block;
+}
+
+.node-input div {
+	display: inline-block;
+	background-color: #000;
+	color: #000;
+	outline: solid 2px var(--accent);
+	width: 1rem;
+	height: 1rem;
+	line-height: 1rem;
+	text-align: center;
+	border-radius: 1rem;
+	transform: translateX(-9px);
+	transition: 0.1s;
+	text-transform: uppercase;
+}
+
+.node-input[connected="true"] div {
+	background-color: var(--accent);
+	border-radius: 0;
+}
+
+.node-input[connected="true"] div:hover {
+	background-color: white;
+	outline-color: white;
+	color: black;
+	border-radius: 0;
+}
+
+.node-input label {
+	color: #777;
+	display: block;
+	width: 6.25rem;for (let i = 0; true; i++) console.log(i);
+	text-align: right;
+	transform: translate(-116px, -22px);
+	height: 0;
+}
+
+.node-input[connected="false"] label {
+	cursor: text;
+}
+
+.node-input label::before {content: ' ';}
+
+.node-input label:focus {
+	outline: none;
+	color: white;
+}
+
+.node-output label {
+	color: #777;
+	transition: color 0.1s;
+	display: block;
+	max-width: 6.25rem;
+	text-align: left;
+	transform: translate(138px, -22px);
+	height: 0;
+}
+
+.node-outputs {
+	width: 50%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.node-output {
+	text-align: right;
+}
+
+.node-input, .node-output {
+	transition: 0.1s;
+	text-transform: lowercase;
+}
+
+.node-input span, .node-output span {
+	display: inline-block;
+	width: 6.375rem;
+	padding: 2px 4px;
+	transition: 0.1s;
+	cursor: pointer;
+}
+
+.node-input[connected="true"] span {
+	color: var(--accent);
+}
+
+.node-output span:hover, .node-input span:hover, .node-output span:focus, .node-input span:focus {
+	background-color: #333;
+}
+
+.node-output[selected=true] span, .node-input[selected=true] span {
+	background-color: white;
+	color: var(--accent);
+}
+
+.node-output div {
+	display: inline-block;
+	background-color: var(--accent);
+	width: 0.75rem;
+	height: 0.75rem;
+	line-height: 0.75rem;
+	text-align: center;
+	border-radius: 1rem;
+	transform: translateX(7px);
+	margin-left: 2px;
+	transition: 0.1s;
+}
+
+section.buttons {
+	overflow: hidden;
+}
+
+section.buttons button {
+	font-family: inherit;
+	background-color: inherit;
+	border: none;
+	color: #bbb;
+	text-transform: lowercase;
+	padding: 0.5rem 0;
+	display: block;
+	width: 100%;
+	font-weight: inherit;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: 0.1s;
+}
+
+section.buttons button:hover, section.buttons button:focus {
+	background-color: #222;
+	color: white;
+	outline: none;
+}
+
+.node textarea {
+	background-color: #000;
+	margin: 0.125rem;
+	border: none;
+	color: white;
+	margin-bottom: 0;
+	resize: none;
+	width: calc(100% - 1.25rem);
+	border-radius: 0.125rem;
+	padding: 0.5rem 0.125rem;
+	font-family: inherit;
+	font-weight: inherit;
+	font-size: 0.875rem;
+	padding: 0.5rem;
+	overflow: hidden;
+	height: 6rem;
+	display: none;
+}
+
+.node textarea:focus {
+	background-color: #222;
+	outline: none;
+}
+
+::selection {
+	background: white;
+	color: black;
+}

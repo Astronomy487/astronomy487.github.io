@@ -7,16 +7,16 @@ catalogue.lists = {
 catalogue.lists.up_to = {
 	name: "up to",
 	inputs: [
-		{name: "lower", val: 0},
-		{name: "upper", val: 4},
-		{name: "step", val: 2}
+		{name: "lower", val: 1},
+		{name: "upper", val: 10},
+		{name: "step", val: 1}
 	],
 	outputs: [
 		{name: "list"}
 	],
 	calculate(i, state) {
 		let arr = [];
-		for (let j = i[0]; j <= i[1]; j += i[2]) {
+		for (let j = i[0]; j <= i[1]+0.00000001; j += i[2]) {
 			arr.push(j);
 		}
 		let results = [arr];
@@ -112,25 +112,47 @@ catalogue.lists.repeat = {
 catalogue.lists.join = {
 	name: "join",
 	inputs: [
-		{name: "list 1", val: [1]},
-		{name: "list 2", val: [2]}
+		{name: "list 1", val: []},
+		{name: "list 2", val: []}
 	],
 	outputs: [
 		{name: "joined list"}
 	],
 	calculate(i, state) {
 		let l = [];
-		if (typeof(i[0]) == "number") {
-			l.push(i[0]);
-		} else {
-			for (item of i[0])
-				l.push(item);
+		for (x of i) {
+			if (typeof(x) == "number") {
+				l.push(x);
+			} else {
+				for (item of x)
+					l.push(item);
+			}
 		}
-		if (typeof(i[1]) == "number") {
-			l.push(i[1]);
-		} else {
-			for (item of i[1])
-				l.push(item);
+		return [[l], state];
+	}
+};
+
+catalogue.lists.big_join = {
+	name: "5x join",
+	inputs: [
+		{name: "list 1", val: []},
+		{name: "list 2", val: []},
+		{name: "list 3", val: []},
+		{name: "list 4", val: []},
+		{name: "list 5", val: []}
+	],
+	outputs: [
+		{name: "joined list"}
+	],
+	calculate(i, state) {
+		let l = [];
+		for (x of i) {
+			if (typeof(x) == "number") {
+				l.push(x);
+			} else {
+				for (item of x)
+					l.push(item);
+			}
 		}
 		return [[l], state];
 	}
@@ -153,5 +175,96 @@ catalogue.lists.get = { //indexed at 1 <333
 			return i[0][index];
 		});
 		return [[result], state];
+	}
+};
+
+catalogue.lists.unfold = {
+	name: "unfold",
+	inputs: [
+		{name: "list", val: [[0]]}
+	],
+	outputs: [
+		{name: "unfolded list"}
+	],
+	calculate(i, state) {
+		let result = flatten(i[0]);
+		return [[result], state];
+	}
+}
+
+catalogue.lists.shuffle = {
+	name: "shuffle",
+	inputs: [
+		{name: "list", val: [0, 1]}
+	],
+	outputs: [
+		{name: "shuffled"}
+	],
+	buttons: [
+		{name: "reshuffle", action(i, state){
+			return state;
+		}}
+	],
+	calculate(i, state) {
+		let list = i[0].concat();
+		list.sort(() => (Math.random() > .5) ? 1 : -1);
+		return [[list], state];
+	}
+};
+
+catalogue.lists.pick = {
+	name: "pick",
+	inputs: [
+		{name: "list", val: [0, 1]},
+		{name: "count", val: 1}
+	],
+	outputs: [
+		{name: "items"}
+	],
+	buttons: [
+		{name: "repick", action(i, state){
+			return state;
+		}}
+	],
+	calculate(i, state) {
+		let result = recursive_unary(i[1], function(a) {
+			let bank = copy(i[0]);
+			let picks = [];
+			for (let j = 0; j < a && bank.length > 0; j++) {
+				let index = Math.floor(Math.random()*bank.length);
+				picks[j] = bank[index];
+				bank.splice(index, 1);
+			}
+			if (a == 1) picks = picks[0];
+			return picks;
+		});
+		return [[result], state];
+	}
+};
+
+catalogue.lists.normalize = {
+	name: "normalize",
+	inputs: [
+		{name: "vector", val: [1, 1]},
+		{name: "target sum", val: 1}
+	],
+	outputs: [
+		{name: "sum to x"},
+		{name: "sq sum to x"},
+	],
+	calculate(i, state) {
+		let flattened = flatten(i[0]);
+		let sum = 0;
+		for (item of flattened) sum += item;
+		let re_sum = recursive_unary(i[0], function(a){
+			return a * i[1] / sum;
+		});
+		let sq_sum = 0;
+		for (item of flattened) sq_sum += (item*item);
+		sq_sum = Math.sqrt(sq_sum);
+		let re_sq_sum = recursive_unary(i[0], function(a){
+			return a * i[1] / sq_sum;
+		});
+		return [[re_sum, re_sq_sum], state];
 	}
 }

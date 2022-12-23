@@ -144,3 +144,23 @@ catalogue.math.round = {
 		return [results, {}];
 	}
 };
+
+catalogue.math.lerp = {
+	name: "change domain",
+	inputs: [
+		{name: "old value", val: 0},
+		{name: "old min", val: 0},
+		{name: "old max", val: 1},
+		{name: "new min", val: 0},
+		{name: "new max", val: 1}
+	],
+	outputs: [
+		{name: "new value"}
+	],
+	calculate(i, state) {
+		let result = recursive_unary(i[0], function(a){
+			return (a-i[1])/(i[2]-i[1]) * (i[4]-i[3]) + i[3];
+		});
+		return [[result], state];
+	}
+}

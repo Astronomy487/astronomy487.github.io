@@ -1,0 +1,238 @@
+nav {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	font-size: 0;
+	padding: 1rem;
+	padding-bottom: 2rem;
+	padding-left: 1.5rem;
+	border-top-right-radius: 0.5rem;
+	z-index: 9999999;
+	pointer-events: none;
+}
+
+nav a {
+	font-size: 1.125rem;
+	color: #888;
+	cursor: pointer;
+	transition: color 0.1s;
+	padding: 0.25rem 0.75rem;
+	background-color: #222;
+	border-radius: 1rem;
+	pointer-events: auto;
+}
+
+nav a:not(:last-child) {
+	margin-right: 0.5rem;
+}
+
+nav a:hover, nav a:focus {
+	color: #fff;
+	background-color: #333;
+}
+
+#hr-container {
+	position: fixed;
+	z-index: -1;
+}
+
+#hr-container hr {
+	position: fixed;
+	border: none;
+	height: 0.25rem;
+	background-color: #444;
+	transition: background-color 0.1s;
+}
+
+#hr-container hr:hover {
+	background-color: #888;
+	cursor: pointer;
+}
+
+@keyframes modal-container-enter {from {opacity: 0}}
+@keyframes modal-container-exit {to {opacity: 0}}
+#modal-container {
+	background-color: #00000088;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 99999999;
+	display: none;
+}
+
+@keyframes modal-enter {from {transform: translate(-50%, -50%) translateY(1rem)}}
+@keyframes modal-exit {to {transform: translate(-50%, -50%) translateY(1rem)}}
+#modal {
+	width: 32rem;
+	height: calc(85vh - 4rem);
+	width: calc(85vh - 4rem);
+	padding: 2rem;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	border: solid 0.125rem #333;
+	color: white;
+	border-radius: 0.25rem;
+	overflow-y: scroll;
+	background-color: black;
+}
+
+#modal h2 {
+	text-transform: uppercase;
+}
+
+#modal > h2 {
+	margin-top: 2.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: solid 0.125rem #333;
+}
+
+#modal p, #modal ul {
+	line-height: 150%;
+	user-select: text;
+}
+
+#modal a {
+	color: #999;
+	transition: color 0.1s;
+}
+
+#modal a:hover, #modal a:focus {
+	color: #fff;
+	outline: none;
+}
+
+#modal span {
+	color: #777;
+}
+
+@keyframes special-message-enter {from {transform: translate(-50%, -50%) translateY(0.5rem) scale(0.95); opacity: 0;}}
+#special-message {
+	transform: translate(-50%, -50%);
+	color: #666;
+	font-size: 1.5rem;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	line-height: 150%;
+	animation: special-message-enter 0.5s;
+}
+
+#modal input {
+	font-family: inherit;
+	background-color: inherit;
+	border: none;
+	color: white;
+	padding: 0.5rem;
+	width: 75%;
+	border: solid 0.125rem #333;
+	font-weight: inherit;
+	font-size: 1rem;
+	transition: background-color 0.1s;
+	margin-right: 0.5rem;
+}
+
+#modal input:focus {
+	background-color: #333;
+	outline: none;
+}
+
+#modal button {
+	display: inline-block;
+	font-family: inherit;
+	font-size: inherit;
+	background-color: inherit;
+	border: none;
+	color: white;
+	padding: 0.5rem;
+	min-width: 6rem;
+	border: solid 0.125rem #333;
+	font-weight: inherit;
+	text-transform: uppercase;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color 0.1s;
+	margin-right: 0.5rem;
+}
+
+#modal button:hover, #modal > button:focus {
+	background-color: #333;
+}
+
+#modal .modal-button-light {
+	background-color: #555;
+	border-color: #777;
+}
+
+#modal .modal-button-light:hover, #modal .modal-button-light:focus {
+	background-color: #777;
+}
+
+#modal hr {
+	border: none;
+	height: 0.125rem;
+	background-color: #333;
+	margin: 2rem 0;
+}
+
+@keyframes catalogue-div-enter {from {opacity: 0; transform: translateX(-1rem)}}
+@keyframes catalogue-div-exit {to {opacity: 0; transform: translateX(1rem)}}
+#modal table {
+	border-collapse: collapse;
+	line-height: 100%;
+	width: 100%;
+	table-layout: fixed;
+	margin: 2rem 0;
+	text-transform: lowercase;
+}
+
+#modal tr[onclick] {
+	cursor: pointer;
+	transition: background-color 0.1s;
+}
+
+#modal tr:nth-child(2n)[onclick] {
+	background-color: #222;
+}
+
+#modal tr:hover[onclick], #modal tr:focus[onclick] {
+	background-color: #444;
+}
+
+#modal td {
+	padding: 0.25rem 0.5rem;
+}
+
+#modal td:first-child {
+	text-transform: uppercase;
+	padding: 0.675rem 1rem;
+	border-left: solid 0.25rem var(--accent);
+	width: 16rem;
+}
+
+#modal td:not(:first-child) {
+	color: #aaa;
+	border-left: solid 0.125rem #444;
+}
+
+#modal .bottom-buttons {
+	bottom: 0;
+	position: absolute;
+	display: block;
+	margin-bottom: 2rem;
+}
+
+#modal .bottom-buttons button {
+	width: calc(85vh - 5rem);
+	margin-top: 0.75rem;
+}
+
+#delete-zone {
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 2rem 0;
+	opacity: 0;
+}

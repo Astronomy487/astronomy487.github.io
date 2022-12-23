@@ -112,3 +112,30 @@ catalogue.debug.replicate = {
 		return [i, state];
 	}
 };
+
+/*catalogue.debug.node_in_node = {
+	name: "node in node",
+	buttons: [
+		{name: `<div class="node" category="math" id="4b7f7c59" style="position: relative;" onmouseup="click_header_up('4b7f7c59')" errored="false" dragging="false"><header onmousedown="click_header_down('4b7f7c59')">trig</header><section><div class="node-inputs"><div class="node-input" connected="false" id="4b7f7c59-input-0"><div onclick="input_circle_click('4b7f7c59', 0)" id="4b7f7c59-input-jack-0">–</div><span onclick="io_click('4b7f7c59', true, 0)">angle</span><label id="4b7f7c59-input-label-0" onfocusin="input_label_focusin('4b7f7c59', 0);" onfocusout="input_label_focusout('4b7f7c59', 0);" contenteditable="true">0</label></div></div><div class="node-outputs"><div class="node-output" id="4b7f7c59-output-0"><span onclick="io_click('4b7f7c59', false, 0)">sine</span><div id="4b7f7c59-output-jack-0">&nbsp;</div><label id="4b7f7c59-output-label-0">0</label></div><div class="node-output" id="4b7f7c59-output-1"><span onclick="io_click('4b7f7c59', false, 1)">cosine</span><div id="4b7f7c59-output-jack-1">&nbsp;</div><label id="4b7f7c59-output-label-1">1</label></div><div class="node-output" id="4b7f7c59-output-2"><span onclick="io_click('4b7f7c59', false, 2)">tangent</span><div id="4b7f7c59-output-jack-2">&nbsp;</div><label id="4b7f7c59-output-label-2">0</label></div></div></section><textarea spellcheck="false" placeholder="module notes..."></textarea></div>`, action(i, state) {return state;}}
+	],
+	calculate(i, state) {
+		return [i, state];
+	}
+};*/
+
+catalogue.debug.summoner = {
+	name: "the summoner",
+	buttons: [
+		{name: "summon", action(i, state){
+			let the_category = Object.keys(catalogue);
+			the_category = the_category[Math.floor(Math.random()*the_category.length)];
+			let the_module = [];
+			for (field of Object.keys(catalogue[the_category])) if (!field.startsWith("_")) the_module.push(field);
+			the_module = the_module[Math.floor(Math.random()*the_module.length)];
+			make_node(the_category, the_module, 200, 100);
+		}}
+	],
+	calculate(i, state) {
+		return [i, state];
+	}
+};

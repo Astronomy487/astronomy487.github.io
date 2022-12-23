@@ -1,7 +1,7 @@
 catalogue.logic = {
 	_name: "logic",
 	_description: "logical operations for boolean values",
-	_color: "#1466fc"
+	_color: "#975CE0"
 };
 
 catalogue.logic.bool = {
