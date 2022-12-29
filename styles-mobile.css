@@ -1,7 +1,7 @@
 /** changes for mobile on top of style.css **/
 
 html {
-	font-size: 24px;
+	font-size: 32px;
 }
 
 body {
@@ -11,6 +11,7 @@ body {
 iframe {
 	width: 24rem;
 	height: 24rem;
+	display: none;
 }
 
 img.art {

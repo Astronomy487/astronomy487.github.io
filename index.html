@@ -39,15 +39,13 @@
     
     #other-albums {
       text-align: center;
-      margin: 0 auto;
-      margin-top: 16rem;
-      margin-bottom: 8rem;
+      margin: 16rem auto;
       max-width: 64rem;
       font-size: 0;
+      display: none;
     }
     
     #other-albums a {
-      background-color: blue;
     }
     
     #other-albums img {
@@ -63,7 +61,7 @@
     }
     
     #other-albums h1 {
-      font-size: 1rem;
+      font-size: 1.25rem;
       font-family: "Inter", sans-serif;
     }
   </style>
@@ -88,8 +86,9 @@
     <a href="utopian"><img src="utopian/utopian.jpg"></a>
     <a href="chaseanidea"><img src="chaseanidea/chaseanidea.jpg"></a>
   </div>
+  <div style="background-color: var(--text);"><iframe src="projects/index.html" style="height: 59rem;"></iframe></div>
   <script>
-    if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "iframe {height: 128rem;}";
+    if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "iframe {height: 124rem;}";
   </script>
 </body>
 </html>

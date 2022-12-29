@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+  <link rel="icon" href="icon.png">
+  <title>0123</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+    
+    :root {
+      --g1: #202020;
+      --g2: #505050;
+      --g3: #888888;
+      --g4: #dddddd;
+      --n0: #34DB22;
+      --n1: #3FC9E9;
+      --n2: #A050E4;
+      --n3: #F75B97;
+      --n4: #F89D3B;
+      --n5: #FAE34D;
+    }
+    
+    /** recolor **/
+    
+    .n0 {color: var(--n0);}
+    .n1 {color: var(--n1);}
+    .n2 {color: var(--n2);}
+    .n3 {color: var(--n3);}
+    .n4 {color: var(--n4);}
+    .n5 {color: var(--n5);}
+    
+    .n0, .n1, .n2, .n3, .n4, .n5 {
+      transition: 0.2s;
+      font-weight: bold;
+    }
+    
+    /** body **/
+    
+    body {
+      background-color: var(--g1);
+      color: var(--g4);
+      font-family: Inter, sans-serif;
+    }
+    
+    article {
+      width: 48rem;
+      margin: auto;
+      font-size: 1rem;
+    }
+    
+    p {
+      text-align: left;
+      line-height: 1.5rem;
+    }
+    
+    a {
+      color: var(--g4);
+      text-decoration: underline;
+    }
+    
+    /** scroll bar and selection **/
+    
+    ::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--g2);
+      border-radius: 1rem;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--g3);
+    }
+    
+    ::selection {
+      background: var(--g4);
+      color: var(--g1);
+    }
+    
+    /** headings **/
+    
+    h1 {
+      font-size: 6rem;
+      text-align: center;
+      margin-top: 12rem;
+      font-weight: bold;
+    }
+    
+    h2 {
+      font-weight: normal;
+      text-align: center;
+      margin-top: 6rem;
+      padding-bottom: 2rem;
+      marign-bottom: 2rem;
+      font-size: 2rem;
+      border-bottom: solid 0.125rem var(--g2);
+    }
+    
+    h3 {
+      font-weight: normal;
+    }
+    
+    h3 span.enumeration {
+      color: var(--g3);
+      font-weight: bold;
+      display: inline-block;
+      width: 2.5rem;
+    }
+    
+    /** tables **/
+    
+    table.table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      border: solid 0.125rem var(--g2);
+      margin: 1rem 0;
+      color: var(--g3);
+    }
+    
+    table.table th {
+      color: var(--g4);
+      font-weight: normal;
+      background-color: var(--g2);
+    }
+    
+    table.table td, table.table th {
+      padding: 0.25rem 0;
+      text-align: center;
+    }
+    
+    table.table caption {
+      color: var(--g3);
+      margin-bottom: 0.25rem;
+      text-align: left;
+    }
+    
+    /** dictionary table **/
+    
+    table#dictionary {
+      width: 100%;
+      border-collapse: collapse;
+      border: solid 0.125rem var(--g2);
+      margin: 1rem 0;
+      color: var(--g3);
+    }
+    
+    table#dictionary th {
+      color: var(--g4);
+      font-weight: normal;
+      background-color: var(--g2);
+    }
+    
+    table#dictionary td, table#dictionary th {
+      padding: 0.25rem;
+      text-align: center;
+      transition: 0.2s;
+    }
+    
+    table#dictionary tr:hover td:not(:nth-child(1)) {
+      color: var(--g4);
+    }
+    
+    table#dictionary tr td:nth-child(1) {
+      width: 6rem;
+      font-weight: bold;
+    }
+    
+    table#dictionary tr td:nth-child(2) {
+      text-align: left;
+    }
+    
+    table#dictionary tr td:nth-child(3) {
+      width: 3rem;
+    }
+    
+    /** other boxes **/
+    
+    blockquote {
+      margin: 0;
+      border: solid 0.125rem var(--g2);
+      border-left-width: 0.75rem;
+      padding: 1rem;
+    }
+    
+    blockquote p {
+      margin: 0;
+    }
+    
+    iframe.code-block {
+      width: 100%;
+      height: 24rem;
+      border: none;
+    }
+    
+    /** interactive parser **/
+    
+    #interactive-parser {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+    
+    #interactive-parser td {
+      padding: 0.75rem;
+      vertical-align: top;
+      border: solid 0.125rem var(--g2);
+      color: var(--g3);
+      transition: 0.2s;
+      height: 12rem;
+    }
+    
+    #interactive-parser-input:focus {
+      outline: none;
+      color: var(--g4);
+    }
+    
+    #interactive-parser th {
+      background-color: var(--g2);
+      padding: 0.25rem 0;
+      font-weight: normal;
+    }
+    
+    /** menu **/
+    
+    #menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      margin: 3rem;
+      font-size: 0;
+      user-select: none;
+    }
+    
+    #menu img {
+      display: block;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    
+    /** toc **/
+    
+    #toc p {
+      display: block;
+      line-height: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    #toc p.heading-depth-1 {
+      margin-left: 0;
+    }
+    
+    #toc p.heading-depth-2 {
+      margin-left: 2rem;
+    }
+    
+    #toc p a {
+      text-decoration: none;
+    }
+    
+    #toc p a:hover {
+      text-decoration: underline;
+    }
+    
+    .unfinished {
+      background-color: var(--n4);
+      color: var(--g1);
+      font-weight: bold;
+      padding: 3rem 1rem;
+      font-size: 1.125rem;
+      text-align: center;
+    }
+    
+    .unfinished::after {
+      content: 'This section is unfinished.';
+    }
+  </style>
+  <link rel="stylesheet" href="" id="nomorecolors">
+</head>
+<body>
+  <article>
+    <h1><span class="recolor">0123</span></h1>
+    <div id="toc"></div>
+    <h2 class="heading">Introduction</h2>
+    <h3 class="heading">About</h3>
+    <p><span class="recolor">0123</span> / <span class="recolor">e tutu 'ile</span> is an engelang with a single word class. It uses a tree-like hierarchy of isolating morphemes to construct phrases as units of meanings, and those phrases can be used as leaves of larger trees. Its grammar is inspired by the likes of <a target="_blank" href="https://toaq.net/">Toaq</a>, <a target="_blank" href="https://tokipona.org/">Toki Pona</a>, <a target="_blank" href="https://lojban.org/">Lojban</a>, and the earlier iterations of this language. It is phonaesthetically inspired by Polynesian languages.</p>
+    <p>Like previous languages that serve as inspiration, <span class="recolor">0123</span> engages with the concept of a predicate in lieu of conventional syntactic word classes—a single word class can cover the syntactic function of most content. The word classes of natural languages (nouns, adjectives, verbs, etc.) are interpreted as semantic aspects of the words that fall into those categories, so the grammar does not depend on them. The interactions between all content words are the same, regardless of whether the content is an object, relationship, or attribute of another idea.</p>
+    <p><span class="recolor">0123</span> takes this idea to its fullest extent; all words fall into this single word class whose interactions with all other words is the same, albeit with an integer property that results in syntactically different use of different words. This property is the "degree" of a word, which can take four values: 0, 1, 2, or 3. In short, this property defines the number of other words used to "complete" the head word. n=0 words cannot be used in the same syntactic contexts as n=3 words, but the rules that govern them are identical. Whether this is truly a single word class or four similar word classes is subjective.</p>
+    <p><span class="recolor">0123</span> does not truly use predicate logic. Phrases are inserted into other phrases in a way that leaves semantic truth open to interpretation; objects cannot be said to definitively satisfy a particular predicate when the object is also a predicate and the predicate is also an object. <span class="recolor">0123</span> is similar to JavaScript in this respect.</p>
+    <p><span class="recolor">0123</span> has been an ongoing project since November 2020, and there have been five previous iterations of this language: Voldo, Folte, Yo Yo, Ki Leoko, and Niachāng. This iteration of the project began June 8, 2022. All specifications, documentation, and code surrounding <span class="recolor">0123</span> was written by Astro.</p>
+    <h2 class="heading">Alphabet</h2>
+    <h3 class="heading">Phonology and Orthography</h3>
+    <p><span class="recolor">0123</span> is phonaesthetically inspired by Polynesian languages. It has exclusively open syllables and lacks voicing distinctions.</p>
+    <p>Its phonology was determined by analyzing the ten most spoken Fijian-Polynesian languages (Fijian, Samoan, Tongan, Tahitian, Cook Islands Māori, New Zealand Māori, Hawaiian, Marquesan, Tuamotuan, Rapanui) and selecting the consonant phonemes present in more than a third of them. In this analysis, three pairs of consonants were merged (/f~ɸ/, /w~v/, and /l~r/), as these distinctions are not made in any of the sample languages, and these pairs are in fact frequently used in allophony. The unanimous five vowel system was used.</p>
+    <table class="table">
+      <tr><th></th><th>Labial</th><th>Coronal</th><th>Dorsal</th><th>Laryngeal</th></tr>
+      <tr><th>Nasal</th><td>m</td><td>n</td><td>ng/ŋ/</td><td></td></tr>
+      <tr><th>Plosive</th><td>p</td><td>t</td><td>k</td><td>'/ʔ/</td></tr>
+      <tr><th>Fricative</th><td>f/f~ɸ/</td><td>s</td><td></td><td>h</td></tr>
+      <tr><th>Liquid</th><td>w/w~v/</td><td>l/l~r/</td><td></td><td></td></tr>
+      <caption>0123 Consonants</caption>
+    </table>
+    <table class="table">
+      <tr><th></th><th>Front</th><th>Back</th></tr>
+      <tr><th>Close</th><td>i</td><td>u</td></tr>
+      <tr><th>Mid</th><td>e</td><td>o</td></tr>
+      <tr><th>Open</th><tdcolspan="2">a</td></tr>
+      <caption>0123 Vowels</caption>
+    </table>
+    <p>In phonemes with two realizations, the first is preferred.</p>
+    <h3 class="heading">Syllables</h3>
+    <p>All syllables are (C)V. There are thirteen possible onsets and five finals. *wu is the only forbidden sequence. *ti is written and pronounced tsi. There are 64 possible syllables.</p>
+    <table class="table">
+      <tr><td>a</td><td>ma</td><td>na</td><td>nga</td><td>pa</td><td>ta</td><td>ka</td><td>'a</td><td>fa</td><td>sa</td><td>ha</td><td>wa</td><td>la</td></tr>
+      <tr><td>e</td><td>me</td><td>ne</td><td>nge</td><td>pe</td><td>te</td><td>ke</td><td>'e</td><td>fe</td><td>se</td><td>he</td><td>we</td><td>le</td></tr>
+      <tr><td>i</td><td>mi</td><td>ni</td><td>ngi</td><td>pi</td><td>tsi</td><td>ki</td><td>'i</td><td>fi</td><td>si</td><td>hi</td><td>wi</td><td>li</td></tr>
+      <tr><td>o</td><td>mo</td><td>no</td><td>ngo</td><td>po</td><td>to</td><td>ko</td><td>'o</td><td>fo</td><td>so</td><td>ho</td><td>wo</td><td>lo</td></tr>
+      <tr><td>u</td><td>mu</td><td>nu</td><td>ngu</td><td>pu</td><td>tu</td><td>ku</td><td>'u</td><td>fu</td><td>su</td><td>hu</td><td></td><td>lu</td></tr>
+      <caption>Valid 0123 Syllables</caption>
+    </table>
+    <p>Although most Polynesian languages distinguish vowels by length, <span class="recolor">0123</span> does not implement length. However, successive repetition of a vowel within a word without a consonant between is written with a macron.</p>
+    <h3 class="heading">Color Use</h3>
+    <p>Words in <span class="recolor">0123</span> as well as the name of the language itself should be colored or highlighted in their respective colors—and, ideally, bolded to aid readability—whenever possible. The color of a word is linked to its degree. n=0 words should show up in green (#34DB22), n=1 in blue (#3FC9E9), n=2 in purple (#A050E4), and n=3 in pink (#F75B97).</p>
+    <p>For help in this coloration, seek the recoloration code in the parsing section of this documentation.</p>
+    <h2 class="heading">Grammar</h2>
+    <h3 class="heading">Degree: The Quintessential and Singular Grammatical Rule of <span class="recolor">0123</span></h3>
+    <p>Every word has an attribute called the "degree," an integer between 0 and 3, which defines how it interacts with other words. The degree of a word is innate to its form according to rules defined in the parsing section.</p>
+    <p>Every complete phrase is headed by a single word, which comes first, and then a number of arguments equal to the degree of the head word. These arguments are themselves phrases. This is the heart of <span class="recolor">0123</span> grammar, and all structures are defined by this rule.</p>
+    <p>Consider the following phrase.</p>
+    <blockquote>
+      <p class="recolor">li wono pa</p>
+      <p>I'm going to school.</p>
+    </blockquote>
+    <p>Thanks for your consideration.</p>
+    <p>In this phrase, <span class="recolor">li</span> has degree n=2, so it must take two arguments. The two words that follow are each n=0, so they do not need arguments themselves.</p>
+    <p><span class="recolor">li</span> here means "to" or "go to." This vagueness allows for semantic polymorphism; <span class="recolor">li</span> can function as the primary verb or as a preposition, in which case its second argument can encode the information of an entire complete clause.</p>
+    <blockquote>
+      <p class="recolor">li wono meka pa</p>
+      <p>I'm running to school.</p>
+    </blockquote>
+    <p>Here, <span class="recolor">meka pa</span> is a complete phrase which means "I am running." <span class="recolor">li</span>, which acts on it, now functions more similarly to a preposition while retaining the same meaning of relationships. Being vague with word classes as formal syntactic types enables <span class="recolor">0123</span> to be polymorphic like this. Here is another example of polymorphism.</p>
+    <blockquote>
+      <p class="recolor">mango mihe</p>
+      <p>Sweet fruit / Fruit is sweet</p>
+    </blockquote>
+    <p><span class="recolor">mango</span> means "sweet" and <span class="recolor">mihe</span> means "fruit". As a whole, the phrase can mean either "sweet fruit" (a likely interpretation if embedded in a larger phrase) or "fruit is sweet" (a translation that suits a complete sentence in English).</p>
+    <p>Also note that the word order of <span class="recolor">li</span>'s arguments does not necessarily match the order of natural languages. <span class="recolor">li</span>'s dictionary definition is as follows.</p>
+    <blockquote>
+      <p><span class="recolor">li</span> X Y</p>
+      <p>to X, Y; towards X, Y goes</p>
+    </blockquote>
+    <p>In general, earlier arguments will be those that are more semantically tied or limited by the parent word, or concepts that will generally be expressed more succinctly than later arguments such that later arguments can be as close to the parent word as possible.</p>
+    <h3 class="heading">Particles</h3>
+    <p>Conventional engelangs use particle classes to supplement their content words, and particles serve unique grammatical functions that require unique parsing and structure rules, which complicates the grammar and takes away from the significance of a single content class—Lojban has as many selma'o (classes of cmavo (particle) with uniquely defined grammatical relationships) as Toki Pona has words. Because of the versatility of the content class in <span class="recolor">0123</span>, a particle class isn't necessary, although there are still words that encode meanings typically described by particles in other languages.</p>
+    <p>For example, the optional tense words <span class="recolor">rai</span>, <span class="recolor">fe</span>, and <span class="recolor">tote</span> indicate that the argument happened in the past, present, or future respectively. Particles like <span class="recolor">fo</span> ("can", "maybe") can express verb modality. Although these are semantically "particles" because most languages denote them with particles, they are grammatically identical to all other words.</p>
+    <h3 class="heading">Number</h3>
+    <div class="unfinished"></div>
+    <h2 class="heading">Parsing Algorithms and Implementations</h2>
+    <h3 class="heading">Motivation</h3>
+    <div class="unfinished"></div>
+    <h3 class="heading">Syllable Parsing</h3>
+    <p>Each of the 64 syllables in <span class="recolor">0123</span> are randomly assigned to integers between 0 and 63 that are used internally for parsing algorithms. Here is a table of these correspondences.</p>
+    <table class="table">
+      <tr><td>ro</td><td>0</td><td>'a</td><td>8</td><td>ki</td><td>16</td><td>ra</td><td>24</td><td>he</td><td>32</td><td>te</td><td>40</td><td>no</td><td>48</td><td>fo</td><td>56</td></tr>
+      <tr><td>re</td><td>1</td><td>wi</td><td>9</td><td>tu</td><td>17</td><td>ka</td><td>25</td><td>ngi</td><td>33</td><td>ngo</td><td>41</td><td>pa</td><td>49</td><td>lo</td><td>57</td></tr>
+      <tr><td>nu</td><td>2</td><td>ho</td><td>10</td><td>ha</td><td>18</td><td>hi</td><td>26</td><td>le</td><td>34</td><td>hu</td><td>42</td><td>o</td><td>50</td><td>ne</td><td>58</td></tr>
+      <tr><td>mo</td><td>3</td><td>mu</td><td>11</td><td>fi</td><td>19</td><td>wa</td><td>27</td><td>ni</td><td>35</td><td>u</td><td>43</td><td>ku</td><td>51</td><td>ti</td><td>59</td></tr>
+      <tr><td>ru</td><td>4</td><td>ma</td><td>12</td><td>ta</td><td>20</td><td>pi</td><td>28</td><td>fa</td><td>36</td><td>pe</td><td>44</td><td>a</td><td>52</td><td>li</td><td>60</td></tr>
+      <tr><td>la</td><td>5</td><td>wo</td><td>13</td><td>'i</td><td>21</td><td>mi</td><td>29</td><td>'e</td><td>37</td><td>we</td><td>45</td><td>ko</td><td>53</td><td>'o</td><td>61</td></tr>
+      <tr><td>nga</td><td>6</td><td>po</td><td>14</td><td>pu</td><td>22</td><td>me</td><td>30</td><td>fu</td><td>38</td><td>lu</td><td>46</td><td>nge</td><td>54</td><td>e</td><td>62</td></tr>
+      <tr><td>ri</td><td>7</td><td>na</td><td>15</td><td>to</td><td>23</td><td>ngu</td><td>31</td><td>i</td><td>39</td><td>ke</td><td>47</td><td>fe</td><td>55</td><td>'u</td><td>63</td></tr>
+      <caption>Syllable-B64 correspondence table</caption>
+    </table>
+    <p>Here are JavaScript implementations of the conversion between <span class="recolor">0123</span> text and arrays of the base-64 representation of syllables.</p>
+    <iframe class="code-block" src="syllablenumbers.js"></iframe>
+    <h3 class="heading">Word Boundary Parsing</h3>
+    <div class="unfinished"></div>
+    <iframe class="code-block" src="wordboundaries.js"></iframe>
+    <h3 class="heading">Grammar Analysis Parsing</h3>
+    <div class="unfinished"></div>
+    <iframe class="code-block" src="grammaranalysis.js"></iframe>
+    <h3 class="heading">Recoloration</h3>
+    <div class="unfinished"></div>
+    <iframe class="code-block" src="recolor.js"></iframe>
+    <h2 class="heading">Resources</h2>
+    <div class="unfinished"></div>
+    <h3 class="heading">Interactive Parser</h3>
+    <table id="interactive-parser">
+      <tr>
+        <th>Input</th>
+        <th>Recolored Output</th>
+        <th>Rough Translation</th>
+      </tr>
+      <tr>
+        <td id="interactive-parser-input" contenteditable="plaintext-only" oninput="run_parser()">etutu'ile</td>
+        <td id="interactive-parser-output"></td>
+        <td id="interactive-parser-output-2"></td>
+      </tr>
+    </table>
+    <h3 class="heading">Dictionary</h3>
+    <table id="dictionary"></table>
+    <!--<h3 class="heading">Translations</h3>-->
+  </article>
+  <div id="menu">
+    <img id="button-palette" onclick="palette()" src="icon.png">
+  </div>
+  <script src="syllablenumbers.js"></script>
+  <script src="wordboundaries.js"></script>
+  <script src="dictionary.js"></script>
+  <script src="grammaranalysis.js"></script>
+  <script src="recolor.js"></script>
+  <script>
+    auto_number_headings();
+    function auto_number_headings() {
+      let p = [];
+      let heading = document.getElementsByClassName("heading");
+      let toc_html = "<h2>Contents</h2>";
+      for (let i = 0; i < heading.length; i++) {
+        let depth = (heading[i].tagName.substring(1))-1;
+        if (p.length > depth) {
+          while (p.length > depth) {
+            let waste = p.pop();
+          }
+          p[depth-1]++;
+        } else if (p.length < depth) {
+          while (p.length < depth) p.push(1);
+        } else {
+          p[depth-1]++;
+        }
+        let heading_text = heading[i].innerText;
+        if (depth != 1) heading[i].innerHTML = "<span class=\"enumeration\">"+p.join(".") + "</span>" + heading_text;
+        heading[i].setAttribute("id","heading-"+p.join("-"));
+        toc_html += "<p class=\"heading-depth-"+depth+"\"><a href=\"#heading-"+p.join("-")+"\">"+p.join(".")+" "+heading_text+"</a></p>";
+      } //end loop
+      document.getElementById("toc").innerHTML = toc_html;
+    }
+    
+    let palette_active = false;
+    palette();
+    function palette() {
+      palette_active = !palette_active;
+      if (palette_active) {
+        let chosen_color = Math.floor(Math.random()*4);
+        document.getElementById("button-palette").setAttribute("style", "");
+        document.getElementById("nomorecolors").setAttribute("href", "");
+      } else {
+        document.getElementById("button-palette").setAttribute("style", "filter: grayscale();");
+        document.getElementById("nomorecolors").setAttribute("href", "nomorecolors.css");
+      }
+    }
+    
+    //silly little code to leave space when going to a section
+    window.addEventListener("hashchange", function () {
+      window.scrollTo(window.scrollX, window.scrollY - 24);
+    });
+    
+    run_parser();
+    function run_parser() {
+      let input = document.getElementById("interactive-parser-input").innerText;
+      let word_ids = b64stream_to_wordids(text_to_b64stream(input));
+      let analysis = grammar_analysis(word_ids);
+      let text = [];
+      let root_translations = [];
+      for (word of analysis) {
+        let word_form = b64stream_to_text(wordid_to_b64stream(word.id));
+        text.push("<span class=\"n"+word.arity+"\" title=\""+word.translation+"\">"+word_form+"</span>"+(word.final_child ? "." : ""));
+        if (word.root) root_translations.push(word.translation);
+      }
+      document.getElementById("interactive-parser-output").innerHTML = text.join(" ");
+      document.getElementById("interactive-parser-output-2").innerText = root_translations.join(". ");
+    }
+  </script>
+</body>
+</html>
