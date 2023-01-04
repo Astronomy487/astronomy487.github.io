@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Progressionatron 5000</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    
+    body {
+      font-size: 1.125rem;
+      background-color: black;
+      color: white;
+      font-family: Inter, sans-serif;
+    }
+    
+    /* colors for all 12 notes */
+    :root {
+      --color0: #DA4C4C;
+      --color1: #E89841;
+      --color2: #EFCF30;
+      --color3: #B2DD3C;
+      --color4: #30DC29;
+      --color5: #41D9A8;
+      --color6: #48E0E0;
+      --color7: #32ABDC;
+      --color8: #4D58D0;
+      --color9: #9E4DD4;
+      --color10: #D052CC;
+      --color11: #D94F96;
+      --accent: gray; /* overridden whenever chord is presented */
+    }
+    
+    /* colored every semitone */
+    [root="0"] {--accent: var(--color0)}
+    [root="1"] {--accent: var(--color1)}
+    [root="2"] {--accent: var(--color2)}
+    [root="3"] {--accent: var(--color3)}
+    [root="4"] {--accent: var(--color4)}
+    [root="5"] {--accent: var(--color5)}
+    [root="6"] {--accent: var(--color6)}
+    [root="7"] {--accent: var(--color7)}
+    [root="8"] {--accent: var(--color8)}
+    [root="9"] {--accent: var(--color9)}
+    [root="10"] {--accent: var(--color10)}
+    [root="11"] {--accent: var(--color11)}
+    
+    /* colored every fifth */
+    [root="0"] {--accent: var(--color0)}
+    [root="1"] {--accent: var(--color7)}
+    [root="2"] {--accent: var(--color2)}
+    [root="3"] {--accent: var(--color9)}
+    [root="4"] {--accent: var(--color4)}
+    [root="5"] {--accent: var(--color11)}
+    [root="6"] {--accent: var(--color6)}
+    [root="7"] {--accent: var(--color1)}
+    [root="8"] {--accent: var(--color8)}
+    [root="9"] {--accent: var(--color3)}
+    [root="10"] {--accent: var(--color10)}
+    [root="11"] {--accent: var(--color5)}
+    
+    span.inline_chord {
+      font-weight: bold;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main>
+  </main>
+    <h1>Progressionatron 5000</h1>
+    <p><b>Hey! this project is incomplete! it is missing css and improved user interactions!!!</b></p>
+    <input id="prog_input" placeholder="put chord progression here" style="width: 50%;">
+    <button onclick="find_continuations()">find continuations</button>
+    <div id="advanced_results" style="border: solid 1px white; width: 50%; margin: 1rem 0; padding: 1rem;"></div>
+    <p>chord progression sources list</p>
+    <ul id="library_list"></ul>
+  <script>
+    // the patterns detected by the c++ program. each attribute of knowledge object is one Library of sources
+    let libraries = [];
+    
+    libraries.push({
+      name: "The Real Book",
+      description: "Chords taken from The Real Book of jazz progressions. As of right now, it has been trained on African Flower and Misty. Comprised mostly of seventh chords!",
+      knowledge: {'Cm7':[[6,'Fm7'],[3,'A#m7'],[3,'Am7'],[1,'Gm7*5'],[1,'Cm7'],[1,'Gm7'],[1,'D#M7'],[1,'Bm7'],[1,'G#7*5'],[2,'C7'],[14,'F7']],'C7*5':[[1,'Fm7']],'CM7':[[1,'F7'],[1,'C7'],[5,'Cm7'],[3,'Am7'],[1,'C#m7'],[1,'Gm7']],'Cm7*5':[[1,'Fm7']],'Cm7 Bm7 G7*5':[[1,'Cm7']],'Cm7 Gm7':[[1,'Cm7']],'C7 Dm7':[[1,'G7']],'CM7 Cm7':[[2,'C7'],[3,'F7']],'C7':[[1,'GM7'],[1,'D7'],[1,'Cm7'],[6,'FM7'],[3,'DM7'],[1,'Am7'],[2,'Fm7'],[1,'FM/A'],[1,'D#7'],[1,'Dm7'],[1,'F6']],'Cm7 F7 GM7':[[3,'Em7']],'Cm7 C7':[[2,'FM7']],'C7 GM7 G7':[[1,'A7']],'Cm7 Fm7':[[2,'D#m7'],[1,'G#M7'],[3,'A#7']],'Cm7 Gm7*5':[[1,'Cm7']],'Cm7 A#m7':[[3,'Gm7']],'C7 FM7':[[4,'Fm7'],[1,'F#m7'],[1,'Cm7']],'Cm7 Fm7 D#m7':[[2,'Cm7']],'Cm7 Cm7 Fm7':[[1,'D#m7']],'Cm7 Am7':[[1,'Em7*5'],[1,'Em7'],[1,'G#m7']],'C7 D#7':[[1,'Fm7']],'Cm7*5 Fm7':[[1,'Fm7']],'C7 DM7':[[3,'Bm7']],'Cm7 D#M7':[[1,'G#7']],'Cm7 Cm7':[[1,'Fm7']],'CM7 F7':[[1,'CM7']],'C7 GM7':[[1,'G7']],'C7 D7':[[1,'Dm7']],'C7 Am7':[[1,'D7']],'CM7 C7':[[1,'D7']],'C7 Cm7':[[1,'A#m7']],'CM7 C#m7':[[1,'F#7']],'Cm7 Bm7':[[1,'G7*5']],'Cm7 G#7*5':[[1,'C#m7']],'Cm7 A#m7 Gm7':[[1,'Dm7*5'],[1,'Dm7'],[1,'F#m7']],'Cm7 Am7 Em7*5':[[1,'Am7']],'Cm7 Gm7*5 Cm7':[[1,'Cm7']],'Cm7*5 Fm7 Fm7':[[1,'A#m7']],'Cm7 Am7 Em7':[[1,'Am7']],'Cm7 Fm7 G#M7':[[1,'C#7']],'Cm7 Gm7 Cm7':[[1,'D#M7']],'Cm7 D#M7 G#7':[[1,'D#M7']],'CM7 F7 CM7':[[1,'C7']],'CM7 C7 D7':[[1,'Dm7']],'C7 D7 Dm7':[[1,'Cm7']],'C7 Cm7 A#m7':[[1,'Gm7']],'Cm7 Am7 G#m7':[[1,'E7*5']],'C7 Fm7':[[2,'A#7']],'CM7 Am7':[[3,'Dm7']],'CM/E':[[1,'Gm7']],'C6':[[1,'Dm7']],'Cm7 F7':[[3,'GM7'],[1,'Dm7'],[2,'A#m7'],[4,'A#M7'],[1,'A#M/D'],[1,'G#7'],[1,'A#6']],'C6 Dm7':[[1,'G7']],'C7 FM/A':[[1,'Cm7']],'CM/E Gm7':[[1,'C7']],'CM7 Gm7':[[1,'C7']],'Cm7 F7 Dm7':[[1,'G7']],'C7 F6':[[1,'Gm7']],'CM7 Cm7 C7':[[2,'FM7']],'Cm7 C7 FM7':[[2,'Fm7']],'C7 FM7 Fm7':[[3,'A#7'],[1,'F7']],'CM7 Cm7 F7':[[3,'GM7']],'C7 DM7 Bm7':[[3,'Em7']],'CM7 Am7 Dm7':[[3,'G7']],'Cm7 Fm7 A#7':[[1,'Gm7'],[1,'D#M/G'],[1,'D#6']],'C7 Am7 D7':[[1,'Gm7']],'Cm7 F7 A#m7':[[2,'D#7']],'C7 Fm7 A#7':[[2,'D#M7']],'Cm7 F7 A#M7':[[2,'A#m7'],[1,'Bm7'],[1,'Fm7']],'Cm7 F7 A#M/D':[[1,'Fm7']],'C7 FM/A Cm7':[[1,'F7']],'CM/E Gm7 C7':[[1,'FM7']],'C7 FM7 F#m7':[[1,'B7']],'CM7 C#m7 F#7':[[1,'A7']],'Cm7 F7 G#7':[[1,'A#m7']],'C7 D#7 Fm7':[[1,'A#7']],'C7 Dm7 G7':[[1,'Cm7']],'C7 FM7 Cm7':[[1,'F7']],'CM7 Gm7 C7':[[1,'FM7']],'Cm7 F7 A#6':[[1,'Cm7']],'C7 F6 Gm7':[[1,'C7']]}
+    });
+    
+    let knowledge = {}; //the copy of knowledge used. composed from the knowledge of several libraries
+    
+    //builds the knowledge to be used from libraries
+    build_knowledge([0]);
+    function build_knowledge(library_indeces) {
+      knowledge = {};
+      let list_html = "";
+      for (i of library_indeces) {
+        add_knowledge(libraries[i].knowledge);
+        list_html += "<li><b>" + libraries[i].name + "</b> " + libraries[i].description + "</li>";
+      }
+      document.getElementById("library_list").innerHTML = list_html;
+      //sort all knowledge rules
+      for (rule of Object.keys(knowledge)) {
+        knowledge[rule].sort((a, b) => (a[0] < b[0]) ? 1 : -1)
+      }
+    }
+    
+    //the variables here are named horribly. dont look at them
+    function add_knowledge(k) {
+      for (key of Object.keys(k)) { //for each entry in the knowledge
+        if (!Object.keys(knowledge).includes(key)) { //make sure entry key exists
+          knowledge[key] = [];
+        }
+        let rule = knowledge[key];
+        for (continuation of k[key]) {
+          //continuation[0] is count, continuation[1] is new chord name. must find it in rule
+          let found = false;
+          for (possible_continuation of rule) {
+            if (possible_continuation[1] == continuation[1]) {
+              possible_continuation[0] += continuation[0];
+              found = true;
+            }
+          }
+          if (!found) {
+            rule.push([continuation[0], continuation[1]]);
+          }
+        }
+      }
+    }
+    
+    let note_names = "C C# D D# E F F# G G# A A# B".split(" ");
+    
+    //clean chords and transposes them. or maybe gets their root!
+    function clean_and_transpose(chord, shift = 0, get_root = false) {
+      chord = chord.replaceAll("maj", "M");
+      chord = chord.replaceAll("min", "m");
+      chord = chord.replaceAll("aug", "+");
+      chord = chord.replaceAll("dim", "*");
+      chord = chord.replaceAll("dom", "7");
+      for (let i = 0; i < chord.length; i++) {
+        let character = chord.charAt(i);
+        if (note_names.includes(character)) {
+          let before = chord.substring(0, i);
+          let after = chord.substring(i+1);
+          let note_value = note_names.indexOf(character) + 12;
+          while (after.startsWith("#")) {
+            note_value++;
+            after = after.substring(1);
+          }
+          while (after.startsWith("b")) {
+            note_value--;
+            after = after.substring(1);
+          }
+          note_value += shift;
+          if (get_root) return note_value%12;
+          chord = before + note_names[note_value%12] + after;
+          //check for plain major chords
+          if (before == "") {
+            let voicing_to_come = after.length > 0 && !after.startsWith("/");
+            if (!voicing_to_come) {
+              chord = before + note_names[note_value%12] + "M" + after;
+            }
+          }
+        }
+      }
+      return chord;
+    }
+    
+    //crunch the numbers. return list of the ways you could continue
+    function request_continuation(history) {
+      let results = [];
+      for (let context = 2; context >= 1; context--) {
+        if (context > history.length) continue;
+        let chord_history = [];
+        let offset = clean_and_transpose(history[history.length - context], 0, true);
+        for (let i = history.length - context; i < history.length; i++) {
+          chord_history.push(clean_and_transpose(history[i], 12-offset));
+        }
+        let continuations = knowledge[chord_history.join(" ")]; //list of pairs [3, 'Fmaj']. need offset applied still
+        if (!continuations) continue;
+        let bank = []; //bank of transposed continuations. one for each entry in the knowledge. still contains frequencies
+        let total_count = 0;
+        for (entry of continuations) {
+          bank.push({
+            count: entry[0],
+            chord: clean_and_transpose(entry[1], offset)
+          });
+          total_count += entry[0];
+        }
+        results.push({
+          context: context,
+          bank: bank,
+          total_count: total_count
+        });
+      }
+      return results;
+    }
+    
+    function accept_chord(chord) {
+      document.getElementById("prog_input").value = document.getElementById("prog_input").value.trim() + " " + chord;
+      find_continuations();
+    }
+    
+    function accept_chord_from_frequency_list(f_list) {
+      let list = [];
+      for (entry of f_list) {
+        for (let i = 0; i < entry.count; i++) {
+          list.push(entry.chord);
+        }
+      }
+      accept_chord(list[Math.floor(Math.random()*list.length)]);
+    }
+    
+    document.getElementById("prog_input").value = "";
+    function find_continuations() {
+      let prog = document.getElementById("prog_input").value.replaceAll("?","*");
+      prog = prog.split(",").join(" ").split(" ").filter((str) => str != '');
+      let report = request_continuation(prog);
+      document.getElementById("advanced_results").innerHTML = advanced_results_html(report, prog);
+    }
+    
+    function advanced_results_html(report, prog) {
+      let html = "";
+      for (level of report) {
+        html += "<p>" + level.context + " chord"+(level.context==1?"":"s")+" of context</b>";
+        html += "<button class=\"accept_button\" onclick=\"accept_chord_from_frequency_list("+JSON.stringify(level.bank).replaceAll('"', "'")+")\">accept rand</button>";
+        html += "</p>";
+        for (cont of level.bank) {
+          let chord_name = cont.chord.replaceAll("*", "?");
+          html += "<div>";
+          html += "<span class=\"inline_chord\" root=\""+clean_and_transpose(cont.chord, 0, true)+"\">" + chord_name + "</span>";
+          html += " ("+ Math.round(1000*cont.count/level.total_count)/10+"%)";
+          html += "<button class=\"accept_button\" onclick=\"accept_chord('"+chord_name+"')\">accept</button>";
+          html += "</div>";
+        }
+      }
+      if (html == "") html = "<h2>Cannot continue this progression</h2><p>There are no instances of a chord like "+clean_and_transpose(prog[prog.length-1])+" before</p>"
+      return html;
+    }
+  </script>
+</body>
+</html>

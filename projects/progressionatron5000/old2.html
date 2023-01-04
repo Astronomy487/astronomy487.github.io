@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+    :root {
+      --accent: #D61552;
+    }
+    
+    body {
+      background-color: #fff;
+      color: black;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: "Inter", sans-serif;
+    }
+    
+    aside {
+      width: calc(33.333% - 4rem);
+      padding: 0 2rem;
+      background-color: #eee;
+      border-right: solid 2px #ccc;
+      height: calc(100vh - 8rem);
+      padding-bottom: 8rem;
+      overflow-y: auto;
+      position: fixed;
+      font-size: 1.125rem;
+      line-height: 1.5em;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      background-color: var(--accent);
+      color: white;
+      margin: 0 -2rem;
+      padding-bottom: 2rem;
+      text-align: center;
+      padding-top: 8rem;
+      margin-bottom: 3rem;
+    }
+    
+    a, b {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    h2 {
+      font-weight: bold;
+      font-size: 1.25rem;
+      border-left: solid 0.25rem var(--accent);
+      padding-left: 1rem;
+      margin-top: 4rem;
+    }
+    
+    textarea {
+      width: calc(100% - 2rem);
+      resize: none;
+      height: 24rem;
+      background-color: white;
+      border: solid 2px #ccc;
+      border-radius: 0.25rem;
+      padding: 1rem;
+      font-family: inherit;
+      font-size: 1.125rem;
+      transition: 0.1s;
+    }
+    
+    button {
+      display: block;
+      font-family: inherit;
+      font-size: 1rem;
+      width: 50%;
+      padding: 1rem 0;
+      margin: 1rem 0;
+      border-radius: 0.25rem;
+      background-color: white;
+      border: solid 2px #ccc;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.1s;
+      color: black;
+    }
+    
+    button:not([disabled]):hover {
+      background-color: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    
+    button[disabled] {
+      cursor: default;
+      background-color: inherit;
+      color: #aaa;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    article {
+      width: calc(66.666% - 16rem);
+      padding: 4rem 8rem;
+      height: calc(100vh - 8rem);
+      overflow-y: scroll;
+      position: fixed;
+      right: 0;
+      font-size: 0;
+      user-select: none;
+    }
+    
+    .row {
+      margin-bottom: 2rem;
+      text-align: center;
+      border-top: solid 2px #ddd;
+      padding-top: 1rem;
+    }
+    
+    .chord {
+      font-weight: bold;
+      font-size: 1.5rem;
+      display: inline-block;
+      width: 6rem;
+      height: 6rem;
+      line-height: 6rem;
+      border: solid 2px #ddd;
+      text-align: center;
+      border-radius: 0.25rem;
+      margin: 0 0.5rem;
+      margin-bottom: 1rem;
+      vertical-align: middle;
+      transition: 0.1s;
+    }
+    
+    .chord[status="clickable"] {
+      cursor: pointer;
+    }
+    
+    .chord[status="clickable"]:hover {
+      border-color: #ccc;
+      background-color: #eee;
+    }
+    
+    .chord[status="decided"] {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    
+    @keyframes chord_button_spin_360 {from {transform: rotate(-360deg);}}
+    @keyframes chord_button_spin_90 {from {transform: rotate(90deg);}}
+    
+    .chord_button { /* button after decided chords that will reset history back to this point */
+      font-weight: bold;
+      font-size: 2rem;
+      display: inline-block;
+      width: 3rem;
+      height: 3rem;
+      line-height: 3rem;
+      background-color: white;
+      text-align: center;
+      border-radius: 6rem;
+      cursor: pointer;
+      opacity: 0.25;
+      font-family: Material Symbols Outlined;
+      vertical-align: middle;
+      transition: 0.1s;
+    }
+    
+    .chord_button[spin="360"]:hover {animation: 0.5s chord_button_spin_360;}
+    .chord_button[spin="90"]:hover {animation: 0.5s chord_button_spin_90;}
+    
+    .chord_button:hover {
+      background-color: #eee;
+      opacity: 1;
+    }
+    
+    .chord_button:first-child {
+      float: left;
+    }
+    
+    .chord_button:last-child {
+      float: right;
+    }
+    
+    .inline_symbol {
+      font-family: Material Symbols Outlined;
+      vertical-align: middle;
+      margin: 0 0.25rem;
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1em;
+      font-size: 2rem;
+    }
+    
+    
+  </style>
+</head>
+<body>
+  <aside> <!-- houses left info and rules and stuff -->
+    <h1>Chord explorer thing :D</h1>
+    <p>This is a chord tool I made. I was inspired by graph theory, jazz music, functional harmony, and <a target="_blank" href="https://williamwieland.midcoip.net/theory/harmony/k_p_maj.jpg">that diagram</a> they loved to show in AP Music Theory. (Originally, I built <a target="_blank" href="oldindex.html">a Huffman-like encoding specification</a>, but it was lame so I did this instead.)</p>
+    <h2>How do you use it</h2>
+    <p>On the right is a vertical sequence of chords starting at <b>C</b>. Chords in red have been commited to the chord history. The white chords presented below are continuations suggested by the computer. Click on a suggestion to commit it to history.</p>
+    <p>On any row, you can use the <span class="inline_symbol">edit</span> button to manually define a chord.</p>
+    <p>On already decided rows, you can use the <span class="inline_symbol">refresh</span> button to delete all chord history after that point.</p>
+    <p>On rows with suggestions, you can use the <span class="inline_symbol">casino</span> button to generate a new set of chord continuations.</p>
+    <p>You can get a more compact view of your chord history by pressing <span class="inline_symbol">grid_view</span> in the bottom right.</p>
+    <h2>How does it work</h2>
+    <p>The basic idea is that I have defined a lookup table for chord "voicings" (e.g. major triad, minor 9th, dominant 7th) and "valid" transitions out of each. Each transition holds a bass note shift and a new target voicing.</p>
+    <p>As opposed to the aformentioned diagram which remembers the function of a chord and makes resolutions in the context of a key (i.e. V to I), this tool ignores keys and allows any modulation as long as each step was validated in the lookup table (any major-to-major movement descending a fifth).</p>
+    <p>All the valid transitions are defined here. You can edit these rules if you want.</p>
+    <textarea spellcheck="false" placeholder="put transition rules here..." id="rules_input" oninput="notify_textarea_change(true)"></textarea>
+    <button disabled id="use_rules_button" onclick="make_rules()">Use these rules</button>
+  </aside>
+  <article id="edit_view" style="display: block;"> <!-- the play field -->
+    <!-- <div class="row">
+      <div class="chord_button" spin="360">edit</div>
+      <div class="chord" status="decided">G7</div>
+      <div class="chord_button" spin="360">refresh</div>
+    </div>
+    <div class="row">
+      <div class="chord_button" spin="360">edit</div>
+      <div class="chord" status="clickable">C</div>
+      <div class="chord" status="clickable">CM7</div>
+      <div class="chord" status="clickable">C11</div>
+      <div class="chord" status="clickable">G#M11</div>
+      <div class="chord_button" spin="90">casino</div>
+    </div> -->
+  </article>
+  </article>
+  <script>
+    document.getElementById("rules_input").value = (
+      "M/5/M M/5/m M/5/M9 M/5/M7 M/4/° M/7/m " +
+      "M7/11/7 M7/6/° " +
+      "M9/5/M7 M9/5/M M9/4/m7 " +
+      "7/5/M 7/5/11 7/11/M7 " +
+      "9/5/M 9/3/M7 " +
+      "m/5/M m/5/m " +
+      "m7/5/11 m7/5/M m7/10/m9 " +
+      "m9/5/11 " +
+      "11/5/M7 11/5/M " +
+      "°/1/M °/5/9 " +
+    "").trim().split(" ").join("\n");
+    let transitions;
+    
+    let rules_changed = false;
+    function notify_textarea_change(bool) { //true = edited, make not disabled. false = not edited, make disabled
+      rules_changed = bool;
+      if (bool) document.getElementById("use_rules_button").removeAttribute("disabled");
+      if (!bool) document.getElementById("use_rules_button").setAttribute("disabled", "");
+    }
+    
+    make_rules();
+    function make_rules() {
+      let rules = document.getElementById("rules_input").value.split("\n");
+      let recognized_voicings = [];
+      transitions = {};
+      function recognize_voicing(v) {
+        if (!recognized_voicings.includes(v)) {
+          recognized_voicings.push(v);
+          transitions[v] = [];
+        }
+      }
+      for (rule of rules) {
+        try {
+          rule = rule.split("/");
+          for (let i = 0; i < rule.length; i++) rule[i] = rule[i].trim();
+          recognize_voicing(rule[0]);
+          recognize_voicing(rule[2]);
+          transitions[rule[0]].push({shift: parseInt(rule[1]), voicing: rule[2]});
+        } catch {
+          console.log("exception on rule \""+rule+"\"")
+        }
+      }
+      notify_textarea_change(false);
+    }
+    
+    function chord_name(chord) {
+      let b = chord.bass % 12;
+      while (b < 0) b += 12;
+      let v = chord.voicing;
+      if (v == "M") v = "";
+      return "C/C#/D/D#/E/F/F#/G/G#/A/A#/B".split("/")[b] + v;
+    }
+    
+    function get_continuations(chord) {
+      let c = [];
+      for (rule of transitions[chord.voicing]) {
+        let b = chord.bass + rule.shift;
+        let v = rule.voicing;
+        c.push({bass: b%12, voicing: v});
+      }
+      return c;
+    }
+    
+    let history = [
+      {bass: 0, voicing: "M9"}
+    ];
+    
+    function pencil_click(row) {
+    }
+    
+    function refresh_click(row) {
+    }
+    
+    function dice_click(row) {
+    }
+    
+    function chord_click(row, n) {
+      let chosen_continuation = saved_continuations[row][n];
+      delete saved_continuations[row];
+      document.getElementById("row_"+row).remove();
+      history.push(chosen_continuation);
+      construct_row(row);
+    }
+    
+    let saved_continuations = {};
+    construct_row(0);
+    function construct_row(row) {
+      let html = "";
+      //construct this row (which is certain) and the possibilities beneath
+      //html += '<div class="row" id="row_'+row+'">';
+      //html += '<div class="chord_button" spin="360" onclick="pencil_click('+row+')">edit</div>';
+      html += '<div class="chord" status="decided">'+chord_name(history[row])+'</div>';
+      //html += '<div class="chord_button" spin="360" onclick="refresh_click('+row+')">refresh</div>'
+      //html += '</div>';
+      document.getElementById("edit_view").insertAdjacentHTML("beforeend", html);
+      let continuations = shuffle(get_continuations(history[row]));
+      row++;
+      saved_continuations[row] = continuations;
+      html = '<div class="row" id="row_'+row+'"><div class="chord_button" spin="360" onclick="pencil_click('+row+')">edit</div>';
+      for (let i = 0; i < Math.min(10, continuations.length); i++) {
+        html += '<div class="chord" status="clickable" onclick="chord_click('+row+', '+i+')">'+chord_name(continuations[i])+'</div>';
+      }
+      html += '<div class="chord_button" spin="90" onclick="dice_click('+row+')">casino</div></div>'
+      document.getElementById("edit_view").insertAdjacentHTML("beforeend", html);
+    }
+    
+    function shuffle(t){for(let r=t.length-1;0<r;r--){var f=Math.floor(Math.random()*(r+1));[t[r],t[f]]=[t[f],t[r]]}return t}
+    
+    
+    
+    let fullgraph = [];
+    for (v of Object.keys(transitions)) {
+      for (e of transitions[v]) {
+        //entry is rule obj for v to e.voicing w shift e.shift
+        for (let i = 0; i < 12; i++) {
+          fullgraph.push(chord_name({bass: i, voicing: v}) + " " + chord_name({bass: i+e.shift, voicing: e.voicing}));
+        }
+      }
+    }
+    console.log(fullgraph.join("\n"));
+  </script>
+</body>
+</html>
