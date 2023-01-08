@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PROGRESSION-O-TRON</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    
+    body {
+      font-size: 1.125rem;
+      background-color: #111;
+      color: #ddd;
+      font-family: Inter, sans-serif;
+      user-select: text;
+      overflow-y: scroll;
+      margin: 0;
+    }
+    
+    main, header div {
+      width: min(48rem, calc(100vw - 2rem));
+      margin: auto;
+    }
+    
+    main {
+      padding-bottom: 8rem;
+    }
+    
+    header {
+      background-color: #222;
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    header h1 {
+      font-size: 3rem;
+      margin: 1rem 0;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    
+    p {
+      line-height: 1.75rem;
+    }
+    
+    a {
+      text-decoration: underline;
+      cursor: pointer;
+      color: white;
+    }
+    
+    nav {
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      user-select: none;
+    }
+    
+    nav span {
+      padding: 0.5rem 0;
+      width: 50%;
+      display: inline-block;
+      text-align: center;
+      border: solid #333;
+      border-width: 0.125rem 0;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    nav span[active="true"] {
+      background-color: #333;
+    }
+    
+    nav span:hover {
+      background-color: #333;
+    }
+    
+    section {
+      display: none;
+    }
+    
+    .quiet {
+      color: #888;
+    }
+    
+    ::selection {
+      background: white;
+      color: black;
+    }
+    
+    /* colors for all 12 notes */
+    :root {
+      --color0: #DA4C4C;
+      --color1: #E89841;
+      --color2: #EFCF30;
+      --color3: #B2DD3C;
+      --color4: #30DC29;
+      --color5: #41D9A8;
+      --color6: #48E0E0;
+      --color7: #32ABDC;
+      --color8: #4D58D0;
+      --color9: #9E4DD4;
+      --color10: #D052CC;
+      --color11: #D94F96;
+      --accent: gray; /* overridden whenever chord is presented */
+    }
+    
+    /* colored every semitone */
+    [root="0"] {--accent: var(--color0)}
+    [root="1"] {--accent: var(--color1)}
+    [root="2"] {--accent: var(--color2)}
+    [root="3"] {--accent: var(--color3)}
+    [root="4"] {--accent: var(--color4)}
+    [root="5"] {--accent: var(--color5)}
+    [root="6"] {--accent: var(--color6)}
+    [root="7"] {--accent: var(--color7)}
+    [root="8"] {--accent: var(--color8)}
+    [root="9"] {--accent: var(--color9)}
+    [root="10"] {--accent: var(--color10)}
+    [root="11"] {--accent: var(--color11)}
+    
+    /* colored every fifth */
+    [root="0"] {--accent: var(--color0)}
+    [root="1"] {--accent: var(--color7)}
+    [root="2"] {--accent: var(--color2)}
+    [root="3"] {--accent: var(--color9)}
+    [root="4"] {--accent: var(--color4)}
+    [root="5"] {--accent: var(--color11)}
+    [root="6"] {--accent: var(--color6)}
+    [root="7"] {--accent: var(--color1)}
+    [root="8"] {--accent: var(--color8)}
+    [root="9"] {--accent: var(--color3)}
+    [root="10"] {--accent: var(--color10)}
+    [root="11"] {--accent: var(--color5)}
+    
+    input {
+      font-family: inherit;
+      font-size: inherit;
+      background-color: inherit;
+      border: none;
+      color: inherit;
+      padding: 0.5rem 0;
+      text-align: center;
+      display: block;
+      border: solid 0.125rem #333;
+      border-radius: 0.25rem;
+      width: 100%;
+    }
+    
+    input:focus {
+      outline: none;
+      background-color: #222;
+    }
+    
+    #advanced_results {
+      background-color: #222;
+      color: white;
+    }
+    
+    hr {
+      border: none;
+      height: 0.25rem;
+      background-color: #555;
+      margin: 1rem 0;
+    }
+    
+    .result_chord {
+      padding: 0.125rem 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .result_chord:hover {
+      background-color: #333;
+    }
+    
+    .result_chord_name {
+      font-weight: bold;
+      color: var(--accent);
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .result_chord_percent {
+      background-color: var(--accent);
+      display: inline-block;
+    }
+    
+    .result_chord_percent_container {
+      border: solid 0.0625rem #aaa;
+      color: #aaa;
+      border-radius: 0.25rem;
+      overflow: hidden;
+      display: inline-block;
+      width: min(calc(100% - 9rem), 32rem);
+      vertical-align: middle;
+      float: right;
+    }
+    
+    .result_chord_number {
+      float: right;
+      margin-right: 0.25rem;
+    }
+    
+    .context_level_heading {
+      user-select: none;
+      text-align: center;
+      background-color: #333;
+      margin: 1rem auto;
+      padding: 0.25rem 0;
+      border-radius: 0.25rem;
+      width: 66.7%;
+      cursor: pointer;
+    }
+    
+    .context_level_heading:hover {
+      background-color: #555;
+    }
+    
+    #advanced_results p, #advanced_results h3 {
+      margin: 1rem;
+    }
+    
+    #advanced_results h3 {
+      font-weight: bold;
+      font-size: 2rem;
+    }
+    
+    #cleaned_return {
+      margin: 1rem 0;
+      text-align: center;
+    }
+    
+    .inline_chord {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-top: 3rem;
+      margin-bottom: -0.5rem;
+    }
+    
+    .library {
+      padding: 1rem 4rem;
+      background-color: #222;
+      border-radius: 0.25rem;
+      border: solid 0.125rem #444;
+      margin: 1.5rem 0;
+    }
+    
+    .library b {
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    
+    .library span {
+      display: block;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+    
+    .library input[type="range"] {
+      filter: grayscale(100%);
+    }
+  </style>
+</head>
+<body>
+  <header><div>
+    <h1>progression-o-tron</h1>
+    <p style="text-align: center;">!! This project is still in development !!</p>
+    <nav id="tab_nav"></nav>
+  </div></header>
+  <main>
+    <section navtext="progression-o-tron">
+      <input id="prog_input" placeholder="put chord progression here" oninput="find_continuations()">
+      <div id="cleaned_return"></div>
+      <div id="advanced_results"></div>
+    </section>
+    <section navtext="about and configuration">
+      <h2>Using the PROGRESSION-O-TRON</h2>
+      <p>This is a tool that can continue chord progressions based on an analysis of existing songs. For example, if you present it with <span class="inline_chord" root="7">Gm7</span> <span class="inline_chord" root="0">C7</span>, it will suggest possible next chords like <span class="inline_chord" root="5">FM7</span> and <span class="inline_chord" root="2">DM7</span>.</p>
+      <p>Chord names are prefered in their short forms (e.g. <span class="inline_chord" root="0">CM7</span> instead of <span class="inline_chord" root="0">Cmaj7</span>) but longer forms are usually accepted. You can use this text box to see how your text gets cleaned.</p>
+      <input id="test_chord_cleaning_input" placeholder="put chord(s) here" oninput="test_chord_cleaning()">
+      <p id="test_chord_cleaning_output" style="text-align: center;">&nbsp;</p>
+      <p>Note that this program has no knowledge of actual chord voicing; if you use precise names that specify sharp/flat chord members, only chords spelled in the same way will be identified as similar!</p>
+      <h2>How it works</h2>
+      <p>It accomplishes this with a lookup table of contexts (always stored transposed such that the first chord's root is C). By transposing and looking up a context, the program shows you the ways that songs tend to continue such a context. To see that lookup table, try <code onclick="console.log(knowledge)">console.log(knowledge)</code> in the JS console. The lookup is generated by <a target="_blank" href="ChordTool.cpp">this C++ program</a> that takes filenames, scans them, and prints the table as a JS object.</p>
+      <p>This page uses those same functions translated into JS to accept user input, access the lookup table, and return the results.</p>
+      <p style="color: #888;">For the curious, these rules were originally hard-coded and only accessed one chord of context. It was also originally a Huffman-like encoding scheme. See iterations <a href="old1.html">1</a> and <a href="old2.html">2</a> of this project.</p>
+      <h2>Libraries</h2>
+      <p>Libraries are collections of songs, each with transcribed chord progressions, used as training data for this system. Each library is trained individually and produces its own lookup table, which are later combined.</p>
+      <p>Here, you can view each of the libraries I've prepared and set the influence each has on the rule scheme used in the PROGERSSION-O-TRON.</p>
+      <div id="library_container"></div>
+      <!--<hr><p style="color: #888; text-align: center;">made by <a href="twitter.com/astronomy487" target="_blank">astro</a>. special thanks to max and alice for feedback</p>-->
+    </section>
+  </main>
+  <script>
+    // ================= KNOWLEDGE MANAGEMENT =================
+  
+    // the patterns detected by the c++ program. each attribute of knowledge object is one Library of sources
+    let libraries = [];
+    
+    libraries.push({
+      weight: 100,
+      color: 2,
+      name: "The Real Book",
+      description: "Chords taken from the first 15 songs of The Real Book collection of jazz standards. Comprised mostly of seventh chords!",
+      knowledge: {'Cm7':[[28,'Fm7'],[8,'A#m7'],[4,'Am7'],[1,'Gm7*5'],[5,'Cm7'],[1,'Gm7'],[3,'D#M7'],[2,'Bm7'],[1,'G#7*5'],[6,'Dm7'],[4,'C#M7'],[4,'A#M'],[71,'F7'],[5,'F7b9'],[4,'D7#9'],[2,'G#M7'],[1,'Gm7b5'],[1,'D7b9'],[2,'B*7'],[4,'G7#9'],[2,'C7'],[7,'F7sus4'],[3,'C#*7'],[2,'Fm7b5/A#'],[1,'Am7b5'],[3,'F#7'],[3,'G7'],[1,'F#9'],[2,'Cm7b5/F#'],[1,'D7'],[1,'D#6'],[1,'F9'],[2,'DM/C'],[1,'G#m7']],'C7#9/G B7#9/F#':[[1,'B7b9']],'C7*5':[[1,'Fm7']],'C9sus4':[[1,'Fm7']],'CM7':[[1,'F7'],[1,'C7'],[6,'Bm7'],[10,'Cm7'],[3,'F#m7'],[12,'Dm7'],[1,'CM7'],[3,'Em7'],[4,'B7'],[4,'C#m7'],[1,'Bm7b5'],[3,'Am7'],[7,'FM7'],[4,'F#m7b5'],[2,'A7'],[2,'C#m7b5'],[3,'C6'],[1,'C#*7'],[1,'B7#5'],[3,'Dm7b5'],[2,'F#7'],[1,'G#+7'],[1,'D7'],[1,'Fm7/C'],[1,'D#7#5']],'Cm7 Gm7':[[1,'Cm7']],'Cm7*5':[[1,'Fm7']],'CM7 Cm7':[[8,'F7'],[1,'Fm7'],[1,'Bm7']],'C7':[[1,'GM7'],[1,'D7'],[6,'Cm7'],[39,'FM7'],[1,'FM7/A'],[26,'Fm7'],[1,'B7b5'],[1,'Fm7b5'],[9,'Am7'],[3,'C7#5'],[4,'Bm7'],[4,'B7'],[25,'F7'],[1,'F7#11'],[1,'F7b9'],[5,'Gm7'],[1,'F7/C'],[9,'G7'],[1,'C#7'],[4,'A7'],[1,'C#M7'],[3,'F6'],[1,'F6/A'],[1,'Fm7b5/B'],[2,'A#m6'],[1,'G#M7'],[1,'DM7']],'Cm7 Fm7':[[2,'D#m7'],[1,'G#M7'],[10,'A#7'],[3,'A#7sus4'],[6,'A#m7'],[2,'F#*7'],[2,'A#m7b5/D#'],[1,'Dm7'],[1,'Dm7b5']],'Cm7 Gm7*5':[[1,'Cm7']],'Cm7 A#m7':[[3,'Gm7'],[2,'A#m7'],[2,'G#M'],[1,'CM/A#']],'C7 FM7/A':[[1,'D7']],'C7 FM7':[[8,'Fm7'],[3,'Bm7'],[6,'Gm7'],[4,'E7'],[2,'F#m7'],[1,'Em7b5'],[7,'A#M7'],[2,'D7'],[2,'F6'],[1,'Em7'],[1,'C#+7'],[1,'Bm7b5']],'Cm7 Am7':[[1,'Em7*5'],[1,'Em7'],[1,'G#m7'],[1,'Dm7']],'Cm7*5 Fm7':[[1,'Fm7']],'CM7 CM7':[[1,'Dm7']],'Cm7 D#M7':[[1,'G#7'],[2,'Em7']],'CM9/E EM7':[[1,'Am7/E']],'Cm7 Cm7':[[1,'Fm7'],[3,'Dm7'],[1,'D7b9']],'CM7 F7':[[1,'CM7']],'C7b9':[[3,'FM7'],[1,'C7#5'],[1,'F9sus4'],[4,'Fm7'],[1,'Dm7b5/C'],[1,'A#m6']],'C7 GM7':[[1,'G7']],'C7 Am7':[[7,'Dm7'],[2,'D7']],'C7 D7':[[1,'Dm7']],'Cm7 F#9':[[1,'F7']],'CM7 C7':[[1,'D7']],'CM7 Dm7':[[10,'G7'],[2,'Em7']],'C7 Cm7':[[1,'A#m7'],[1,'Cm7b5/F#'],[4,'F7']],'Cm7 C#M7':[[4,'Cm7']],'Cm7 Bm7':[[1,'G7*5'],[1,'A#*7']],'Cm7 G#7*5':[[1,'C#m7']],'C*7':[[1,'E9/B'],[3,'Bm7'],[1,'G#m7'],[1,'F#M7']],'CM':[[4,'A#M'],[4,'DM'],[4,'Dm7'],[1,'Bm7b5']],'CM7/E A7':[[1,'Dm7']],'C7b5':[[1,'Bm7'],[1,'B7sus4']],'Cm7 Dm7':[[4,'D#M7'],[2,'G7b9']],'CM7 Bm7':[[4,'Am7'],[1,'E7'],[1,'Gm7']],'C7b9 FM7':[[2,'Gm7'],[1,'FM7']],'Cm7 A#M':[[4,'G#M']],'CM A#M':[[4,'CM']],'C9 B7':[[1,'F#m7']],'CM DM':[[4,'Em7']],'C7b9 Dm7b5/C':[[1,'C7b9']],'CM Dm7':[[2,'CM'],[1,'Dm7']],'CM7/E':[[1,'A7'],[1,'FM7#11']],'C7#5 A#m7':[[1,'D#m7']],'Cm7 F7':[[33,'A#M7'],[1,'A#M7/D'],[1,'A#m7b5'],[7,'Dm7'],[2,'F7#5'],[5,'A#m7'],[1,'A#7b9'],[7,'A#7'],[1,'D7'],[2,'Fm7'],[3,'A#6'],[1,'D#m6'],[1,'C#M7'],[1,'GM7']],'CM7 B7':[[1,'A#7b5'],[1,'Em7b5/A#'],[1,'E7'],[1,'A#7']],'C7#9/G':[[1,'B7#9/F#'],[1,'C7b9']],'CM7 F#m7':[[3,'B7b9']],'Cm7 F7b9':[[3,'A#M7'],[2,'A#m7']],'CM7#11':[[1,'Dm7']],'C7 Fm7':[[11,'A#7'],[2,'C7#9'],[1,'A#7sus4'],[2,'A#m7'],[3,'B7'],[3,'C7'],[1,'B9'],[1,'Fm7b5/B'],[1,'G7'],[1,'G#6']],'C7#9':[[4,'F7#5'],[4,'Fm7']],'C7#5':[[5,'Fm7'],[1,'A#m7'],[2,'FM7'],[1,'C7'],[1,'Fm7b5/B']],'Cm7b5':[[1,'Fm7'],[4,'F7b9'],[8,'F7'],[2,'B7']],'C9/G':[[1,'C7#9/G']],'Cm7 D7#9':[[4,'G7#5']],'Cm7 Gm7b5':[[1,'Cm7']],'C7#9 F7#5':[[4,'A#m7']],'CM7 Em7':[[1,'Bm7b5'],[1,'Em7'],[1,'A7']],'C7#5 Fm7':[[2,'G7#9'],[2,'C#M7'],[1,'D#m7']],'C*7 E9/B':[[1,'E7#9/B']],'Cm F7':[[1,'A#M7']],'Cm7 G#M7':[[2,'Cm7']],'Cm7b5 Fm7':[[1,'G7#9']],'Cm7 D7b9':[[1,'D7#5']],'C7b9 C7#5':[[1,'A#m7']],'C7sus4 G#M/C':[[1,'G7b9sus4']],'Cm7 B*7':[[1,'D#9/A#'],[1,'A#m7']],'C7 B7b5':[[1,'A#m7']],'Cm7 G7#9':[[4,'Cm7']],'C7b5 Bm7':[[1,'A#*7']],'C7sus4 Cm7':[[1,'F7']],'C9/G C7#9/G':[[1,'B7#9/F#']],'C*7 F#M7':[[1,'F7#5']],'C7#9/G C7b9':[[1,'F9sus4']],'C7b9 F9sus4':[[1,'A#m7']],'C6':[[2,'D7'],[1,'F#m7'],[2,'E7'],[1,'Cm6'],[2,'Dm7']],'C7sus4':[[1,'FM'],[2,'FM7'],[1,'Am7'],[1,'Cm7'],[1,'Bm7b5'],[1,'Fm7/C'],[1,'DM/C'],[1,'G#M/C'],[1,'G#M/A#'],[1,'BM7'],[1,'A#M7'],[1,'D#7sus4']],'C7#9 Fm7':[[2,'F7'],[2,'G#M7']],'Cm7 C7':[[2,'Fm7']],'C7b9 Fm7':[[1,'C7#9'],[3,'A#7']],'CM7 C#m7':[[4,'F#7']],'CM7 Bm7b5':[[1,'E7b9']],'Cm7b5 F7b9':[[2,'A#m7'],[1,'D#m6']],'Cm7/G':[[1,'G7sus4'],[1,'C#M7/F']],'C7 Fm7b5':[[1,'A#7']],'Cm7b5 F7':[[5,'A#m7'],[1,'A#6/D'],[1,'D#m6'],[1,'A#M7']],'CM7 Fm7/C':[[1,'C7sus4']],'Cm7 F7sus4':[[1,'A#M'],[2,'A#M7'],[1,'Em7b5'],[1,'GM/F'],[1,'D#M7'],[1,'G#7sus4']],'C7sus4 FM':[[1,'Em7b5']],'CM Bm7b5':[[1,'E7b9']],'Cm7b5/F':[[2,'F7sus4']],'C6 Cm6':[[1,'Bm7']],'C7#11':[[1,'Cm7']],'C7 C#7':[[1,'C7']],'Cm7b5/A#':[[1,'A#7b9']],'C7b9sus4 G#M9/C':[[1,'C7b9sus4'],[1,'CM7'],[1,'Cma7']],'CM7 Am7':[[3,'Dm7']],'C7sus4 FM7':[[2,'Gm7']],'Cm7 C#*7':[[2,'Cm7'],[1,'Am7']],'C*7 Bm7':[[3,'E7']],'C7 C7#5':[[2,'FM7'],[1,'C7']],'C7#5 FM7':[[2,'Dm7']],'C*7 G#m7':[[1,'C#m7']],'Cm7 Fm7b5/A#':[[2,'A#7sus4']],'C7sus4 BM7':[[1,'D7#5']],'Cm7b5/F F7sus4':[[1,'Dm7'],[1,'Fm7']],'C7sus4 Am7':[[1,'D7']],'C7sus4 Bm7b5':[[1,'A#7']],'Cm7b5 B7':[[1,'A#m7'],[1,'A#7']],'C7 Bm7':[[1,'Em7'],[3,'E7']],'Cm6 GM7':[[3,'Am7b5'],[1,'Bm7']],'Cm7 Am7b5':[[1,'G#7']],'C7 B7':[[2,'E7'],[1,'A#7'],[1,'Em7']],'C7 F7':[[1,'A#7#11'],[8,'A#7'],[2,'Dm7'],[2,'Cm7'],[3,'A#m7'],[6,'C7'],[1,'A#M7']],'C7 F7#11':[[1,'Fm7']],'C7#11 Cm7':[[1,'C#*7']],'C7 G7':[[1,'G#7'],[3,'E7'],[2,'D7'],[3,'C7']],'C7 F7b9':[[1,'Gm7b5/F']],'C9':[[1,'B7'],[1,'Fm7']],'CM7 FM7':[[3,'Bm7b5'],[1,'F#m7b5'],[2,'B7'],[1,'Fm7']],'CM7 F#m7b5':[[4,'B7']],'Cm7 F#7':[[3,'Fm7']],'CM7 A7':[[1,'D7'],[1,'Dm7']],'CM7 C#m7b5':[[1,'F#7b9'],[1,'F#7']],'CM7 D#7#5':[[1,'G#m7']],'Cm7 G7':[[3,'Cm7']],'C7 Gm7':[[5,'C7']],'C7/G':[[1,'G7']],'C7 F7/C':[[1,'C7']],'C7/G G7':[[1,'D7']],'Cm7b5/F#':[[4,'F7']],'CM7 C6':[[2,'D7'],[1,'F#m7']],'C6 D7':[[2,'Am7']],'C6 F#m7':[[1,'B7']],'Cm7 Cm7b5/F#':[[2,'F7']],'Cm7b5/F# F7':[[2,'Fm7'],[1,'A#M7'],[1,'A#m7']],'C7 A7':[[1,'A7#5'],[3,'Dm7']],'C7#5 C7':[[1,'C#M7']],'Cm7/G C#M7/F':[[1,'F#M7#11']],'C7 C#M7':[[1,'D*7']],'CM7 C#*7':[[1,'GM7']],'CM7 B7#5':[[1,'Em7b5/A#']],'C7#5 Fm7b5/B':[[1,'A#7']],'Cm6':[[1,'Bm7'],[4,'GM7']],'C6 E7':[[2,'A7']],'Cm7 DM/C':[[2,'Bm7']],'Cm7 D7':[[1,'Gm7']],'C7 F6':[[1,'A7'],[2,'Gm7']],'Cm7 D#6':[[1,'D#m6']],'Cm6 Bm7':[[1,'E9']],'Cm7 F9':[[1,'A#m7']],'C9 Fm7':[[1,'A#7']],'C6 Dm7':[[1,'G7']],'C6/E':[[1,'D#*']],'C*':[[1,'Bm']],'Cm':[[1,'F7']],'CM7 Dm7b5':[[1,'G7b9'],[2,'G7']],'C* Bm':[[1,'E7']],'C7b9 A#m6':[[1,'FM7']],'CM/A# Am7':[[2,'D7sus4']],'C7 F6/A':[[1,'G#*']],'C6/E D#*':[[1,'Dm']],'C7 Fm7b5/B':[[1,'A#7']],'C7 A#m6':[[2,'FM7']],'C7 G#M7':[[1,'Am7b5']],'C+7':[[1,'Fm7']],'CM7 F#7':[[2,'BM7']],'CM7 G#+7':[[1,'C#m7']],'C+7 Fm7':[[1,'A#m7']],'C7 DM7':[[1,'E7']],'CM7 D7':[[1,'Dm7']],'C7b9sus4':[[3,'G#M9/C']],'CM9/E':[[1,'E7b9sus4'],[1,'EM7'],[1,'Ema7']],'CM/A#':[[2,'Am7'],[1,'A#7sus4']],'CM/E':[[1,'B7b9sus4']],'Cma7':[[1,'C7sus4']],'CM/D':[[1,'C#7b5']],'CM9/E E7b9sus4':[[1,'CM9/E']],'Cm7/G G7sus4':[[1,'Cm7/G']],'C7sus4 Fm7/C':[[1,'F#M7/A#']],'CM7/E FM7#11':[[1,'Gm7']],'CM7#11 Dm7':[[1,'EM/D']],'C7sus4 DM/C':[[1,'C7sus4']],'CM/A# A#7sus4':[[1,'F#M/A#']],'CM/E B7b9sus4':[[1,'GM9/B']],'CM9/E Ema7':[[1,'E7sus4']],'Cma7 C7sus4':[[1,'G#M/A#']],'C7sus4 G#M/A#':[[1,'A7b5']],'CM/D C#7b5':[[1,'C7sus4']],'C7b5 B7sus4':[[1,'A#M7']],'C7sus4 A#M7':[[1,'Am7']],'Cm7 G#m7':[[1,'C#7sus4']]}
+    });
+    
+    libraries.push({
+      weight: 0,
+      color: 3,
+      name: "Circle of 5ths",
+      description: "An experimental library that is obsessed with motion along the circle of fifths and nothing else",
+      knowledge: {'Cm':[[1,'Fm'],[1,'Gm']],'CM':[[1,'FM'],[1,'GM']],'Cm7':[[1,'Fm7'],[1,'Gm7']],'CM7':[[1,'FM7'],[1,'GM7']],'C7':[[1,'F7'],[1,'G7']]}
+    });
+    
+    //library processing step: for each individual library, the list of transitions should be WEIGHTED. i.e. within this library, "Cm7 G7" has the following transitions, summing to 1. when libraries A and B are merged, then 50% of those counts come straight from A and 50% straight from B, regardless of how many instances of that transition are present in A or B. that just prevents libraries that have more sample data from being overrepresented once libraries are combined
+    for (lib of libraries) {
+      for (rule of Object.keys(lib.knowledge)) {
+        let list = lib.knowledge[rule];
+        let sum = 0;
+        for (ex of list) {
+          sum += ex[0];
+        }
+        if (sum == 0) continue;
+        for (ex of list) {
+          ex[0] /= sum;
+        }
+      }
+    }
+    
+    let knowledge = {}; //the copy of knowledge used. composed from the knowledge of several libraries
+    
+    //builds the knowledge to be used from libraries
+    function build_knowledge() {
+      knowledge = {};
+      //let html = "";
+      for (let i = 0; i < libraries.length; i++) {
+        let lib = libraries[i];
+        if (lib.weight > 0)
+          add_knowledge(lib.knowledge, lib.weight);
+      }
+      //library_selector_container.innerHTML = html;
+      //sort all knowledge rules
+      for (rule of Object.keys(knowledge)) {
+        knowledge[rule].sort((a, b) => (a[0] < b[0]) ? 1 : -1)
+      }
+      document.getElementById("prog_input").value = "";
+      find_continuations();
+    }
+    
+    //the variables here are named horribly. dont look at them
+    function add_knowledge(k, weight) {
+      for (key of Object.keys(k)) { //for each entry in the knowledge
+        if (!Object.keys(knowledge).includes(key)) { //make sure entry key exists
+          knowledge[key] = [];
+        }
+        let rule = knowledge[key];
+        for (continuation of k[key]) {
+          //continuation[0] is count, continuation[1] is new chord name. must find it in rule
+          let found = false;
+          for (possible_continuation of rule) {
+            if (possible_continuation[1] == continuation[1]) {
+              possible_continuation[0] += continuation[0] * weight;
+              found = true;
+            }
+          }
+          if (!found) {
+            rule.push([continuation[0]*weight, continuation[1]]);
+          }
+        }
+      }
+    }
+    
+    //make libraries list and their ui interactions (they update active/weight and call for build_knowledge)
+    for (let i = 0; i < libraries.length; i++) {
+      let lib = libraries[i];
+      let html = '<div class="library" root="'+lib.color+'"><p><b>'+lib.name+'</b>: '+lib.description+'</p>';
+      html += '<span id="library_label_'+i+'"></span>';
+      html += '<input type="range" min="0" max="100" value="'+lib.weight+'" id="library_slider_'+i+'" oninput="library_slider_change('+i+')" onchange="build_knowledge()">';
+      html += '</div>';
+      document.getElementById("library_container").innerHTML += html;
+      library_slider_change(i);
+    }
+    build_knowledge();
+    
+    function library_slider_change(i) {
+      libraries[i].weight = document.getElementById("library_slider_"+i).value;
+      document.getElementById("library_label_"+i).innerText = libraries[i].weight>0 ? libraries[i].weight+'%' : "no influence";
+      document.getElementById("library_label_"+i).style.color = libraries[i].weight>0 ? 'var(--accent)' : '#999';
+    }
+    
+    
+    
+    // ================= NOTE AND CHORD CALCULATIONS =================
+    
+    let note_names = "C C# D D# E F F# G G# A A# B".split(" ");
+    
+    //clean chords and transposes them. or maybe gets their root!
+    function clean_and_transpose(chord, shift = 0, get_root = false) {
+      chord = chord.replaceAll("maj", "M");
+      chord = chord.replaceAll("min", "m");
+      chord = chord.replaceAll("-", "m");
+      chord = chord.replaceAll("aug", "+");
+      chord = chord.replaceAll("dim", "*");
+      chord = chord.replaceAll("dom", "7");
+      for (let i = 0; i < chord.length; i++) {
+        let character = chord.charAt(i);
+        if (note_names.includes(character)) {
+          let before = chord.substring(0, i);
+          let after = chord.substring(i+1);
+          let note_value = note_names.indexOf(character) + 12;
+          while (after.startsWith("#")) {
+            note_value++;
+            after = after.substring(1);
+          }
+          while (after.startsWith("b")) {
+            note_value--;
+            after = after.substring(1);
+          }
+          note_value += shift;
+          if (get_root) return note_value%12;
+          chord = before + note_names[note_value%12] + after;
+          //check for plain major chords
+          if (before == "") {
+            let voicing_to_come = after.length > 0 && !after.startsWith("/");
+            if (!voicing_to_come) {
+              chord = before + note_names[note_value%12] + "M" + after;
+            }
+          }
+        }
+      }
+      return chord;
+    }
+    
+    let context_max = 5;
+    let context_min = 1;
+    
+    //crunch the numbers. return list of the ways you could continue
+    function request_continuation(history) {
+      let results = [];
+      for (let context = context_max; context >= context_min; context--) {
+        if (context > history.length) continue;
+        let chord_history = [];
+        let offset = clean_and_transpose(history[history.length - context], 0, true);
+        for (let i = history.length - context; i < history.length; i++) {
+          chord_history.push(clean_and_transpose(history[i], 12-offset));
+        }
+        let continuations = knowledge[chord_history.join(" ")]; //list of pairs [3, 'Fmaj']. need offset applied still
+        if (!continuations) continue;
+        let bank = []; //bank of transposed continuations. one for each entry in the knowledge. still contains frequencies
+        let total_count = 0;
+        for (entry of continuations) {
+          bank.push({
+            count: entry[0],
+            chord: clean_and_transpose(entry[1], offset)
+          });
+          total_count += entry[0];
+        }
+        results.push({
+          context: context,
+          bank: bank,
+          total_count: total_count
+        });
+      }
+      return results;
+    }
+    
+    
+    
+    
+    
+    // ================= UI INTERACTIONS FOR CHORD TOOL =================
+    
+    function accept_chord(chord) {
+      document.getElementById("prog_input").value = document.getElementById("prog_input").value.trim() + " " + chord;
+      find_continuations();
+    }
+    
+    function pick_from_frequency_list(f_list) { //doesn't force any changes, literally just picks
+      let list = [];
+      for (entry of f_list) {
+        for (let i = 0; i < entry.count; i++) {
+          list.push(entry.chord);
+        }
+      }
+      return list[Math.floor(Math.random()*list.length)];
+    }
+    
+    //ui for running request_continuation
+    function find_continuations() {
+      let prog = document.getElementById("prog_input").value.replaceAll("?","*");
+      prog = prog.split(",").join(" ").split(" ").filter((str) => str != '');
+      if (Object.keys(knowledge).length == 0) {
+        document.getElementById("advanced_results").innerHTML = "<hr><h3>There are no active libraries right now.</h3><p>You should probably go fix that.</p><hr>";
+      } else if (prog.length == 0) {
+        document.getElementById("advanced_results").innerHTML = "";
+      } else {
+        let report = request_continuation(prog);
+        document.getElementById("advanced_results").innerHTML = advanced_results_html(report, prog);
+      }
+      let return_html = []; //html for the little box that cleans and returns the input prog
+      for (element of prog) {
+        return_html.push("<span class=\"inline_chord\" root=\""+clean_and_transpose(element, 0, true)+"\">"+clean_and_transpose(element)+"</span>");
+      }
+      document.getElementById("cleaned_return").innerHTML = return_html.join(" ");
+    }
+    
+    //assumes result has at least one entry
+    function advanced_results_html(report, prog) {
+      let html = "<hr>";
+      //clean_and_transpose(prog[prog.length-1]) //cleaned final chord that might cause error
+      if (report.length == 0) {
+        //problem: last chord has no lookup
+        let problem = prog[prog.length-1];
+        return "<hr><h3>Cannot continue this progression</h3><p>There are no instances of a chord like <span class=\"inline_chord\" root=\""+clean_and_transpose(problem, 0, true)+"\">"+clean_and_transpose(problem)+"</span> before. <span class=\"quiet\">Maybe the chord is spelled wrong. If not, then that chord never appeared in the sample.</span></p><hr>";
+      }
+      for (level of report) {
+        html += "<div class=\"context_level_heading\" onclick=\"accept_chord('"+pick_from_frequency_list(level.bank)+"')\">using " + level.context + " chord"+(level.context==1?"":"s")+" of context</div>";
+        let proportion_ceiling = level.bank[0].count * 1.3;
+        for (cont of level.bank) {
+          let chord_name = cont.chord.replaceAll("*", "?");
+          html += "<div class=\"result_chord\" root=\""+clean_and_transpose(cont.chord, 0, true)+"\" onclick=\"accept_chord('"+chord_name+"')\">";
+          html += "<span class=\"result_chord_name\">" + chord_name + "</span>";
+          let proportion_display = 100 * cont.count / proportion_ceiling;
+          let proportion_text = Math.round(1000 * cont.count / level.total_count)/10 + "%";
+          html += "<span class=\"result_chord_percent_container\"><span class=\"result_chord_percent\" style=\"width: "+proportion_display+"%\">&nbsp;</span><span class=\"result_chord_number\">"+proportion_text+"</span></span>";
+          html += "</div>";
+        }
+        html += "<hr>";
+      }
+      return html;
+    }
+    
+    
+    
+    
+    
+    // ================= OTHER UI INTERACTIONS =================
+    
+    let sections_list = document.getElementsByTagName("section");
+    for (let i = 0; i < sections_list.length; i++) {
+      let t = sections_list[i].getAttribute("navtext");
+      document.getElementById("tab_nav").innerHTML += "<span onclick=\"open_section("+i+")\" id=\"section_nav_"+i+"\">"+t+"</span>";
+    }
+    open_section(0);
+    function open_section(n) {
+      for (let i = 0; i < sections_list.length; i++) {
+        sections_list[i].style.display = i==n ? "block" : "none";
+        document.getElementById("section_nav_"+i).setAttribute("active", i==n ? "true" : "false");
+      }
+    }
+    
+    // + the special thing that makes h1/h2 (always static) rainbows
+    for (el of document.getElementsByTagName("h1")) {
+      let t = el.innerText;
+      let html = "";
+      for (let i = 0; i < t.length; i++) {
+        html += "<span style=\"color: var(--color"+i%12+")\">"+t.charAt(i)+"</span>";
+      }
+      el.innerHTML = html;
+    }
+    for (el of document.getElementsByTagName("h2")) {
+      let t = el.innerText;
+      let html = "// ";
+      for (let i = 0; i < t.length; i++) {
+        html += "<span style=\"color: var(--color"+i%12+")\">"+t.charAt(i)+"</span>";
+      }
+      el.innerHTML = html;
+    }
+    
+    //the special cleaning test
+    document.getElementById("test_chord_cleaning_input").value = "";
+    function test_chord_cleaning() {
+      let prog = document.getElementById("test_chord_cleaning_input").value.replaceAll("?","*");
+      prog = prog.split(",").join(" ").split(" ").filter((str) => str != '');
+      let html = [];
+      for (chord of prog) {
+        html.push("<span class=\"inline_chord\" root=\""+clean_and_transpose(chord, 0, true)+"\">"+clean_and_transpose(chord)+"</span>");
+      }
+      if (html.length == 0) html = ["&nbsp;"];
+      document.getElementById("test_chord_cleaning_output").innerHTML = html.join(" ");
+    }
+  </script>
+</body>
+</html>
