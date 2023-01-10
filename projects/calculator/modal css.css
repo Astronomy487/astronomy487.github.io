@@ -18,8 +18,8 @@ nav a {
 	transition: color 0.1s;
 	padding: 0.25rem 0.75rem;
 	background-color: #222;
-	border-radius: 1rem;
 	pointer-events: auto;
+	border-radius: 1rem;
 }
 
 nav a:not(:last-child) {
@@ -64,8 +64,8 @@ nav a:hover, nav a:focus {
 @keyframes modal-exit {to {transform: translate(-50%, -50%) translateY(1rem)}}
 #modal {
 	width: 32rem;
-	height: calc(85vh - 4rem);
-	width: calc(85vh - 4rem);
+	height: min(calc(100vh - 4rem), 48rem);
+	width: min(calc(100vw - 6rem), 48rem);
 	padding: 2rem;
 	left: 50%;
 	top: 50%;
@@ -73,7 +73,6 @@ nav a:hover, nav a:focus {
 	position: absolute;
 	border: solid 0.125rem #333;
 	color: white;
-	border-radius: 0.25rem;
 	overflow-y: scroll;
 	background-color: black;
 }
