@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title id="title">ABCDE</title>
+  <style>
+     @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,900&display=swap');
+    
+    :root {
+      --white: #FCF9F2;
+      --offwhite: #F0E4C8;
+      --gray: #E0C890;
+      --black: #6B3A1D;
+      --accent: blue; /** reassigned by letter. color generate off the fly by breakpoints **/
+    }
+    
+    body {
+      background-color: var(--white);
+      font-family: Fraunces, serif;
+      font-weight: normal;
+      user-select: none;
+      color: var(--black);
+      font-size: 0;
+    }
+    
+    main {
+      max-width: 100vw;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      text-align: center;
+    }
+    
+    section {
+      margin: 2rem 0;
+    }
+    
+    @keyframes enter_left {from {opacity: 0; transform: translateX(-1rem);}}
+    @keyframes enter_right {from {opacity: 0; transform: translateX(1rem);}}
+    
+    #play_letters {
+      border: solid 0.125rem var(--offwhite);
+      padding: 2rem;
+      animation: 0.5s enter_left;
+    }
+    
+    #presented_letters i {
+      animation: 0.5s enter_right;
+    }
+    
+    @keyframes success_bump {
+      from {transform: translateY(0);}
+      30% {transform: translateY(-1rem);}
+      70% {transform: translateY(0.25rem);}
+      to {transform: translateY(0);}
+    }
+    i { /** i is just the way a single letter is presented always **/
+      width: 6rem;
+      height: 6rem;
+      line-height: 6rem;
+      display: inline-block;
+      text-align: center;
+      font-size: 5rem;
+      background-color: var(--accent);
+      color: var(--white);
+      font-style: normal;
+      margin: 0.125rem;
+      border: solid 0.125rem var(--accent);
+      transition: 0.1s;
+      font-weight: bold;
+    }
+    
+    i.unassigned {
+      border-color: var(--gray);
+      background-color: var(--white);
+      color: var(--offwhite);
+    }
+    
+    i.unassigned[clickable="true"] {
+      cursor: pointer;
+    }
+    
+    i.unassigned[clickable="true"]:hover {
+      background-color: var(--offwhite);
+      color: var(--gray);
+    }
+    
+    i.presented {
+      background-color: var(--white);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    
+    p {
+      margin: 1rem 0;
+      font-size: 1.5rem;
+      animation: 0.5s enter_left;
+    }
+    
+    .tiny { /** a special p **/
+      font-size: 1.125rem;
+    }
+    
+    button, input {
+      font-family: inherit;
+      color: inherit;
+      background-color: inherit;
+      border: solid 0.125rem var(--gray);
+      outline: none;
+      color: var(--black);
+      animation: 0.5s enter_right;
+      font-size: 1.25rem;
+      padding: 0.5rem 1rem;
+      transition: 0.1s;
+      margin: 0 0.5rem;
+      width: 12rem;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    
+    button {
+      cursor: pointer;
+    }
+    
+    button:hover, button:focus, input:focus {
+      outline: none;
+      background-color: var(--offwhite);
+    }
+  </style>
+  <style id="mobilecss"></style>
+</head>
+<body>
+  <main>
+    <section id="presented_letters"></section>
+    <section id="information">
+      <p>The goal of this game is to sort 5 letters<br>alphabetically. But you don't know<br>beforehand what letters you will get!</p>
+      <button onclick="start_game();">Play</button>
+    </section>
+    <section id="play_letters">
+    </section>
+  </main>
+  <script>
+    let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    
+    color_breakpoints = [
+      [208, 0, 0],
+      [232, 93, 4],
+      [255, 186, 8],
+      //[199, 219, 23],
+      [100, 203, 55],
+      [53, 190, 203],
+      [29, 125, 203],
+      [120, 0, 180]
+    ];
+    
+    function get_color(t) { //returns in css formatting. 0 <= t < letters.length
+      let i = t / (letters.length-1) * (color_breakpoints.length - 1);
+      let low_i = Math.floor(i);
+      let high_i = Math.ceil(i);
+      let high_i_prop = i%1;
+      let low_i_prop = 1 - high_i_prop;
+      let colors = [];
+      for (let channel = 0; channel < 3; channel++)
+        colors[channel] = color_breakpoints[low_i][channel] * low_i_prop + color_breakpoints[high_i][channel] * high_i_prop;
+      for (let channel = 0; channel < 3; channel++)
+        colors[channel] = Math.round(colors[channel]);
+      return "rgb("+colors.join(", ")+")";
+    }
+    
+    let size; //number of letters to be sorted
+    let inventory; //inventory of letters currently in play, in order. excludes the currently presented. stored as numbers
+    let presented; //the presented letter. stored as number
+    let can_take_presented; //paralell to inventory
+    
+    //start_game();
+    let games_started = 0;
+    function start_game(n = 5) {
+      games_started++;
+      document.getElementById("information").innerHTML = "";
+      document.getElementById("play_letters").innerHTML = "";
+      size = n;
+      inventory = [];
+      inventory.length = size;
+      can_take_presented = [];
+      can_take_presented.length = size;
+      let html;
+      //make blank play letters
+      html = "";
+      for (let i = 0; i < size; i++)
+        html += '<i class="unassigned" id="play_'+i+'" onclick="accept_into('+i+');"></i>';
+      document.getElementById("play_letters").innerHTML = html;
+      //start off the first round
+      cause_round();
+    }
+    
+    function cause_round() {
+      update_title(inventory)
+      let all_done = true;
+      for (let i = 0; i < size && all_done; i++) if (inventory[i] == undefined) all_done = false;
+      if (all_done) {
+        document.getElementById("presented_letters").innerHTML = "";
+        end_game("success");
+        return;
+      }
+      do {
+        presented = Math.floor(Math.random()*letters.length);
+      } while (inventory.includes(presented));
+      document.getElementById("presented_letters").innerHTML = '<i style="--accent: '+get_color(presented)+'" class="presented">'+letters[presented]+'</i>';
+      //find out which of inventory can take this letter, make em say + or ''
+      calculate_can_take_presented();
+      if (!can_take_presented.includes(true)) end_game("cant_place_letter");
+    }
+    
+    function calculate_can_take_presented() {
+      for (let i = 0; i < size; i++) {
+        if (inventory[i] != undefined) {
+          can_take_presented[i] = false;
+          continue; //if this square is assigned, dont touch it
+        }
+        let i_can_take_presented = true;
+        //walk right. if ever something smaller than presented, false
+        for (let walk = i; walk < size && i_can_take_presented; walk++) {
+          if (inventory[walk] != undefined && inventory[walk] < presented) {
+            i_can_take_presented = false;
+          }
+        }
+        //walk left. if ever something greater than presented, true
+        for (let walk = i; walk >= 0 && i_can_take_presented; walk--) {
+          if (inventory[walk] != undefined && inventory[walk] > presented) {
+            i_can_take_presented = false;
+          }
+        }
+        document.getElementById("play_"+i).innerText = i_can_take_presented ? "?" : "\u00A0";
+        document.getElementById("play_"+i).setAttribute("clickable", ""+i_can_take_presented);
+        can_take_presented[i] = i_can_take_presented;
+        if (i_can_take_presented) any_can_take_presented = true;
+      }
+      /* //special checks. if a, z, or if one above/below another value
+      if (presented == 0) {
+      }
+      if (presented == letters.length-1) {
+      }
+      for (let i = 1; i < size; i++) {
+      }
+      for (let i = 0; i < size-1; i++) {
+        
+      }*/
+      //cancelled. also it would require more advanced calculations. like among set {ABCDE} if u placed _B___ then D could literally only be in 1 spot
+    }
+    
+    function accept_into(i) { //user's hand i just accepted presented
+      if (inventory[i] == undefined && can_take_presented[i]) {
+        inventory[i] = presented;
+        document.getElementById("play_"+i).setAttribute("class", "");
+        document.getElementById("play_"+i).setAttribute("style", "--accent: "+get_color(presented)+";");
+        document.getElementById("play_"+i).innerText = letters[presented];
+        document.getElementById("play_"+i).setAttribute("clickable", "false");
+        cause_round();
+      }
+    }
+    
+    function end_game(cause) {
+      document.getElementById("information").innerHTML = '<p>'+end_game_messages[cause]+'</p><input id="game_size" type="number" min="'+2+'" max="'+letters.length+'" onchange="check_min_max_input()" value="'+size+'"><button onclick="start_game(document.getElementById(\'game_size\').value);">Play again</button>';
+      if (cause == "success") bump_animation(size);
+      document.getElementById("title").innerHTML += cause=="success" ? " :D" : " :(";
+    }
+    
+    function check_min_max_input() {
+      let element = document.getElementById("game_size");
+      if (element.value > letters.length) element.value = letters.length;
+      if (element.value < 2) element.value = 2;
+    }
+    
+    let end_game_messages = {
+      "cant_place_letter": "You can't place this letter. :(",
+      "success": "You successfully sorted all the letters. Good job!!"
+    };
+    
+    display_letters(5, false);
+    setInterval(function(){
+      if (games_started == 0) display_letters(5, false);
+    }, 1500);
+    function display_letters(n = letters.length, ordered = true) {
+      let indeces = [];
+      if (ordered) {
+        for (let i = 0; i < n; i++) indeces.push(i);
+      } else {
+        while (indeces.length < n) {
+          let choice;
+          do {
+            choice = Math.floor(Math.random()*letters.length);
+          } while (indeces.includes(choice));
+          indeces.push(choice);
+        }
+        indeces.sort(function(a, b) {return a - b;});
+      }
+      let html = "";
+      for (let i = 0; i < indeces.length; i++) {
+        html += '<i style="--accent: '+get_color(indeces[i])+'" id="play_'+i+'">'+letters[indeces[i]]+'</i>';
+      }
+      document.getElementById("presented_letters").innerHTML = "";
+      document.getElementById("play_letters").innerHTML = html;
+      bump_animation(n, false);
+      update_title(indeces);
+    }
+    
+    function bump_animation(n) {
+      for (let i = 0; i < n; i++) {
+        setTimeout(function(){
+          document.getElementById("play_"+i).style.animation = "1s success_bump";
+        }, i*70);
+      }
+    }
+    
+    function update_title(indeces) {
+      let txt = "";
+      for (i of indeces) txt += i==undefined ? "_" : letters[i];
+      document.getElementById("title").innerHTML = txt;
+    }
+    
+    if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "html {font-size: 32px;} i {margin-left: 4rem; margin-right: 4rem;}";
+  </script>
+</body>
+</html>

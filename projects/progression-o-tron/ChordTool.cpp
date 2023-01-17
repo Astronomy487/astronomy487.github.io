@@ -61,11 +61,12 @@ struct chord_graph {
     vector<string> note_names;
     vector<int> diatonic_note_values;
     unordered_map<string, vector<pair<int, string>>> motions;
-    chord_graph(int h_min, int h_max) {
+    chord_graph(int h_min, int h_max, bool simple) {
         history_min = h_min;
         history_max = h_max;
         note_names = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
         diatonic_note_values = { 9, 11, 0, 2, 4, 5, 7 }; //values of A,B,C,D,E,F,G
+        simplify_mode = simple;
     }
     //motions["C"] stores all recorded motions from "C". motions["G C"] stores all recorded motions from "G" "C"
     void record_motion(string from, string to) {
@@ -88,18 +89,28 @@ struct chord_graph {
         motions[from] = entries;
     }
     //reads the chords from a txt file and records all those motions
+    bool simplify_mode;
     void read_song(string filename) {
         ifstream file(filename);
         //vector<string> chords;
         vector<string> chord_list;
         string token;
-        cout << "learning from file '" << filename << "' ...\n";
+        //cout << "learning from file '" << filename << "' ...\n";
+        bool in_header = true;
         while (file >> token) {
-            if (token == "/") {
+            if (token.size() >= 2 and token[0] == '-' and token[1] == '-') {
+                in_header = false;
+                continue;
+            }
+            if (in_header) continue;
+            if (token[0] == '/') {
                 process_chord_list(chord_list);
                 chord_list = {};
             } else {
-                chord_list.push_back(read_and_transpose(token, 0));
+                if (simplify_mode)
+                    chord_list.push_back(simplify_chord(token)); //simplify mode. simplify too
+                else
+                    chord_list.push_back(read_and_transpose(token, 0)); //non simplify mode, just run through read_and_transpose
             }
         }
         process_chord_list(chord_list);
@@ -176,6 +187,31 @@ struct chord_graph {
             note_value--;
         }
         return (note_value + 12) % 12;
+    }
+    //simplifies a chord to just its root and its primary quality m M + *
+    string simplify_chord(string chord) {
+        chord = read_and_transpose(chord, 0);
+        int root = diatonic_note_values[chord[0] - 'A'];
+        chord = chord.substr(1);
+        while (chord.size() > 0 and chord[0] == '#') {
+            root = (root + 1) % 12;
+            chord = chord.substr(1);
+        }
+        while (chord.size() > 0 and chord[0] == 'b') {
+            root = (root + 11) % 12;
+            chord = chord.substr(1);
+        }
+        char quality = 'M';
+        if (chord.size() > 0 and chord[0] == 'm') quality = 'm';
+        if (chord.size() > 0 and chord[0] == '*') quality = '*';
+        if (chord.size() > 0 and chord[0] == '+') quality = '+';
+
+        if (quality == 'm' && chord.find("b5") != std::string::npos) quality = '*';
+        if (quality == 'M' && chord.find("#5") != std::string::npos) quality = '+';
+
+        string c = note_names[root];
+        c.push_back(quality);
+        return c;
     }
     //cleans up a chord (w text replacement strategies) and then shifts any explicit tones according to a shift
     string read_and_transpose(string chord, int shift) {
@@ -256,18 +292,9 @@ struct chord_graph {
 
 int main() {
     srand(time(NULL));
-    chord_graph c(1, 3);
+    chord_graph c(1, 2, true);
 
-    vector<string> songs = {
-        "african flower",
-        "misty"
-    };
-
-    songs = { "debug" };
-
-    //for (int repeat = 400/songs.size(); repeat > 0; repeat--)
-    for (int i = 0; i < songs.size(); i++)
-        c.read_song(songs[i] + ".txt");
+    c.read_song("jazzstandards.txt");
 
     c.print_knowledge();
 

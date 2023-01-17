@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+:root {
+	--main-background: #111;
+	--high-background: #222; /* header, results square, highlighted input background, libraries. raised surfaces */
+	--light-background: #333; /* borders, hover states, highlight things **/
+	--white-background: #555; /* the lightest background color. significant borders, super highlighting. */
+	--medium: #888; /* mid gray. muted text */
+	--text: #ddd;
+	--max-text: #fff;
+	--max-background: #000;
+	--shadow: #000;
+}
+/**:root {
+	--main-background: #fff;
+	--high-background: #fff;
+	--light-background: #eee;
+	--white-background: #ddd;
+	--medium: #888;
+	--text: #444;
+	--max-text: #000;
+	--max-background: #fff;
+	--shadow: #bbb;
+}**/
+
+body {
+	font-size: 1.125rem;
+	background-color: var(--main-background);
+	color: var(--text);
+	font-family: Inter, sans-serif;
+	user-select: text;
+	overflow-y: scroll;
+	margin: 0;
+}
+
+main, header div {
+	width: min(48rem, calc(100vw - 2rem));
+	margin: auto;
+}
+
+main {
+	padding-bottom: 8rem;
+}
+
+header {
+	background-color: var(--high-background);
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	margin-bottom: 2rem;
+}
+
+header h1 {
+	font-size: 3rem;
+	margin: 0.5rem 0;
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+p {
+	line-height: 1.75rem;
+}
+
+a {
+	cursor: pointer;
+	text-decoration: none;
+	color: var(--medium);
+	transition: color 0.1s;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: var(--max-text);
+}
+
+header nav {
+	margin-bottom: 1rem;
+	text-transform: uppercase;
+	font-weight: bold;
+	user-select: none;
+}
+
+header nav span {
+	padding: 0.5rem 0;
+	width: 50%;
+	display: inline-block;
+	text-align: center;
+	border: solid var(--light-background);
+	border-width: 0.125rem 0;
+	cursor: pointer;
+	font-size: 1rem;
+	transition: background-color 0.1s;
+}
+
+header nav span[active="true"] {
+	background-color: var(--light-background);
+}
+
+header nav span:hover {
+	background-color: var(--light-background);
+}
+
+@keyframes section_0_in {from {opacity: 0; transform: translateX(-4rem);}}
+@keyframes section_0_out {to {opacity: 0; transform: translateX(-4rem);}}
+@keyframes section_1_in {from {opacity: 0; transform: translateX(4rem);}}
+@keyframes section_1_out {to {opacity: 0; transform: translateX(4rem);}}
+
+@keyframes section_extra_enter_left {from {opacity: 0; transform: translateX(-4rem)}}
+@keyframes section_extra_enter_right {from {opacity: 0; transform: translateX(4rem)}}
+
+section {
+	display: none;
+	opacity: 0;
+}
+
+section[active="true"] {
+	display: block;
+	opacity: 1;
+}
+
+.quiet {
+	color: var(--medium);
+}
+
+::selection {
+	background: var(--max-text);
+	color: var(--max-background);
+}
+
+/* colors for all 12 notes */
+:root {
+	--color0: #DA4C4C;
+	--color1: #E89841;
+	--color2: #EFCF30;
+	--color3: #B2DD3C;
+	--color4: #30DC29;
+	--color5: #41D9A8;
+	--color6: #48E0E0;
+	--color7: #32ABDC;
+	--color8: #4D58D0;
+	--color9: #9E4DD4;
+	--color10: #D052CC;
+	--color11: #D94F96;
+	--accent: gray; /* overridden whenever chord is presented */
+}
+
+:root {
+	--color9: #931BE3;
+	--color10: #C452D1;
+}
+
+/* colored every fifth */
+[root="0"] {--accent: var(--color0)}
+[root="1"] {--accent: var(--color7)}
+[root="2"] {--accent: var(--color2)}
+[root="3"] {--accent: var(--color9)}
+[root="4"] {--accent: var(--color4)}
+[root="5"] {--accent: var(--color11)}
+[root="6"] {--accent: var(--color6)}
+[root="7"] {--accent: var(--color1)}
+[root="8"] {--accent: var(--color8)}
+[root="9"] {--accent: var(--color3)}
+[root="10"] {--accent: var(--color10)}
+[root="11"] {--accent: var(--color5)}
+
+input, textarea {
+	font-family: inherit;
+	font-size: inherit;
+	background-color: inherit;
+	border: none;
+	color: inherit;
+	padding: 0.5rem;
+	text-align: center;
+	display: block;
+	border: solid 0.125rem var(--light-background);
+	width: calc(100% - 1.25rem);
+	resize: none;
+	transition: background-color 0.1s;
+}
+
+input:focus, textarea:focus {
+	outline: none;
+	background-color: var(--high-background);
+}
+
+hr {
+	border: none;
+	height: 0.125rem;
+	background-color: var(--white-background);
+	margin: 1rem 0;
+}
+
+aside {
+	width: 67%;
+	margin: 1rem auto;
+	color: var(--medium);
+	opacity: 0.5;
+	transition: 0.1s opacity;
+}
+
+aside:hover {
+	opacity: 1;
+}
+
+aside::before {
+	content: '// ';
+}
+
+#advanced_results {
+	background-color: var(--high-background);
+	animation: 1s section_extra_enter_left;
+	color: var(--max-text);
+}
+
+.result_chord {
+	padding: 0.125rem 1rem;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.1s;
+}
+
+.result_chord:hover {
+	background-color: var(--light-background);
+}
+
+.result_chord_name {
+	font-weight: bold;
+	color: var(--accent);
+	display: inline-block;
+	vertical-align: middle;
+}
+
+@keyframes result_chord_percent_enter {from {width: 0%;}}
+.result_chord_percent {
+	background-color: var(--accent);
+	display: inline-block;
+	animation: result_chord_percent_enter 0.5s;
+}
+
+.result_chord_percent_container {
+	overflow: hidden;
+	display: inline-block;
+	width: calc(100% - 9rem);
+	vertical-align: middle;
+	float: right;
+}
+
+.result_chord_number {
+	float: right;
+	width: 4rem;
+	text-align: right;
+	color: var(--text);
+}
+
+.result_chord_common_tones {
+	float: right;
+	margin-right: 0.25rem;
+	color: var(--medium);
+}
+
+.context_level_heading {
+	user-select: none;
+	text-align: center;
+	background-color: var(--light-background);
+	margin: 1rem auto;
+	padding: 0.75rem 0;
+	margin-top: -1rem;
+	cursor: pointer;
+	transition: background-color 0.1s;
+}
+
+.context_level_heading:hover {
+	background-color: var(--white-background);
+}
+
+#advanced_results p, #advanced_results h3 {
+	margin: 1rem;
+}
+
+#advanced_results h3 {
+	font-weight: bold;
+	font-size: 1.75rem;
+	margin-top: 1.5rem;
+}
+
+#cleaned_return {
+	margin: 1rem 0;
+	text-align: center;
+}
+
+.inline_chord {
+	color: var(--accent);
+	font-weight: bold;
+}
+
+h2 {
+	font-size: 2rem;
+	margin-top: 3rem;
+	margin-bottom: -0.5rem;
+	animation: 1s section_extra_enter_right;
+}
+
+h2::before {
+	content: '♫';
+	user-select: none;
+	margin-right: 1rem;
+}
+
+h2:first-child {
+	margin-top: 1rem;
+}
+
+@keyframes start_for_me_enter {
+	from {opacity: 0; transform: translateY(1rem); pointer-events: none; cursor: default;}
+	33.3% {opacity: 0; transform: translateY(1rem); pointer-events: none; cursor: default;}
+	to {opacity: 1; transform: translateY(0); pointer-events: none; cursor: default;}
+}
+#start_for_me {
+	animation: 1.5s start_for_me_enter;
+	pointer-events: auto;
+	cursor: pointer;
+	margin: 1rem 0;
+}
+
+.library {
+	padding: 1rem 2rem;
+	background-color: var(--high-background);
+	border: solid 0.125rem var(--white-background);
+	margin: 1.5rem auto;
+	position: relative;
+}
+
+.library p b {
+	font-weight: bold;
+	color: var(--accent);
+}
+
+.library_contribution {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1rem;
+	color: var(--accent);
+	margin: -0.5rem 0;
+}
+
+.library input[type="range"] {
+	filter: grayscale(100%);
+}
+
+.library p a {
+	float: right;
+}
+
+#action_buttons {
+	margin: 1rem 0;
+	user-select: none;
+	animation: 1s section_extra_enter_left;
+}
+
+#action_buttons a {
+	margin-right: 1rem;
+}
+
+header, #advanced_results, .library {box-shadow: 0 0 1rem var(--shadow);}
