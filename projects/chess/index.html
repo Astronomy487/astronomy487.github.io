@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>my new chess</title>
+  <style>
+    @font-face {
+      font-family: "chess font";
+      src: url('CASEFONT.TTF') format('truetype');
+    }
+    
+    body {
+      user-select: none;
+      margin: 0;
+      background-color: #000;
+    }
+    
+    main {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    @keyframes table_enter {from {transform: scale(0.975); opacity: 0;}}
+    table {
+      font-family: 'chess font';
+      border-collapse: collapse;
+      transition: transform 1s;
+      animation: 1s table_enter;
+    }
+    
+    td {
+      width: 5rem;
+      height: 5rem;
+      text-align: center;
+      font-size: 4rem;
+    }
+    
+    tr:nth-child(2n) td:nth-child(2n), tr:nth-child(2n+1) td:nth-child(2n+1) {background-color: #111;}
+    tr:nth-child(2n) td:nth-child(2n+1), tr:nth-child(2n+1) td:nth-child(2n) {background-color: #222;}
+    
+    span[team] {
+      paint-order: stroke fill;
+      -webkit-text-stroke: 0.5rem black;
+      display: block;
+      transition: transform 0s;
+    }
+    
+    span[team="0"] {color: #fff;}
+    span[team="1"] {color: #444;}
+    span[team="2"] {color: #d22;}
+    span[team="3"] {color: #22d;}
+    span[team="4"] {color: #2d2;}
+    
+    td[oob="true"] {
+      opacity: 0;
+    }
+    
+    @keyframes pulse_animation {
+      from {box-shadow: inset 0 0 1rem #666666;}
+      50% {box-shadow: inset 0 0 1rem #666666;}
+      to {box-shadow: inset 0 0 1rem #666666;}
+    }
+    td[highlight="owned"] {
+      cursor: pointer;
+    }
+    td[highlight="origin"] {
+      background-color: #444 !important;
+      cursor: pointer;
+    }
+    td[highlight="destination"] {
+      cursor: pointer;
+      animation: 1s pulse_animation infinite;
+    }
+  </style>
+  <style id="rotation_css"></style>
+</head>
+<body>
+  <main><table id="display_table"></table></main>
+  <script src="script.js"></script>
+</body>
+</html>

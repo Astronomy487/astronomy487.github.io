@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
 
 :root {
 	--main-background: #111;
@@ -62,13 +62,13 @@ p {
 }
 
 a {
-	cursor: pointer;
 	text-decoration: none;
 	color: var(--medium);
 	transition: color 0.1s;
 }
 
-a:hover {
+a:hover[href], a:hover[onclick] {
+	cursor: pointer;
 	text-decoration: underline;
 	color: var(--max-text);
 }
@@ -163,11 +163,10 @@ section[active="true"] {
 [root="10"] {--accent: var(--color10)}
 [root="11"] {--accent: var(--color5)}
 
-input, textarea {
+input, textarea, button {
 	font-family: inherit;
 	font-size: inherit;
 	background-color: inherit;
-	border: none;
 	color: inherit;
 	padding: 0.5rem;
 	text-align: center;
@@ -176,9 +175,20 @@ input, textarea {
 	width: calc(100% - 1.25rem);
 	resize: none;
 	transition: background-color 0.1s;
+	margin: 1rem 0;
 }
 
-input:focus, textarea:focus {
+textarea {
+	height: 16rem;
+	text-align: left;
+}
+
+button {
+	width: 100%;
+	cursor: pointer;
+}
+
+input:focus, textarea:focus, button:hover {
 	outline: none;
 	background-color: var(--high-background);
 }

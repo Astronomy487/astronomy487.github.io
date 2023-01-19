@@ -3,7 +3,7 @@
 <head>
   <title id="title">ABCDE</title>
   <style>
-     @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
     
     :root {
       --white: #FCF9F2;
@@ -15,7 +15,7 @@
     
     body {
       background-color: var(--white);
-      font-family: Fraunces, serif;
+      font-family: Inter, sans-serif;
       font-weight: normal;
       user-select: none;
       color: var(--black);
@@ -67,13 +67,15 @@
       margin: 0.125rem;
       border: solid 0.125rem var(--accent);
       transition: 0.1s;
-      font-weight: bold;
+      font-weight: 900;
+      vertical-align: middle;
     }
     
     i.unassigned {
       border-color: var(--gray);
       background-color: var(--white);
       color: var(--offwhite);
+      font-size: 4rem;
     }
     
     i.unassigned[clickable="true"] {
@@ -126,6 +128,11 @@
       outline: none;
       background-color: var(--offwhite);
     }
+    
+    ::selection {
+      background: var(--black);
+      color: var(--white);
+    }
   </style>
   <style id="mobilecss"></style>
 </head>
@@ -143,14 +150,15 @@
     let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     
     color_breakpoints = [
-      [208, 0, 0],
-      [232, 93, 4],
-      [255, 186, 8],
-      //[199, 219, 23],
-      [100, 203, 55],
-      [53, 190, 203],
-      [29, 125, 203],
-      [120, 0, 180]
+      [208, 0, 0], //red
+      [232, 93, 4], //orange
+      [255, 186, 8], //yellow
+      [199, 219, 23], //lime
+      [100, 203, 55], //green
+      [53, 190, 203], //cyan
+      [29, 125, 203], //blue
+      [120, 0, 180], //royal purple
+      [197, 20, 145], // deep magenta
     ];
     
     function get_color(t) { //returns in css formatting. 0 <= t < letters.length
@@ -230,7 +238,7 @@
             i_can_take_presented = false;
           }
         }
-        document.getElementById("play_"+i).innerText = i_can_take_presented ? "?" : "\u00A0";
+        document.getElementById("play_"+i).innerText = i_can_take_presented ? (i+1) : "";
         document.getElementById("play_"+i).setAttribute("clickable", ""+i_can_take_presented);
         can_take_presented[i] = i_can_take_presented;
         if (i_can_take_presented) any_can_take_presented = true;
@@ -318,7 +326,25 @@
       document.getElementById("title").innerHTML = txt;
     }
     
+    window.addEventListener('keydown', function (e) {
+      if (e.key == "Enter") {
+        document.getElementsByTagName("button")[0].click();
+        return;
+      }
+      let x = parseInt(e.key);
+      if (0 < x && x < 10) accept_into(x-1);
+    }, false);
+    
     if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "html {font-size: 32px;} i {margin-left: 4rem; margin-right: 4rem;}";
+    
+    function choose(set, subset) {
+      return factorial(set) / factorial(subset) / factorial(set - subset);
+      function factorial(n) {
+        let product = 1;
+        for (let i = 1; i <= n; i++) product *= i;
+        return product;
+      }
+    }
   </script>
 </body>
 </html>
