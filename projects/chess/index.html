@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>my new chess</title>
+  <link rel="icon" href="icon.png">
+  <title>Chess</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+    
     @font-face {
       font-family: "chess font";
       src: url('CASEFONT.TTF') format('truetype');
     }
     
+    :root {
+      --black: #292929;
+      --white: #EDEDEA;
+      --green: #32684B;
+      --orange: #E08300;
+    }
+    
     body {
       user-select: none;
       margin: 0;
-      background-color: #000;
+      background-color: var(--black);
+      font-family: Inter, sans-serif;
+      color: var(--white);
     }
     
     main {
@@ -21,12 +33,10 @@
       transform: translate(-50%, -50%);
     }
     
-    @keyframes table_enter {from {transform: scale(0.975); opacity: 0;}}
     table {
       font-family: 'chess font';
       border-collapse: collapse;
       transition: transform 1s;
-      animation: 1s table_enter;
     }
     
     td {
@@ -36,18 +46,18 @@
       font-size: 4rem;
     }
     
-    tr:nth-child(2n) td:nth-child(2n), tr:nth-child(2n+1) td:nth-child(2n+1) {background-color: #111;}
-    tr:nth-child(2n) td:nth-child(2n+1), tr:nth-child(2n+1) td:nth-child(2n) {background-color: #222;}
+    td[parity="0"] {background-color: var(--white);}
+    td[parity="1"] {background-color: var(--green);}
     
     span[team] {
       paint-order: stroke fill;
-      -webkit-text-stroke: 0.5rem black;
+      -webkit-text-stroke: 0.5rem var(--black);
       display: block;
       transition: transform 0s;
     }
     
-    span[team="0"] {color: #fff;}
-    span[team="1"] {color: #444;}
+    span[team="0"] {color: var(--white); -webkit-text-stroke-color: var(--black);}
+    span[team="1"] {color: var(--black); -webkit-text-stroke-color: var(--white);}
     span[team="2"] {color: #d22;}
     span[team="3"] {color: #22d;}
     span[team="4"] {color: #2d2;}
@@ -56,27 +66,105 @@
       opacity: 0;
     }
     
-    @keyframes pulse_animation {
-      from {box-shadow: inset 0 0 1rem #666666;}
-      50% {box-shadow: inset 0 0 1rem #666666;}
-      to {box-shadow: inset 0 0 1rem #666666;}
-    }
     td[highlight="owned"] {
       cursor: pointer;
     }
     td[highlight="origin"] {
-      background-color: #444 !important;
+      background-color: var(--orange);
       cursor: pointer;
     }
     td[highlight="destination"] {
       cursor: pointer;
-      animation: 1s pulse_animation infinite;
+    }
+    td[parity="0"][highlight="destination"] {box-shadow: inset 0.25rem 0.25rem var(--white), inset -0.25rem -0.25rem var(--white), inset 0.5rem 0.5rem var(--orange), inset -0.5rem -0.5rem var(--orange);
+    }
+    td[parity="1"][highlight="destination"] {box-shadow: inset 0.25rem 0.25rem var(--green), inset -0.25rem -0.25rem var(--green), inset 0.5rem 0.5rem var(--orange), inset -0.5rem -0.5rem var(--orange);
+    }
+    
+    #menu {
+      width: calc(100vw - 6rem);
+      height: calc(100vh - 6rem);
+      background-color: var(--green);
+      font-size: 1.5rem;
+      padding: 3rem;
+      text-align: center;
+      position: fixed;
+    }
+    
+    #menu table {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    #menu tr[onclick] {
+      cursor: pointer;
+    }
+    
+    #menu td:nth-child(2) {
+      width: 12rem;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 1.5rem;
+      text-align: left;
+      padding: 0.5rem 0.5rem;
+    }
+    
+    #menu tr[onclick]:hover td:nth-child(2) {
+      color: var(--orange);
+      text-decoration: underline;
+    }
+    
+    #menu tr[onclick]:hover td:nth-child(1) span {
+      -webkit-text-stroke-color: var(--orange) !important;
+    }
+    
+    #ruleset {
+      position: absolute;
+      text-align: center;
+      bottom: 1rem;
+      left: 1rem;
+      font-size: 1rem;
+    }
+    
+    #ruleset_link {
+      color: var(--orange);
+      text-decoration: none;
     }
   </style>
   <style id="rotation_css"></style>
 </head>
 <body>
   <main><table id="display_table"></table></main>
+  <div id="ruleset">using ruleset <a id="ruleset_link" target="_blank"></a></div>
+  <script id="rules_script"></script>
   <script src="script.js"></script>
+  <div id="menu">
+    <table>
+      <tr onclick="use_rules('_standard.js')"><td parity="1"><span team="1">l</span></td><td>Standard Game</td></tr>
+      <tr onclick="use_rules('_960.js')"><td parity="1"><span team="1">t</span></td><td>Chess960</td></tr>
+      <tr onclick="use_rules('_balbo.js')"><td parity="1"><span team="1">v</span></td><td>Balbo's Game</td></tr>
+      <tr onclick="use_rules('_mini.js')"><td parity="1"><span team="1">o</span></td><td>Mini (4x4)</td></tr>
+      <tr onclick="use_rules('_double.js')"><td parity="1"><span team="1">m</span></td><td>Double (16x12)</td></tr>
+      <tr style="opacity: 0.33;"><td parity="1"><span team="1">w</span></td><td>customization coming later...</td></tr>
+    </table>
+  </div>
+  <!--<table style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(12);"><td parity="1" highlight=""><span team="1">l</span></td></table>-->
+  <script>
+    let filename = location.search;
+    if (filename.startsWith("?")) filename = filename.substring(1);
+    if (filename != "") {
+      document.getElementById("rules_script").setAttribute("src", filename);
+      document.getElementById("menu").remove();
+      setTimeout(start_game, 10);
+      document.getElementById("ruleset_link").innerText = filename;
+      document.getElementById("ruleset_link").setAttribute("href", filename);
+    }
+    
+    function use_rules(filename) {
+      window.location.href = location + "?" + filename;
+    }
+  </script>
 </body>
 </html>

@@ -2,8 +2,8 @@ const empty_cell = 1;
 const oob_cell = 0; //important that this casts to false
 
 let board = [];
-let team_rotations;
 
+let team_rotations = [0, 0, 0, 0, 0];
 let teams;
 let turn; //whose turn it currently is
 let available_moves; //available moves to current turn
@@ -11,8 +11,10 @@ let selection = null; //select piece before acting on it. [row, col]
 let team_names = "white black red blue green".split(" ");
 
 function start_game() {
-	//board, team_rotations have been initialized
-	teams = team_rotations.length;
+	//board alone has been initialized
+	teams = 0;
+	for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
+	teams++;
 	turn = -1;
 	//create board
 	{
@@ -22,7 +24,7 @@ function start_game() {
 			html += '<tr>';
 			for (let col_count = 0; col_count < row.length; col_count++) {
 				let cell = row[col_count];
-				html += '<td id="cell_'+row_count+'_'+col_count+'" onclick="click_cell('+row_count+', '+col_count+')">';
+				html += '<td id="cell_'+row_count+'_'+col_count+'" onclick="click_cell('+row_count+', '+col_count+')" parity="'+((row_count+col_count)%2)+'">';
 				html += '</td>';
 			}
 			html += '</tr>';
@@ -51,6 +53,7 @@ function update_display(row_count, col_count) { //only updates the character ins
 	if (board[row_count][col_count]) {
 		let cell = board[row_count][col_count];
 		get_celement(row_count, col_count).innerHTML = cell.type==undefined ? "" : '<span team="'+cell.team+'">'+cell.type.letter+'</span>';
+		get_celement(row_count, col_count).setAttribute("title", (cell.type==undefined?"":team_names[cell.team]+" "+cell.type.name+" on ")+square_name(row_count, col_count));
 	}
 }
 
@@ -91,7 +94,7 @@ function find_moves(turn, board) {
 							future_board[row_count][col_count].uses++;
 							future_board[current_row][current_col] = future_board[row_count][col_count];
 							future_board[row_count][col_count] = empty_cell;
-							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
+							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board, type: move.type});
 						}
 					} else { //if we have hit a piece
 						if (board[current_row][current_col].team != turn && move.type != "peaceful") { //if hitting enemy, and we aren't peaceful
@@ -106,7 +109,7 @@ function find_moves(turn, board) {
 								future_board[current_row][current_col] = future_board[row_count][col_count];
 								future_board[row_count][col_count] = empty_cell;
 							}
-							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
+							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board, type: move.type});
 						}
 						break; //stop the sliding loop
 					}
@@ -150,7 +153,7 @@ function click_cell(row, col) {
 		if (move.destination[0] == row && move.destination[1] == col && move.origin[0] == selection[0] && move.origin[1] == selection[1]) {
 			board = move.result;
 			selection = null;
-			sfx("play");
+			sfx("play_"+move.type);
 			do_turn();
 			return;
 		}
@@ -204,6 +207,10 @@ function in_bounds(board, row_count, col_count, counting_void = true) {
 	if (col_count < 0 || col_count >= board[row_count].length) return false;
 	if (board[row_count][col_count] == oob_cell && counting_void) return false;
 	return true;
+}
+
+function square_name(row, col) {
+	return "abcdefghijklmnopqrstuvwxyz".split("")[col] + (board.length - row);
 }
 
 
@@ -296,6 +303,17 @@ let type_pawn = {
 		{type: "capture", motion: [1, 1], limit: 1},
 		{type: "capture", motion: [-1, 1], limit: 1}
 	]
+};
+let type_paw4 = {
+	name: "pawn",
+	letter: "o",
+	worth: 100,
+	moves: [
+		{type: "peaceful", motion: [0, 1], limit: 4, condition: {max_uses: 0}},
+		{type: "peaceful", motion: [0, 1], limit: 1},
+		{type: "capture", motion: [1, 1], limit: 1},
+		{type: "capture", motion: [-1, 1], limit: 1}
+	]
 }
 let type_bure = {
 	name: "bureaucrat",
@@ -324,8 +342,8 @@ let type_wiza = {
 		{type: "convert", motion: [-1, 0], limit: 1},
 		{type: "peaceful", motion: [0, 1], limit: 1},
 		{type: "peaceful", motion: [0, -1], limit: 1},
-		/*{type: "peaceful", motion: [-1, 0], limit: 1},
-		{type: "peaceful", motion: [1, 0], limit: 1},*/
+		{type: "peaceful", motion: [-1, 0], limit: 1},
+		{type: "peaceful", motion: [1, 0], limit: 1},
 		{type: "peaceful", motion: [-1, 1], limit: 1},
 		{type: "peaceful", motion: [-1, -1], limit: 1},
 		{type: "peaceful", motion: [1, -1], limit: 1},
@@ -344,26 +362,11 @@ let white_knig = {team: 0, direction: 0, uses: 0, type: type_knig};
 let black_knig = {team: 1, direction: 2, uses: 0, type: type_knig};
 let white_pawn = {team: 0, direction: 0, uses: 0, type: type_pawn};
 let black_pawn = {team: 1, direction: 2, uses: 0, type: type_pawn};
+let white_paw4 = {team: 0, direction: 0, uses: 0, type: type_paw4};
+let black_paw4 = {team: 1, direction: 2, uses: 0, type: type_paw4};
 let white_bure = {team: 0, direction: 0, uses: 0, type: type_bure};
 let black_bure = {team: 1, direction: 2, uses: 0, type: type_bure};
 let white_lase = {team: 0, direction: 0, uses: 0, type: type_lase};
 let black_lase = {team: 1, direction: 2, uses: 0, type: type_lase};
 let white_wiza = {team: 0, direction: 0, uses: 0, type: type_wiza};
 let black_wiza = {team: 1, direction: 2, uses: 0, type: type_wiza};
-
-board = [
-	[black_rook, black_bish, black_knig, black_quee, black_king, black_knig, black_bish, black_rook],
-	[black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_wiza],
-	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-	[white_wiza, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn],
-	[white_rook, white_bish, white_knig, white_quee, white_king, white_knig, white_bish, white_rook],
-];
-
-board[1][0] = black_bure;
-board[6][7] = white_bure;
-
-team_rotations = [0, 0];
-start_game();
