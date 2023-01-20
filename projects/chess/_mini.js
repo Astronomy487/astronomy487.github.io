@@ -4,3 +4,5 @@ board = [
 	[white_pawn, white_pawn, white_pawn, white_pawn],
 	[white_rook, white_quee, white_king, white_rook]
 ];
+
+start_game();

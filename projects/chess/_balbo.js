@@ -10,3 +10,5 @@ board = [
 	[oob_cell, oob_cell, oob_cell, white_rook, white_knig, white_bish, white_knig, white_rook, oob_cell, oob_cell, oob_cell],
 	[oob_cell, oob_cell, oob_cell, oob_cell, white_king, white_bish, white_quee, oob_cell, oob_cell, oob_cell, oob_cell],
 ];
+
+start_game();

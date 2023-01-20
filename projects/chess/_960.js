@@ -26,3 +26,5 @@ for (p of row) {
 	board[7].push({q: white_quee, k: white_king, r: white_rook, b: white_bish, n: white_knig}[p]);
 	board[0].push({q: black_quee, k: black_king, r: black_rook, b: black_bish, n: black_knig}[p]);
 }
+
+start_game();
