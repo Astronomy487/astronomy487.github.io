@@ -2,16 +2,16 @@ const empty_cell = 1;
 const oob_cell = 0; //important that this casts to false
 
 let board = [];
+let board_history = []; //every past value of board
 
 let team_rotations = [];
 let teams;
 let turn; //whose turn it currently is
 let available_moves; //available moves to current turn
 let selection = null; //select piece before acting on it. [row, col]
-let team_names = "White Black Red Blue Green".split(" ");
+let team_names = "White Black Blue Red Yellow".split(" ");
 
 function start_game() {
-  document.getElementById("menu").remove();
 	//board alone has been initialized
 	teams = 0;
 	for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
@@ -42,6 +42,7 @@ function start_game() {
 	}
 	//dereference anything sus in the board
 	board = copy_board(board);
+	board_history.push(board);
 	//start the round
 	do_turn();
 }
@@ -56,7 +57,7 @@ function update_display_all() {
 function update_display(row_count, col_count) { //only updates the character inside! square highlighting is handled by highlight_appropriate_squares
 	if (board[row_count][col_count]) {
 		let cell = board[row_count][col_count];
-		get_celement(row_count, col_count).innerHTML = cell.type==undefined ? "" : '<span team="'+cell.team+'">'+cell.type.letter+'</span>';
+		get_celement(row_count, col_count).innerHTML = cell.type==undefined ? '' : '<span team="'+cell.team+'">'+cell.type.letter+'</span>';
 		get_celement(row_count, col_count).setAttribute("title", (cell.type==undefined?"":team_names[cell.team].toLowerCase()+" "+cell.type.name+" on ")+square_name(row_count, col_count));
 	}
 }
@@ -74,6 +75,25 @@ function royalty_threatened_by(board, attacking_team) {
 	return false;
 }
 
+function find_legal_moves(turn, board) {
+	let m = find_moves(turn, board);
+	for (let i = 0; i < m.length; i++) {
+		let move = m[i];
+		let illegal = royalty_threatened(move.result, turn);
+		if (illegal) {
+			m.splice(i, 1);
+			i--;
+		}
+	}
+	return m;
+}
+
+function rotate(v, direction) {
+	let dx = v[0];
+	let dy = v[1];
+	return [[-dy, dx, dy, -dx][direction], [dx, -dy, -dx, dy][direction]];
+}
+
 //finds pseudo legal moves from this function
 function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 	//finds the valid moves for player #turn to make
@@ -89,12 +109,21 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 			for (move of cell.type.moves) {
 				if (move.condition != undefined) {
 					if (move.condition.max_uses != undefined && cell.uses > move.condition.max_uses) continue;
+					if (move.condition.min_uses != undefined && cell.uses < move.condition.min_uses) continue;
+					if (move.condition.by_void != undefined) {
+						let [d_row, d_col] = rotate(move.condition.by_void, cell.direction);
+						if (in_bounds(board, row_count+d_row, col_count+d_col)) continue;
+					}
+					if (move.condition.mandatory_collateral != undefined) {
+						let [collateral_row, collateral_col] = rotate(move.condition.mandatory_collateral, cell.direction);
+						collateral_row += row_count;
+						collateral_col += col_count;
+						if (!in_bounds(board, collateral_row, collateral_col) || board[collateral_row][collateral_col] == empty_cell) continue;
+						let collateral_cell = board[collateral_row][collateral_col];
+						if (collateral_cell.team == turn) continue;
+					}
 				}
-				//coordinates in definition are (a, b). use that + rotation to determine d_row and d_col for this piece
-				let a = move.motion[0];
-				let b = move.motion[1];
-				let d_row = [-b, a, b, -a][cell.direction];
-				let d_col = [a, -b, -a, b][cell.direction];
+				let [d_row, d_col] = rotate(move.motion, cell.direction);
 				let current_row = row_count + d_row;
 				let current_col = col_count + d_col;
 				//special move types
@@ -113,17 +142,13 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 							if (move.condition.max_uses != undefined && board[current_row][current_col].uses > move.condition.max_uses) continue;
 						}
 						let future_board = copy_board(board);
-						/* future_board[row_count][col_count] //old king
-						future_board[row_count+d_row][col_count+d_col] //old king + 1
-						future_board[row_count+2*d_row][col_count+2*d_col] //old king + 2
-						future_board[current_row][current_col] //pos of rook */
 						future_board[current_row][current_col].uses++;
 						future_board[row_count+d_row][col_count+d_col] = future_board[current_row][current_col];
 						future_board[current_row][current_col] = empty_cell;
 						future_board[row_count][col_count].uses++;
 						future_board[row_count+2*d_row][col_count+2*d_col] = future_board[row_count][col_count];
 						future_board[row_count][col_count] = empty_cell;
-						moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board, type: move.type});
+						moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
 					}
 					continue;
 				}
@@ -135,15 +160,20 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 					if (move.limit != undefined && slide_count > move.limit) break;
 					if (board[current_row][current_col] == empty_cell) { //if in empty
 						if (move.type != "capture" && move.type != "ranged" && move.type != "convert") {
-							//create possible future around this
+							//create possible future around this. sliding at empty
 							let future_board = copy_board(board);
 							future_board[row_count][col_count].uses++;
 							future_board[current_row][current_col] = future_board[row_count][col_count];
 							future_board[row_count][col_count] = empty_cell;
-							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board, type: move.type});
+							if (move.condition != undefined && move.condition.mandatory_collateral != undefined) { //if pass, this Is a collateral situation
+								let [collateral_row, collateral_col] = rotate(move.condition.mandatory_collateral, cell.direction);
+								collateral_row += row_count;
+								collateral_col += col_count;
+								future_board[collateral_row][collateral_col] = empty_cell;
+							}
+							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
 						}
 					} else {
-						//console.log(square_name(row_count, col_count)+" to "+square_name(current_row, current_col));
 						if (board[current_row][current_col].team != turn && move.type != "peaceful") { //if hitting enemy, and we aren't peaceful
 							//console.log("looking at "+square_name(row_count, col_count)+" to "+square_name(current_row, current_col));
 							//console.log("hit a piece");
@@ -159,7 +189,7 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 								future_board[current_row][current_col] = future_board[row_count][col_count];
 								future_board[row_count][col_count] = empty_cell;
 							}
-							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board, type: move.type});
+							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
 						}
 						break; //stop the sliding loop
 					}
@@ -175,8 +205,10 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 	return moves_list;
 }
 
-function do_turn() {
-	{
+//once the board is in its good current state, update visuals and get moves ready
+// (to return to a history, use need_rotate=false and set the turn yourself)
+function do_turn(need_rotate = true) {
+	if (need_rotate) {
 		turn = (turn+1)%teams;
 		let css = "";
 		css += "table{transform:rotate("+team_rotations[turn]+"deg);}";
@@ -184,52 +216,28 @@ function do_turn() {
 		//document.getElementById("rotation_css").innerHTML = css;
 	}
 	update_display_all();
-	available_moves = find_moves(turn, board);
-	//filter out moves that threaten our own royalty
-	for (let i = 0; i < available_moves.length; i++) {
-		let move = available_moves[i];
-		let illegal = royalty_threatened(move.result, turn);
-		if (illegal) {
-			available_moves.splice(i, 1);
-			i--;
-		}
-	}
+	available_moves = find_legal_moves(turn, board);
+	document.getElementById("current_turn_display").innerText = team_names[turn]+"'s turn ("+available_moves.length+" moves)";
 	if (available_moves.length == 0) {
 		if (royalty_threatened(board, turn)) {
 			end_game("checkmate");
 		} else {
 			end_game("stalemate");
 		}
-	} else highlight_appropriate_squares();
+	} else {
+		highlight_appropriate_squares();
+		if (turn) setTimeout(computer_turn, 20);
+	}
 }
 
-function end_game(kind, winner) {
+function end_game(kind) {
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
 		get_celement(row_count, col_count).setAttribute("highlight", "");
 		get_celement(row_count, col_count).setAttribute("onclick", "");
 	}
-	let html = "";
-	if (kind == "stalemate") {
-		html += "<h1>Stalemate</h1>";
-		html += "<p>It is "+team_names[turn]+"'s turn, but they have no valid moves.</p>";
-	} else if (kind == "checkmate") {
-		html += "<h1>Checkmate</h1>";
-		html += "<p>"+team_names[turn]+"'s royalty cannot be saved.</p>"
-	}
-	open_modal(html, true);
+	document.getElementById("current_turn_display").innerHTML = kind + " on " + team_names[turn];
+	console.log(kind);
 }
-function open_modal(html, closable) {
-	document.getElementById("modal").hidden = false;
-	document.getElementById("modal").style.animation = "0.5s modal_open";
-	document.getElementById("modal").innerHTML = (closable?'<div id="close_modal" onclick="close_modal();">x</div>':'') + html;
-}
-function close_modal() {
-	document.getElementById("modal").style.animation = "0.5s modal_close";
-	setTimeout(function(){
-		document.getElementById("modal").hidden = true;
-	}, 450);
-}
-
 //these functions work with the ui. current board state! no future handling
 function click_cell(row, col) {
 	//deselecting space
@@ -242,11 +250,7 @@ function click_cell(row, col) {
 	//using an available move
 	if (selection != null) for (move of available_moves) {
 		if (move.destination[0] == row && move.destination[1] == col && move.origin[0] == selection[0] && move.origin[1] == selection[1]) {
-			board = move.result;
-			selection = null;
-			sfx("play_"+move.type);
-			//if (royalty_threatened_by(board, turn)) console.log("check btw");
-			do_turn();
+			accept_move(move);
 			return;
 		}
 	}
@@ -259,8 +263,21 @@ function click_cell(row, col) {
 	}
 }
 
+//for actually commiting a move object
+function accept_move(move) {
+	board = move.result;
+	board_history.push(board);
+	selection = null;
+	sfx("move");
+	//if (royalty_threatened_by(board, turn)) console.log("check btw");
+	do_turn();
+}
+
 function sfx(noise) {
-	//console.log(noise);
+	//return;
+	let a = new Audio("sfx/sfx"+noise+".mp3");
+	a.volume = 0.5;
+	a.play();
 }
 
 function highlight_appropriate_squares() { //do square highlighting
@@ -311,11 +328,64 @@ function square_name(row, col) {
 	return "abcdefghijklmnopqrstuvwxyz".split("")[col] + (board.length - row);
 }
 
+//using global available_moves, does a turn for us.
+function computer_turn() {
+	//console.log("thinking...");
+	let move = best_move_for(turn, board, 3);
+	//console.log("done thinking");
+	accept_move(move);
+}
+
+//evaluates how much a board state is in favor of some team
+function board_evaluation(team, board) {
+	let points = [];
+	for (let i = 0; i < teams; i++) points[i] = 0;
+	for (row of board) for (cell of row) {
+		if (cell.team != undefined) points[cell.team] += cell.type.worth;
+	}
+	let our_advantage = 0;
+	for (let opposing = 0; opposing < teams; opposing++) our_advantage += points[team] - points[opposing];
+	return our_advantage;
+}
+
+function best_move_for(team, board, depth) {
+	if (depth == 1) {
+		let available = find_legal_moves(team, board);
+		if (available.length == 0) return 0; //this player is trapped. keep that in mind when returning to previous layer
+		let evals = [];
+		for (a of available) evals.push(board_evaluation(team, board));
+		let max_eval = evals[0];
+		for (e of evals) if (e > max_eval) max_eval = e;
+		let best_of_available = [];
+		for (let i = 0; i < evals.length; i++) if (evals[i] == max_eval) best_of_available.push(available[i]);
+		return best_of_available[Math.floor(Math.random()*best_of_available.length)];
+	} else {
+		let available = find_moves(team, board);
+		if (available.length == 0) return 0;
+		//among the legal moves, let's predict how the next person will respond
+		let next_team = (team+1)%teams;
+		let evals = []; //evaluation in terms of our own benefit still
+		for (a of available) {
+			let their_response = best_move_for(next_team, a.result, depth-1);
+			if (their_response == 0) {
+				//they have no available moves here. if they're in danger, checkmate; otherwise, stalemate
+				evals.push(royalty_threatened(next_team, a.result) ? 999 : 0);
+			} else {
+				evals.push(board_evaluation(team, their_response.result)); //this is how good we'll end up if we go through with their plans
+			}
+		}
+		let max_eval = evals[0];
+		for (e of evals) if (e > max_eval) max_eval = e;
+		let best_of_available = [];
+		for (let i = 0; i < evals.length; i++) if (evals[i] == max_eval) best_of_available.push(available[i]);
+		return best_of_available[Math.floor(Math.random()*best_of_available.length)];
+	}
+}
 
 
 /*
 MOVE DEFINITION INCLUDES
-- type {normal, capture, peaceful, ranged}
+- type {normal, capture, peaceful, ranged, convert, castle}
 - motion
 - *limit
 - *condition{max_uses}
@@ -327,7 +397,7 @@ let c = {}; //piece catalogue
 c.rook = {
 	name: "rook",
 	letter: "t",
-	worth: 500,
+	worth: 5,
 	moves: [
 		{type: "normal", motion: [0, 1]},
 		{type: "normal", motion: [0, -1]},
@@ -338,7 +408,7 @@ c.rook = {
 c.bishop = {
 	name: "bishop",
 	letter: "v",
-	worth: 300,
+	worth: 3,
 	moves: [
 		{type: "normal", motion: [1, 1]},
 		{type: "normal", motion: [1, -1]},
@@ -349,7 +419,7 @@ c.bishop = {
 c.queen = {
 	name: "queen",
 	letter: "w",
-	worth: 900,
+	worth: 9,
 	moves: [
 		{type: "normal", motion: [1, 1]},
 		{type: "normal", motion: [1, -1]},
@@ -364,7 +434,7 @@ c.queen = {
 c.king = {
 	name: "king",
 	letter: "l",
-	worth: 9999999,
+	worth: 100,
 	royal: true,
 	moves: [
 		{type: "normal", motion: [1, 1], limit: 1},
@@ -382,7 +452,7 @@ c.king = {
 c.knight = {
 	name: "knight",
 	letter: "m",
-	worth: 300,
+	worth: 3,
 	moves: [
 		{type: "normal", motion: [2, 1], limit: 1},
 		{type: "normal", motion: [2, -1], limit: 1},
@@ -397,66 +467,18 @@ c.knight = {
 c.pawn = {
 	name: "pawn",
 	letter: "o",
-	worth: 100,
+	worth: 1,
 	promote: true,
 	moves: [
 		{type: "peaceful", motion: [0, 1], limit: 2, condition: {max_uses: 0}},
-		{type: "peaceful", motion: [0, 1], limit: 1},
+		{type: "peaceful", motion: [0, 1], limit: 1, condition: {min_uses: 1}},
 		{type: "capture", motion: [1, 1], limit: 1},
 		{type: "capture", motion: [-1, 1], limit: 1}
 	]
 };
 
-c.pawn4 = { //can move forward 4
-	name: "pawn",
-	letter: "o",
-	worth: 100,
-	promote: true,
-	moves: [
-		{type: "peaceful", motion: [0, 1], limit: 4, condition: {max_uses: 0}},
-		{type: "peaceful", motion: [0, 1], limit: 1},
-		{type: "capture", motion: [1, 1], limit: 1},
-		{type: "capture", motion: [-1, 1], limit: 1}
-	]
-}
-c.bureaucrat = { //can move anywhere
-	name: "bureaucrat",
-	letter: ".",
-	worth: 0,
-	moves: [
-		{type: "peaceful", motion: [-7, -7], limit: 1},{type: "peaceful", motion: [-7, -6], limit: 1},{type: "peaceful", motion: [-7, -5], limit: 1},{type: "peaceful", motion: [-7, -4], limit: 1},{type: "peaceful", motion: [-7, -3], limit: 1},{type: "peaceful", motion: [-7, -2], limit: 1},{type: "peaceful", motion: [-7, -1], limit: 1},{type: "peaceful", motion: [-7, 0], limit: 1},{type: "peaceful", motion: [-7, 1], limit: 1},{type: "peaceful", motion: [-7, 2], limit: 1},{type: "peaceful", motion: [-7, 3], limit: 1},{type: "peaceful", motion: [-7, 4], limit: 1},{type: "peaceful", motion: [-7, 5], limit: 1},{type: "peaceful", motion: [-7, 6], limit: 1},{type: "peaceful", motion: [-7, 7], limit: 1},{type: "peaceful", motion: [-6, -7], limit: 1},{type: "peaceful", motion: [-6, -6], limit: 1},{type: "peaceful", motion: [-6, -5], limit: 1},{type: "peaceful", motion: [-6, -4], limit: 1},{type: "peaceful", motion: [-6, -3], limit: 1},{type: "peaceful", motion: [-6, -2], limit: 1},{type: "peaceful", motion: [-6, -1], limit: 1},{type: "peaceful", motion: [-6, 0], limit: 1},{type: "peaceful", motion: [-6, 1], limit: 1},{type: "peaceful", motion: [-6, 2], limit: 1},{type: "peaceful", motion: [-6, 3], limit: 1},{type: "peaceful", motion: [-6, 4], limit: 1},{type: "peaceful", motion: [-6, 5], limit: 1},{type: "peaceful", motion: [-6, 6], limit: 1},{type: "peaceful", motion: [-6, 7], limit: 1},{type: "peaceful", motion: [-5, -7], limit: 1},{type: "peaceful", motion: [-5, -6], limit: 1},{type: "peaceful", motion: [-5, -5], limit: 1},{type: "peaceful", motion: [-5, -4], limit: 1},{type: "peaceful", motion: [-5, -3], limit: 1},{type: "peaceful", motion: [-5, -2], limit: 1},{type: "peaceful", motion: [-5, -1], limit: 1},{type: "peaceful", motion: [-5, 0], limit: 1},{type: "peaceful", motion: [-5, 1], limit: 1},{type: "peaceful", motion: [-5, 2], limit: 1},{type: "peaceful", motion: [-5, 3], limit: 1},{type: "peaceful", motion: [-5, 4], limit: 1},{type: "peaceful", motion: [-5, 5], limit: 1},{type: "peaceful", motion: [-5, 6], limit: 1},{type: "peaceful", motion: [-5, 7], limit: 1},{type: "peaceful", motion: [-4, -7], limit: 1},{type: "peaceful", motion: [-4, -6], limit: 1},{type: "peaceful", motion: [-4, -5], limit: 1},{type: "peaceful", motion: [-4, -4], limit: 1},{type: "peaceful", motion: [-4, -3], limit: 1},{type: "peaceful", motion: [-4, -2], limit: 1},{type: "peaceful", motion: [-4, -1], limit: 1},{type: "peaceful", motion: [-4, 0], limit: 1},{type: "peaceful", motion: [-4, 1], limit: 1},{type: "peaceful", motion: [-4, 2], limit: 1},{type: "peaceful", motion: [-4, 3], limit: 1},{type: "peaceful", motion: [-4, 4], limit: 1},{type: "peaceful", motion: [-4, 5], limit: 1},{type: "peaceful", motion: [-4, 6], limit: 1},{type: "peaceful", motion: [-4, 7], limit: 1},{type: "peaceful", motion: [-3, -7], limit: 1},{type: "peaceful", motion: [-3, -6], limit: 1},{type: "peaceful", motion: [-3, -5], limit: 1},{type: "peaceful", motion: [-3, -4], limit: 1},{type: "peaceful", motion: [-3, -3], limit: 1},{type: "peaceful", motion: [-3, -2], limit: 1},{type: "peaceful", motion: [-3, -1], limit: 1},{type: "peaceful", motion: [-3, 0], limit: 1},{type: "peaceful", motion: [-3, 1], limit: 1},{type: "peaceful", motion: [-3, 2], limit: 1},{type: "peaceful", motion: [-3, 3], limit: 1},{type: "peaceful", motion: [-3, 4], limit: 1},{type: "peaceful", motion: [-3, 5], limit: 1},{type: "peaceful", motion: [-3, 6], limit: 1},{type: "peaceful", motion: [-3, 7], limit: 1},{type: "peaceful", motion: [-2, -7], limit: 1},{type: "peaceful", motion: [-2, -6], limit: 1},{type: "peaceful", motion: [-2, -5], limit: 1},{type: "peaceful", motion: [-2, -4], limit: 1},{type: "peaceful", motion: [-2, -3], limit: 1},{type: "peaceful", motion: [-2, -2], limit: 1},{type: "peaceful", motion: [-2, -1], limit: 1},{type: "peaceful", motion: [-2, 0], limit: 1},{type: "peaceful", motion: [-2, 1], limit: 1},{type: "peaceful", motion: [-2, 2], limit: 1},{type: "peaceful", motion: [-2, 3], limit: 1},{type: "peaceful", motion: [-2, 4], limit: 1},{type: "peaceful", motion: [-2, 5], limit: 1},{type: "peaceful", motion: [-2, 6], limit: 1},{type: "peaceful", motion: [-2, 7], limit: 1},{type: "peaceful", motion: [-1, -7], limit: 1},{type: "peaceful", motion: [-1, -6], limit: 1},{type: "peaceful", motion: [-1, -5], limit: 1},{type: "peaceful", motion: [-1, -4], limit: 1},{type: "peaceful", motion: [-1, -3], limit: 1},{type: "peaceful", motion: [-1, -2], limit: 1},{type: "peaceful", motion: [-1, -1], limit: 1},{type: "peaceful", motion: [-1, 0], limit: 1},{type: "peaceful", motion: [-1, 1], limit: 1},{type: "peaceful", motion: [-1, 2], limit: 1},{type: "peaceful", motion: [-1, 3], limit: 1},{type: "peaceful", motion: [-1, 4], limit: 1},{type: "peaceful", motion: [-1, 5], limit: 1},{type: "peaceful", motion: [-1, 6], limit: 1},{type: "peaceful", motion: [-1, 7], limit: 1},{type: "peaceful", motion: [0, -7], limit: 1},{type: "peaceful", motion: [0, -6], limit: 1},{type: "peaceful", motion: [0, -5], limit: 1},{type: "peaceful", motion: [0, -4], limit: 1},{type: "peaceful", motion: [0, -3], limit: 1},{type: "peaceful", motion: [0, -2], limit: 1},{type: "peaceful", motion: [0, -1], limit: 1},{type: "peaceful", motion: [0, 1], limit: 1},{type: "peaceful", motion: [0, 2], limit: 1},{type: "peaceful", motion: [0, 3], limit: 1},{type: "peaceful", motion: [0, 4], limit: 1},{type: "peaceful", motion: [0, 5], limit: 1},{type: "peaceful", motion: [0, 6], limit: 1},{type: "peaceful", motion: [0, 7], limit: 1},{type: "peaceful", motion: [1, -7], limit: 1},{type: "peaceful", motion: [1, -6], limit: 1},{type: "peaceful", motion: [1, -5], limit: 1},{type: "peaceful", motion: [1, -4], limit: 1},{type: "peaceful", motion: [1, -3], limit: 1},{type: "peaceful", motion: [1, -2], limit: 1},{type: "peaceful", motion: [1, -1], limit: 1},{type: "peaceful", motion: [1, 0], limit: 1},{type: "peaceful", motion: [1, 1], limit: 1},{type: "peaceful", motion: [1, 2], limit: 1},{type: "peaceful", motion: [1, 3], limit: 1},{type: "peaceful", motion: [1, 4], limit: 1},{type: "peaceful", motion: [1, 5], limit: 1},{type: "peaceful", motion: [1, 6], limit: 1},{type: "peaceful", motion: [1, 7], limit: 1},{type: "peaceful", motion: [2, -7], limit: 1},{type: "peaceful", motion: [2, -6], limit: 1},{type: "peaceful", motion: [2, -5], limit: 1},{type: "peaceful", motion: [2, -4], limit: 1},{type: "peaceful", motion: [2, -3], limit: 1},{type: "peaceful", motion: [2, -2], limit: 1},{type: "peaceful", motion: [2, -1], limit: 1},{type: "peaceful", motion: [2, 0], limit: 1},{type: "peaceful", motion: [2, 1], limit: 1},{type: "peaceful", motion: [2, 2], limit: 1},{type: "peaceful", motion: [2, 3], limit: 1},{type: "peaceful", motion: [2, 4], limit: 1},{type: "peaceful", motion: [2, 5], limit: 1},{type: "peaceful", motion: [2, 6], limit: 1},{type: "peaceful", motion: [2, 7], limit: 1},{type: "peaceful", motion: [3, -7], limit: 1},{type: "peaceful", motion: [3, -6], limit: 1},{type: "peaceful", motion: [3, -5], limit: 1},{type: "peaceful", motion: [3, -4], limit: 1},{type: "peaceful", motion: [3, -3], limit: 1},{type: "peaceful", motion: [3, -2], limit: 1},{type: "peaceful", motion: [3, -1], limit: 1},{type: "peaceful", motion: [3, 0], limit: 1},{type: "peaceful", motion: [3, 1], limit: 1},{type: "peaceful", motion: [3, 2], limit: 1},{type: "peaceful", motion: [3, 3], limit: 1},{type: "peaceful", motion: [3, 4], limit: 1},{type: "peaceful", motion: [3, 5], limit: 1},{type: "peaceful", motion: [3, 6], limit: 1},{type: "peaceful", motion: [3, 7], limit: 1},{type: "peaceful", motion: [4, -7], limit: 1},{type: "peaceful", motion: [4, -6], limit: 1},{type: "peaceful", motion: [4, -5], limit: 1},{type: "peaceful", motion: [4, -4], limit: 1},{type: "peaceful", motion: [4, -3], limit: 1},{type: "peaceful", motion: [4, -2], limit: 1},{type: "peaceful", motion: [4, -1], limit: 1},{type: "peaceful", motion: [4, 0], limit: 1},{type: "peaceful", motion: [4, 1], limit: 1},{type: "peaceful", motion: [4, 2], limit: 1},{type: "peaceful", motion: [4, 3], limit: 1},{type: "peaceful", motion: [4, 4], limit: 1},{type: "peaceful", motion: [4, 5], limit: 1},{type: "peaceful", motion: [4, 6], limit: 1},{type: "peaceful", motion: [4, 7], limit: 1},{type: "peaceful", motion: [5, -7], limit: 1},{type: "peaceful", motion: [5, -6], limit: 1},{type: "peaceful", motion: [5, -5], limit: 1},{type: "peaceful", motion: [5, -4], limit: 1},{type: "peaceful", motion: [5, -3], limit: 1},{type: "peaceful", motion: [5, -2], limit: 1},{type: "peaceful", motion: [5, -1], limit: 1},{type: "peaceful", motion: [5, 0], limit: 1},{type: "peaceful", motion: [5, 1], limit: 1},{type: "peaceful", motion: [5, 2], limit: 1},{type: "peaceful", motion: [5, 3], limit: 1},{type: "peaceful", motion: [5, 4], limit: 1},{type: "peaceful", motion: [5, 5], limit: 1},{type: "peaceful", motion: [5, 6], limit: 1},{type: "peaceful", motion: [5, 7], limit: 1},{type: "peaceful", motion: [6, -7], limit: 1},{type: "peaceful", motion: [6, -6], limit: 1},{type: "peaceful", motion: [6, -5], limit: 1},{type: "peaceful", motion: [6, -4], limit: 1},{type: "peaceful", motion: [6, -3], limit: 1},{type: "peaceful", motion: [6, -2], limit: 1},{type: "peaceful", motion: [6, -1], limit: 1},{type: "peaceful", motion: [6, 0], limit: 1},{type: "peaceful", motion: [6, 1], limit: 1},{type: "peaceful", motion: [6, 2], limit: 1},{type: "peaceful", motion: [6, 3], limit: 1},{type: "peaceful", motion: [6, 4], limit: 1},{type: "peaceful", motion: [6, 5], limit: 1},{type: "peaceful", motion: [6, 6], limit: 1},{type: "peaceful", motion: [6, 7], limit: 1},{type: "peaceful", motion: [7, -7], limit: 1},{type: "peaceful", motion: [7, -6], limit: 1},{type: "peaceful", motion: [7, -5], limit: 1},{type: "peaceful", motion: [7, -4], limit: 1},{type: "peaceful", motion: [7, -3], limit: 1},{type: "peaceful", motion: [7, -2], limit: 1},{type: "peaceful", motion: [7, -1], limit: 1},{type: "peaceful", motion: [7, 0], limit: 1},{type: "peaceful", motion: [7, 1], limit: 1},{type: "peaceful", motion: [7, 2], limit: 1},{type: "peaceful", motion: [7, 3], limit: 1},{type: "peaceful", motion: [7, 4], limit: 1},{type: "peaceful", motion: [7, 5], limit: 1},{type: "peaceful", motion: [7, 6], limit: 1},{type: "peaceful", motion: [7, 7], limit: 1}
-	]
-};
-c.laser = { //laser straight ahead
-	name: "laser",
-	letter: "x",
-	worth: 900,
-	moves: [
-		{type: "ranged", motion: [0, 1]},
-		{type: "peaceful", motion: [-1, 0], limit: 1},
-		{type: "peaceful", motion: [1, 0], limit: 1}
-	]
-};
-c.wizard = { //converts neighbor pieces
-	name: "wizard",
-	letter: "x",
-	worth: 900,
-	moves: [
-		{type: "convert", motion: [1, 0], limit: 1},
-		{type: "convert", motion: [-1, 0], limit: 1},
-		{type: "peaceful", motion: [0, 1], limit: 1},
-		{type: "peaceful", motion: [0, -1], limit: 1},
-		{type: "peaceful", motion: [-1, 0], limit: 1},
-		{type: "peaceful", motion: [1, 0], limit: 1},
-		{type: "peaceful", motion: [-1, 1], limit: 1},
-		{type: "peaceful", motion: [-1, -1], limit: 1},
-		{type: "peaceful", motion: [1, -1], limit: 1},
-		{type: "peaceful", motion: [1, 1], limit: 1}
-	]
-};
-
-c.governor = { //1x rook
-	name: "governor",
+c.wazir = { //1x rook
+	name: "wazir",
 	letter: "<div style=\"transform: rotate(180deg);\">t</div>",
 	worth: 200,
 	moves: [
@@ -466,8 +488,8 @@ c.governor = { //1x rook
 		{type: "normal", motion: [1, 0], limit: 1}
 	]
 };
-c.general = { //1x bishop
-	name: "general",
+c.ferz = { //1x bishop
+	name: "ferz",
 	letter: "<div style=\"transform: rotate(180deg);\">v</div>",
 	worth: 200,
 	moves: [
@@ -477,9 +499,9 @@ c.general = { //1x bishop
 		{type: "normal", motion: [1, -1], limit: 1}
 	]
 };
-c.tank = { //2x rook
-	name: "tank",
-	letter: "<div style=\"transform: rotate(180deg);\">t</div>",
+c.dabbaba = { //2x rook
+	name: "dabbaba",
+	letter: "<div style=\"transform: rotate(90deg);\">t</div>",
 	worth: 400,
 	moves: [
 		{type: "normal", motion: [0, 2], limit: 1},
@@ -488,9 +510,9 @@ c.tank = { //2x rook
 		{type: "normal", motion: [2, 0], limit: 1}
 	]
 };
-c.elephant = { //2x bishop
-	name: "elephant",
-	letter: "<div style=\"transform: rotate(180deg);\">v</div>",
+c.alfil = { //2x bishop
+	name: "alfil",
+	letter: "<div style=\"transform: rotate(90deg);\">v</div>",
 	worth: 200,
 	moves: [
 		{type: "normal", motion: [2, 2], limit: 1},
@@ -512,5 +534,3 @@ let white_knig = {team: 0, direction: 0, uses: 0, type: c.knight};
 let black_knig = {team: 1, direction: 2, uses: 0, type: c.knight};
 let white_pawn = {team: 0, direction: 0, uses: 0, type: c.pawn};
 let black_pawn = {team: 1, direction: 2, uses: 0, type: c.pawn};
-let white_paw4 = {team: 0, direction: 0, uses: 0, type: c.pawn4};
-let black_paw4 = {team: 1, direction: 2, uses: 0, type: c.pawn4};

@@ -2,9 +2,9 @@
 <html>
 <head>
   <link rel="icon" href="icon.png">
-  <title>Chess</title>
+  <title>chess sandbox</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
     
     @font-face {
       font-family: "chess font";
@@ -24,6 +24,7 @@
       background-color: var(--black);
       font-family: Inter, sans-serif;
       color: var(--white);
+      overflow-x: hidden;
     }
     
     main {
@@ -37,10 +38,10 @@
     }
     
     table {
-      font-family: 'chess font';
       border-collapse: collapse;
       transition: transform 1s;
       margin: auto;
+      font-family: 'chess font';
     }
     
     #display_table {
@@ -66,9 +67,9 @@
     
     span[team="0"] {color: var(--white);}
     span[team="1"] {color: var(--black); -webkit-text-stroke-color: var(--white);}
-    span[team="2"] {color: #d22;}
-    span[team="3"] {color: #22d;}
-    span[team="4"] {color: #2d2;}
+    span[team="2"] {color: #3B4FE7;}
+    span[team="3"] {color: #EE2B1A;}
+    span[team="4"] {color: #ECAD19;}
     
     td[oob="true"] {
       opacity: 0;
@@ -87,46 +88,64 @@
     }
     
     #menu {
-      width: calc(100vw - 6rem);
-      height: calc(100vh - 6rem);
       background-color: var(--green);
-      font-size: 1.5rem;
-      padding: 3rem;
+      width: 100vw;
+      min-height: 100vh;
+      padding: 6rem 0;
+    }
+    
+    #menu h1 {
+      width: 24rem;
+      margin: 1rem auto;
+      margin-top: 6rem;
       text-align: center;
-      position: fixed;
-    }
-    
-    #menu table {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-    
-    #menu tr[onclick] {
-      cursor: pointer;
-    }
-    
-    #menu td:nth-child(2) {
-      width: 12rem;
-      color: var(--white);
-      font-family: 'Inter', sans-serif;
+      font-weight: normal;
       font-size: 1.5rem;
-      text-align: left;
-      padding: 0.5rem 0.5rem;
-    }
-    
-    #menu tr[onclick]:hover td:nth-child(2) {
+      text-transform: uppercase;
       color: var(--orange);
-      text-decoration: underline;
     }
     
-    #menu tr[onclick]:hover td:nth-child(1) span {
-      -webkit-text-stroke-color: var(--orange) !important;
+    .setup {
+      width: 32rem;
+      padding: 0 2rem;
+      margin: 1rem auto;
+      cursor: pointer;
+      border-right: solid 0.125rem var(--white);
     }
     
-    #ruleset {
+    .setup:hover {
+      --white: var(--orange);
+    }
+    
+    .setup h2 {
+      margin-top: 0;
+      margin-bottom: 0;
+      font-size: 2rem;
+      line-height: 4rem;
+      font-weight: normal;
+    }
+    
+    .setup h2 span {
+      font-family: "chess font";
+      paint-order: stroke fill;
+      -webkit-text-stroke: 0.5rem var(--black);
+      font-size: 4rem;
+      transform: translateY(1rem);
+      display: inline-block;
+      margin-right: 1rem;
+      color: var(--white);
+    }
+    
+    .setup p {
+      width: 25rem;
+      margin: 0.5rem 0;
+      margin-left: 5.125rem;
+      padding-bottom: 0.5rem;
+    }
+    
+    #sidebar {
       position: fixed;
+      width: 16rem;
       bottom: 0;
       left: 0;
       padding: 1rem;
@@ -134,84 +153,105 @@
       font-size: 1rem;
     }
     
-    #ruleset a {
+    #sidebar p {
+      margin: 0;
+      margin-top: 0.5rem;
+    }
+    
+    #sidebar a {
       color: var(--orange);
       text-decoration: none;
       cursor: pointer;
     }
     
-    #ruleset a:hover {
+    #sidebar a:hover {
       text-decoration: underline;
-    }
-    
-    @keyframes modal_open {from {opacity: 0; transform: translate(-50%, -50%) translatey(2rem);}}
-    @keyframes modal_close {to {opacity: 0; transform: translate(-50%, -50%) translatey(2rem);}}
-    #modal {
-      background-color: var(--black);
-      border: solid 0.25rem var(--white);
-      box-shadow: 0 0 1rem var(--black);
-      width: 40rem;
-      height: 20rem;
-      left: 50%;
-      top: 50%;
-      position: absolute;
-      transform: translate(-50%, -50%);
-      padding: 3rem;
-      user-select: text;
-    }
-    
-    #modal p {
-      margin: 1rem 0;
-      font-size: 1.25rem;
-    }
-    
-    #modal h1 {
-      color: var(--orange);
-      font-size: 2.25rem;
-      margin: 1rem 0;
-    }
-    
-    #close_modal {
-      display: inline;
-      height: 0;
-      float: right;
-      font-family: "chess font";
-      font-size: 2rem;
-      user-select: none;
-      cursor: pointer;
-    }
-    
-    #close_modal:hover {
-      color: var(--orange);
     }
   </style>
   <style id="rotation_css"></style>
 </head>
 <body>
-  <main><table id="display_table"></table></main> <!-- game board -->
-  <div id="ruleset">using ruleset <a id="ruleset_link" target="_blank"></a><br><a onclick="window.location.href = (''+location).substring(0, (''+location).indexOf('?'));">Home</a></div> <!-- lil info -->
-  <script id="rules_script"></script>
   <script src="script.js"></script>
-  <div id="menu"> <!-- main menu -->
-    <table>
-      <tr onclick="link_to_rules('_standard.js')"><td parity="1"><span team="1">l</span></td><td>Standard Game</td></tr>
-      <tr onclick="link_to_rules('_960.js')"><td parity="1"><span team="1">t</span></td><td>Chess960</td></tr>
-      <tr onclick="link_to_rules('_balbo.js')"><td parity="1"><span team="1">v</span></td><td>Balbo's Game</td></tr>
-      <tr onclick="link_to_rules('_mini.js')"><td parity="1"><span team="1">o</span></td><td>Mini (4x4)</td></tr>
-      <tr onclick="link_to_rules('_double.js')"><td parity="1"><span team="1">m</span></td><td>Double (16x12)</td></tr>
-      <tr onclick="link_to_rules('_lol.js')"><td parity="1"><span team="1">w</span></td><td>league of legends</td></tr>
-      <!--<tr><td parity="1"><span team="1">w</span></td><td>Make board...</td></tr>
-      <tr><td parity="1"><span team="1">m</span></td><td>Other variants...</td></tr>-->
-    </table>
+  <main><table id="display_table"></table></main> <!-- game board -->
+  <div id="sidebar">
+    <p>using ruleset <a id="ruleset_link" target="_blank"></a></p>
+    <p id="current_turn_display"></p>
+    <p><a onclick="window.location.href = (''+location).substring(0, (''+location).indexOf('?'));">Home</a></p>
+  </div>
+  <div id="menu">
+    <div class="setup" onclick="link_to_rules('_standard.js')">
+      <h2><span>l</span>Standard Game</h2>
+      <p></p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_960.js')">
+      <h2><span>w</span>Fischer Random</h2>
+      <p>The order of all pieces on the back rank is shuffled. Invented by Bobby Fischer in 1996.</p>
+    </div>
+    <h1>different board shapes</h1>
+    <div class="setup" onclick="link_to_rules('_balbo.js')">
+      <h2><span>v</span>Balbo's Game</h2>
+      <p>A variant played on a non-rectangular board. Invented by M. Balbo in 1974.</p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_mini.js')">
+      <h2><span>o</span>Mini (4x4)</h2>
+      <p>An absurdly tiny 4x4 game. //There are so few possibilities I could probably make a directed graph of literally every possible game</p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_double.js')">
+      <h2><span>m</span>Double (16x12)</h2>
+      <p>An absurdly large 16x12 game. Each team has two kings, both of which must stay protected.</p>
+    </div>
+    <!--<h1>predecessors</h1>
+    <div class="setup" onclick="">
+      <h2><span>&nbsp;</span>Chaturanga</h2>
+      <p>The ancient Indian predecessor of chess.</p>
+    </div>
+    <div class="setup" onclick="">
+      <h2><span>&nbsp;</span>Shatranj</h2>
+      <p>The ancient Iranian predecessor of chess.</p>
+    </div>-->
+    <h1>silly</h1>
+    <div class="setup" onclick="link_to_rules('_puzzle.js')">
+      <h2><span>x</span>Crossword</h2>
+      <p></p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_lol.js')">
+      <h2><span>t</span>League of Legends</h2>
+      <p></p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_spacious.js')">
+      <h2><span>w</span>Spacious Chess</h2>
+      <p></p>
+    </div>
+    <div class="setup" onclick="link_to_rules('_checkers.js')">
+      <h2><span>.</span>Checkers</h2>
+      <p></p>
+    </div>
   </div>
   <div id="modal" hidden="true"> <!-- modals that come up during PLAY --> </div>
   <script> <!-- game rule loader -->
     let filename = location.search;
     if (filename.startsWith("?")) filename = filename.substring(1);
     if (filename != "") {
-      document.getElementById("rules_script").setAttribute("src", filename);
+      //make script
+      let el = document.createElement("script");
+      el.setAttribute("src", filename);
+      el.setAttribute("type", "text/javascript");
+      el.setAttribute("async", false);
+      document.body.appendChild(el);
+      el.addEventListener("load", function(){
+        //success
+      });
+      el.addEventListener("error", function(er){
+        //failure
+      });
+      //link to ruleset
       document.getElementById("ruleset_link").innerText = filename;
       document.getElementById("ruleset_link").setAttribute("href", filename);
+      //menu
+      document.getElementById("menu").remove();
+    } else {
+      //we are on home screen
+      document.getElementById("sidebar").remove();
     }
     
     function link_to_rules(filename) {
