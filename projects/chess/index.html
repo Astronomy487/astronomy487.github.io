@@ -4,7 +4,7 @@
   <link rel="icon" href="icon.png">
   <title>chess sandbox</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
     
     @font-face {
       font-family: "chess font";
@@ -14,8 +14,11 @@
     :root {
       --black: #292929;
       --white: #EDEDEA;
-      --green: #32684B;
-      --orange: #E08300;
+      --square-dark: #6388a5;
+      --square-light: #afbecc;
+      --color: #FF7300;
+      /* --square-dark: #88a563;
+      --square-light: #becf9f; */
     }
     
     body {
@@ -29,7 +32,6 @@
     
     main {
       max-height: 94vh;
-      overflow-y: scroll;
       margin-top: 3vh;
       position: absolute;
       width: 100%;
@@ -41,10 +43,11 @@
       border-collapse: collapse;
       transition: transform 1s;
       margin: auto;
-      font-family: 'chess font';
     }
     
-    #display_table {
+    ::selection {
+      background: var(--white);
+      color: var(--black);
     }
     
     td {
@@ -55,14 +58,16 @@
       background-color: var(--square);
     }
     
-    td[parity="0"] {--square: var(--white); --not-square: var(--green);}
-    td[parity="1"] {--square: var(--green); --not-square: var(--white);}
+    td[parity="0"] {--square: var(--square-light); --not-square: var(--square-dark);}
+    td[parity="1"] {--square: var(--square-dark); --not-square: var(--square-light);}
     
     span[team] {
       paint-order: stroke fill;
-      -webkit-text-stroke: 0.5rem var(--black);
+      -webkit-text-stroke: 0.125em var(--black);
       display: block;
       transition: transform 0s;
+      text-shadow: 0 0.0625em 0.125em var(--black);
+      font-family: 'chess font';
     }
     
     span[team="0"] {color: var(--white);}
@@ -79,68 +84,88 @@
       cursor: pointer;
     }
     td[highlight="origin"] {
-      background-color: var(--orange);
+      background-color: var(--color);
       cursor: pointer;
     }
     td[highlight="destination"] {
       cursor: pointer;
-      box-shadow: inset 0.25rem 0.25rem var(--square), inset -0.25rem -0.25rem var(--square), inset 0.5rem 0.5rem var(--orange), inset -0.5rem -0.5rem var(--orange);
+      box-shadow: inset 0.25rem 0.25rem var(--square), inset -0.25rem -0.25rem var(--square), inset 0.5rem 0.5rem var(--color), inset -0.5rem -0.5rem var(--color);
+    }
+    td[highlight="just_happened"] {
+      box-shadow: inset 0.25rem 0.25rem var(--square), inset -0.25rem -0.25rem var(--square), inset 0.5rem 0.5rem var(--not-square), inset -0.5rem -0.5rem var(--not-square);
+    }
+    
+    a {
+      color: var(--color);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    button {
+      background-color: var(--color);
+      border: none;
+      font-size: 1rem;
+      font-family: inherit;
+      width: 8rem;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      margin: 0;
+      margin-top: 1rem;
+      float: right;
+    }
+    
+    button:hover {
+      background-color: var(--white);
+    }
+    
+    button:hover::after {
+      content: ' ->';
     }
     
     #menu {
-      background-color: var(--green);
-      width: 100vw;
-      min-height: 100vh;
-      padding: 6rem 0;
+      width: 100%;
+      user-select: text;
     }
     
     #menu h1 {
-      width: 24rem;
-      margin: 1rem auto;
-      margin-top: 6rem;
-      text-align: center;
       font-weight: normal;
-      font-size: 1.5rem;
+      text-align: center;
+      font-size: 1.25rem;
+      width: 28rem;
+      margin: 0 auto;
+      margin-top: 10rem;
+      margin-bottom: -4rem;
+      color: var(--color);
       text-transform: uppercase;
-      color: var(--orange);
     }
+    
+    #menu h1::before {content: '— ';}
+    #menu h1::after {content: ' —';}
     
     .setup {
-      width: 32rem;
-      padding: 0 2rem;
-      margin: 1rem auto;
-      cursor: pointer;
-      border-right: solid 0.125rem var(--white);
-    }
-    
-    .setup:hover {
-      --white: var(--orange);
+      width: 28rem;
+      margin: 6rem auto;
     }
     
     .setup h2 {
-      margin-top: 0;
-      margin-bottom: 0;
       font-size: 2rem;
-      line-height: 4rem;
       font-weight: normal;
+      margin: 1rem 0;
+      color: var(--color);
     }
     
-    .setup h2 span {
-      font-family: "chess font";
-      paint-order: stroke fill;
-      -webkit-text-stroke: 0.5rem var(--black);
-      font-size: 4rem;
-      transform: translateY(1rem);
-      display: inline-block;
-      margin-right: 1rem;
+    .setup button {
+      background-color: var(--black);
       color: var(--white);
     }
     
-    .setup p {
-      width: 25rem;
-      margin: 0.5rem 0;
-      margin-left: 5.125rem;
-      padding-bottom: 0.5rem;
+    .setup button:hover {
+      background-color: var(--color);
+      color: var(--black);
     }
     
     #sidebar {
@@ -150,7 +175,7 @@
       left: 0;
       padding: 1rem;
       background-color: var(--black);
-      font-size: 1rem;
+      font-size: 1.125rem;
     }
     
     #sidebar p {
@@ -158,100 +183,115 @@
       margin-top: 0.5rem;
     }
     
-    #sidebar a {
-      color: var(--orange);
-      text-decoration: none;
-      cursor: pointer;
+    #modal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--black);
+      width: 32rem;
+      padding: 1rem 2rem;
+      min-height: 16rem;
+      /* border: solid 0.25rem var(--white);
+      box-shadow: 0 0 1rem var(--black); */
     }
     
-    #sidebar a:hover {
-      text-decoration: underline;
+    #modal h1 {
+      font-weight: normal;
+      margin: 1rem 0;
+      color: var(--color);
+    }
+    
+    #modal div {
+      margin: 0.25rem 0;
+    }
+    
+    #modal label {
+      margin-left: 1rem;
+    }
+    
+    #modal hr {
+      border: none;
+      margin: 1rem 0;
+      height: 0.125rem;
+      background-color: var(--white);
+      width: 50%;
     }
   </style>
   <style id="rotation_css"></style>
 </head>
 <body>
   <script src="script.js"></script>
+  <script src="common_pieces.js"></script>
   <main><table id="display_table"></table></main> <!-- game board -->
   <div id="sidebar">
-    <p>using ruleset <a id="ruleset_link" target="_blank"></a></p>
     <p id="current_turn_display"></p>
     <p><a onclick="window.location.href = (''+location).substring(0, (''+location).indexOf('?'));">Home</a></p>
   </div>
-  <div id="menu">
-    <div class="setup" onclick="link_to_rules('_standard.js')">
-      <h2><span>l</span>Standard Game</h2>
-      <p></p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_960.js')">
-      <h2><span>w</span>Fischer Random</h2>
-      <p>The order of all pieces on the back rank is shuffled. Invented by Bobby Fischer in 1996.</p>
-    </div>
-    <h1>different board shapes</h1>
-    <div class="setup" onclick="link_to_rules('_balbo.js')">
-      <h2><span>v</span>Balbo's Game</h2>
-      <p>A variant played on a non-rectangular board. Invented by M. Balbo in 1974.</p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_mini.js')">
-      <h2><span>o</span>Mini (4x4)</h2>
-      <p>An absurdly tiny 4x4 game. //There are so few possibilities I could probably make a directed graph of literally every possible game</p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_double.js')">
-      <h2><span>m</span>Double (16x12)</h2>
-      <p>An absurdly large 16x12 game. Each team has two kings, both of which must stay protected.</p>
-    </div>
-    <!--<h1>predecessors</h1>
-    <div class="setup" onclick="">
-      <h2><span>&nbsp;</span>Chaturanga</h2>
-      <p>The ancient Indian predecessor of chess.</p>
-    </div>
-    <div class="setup" onclick="">
-      <h2><span>&nbsp;</span>Shatranj</h2>
-      <p>The ancient Iranian predecessor of chess.</p>
-    </div>-->
-    <h1>silly</h1>
-    <div class="setup" onclick="link_to_rules('_puzzle.js')">
-      <h2><span>x</span>Crossword</h2>
-      <p></p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_lol.js')">
-      <h2><span>t</span>League of Legends</h2>
-      <p></p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_spacious.js')">
-      <h2><span>w</span>Spacious Chess</h2>
-      <p></p>
-    </div>
-    <div class="setup" onclick="link_to_rules('_checkers.js')">
-      <h2><span>.</span>Checkers</h2>
-      <p></p>
-    </div>
-  </div>
-  <div id="modal" hidden="true"> <!-- modals that come up during PLAY --> </div>
-  <script> <!-- game rule loader -->
+  <div id="menu"></div>
+  <div id="modal"></div>
+  <script>
+    let gamerules = {};
+    //each gamerule object has:
+    // - name. actual display name (not the key, which goes in ? part of url)
+    // - description.
+    // - establish(). runs the stuff to get the board (and maybe c) set up
+  </script>
+  <script src="_standard.js"></script>
+  <script src="_4.js"></script>
+  <script src="_960.js"></script>
+  <script src="_chaturanga.js"></script>
+  <script src="_balbo.js"></script>
+  <script src="_puzzle.js"></script>
+  <script src="_mini.js"></script>
+  <script src="_double.js"></script>
+  
+  <script src="_lol.js"></script>
+  <script src="_totalrandom.js"></script>
+  <script src="_spacious.js"></script>
+  <script src="_checkers.js"></script>
+  
+  <script src="_2020.js"></script>
+  <script src="_gay.js"></script>
+  <script src="_guillotine.js"></script>
+  <script>
     let filename = location.search;
     if (filename.startsWith("?")) filename = filename.substring(1);
     if (filename != "") {
-      //make script
-      let el = document.createElement("script");
-      el.setAttribute("src", filename);
-      el.setAttribute("type", "text/javascript");
-      el.setAttribute("async", false);
-      document.body.appendChild(el);
-      el.addEventListener("load", function(){
-        //success
-      });
-      el.addEventListener("error", function(er){
-        //failure
-      });
-      //link to ruleset
-      document.getElementById("ruleset_link").innerText = filename;
-      document.getElementById("ruleset_link").setAttribute("href", filename);
-      //menu
+      //we are playing game
       document.getElementById("menu").remove();
+      //run appropriate script
+      gamerules[filename].establish();
+      //create the modal
+      let html = '';
+      html += '<h1>'+gamerules[filename].name+'</h1>';
+      html += '<p>'+gamerules[filename].description+'</p>';
+      teams = 0;
+      for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
+      teams++;
+      for (let i = 0; i < teams; i++) {
+        html += '<div><input type="checkbox" id="ai_checkbox_'+i+'"><label>'+team_names[i]+' player CPU?</label></div>';
+      }
+      html += '<hr><div><input type="checkbox" id="rotation_checkbox"><label>Rotate on new player?</label></div>';
+      html += '<button onclick="start_game();">Start</button>';
+      document.getElementById("modal").innerHTML = html;
     } else {
       //we are on home screen
       document.getElementById("sidebar").remove();
+      document.getElementById("modal").remove();
+      let html = '';
+      for (variant of "standard 960 4 #predecessors chaturanga #different_board_shapes balbo puzzle mini double #silly lol totalrandom spacious checkers".split(" ")) {
+        if (variant.startsWith("#")) {
+          html += '<h1>'+variant.substring(1).replaceAll("_", " ")+'</h1>';
+          continue;
+        }
+        html += '<div class="setup">';
+        html += '<h2>' + gamerules[variant].name + '</h2>';
+        html += '<p>' + gamerules[variant].description + '</h2>';
+        html += '<button onclick="link_to_rules(\''+variant+'\')">Play</button>';
+        html += '</div>';
+      }
+      document.getElementById("menu").innerHTML = html;
     }
     
     function link_to_rules(filename) {

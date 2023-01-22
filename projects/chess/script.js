@@ -9,16 +9,23 @@ let teams;
 let turn; //whose turn it currently is
 let available_moves; //available moves to current turn
 let selection = null; //select piece before acting on it. [row, col]
+let just_happened = null; //the last move that just happened. [row, col]
 let team_names = "White Black Blue Red Yellow".split(" ");
+let ai_teams = [];
+let rotation_enabled = true;
 
 function start_game() {
-	//board alone has been initialized
-	teams = 0;
-	for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
+	//board alone has been initialized. and teams has already been calculated
 	for (row of board) for (cell of row) if (cell.type != undefined) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
 	for (row of board) for (cell of row) if (cell.type != undefined && cell.type.royal) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
-	teams++;
 	turn = -1;
+	//read and remove modal
+	for (let i = 0; i < teams; i++) if (document.getElementById("ai_checkbox_"+i).checked) {
+		ai_teams.push(i);
+		team_names[i] += " (CPU)";
+	}
+	rotation_enabled = document.getElementById("rotation_checkbox").checked;
+	document.getElementById("modal").remove();
 	//create board
 	{
 		let html = "";
@@ -42,7 +49,7 @@ function start_game() {
 	}
 	//dereference anything sus in the board
 	board = copy_board(board);
-	board_history.push(board);
+	board_history = [board];
 	//start the round
 	do_turn();
 }
@@ -94,6 +101,8 @@ function rotate(v, direction) {
 	return [[-dy, dx, dy, -dx][direction], [dx, -dy, -dx, dy][direction]];
 }
 
+//TODO: restructure this so theres a helper function to find moves for one specific piece. it still has to somehow overload with those royal threat parameters
+
 //finds pseudo legal moves from this function
 function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 	//finds the valid moves for player #turn to make
@@ -106,23 +115,24 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 		let cell = board[row_count][col_count];
 		//if (cell == empty_cell || cell == oob_cell) continue;
 		if (cell.team == turn) {
+			//main loop: for each move definition
 			for (move of cell.type.moves) {
-				if (move.condition != undefined) {
-					if (move.condition.max_uses != undefined && cell.uses > move.condition.max_uses) continue;
-					if (move.condition.min_uses != undefined && cell.uses < move.condition.min_uses) continue;
-					if (move.condition.by_void != undefined) {
-						let [d_row, d_col] = rotate(move.condition.by_void, cell.direction);
-						if (in_bounds(board, row_count+d_row, col_count+d_col)) continue;
-					}
-					if (move.condition.mandatory_collateral != undefined) {
-						let [collateral_row, collateral_col] = rotate(move.condition.mandatory_collateral, cell.direction);
-						collateral_row += row_count;
-						collateral_col += col_count;
-						if (!in_bounds(board, collateral_row, collateral_col) || board[collateral_row][collateral_col] == empty_cell) continue;
-						let collateral_cell = board[collateral_row][collateral_col];
-						if (collateral_cell.team == turn) continue;
-					}
+				//preliminary checks for conditions for this move
+				if (move.void_condition != undefined) {
+					let [d_row, d_col] = rotate(move.void_condition, cell.direction);
+					if (in_bounds(board, row_count+d_row, col_count+d_col)) continue;
 				}
+				if (move.mandatory_collateral != undefined) {
+					let [collateral_row, collateral_col] = rotate(move.mandatory_collateral, cell.direction);
+					collateral_row += row_count;
+					collateral_col += col_count;
+					if (!in_bounds(board, collateral_row, collateral_col) || board[collateral_row][collateral_col] == empty_cell) continue;
+					let collateral_cell = board[collateral_row][collateral_col];
+					if (collateral_cell.team == turn) continue;
+					if (move.mandatory_collateral[2] != undefined && move.mandatory_collateral[2] != collateral_cell.type.name) continue;
+					if (move.mandatory_collateral[3] != undefined && move.mandatory_collateral[3] != collateral_cell.state) continue;
+				}
+				if (move.required_state != undefined && cell.state != move.required_state) continue;
 				let [d_row, d_col] = rotate(move.motion, cell.direction);
 				let current_row = row_count + d_row;
 				let current_col = col_count + d_col;
@@ -137,18 +147,16 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 					}
 					if (walks < 1) continue;
 					if (in_bounds(board, current_row, current_col) && board[current_row][current_col].team == turn && board[current_row][current_col].type.name == move.friend) {
-						//extra condition check: does friend also meet requirements:
-						if (move.condition != undefined) {
-							if (move.condition.max_uses != undefined && board[current_row][current_col].uses > move.condition.max_uses) continue;
-						}
+						//extra condition check: does friend also meet requirements
+						if (move.required_state != undefined && board[current_row][current_col].state != move.required_state) continue;
 						let future_board = copy_board(board);
-						future_board[current_row][current_col].uses++;
+						if (move.new_state != undefined) future_board[current_row][current_col].state = move.new_state;
 						future_board[row_count+d_row][col_count+d_col] = future_board[current_row][current_col];
 						future_board[current_row][current_col] = empty_cell;
-						future_board[row_count][col_count].uses++;
+						if (move.new_state != undefined) future_board[row_count][col_count].state = move.new_state;
 						future_board[row_count+2*d_row][col_count+2*d_col] = future_board[row_count][col_count];
 						future_board[row_count][col_count] = empty_cell;
-						moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
+						moves_list.push({origin: [row_count, col_count], destination: [row_count+2*d_row, col_count+2*d_col], result: future_board});
 					}
 					continue;
 				}
@@ -162,11 +170,11 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 						if (move.type != "capture" && move.type != "ranged" && move.type != "convert") {
 							//create possible future around this. sliding at empty
 							let future_board = copy_board(board);
-							future_board[row_count][col_count].uses++;
+							if (move.new_state != undefined) future_board[row_count][col_count].state = move.new_state;
 							future_board[current_row][current_col] = future_board[row_count][col_count];
 							future_board[row_count][col_count] = empty_cell;
-							if (move.condition != undefined && move.condition.mandatory_collateral != undefined) { //if pass, this Is a collateral situation
-								let [collateral_row, collateral_col] = rotate(move.condition.mandatory_collateral, cell.direction);
+							if (move.mandatory_collateral != undefined) { //if pass, this Is a collateral situation
+								let [collateral_row, collateral_col] = rotate(move.mandatory_collateral, cell.direction);
 								collateral_row += row_count;
 								collateral_col += col_count;
 								future_board[collateral_row][collateral_col] = empty_cell;
@@ -179,7 +187,7 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 							//console.log("hit a piece");
 							if (checking_royal_threat && board[current_row][current_col].type.royal && board[current_row][current_col].team == royal_team) return true;
 							let future_board = copy_board(board);
-							future_board[row_count][col_count].uses++;
+							future_board[row_count][col_count].state++;
 							if (move.type == "ranged") {
 								future_board[current_row][current_col] = empty_cell;
 							} else if (move.type == "convert") {
@@ -197,8 +205,7 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 					current_col += d_col;
 					slide_count++;
 				}
-			}
-			//thats all the movements for this piece
+			} //end for each move
 		} //end 'is this our piece' conditions
 	} //end piece loop
 	if (checking_royal_threat) return false;
@@ -210,14 +217,17 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 function do_turn(need_rotate = true) {
 	if (need_rotate) {
 		turn = (turn+1)%teams;
-		let css = "";
-		css += "table{transform:rotate("+team_rotations[turn]+"deg);}";
-		css += "span[team]{transform:rotate(-"+team_rotations[turn]+"deg);}";
-		//document.getElementById("rotation_css").innerHTML = css;
+		if (!ai_teams.includes(turn) && rotation_enabled) {
+			let css = "";
+			css += "table{transform:rotate("+team_rotations[turn]+"deg);}";
+			css += "span[team]{transform:rotate(-"+team_rotations[turn]+"deg);}";
+			document.getElementById("rotation_css").innerHTML = css;
+		}
 	}
 	update_display_all();
 	available_moves = find_legal_moves(turn, board);
-	document.getElementById("current_turn_display").innerText = team_names[turn]+"'s turn ("+available_moves.length+" moves)";
+	document.getElementById("current_turn_display").innerText = team_names[turn]+"'s turn";
+	if (royalty_threatened(board, turn)) document.getElementById("current_turn_display").innerText += " (in check)";
 	if (available_moves.length == 0) {
 		if (royalty_threatened(board, turn)) {
 			end_game("checkmate");
@@ -226,11 +236,12 @@ function do_turn(need_rotate = true) {
 		}
 	} else {
 		highlight_appropriate_squares();
-		if (turn) setTimeout(computer_turn, 20);
+		if (ai_teams.includes(turn)) setTimeout(computer_turn, 200);
 	}
 }
 
 function end_game(kind) {
+	sfx("boom.ogg");
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
 		get_celement(row_count, col_count).setAttribute("highlight", "");
 		get_celement(row_count, col_count).setAttribute("onclick", "");
@@ -243,7 +254,7 @@ function click_cell(row, col) {
 	//deselecting space
 	if (selection != null && row == selection[0] && col == selection[1]) {
 		selection = null;
-		sfx("deselect");
+		sfx("sfxdeselect.mp3");
 		highlight_appropriate_squares();
 		return;
 	}
@@ -257,7 +268,7 @@ function click_cell(row, col) {
 	//selecting a new space from our team
 	if (board[row][col].team == turn) {
 		selection = [row, col];
-		sfx("select");
+		sfx("sfxselect.mp3");
 		highlight_appropriate_squares();
 		return;
 	}
@@ -265,17 +276,17 @@ function click_cell(row, col) {
 
 //for actually commiting a move object
 function accept_move(move) {
+	let evaluation_change = board_evaluation(turn, move.result) - board_evaluation(turn, board);
 	board = move.result;
 	board_history.push(board);
 	selection = null;
-	sfx("move");
-	//if (royalty_threatened_by(board, turn)) console.log("check btw");
+	just_happened = move.destination;
+	sfx(evaluation_change == 0 ? "sfxmove.mp3" : "sfxtake.mp3");
 	do_turn();
 }
 
 function sfx(noise) {
-	//return;
-	let a = new Audio("sfx/sfx"+noise+".mp3");
+	let a = new Audio("sfx/"+noise);
 	a.volume = 0.5;
 	a.play();
 }
@@ -285,6 +296,9 @@ function highlight_appropriate_squares() { //do square highlighting
 		let highlight_type = "";
 		if (board[row_count][col_count].team == turn) highlight_type = "owned"; //we own this piece. we can use it
 		get_celement(row_count, col_count).setAttribute("highlight", highlight_type);
+	}
+	if (just_happened != null) {
+		get_celement(just_happened[0], just_happened[1]).setAttribute("highlight", "just_happened"); //actively selected piece
 	}
 	if (selection != null) {
 		get_celement(selection[0], selection[1]).setAttribute("highlight", "origin"); //actively selected piece
@@ -309,7 +323,7 @@ function copy_board(board) {
 			new_row.push({
 				team: cell.team,
 				direction: cell.direction,
-				uses: cell.uses,
+				state: cell.state,
 				type: cell.type
 			});
 		}
@@ -331,7 +345,10 @@ function square_name(row, col) {
 //using global available_moves, does a turn for us.
 function computer_turn() {
 	//console.log("thinking...");
+	let time = Date.now();
 	let move = best_move_for(turn, board, 3);
+	time = Date.now() - time;
+	console.log("took "+time/1000+" seconds");
 	//console.log("done thinking");
 	accept_move(move);
 }
@@ -360,7 +377,7 @@ function best_move_for(team, board, depth) {
 		for (let i = 0; i < evals.length; i++) if (evals[i] == max_eval) best_of_available.push(available[i]);
 		return best_of_available[Math.floor(Math.random()*best_of_available.length)];
 	} else {
-		let available = find_moves(team, board);
+		let available = find_legal_moves(team, board);
 		if (available.length == 0) return 0;
 		//among the legal moves, let's predict how the next person will respond
 		let next_team = (team+1)%teams;
@@ -369,7 +386,7 @@ function best_move_for(team, board, depth) {
 			let their_response = best_move_for(next_team, a.result, depth-1);
 			if (their_response == 0) {
 				//they have no available moves here. if they're in danger, checkmate; otherwise, stalemate
-				evals.push(royalty_threatened(next_team, a.result) ? 999 : 0);
+				evals.push(royalty_threatened(next_team, a.result) ? 99999 : 0);
 			} else {
 				evals.push(board_evaluation(team, their_response.result)); //this is how good we'll end up if we go through with their plans
 			}
@@ -381,156 +398,3 @@ function best_move_for(team, board, depth) {
 		return best_of_available[Math.floor(Math.random()*best_of_available.length)];
 	}
 }
-
-
-/*
-MOVE DEFINITION INCLUDES
-- type {normal, capture, peaceful, ranged, convert, castle}
-- motion
-- *limit
-- *condition{max_uses}
-
-
-*/
-let c = {}; //piece catalogue
-
-c.rook = {
-	name: "rook",
-	letter: "t",
-	worth: 5,
-	moves: [
-		{type: "normal", motion: [0, 1]},
-		{type: "normal", motion: [0, -1]},
-		{type: "normal", motion: [-1, 0]},
-		{type: "normal", motion: [1, 0]}
-	]
-};
-c.bishop = {
-	name: "bishop",
-	letter: "v",
-	worth: 3,
-	moves: [
-		{type: "normal", motion: [1, 1]},
-		{type: "normal", motion: [1, -1]},
-		{type: "normal", motion: [-1, 1]},
-		{type: "normal", motion: [-1, -1]}
-	]
-};
-c.queen = {
-	name: "queen",
-	letter: "w",
-	worth: 9,
-	moves: [
-		{type: "normal", motion: [1, 1]},
-		{type: "normal", motion: [1, -1]},
-		{type: "normal", motion: [-1, 1]},
-		{type: "normal", motion: [-1, -1]},
-		{type: "normal", motion: [0, 1]},
-		{type: "normal", motion: [0, -1]},
-		{type: "normal", motion: [-1, 0]},
-		{type: "normal", motion: [1, 0]}
-	]
-};
-c.king = {
-	name: "king",
-	letter: "l",
-	worth: 100,
-	royal: true,
-	moves: [
-		{type: "normal", motion: [1, 1], limit: 1},
-		{type: "normal", motion: [1, -1], limit: 1},
-		{type: "normal", motion: [-1, 1], limit: 1},
-		{type: "normal", motion: [-1, -1], limit: 1},
-		{type: "normal", motion: [0, 1], limit: 1},
-		{type: "normal", motion: [0, -1], limit: 1},
-		{type: "normal", motion: [-1, 0], limit: 1},
-		{type: "normal", motion: [1, 0], limit: 1},
-		{type: "castle", motion: [1, 0], friend: "rook", condition: {max_uses: 0}},
-		{type: "castle", motion: [-1, 0], friend: "rook", condition: {max_uses: 0}}
-	]
-};
-c.knight = {
-	name: "knight",
-	letter: "m",
-	worth: 3,
-	moves: [
-		{type: "normal", motion: [2, 1], limit: 1},
-		{type: "normal", motion: [2, -1], limit: 1},
-		{type: "normal", motion: [-2, 1], limit: 1},
-		{type: "normal", motion: [-2, -1], limit: 1},
-		{type: "normal", motion: [1, 2], limit: 1},
-		{type: "normal", motion: [1, -2], limit: 1},
-		{type: "normal", motion: [-1, 2], limit: 1},
-		{type: "normal", motion: [-1, -2], limit: 1}
-	]
-};
-c.pawn = {
-	name: "pawn",
-	letter: "o",
-	worth: 1,
-	promote: true,
-	moves: [
-		{type: "peaceful", motion: [0, 1], limit: 2, condition: {max_uses: 0}},
-		{type: "peaceful", motion: [0, 1], limit: 1, condition: {min_uses: 1}},
-		{type: "capture", motion: [1, 1], limit: 1},
-		{type: "capture", motion: [-1, 1], limit: 1}
-	]
-};
-
-c.wazir = { //1x rook
-	name: "wazir",
-	letter: "<div style=\"transform: rotate(180deg);\">t</div>",
-	worth: 200,
-	moves: [
-		{type: "normal", motion: [0, 1], limit: 1},
-		{type: "normal", motion: [0, -1], limit: 1},
-		{type: "normal", motion: [-1, 0], limit: 1},
-		{type: "normal", motion: [1, 0], limit: 1}
-	]
-};
-c.ferz = { //1x bishop
-	name: "ferz",
-	letter: "<div style=\"transform: rotate(180deg);\">v</div>",
-	worth: 200,
-	moves: [
-		{type: "normal", motion: [1, 1], limit: 1},
-		{type: "normal", motion: [-1, -1], limit: 1},
-		{type: "normal", motion: [-1, 1], limit: 1},
-		{type: "normal", motion: [1, -1], limit: 1}
-	]
-};
-c.dabbaba = { //2x rook
-	name: "dabbaba",
-	letter: "<div style=\"transform: rotate(90deg);\">t</div>",
-	worth: 400,
-	moves: [
-		{type: "normal", motion: [0, 2], limit: 1},
-		{type: "normal", motion: [0, -2], limit: 1},
-		{type: "normal", motion: [-2, 0], limit: 1},
-		{type: "normal", motion: [2, 0], limit: 1}
-	]
-};
-c.alfil = { //2x bishop
-	name: "alfil",
-	letter: "<div style=\"transform: rotate(90deg);\">v</div>",
-	worth: 200,
-	moves: [
-		{type: "normal", motion: [2, 2], limit: 1},
-		{type: "normal", motion: [-2, -2], limit: 1},
-		{type: "normal", motion: [-2, 2], limit: 1},
-		{type: "normal", motion: [2, -2], limit: 1}
-	]
-};
-
-let white_rook = {team: 0, direction: 0, uses: 0, type: c.rook};
-let black_rook = {team: 1, direction: 2, uses: 0, type: c.rook};
-let white_bish = {team: 0, direction: 0, uses: 0, type: c.bishop};
-let black_bish = {team: 1, direction: 2, uses: 0, type: c.bishop};
-let white_quee = {team: 0, direction: 0, uses: 0, type: c.queen};
-let black_quee = {team: 1, direction: 2, uses: 0, type: c.queen};
-let white_king = {team: 0, direction: 0, uses: 0, type: c.king};
-let black_king = {team: 1, direction: 2, uses: 0, type: c.king};
-let white_knig = {team: 0, direction: 0, uses: 0, type: c.knight};
-let black_knig = {team: 1, direction: 2, uses: 0, type: c.knight};
-let white_pawn = {team: 0, direction: 0, uses: 0, type: c.pawn};
-let black_pawn = {team: 1, direction: 2, uses: 0, type: c.pawn};
