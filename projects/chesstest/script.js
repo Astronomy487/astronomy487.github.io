@@ -13,8 +13,6 @@ let just_happened = null; //the last move that just happened. [row, col]
 let team_names = "White Black Blue Red Yellow".split(" ");
 let ai_teams = [];
 let rotation_enabled = true;
-let rules_name = "Untitled ruleset"; //name displayed
-let rules_description = ""; //rules
 
 function start_game() {
 	//board alone has been initialized. and teams has already been calculated

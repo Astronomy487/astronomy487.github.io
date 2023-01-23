@@ -168,22 +168,6 @@
       color: var(--black);
     }
     
-    #menu input {
-      background-color: var(--black);
-      color: var(--white);
-      font-family: inherit;
-      border: none;
-      padding: 0.5rem;
-      width: calc(100% - 1rem);
-      font-size: 1rem;
-      text-align: center;
-    }
-    
-    #menu input:hover, #menu input:focus {
-      outline: none;
-      color: var(--color);
-    }
-    
     #sidebar {
       position: fixed;
       width: 16rem;
@@ -249,56 +233,32 @@
     <p id="current_turn_display"></p>
     <p><a onclick="window.location.href = (''+location).substring(0, (''+location).indexOf('?'));">Home</a></p>
   </div>
-  <div id="menu">
-    <h1>chess sandbox</h1>
-    <div class="setup">
-      <p>This is a generalized sandbox for playing chess and chess-adjacent games/variants.</p>
-      <p>New pieces, board states, and other behaviors can be easily implemented in simple .js scripts. Those rulesets can then be easily loaded.</p>
-      <input id="url_loader" placeholder="put ruleset URL here...">
-      <script>document.getElementById("url_loader").value = "";</script>
-      <button onclick="location.href += '?' + document.getElementById('url_loader').value;">Load </button>
-    </div>
-    <div class="setup">
-      <h2>Standard Game</h2>
-      <p>Chess played with normal rules.</p>
-      <button onclick="link_to_rules('standard')">Play</button>
-    </div>
-    <div class="setup">
-      <h2>Chess960</h2>
-      <p>The order of all pieces on the back rank is shuffled. Invented by Bobby Fischer in 1996. Called Chess960 because there are 960 possible arrangements.</p>
-      <button onclick="link_to_rules('960')">Play</button>
-    </div>
-    <div class="setup">
-      <h2>4 Players</h2>
-      <p>Chess with 4 players on a unique board.</p>
-      <button onclick="link_to_rules('4')">Play</button>
-    </div>
-    <div class="setup">
-      <h2>Chaturanga / Shatranj</h2>
-      <p>The ancient Indian/Iranian predecessor of chess. Mantri (queens) can only move diagonal one square. Gaja/elephants (bishops) hop 2 squares diagonally. And you can't even castle.</p>
-      <button onclick="link_to_rules('chaturanga')">Play</button>
-    </div>
-    <div class="setup">
-      <h2>Crossword</h2>
-      <p>Chess except it has random holes in the middle like a crossword puzzle.</p>
-      <button onclick="link_to_rules('crossword')">Play</button>
-    </div>
-    <div class="setup">
-      <p>Other variants I have prepared</p>
-      <ul>
-        <li><a onclick="link_to_rules('2020')">2020 Election</a></li>
-        <li><a onclick="link_to_rules('checkers')">Checkers</a></li>
-        <li><a onclick="link_to_rules('double')">Double (16x12)</a></li>
-        <li><a onclick="link_to_rules('gay')">Gay Chess</a></li>
-        <li><a onclick="link_to_rules('guillotine')">Guillotine</a></li>
-        <li><a onclick="link_to_rules('lol')">League of Legends</a></li>
-        <li><a onclick="link_to_rules('mini')">Mini (4x4)</a></li>
-        <li><a onclick="link_to_rules('spacious')">Spacious</a></li>
-        <li><a onclick="link_to_rules('totalrandom')">Chess9.8x10<sup>16</sup></a></li>
-      </ul>
-    </div>
-  </div>
+  <div id="menu"></div>
   <div id="modal"></div>
+  <script>
+    let gamerules = {};
+    //each gamerule object has:
+    // - name. actual display name (not the key, which goes in ? part of url)
+    // - description.
+    // - establish(). runs the stuff to get the board (and maybe c) set up
+  </script>
+  <script src="rules/standard.js"></script>
+  <script src="rules/4.js"></script>
+  <script src="rules/960.js"></script>
+  <script src="rules/chaturanga.js"></script>
+  <script src="rules/balbo.js"></script>
+  <script src="rules/puzzle.js"></script>
+  <script src="rules/mini.js"></script>
+  <script src="rules/double.js"></script>
+  
+  <script src="rules/lol.js"></script>
+  <script src="rules/totalrandom.js"></script>
+  <script src="rules/spacious.js"></script>
+  <script src="rules/checkers.js"></script>
+  
+  <script src="rules/2020.js"></script>
+  <script src="rules/gay.js"></script>
+  <script src="rules/guillotine.js"></script>
   <script>
     let filename = location.search;
     if (filename.startsWith("?")) filename = filename.substring(1);
@@ -306,42 +266,41 @@
       //we are playing game
       document.getElementById("menu").remove();
       //run appropriate script
-      let el = document.createElement("script");
-      el.setAttribute("src", filename);
-      el.setAttribute("type", "text/javascript");
-      el.setAttribute("async", false);
-      document.body.appendChild(el);
-      el.addEventListener("load", function(){
-        //create the modal that can start the game
-        let html = '';
-        html += '<h1>'+rules_name+'</h1>';
-        html += '<p>'+rules_description+'</p>';
-        html += '<p>Ruleset script: <a href="'+filename+'" target="_blank">'+filename+'</a></p>';
-        teams = 0;
-        for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
-        teams++;
-        for (let i = 0; i < teams; i++) {
-          html += '<div><input type="checkbox" id="ai_checkbox_'+i+'"><label>'+team_names[i]+' player CPU?</label></div>';
-        }
-        html += '<hr><div><input type="checkbox" id="rotation_checkbox"><label>Rotate on new player?</label></div>';
-        html += '<button onclick="start_game();">Start</button>';
-        document.getElementById("modal").innerHTML = html;
-      });
-      el.addEventListener("error", function(){
-        //create the modal that can start the game
-        let html = '';
-        html += '<h1>Error</h1>';
-        html += '<p>Something went wrong. I can\'t load the url <a href="'+filename+'">'+filename+'</a> you gave me. Are you sure it exists?</p>';
-        document.getElementById("modal").innerHTML = html;
-      });
+      gamerules[filename].establish();
+      //create the modal
+      let html = '';
+      html += '<h1>'+gamerules[filename].name+'</h1>';
+      html += '<p>'+gamerules[filename].description+'</p>';
+      teams = 0;
+      for (row of board) for (cell of row) if (cell.team != undefined) teams = Math.max(teams, cell.team);
+      teams++;
+      for (let i = 0; i < teams; i++) {
+        html += '<div><input type="checkbox" id="ai_checkbox_'+i+'"><label>'+team_names[i]+' player CPU?</label></div>';
+      }
+      html += '<hr><div><input type="checkbox" id="rotation_checkbox"><label>Rotate on new player?</label></div>';
+      html += '<button onclick="start_game();">Start</button>';
+      document.getElementById("modal").innerHTML = html;
     } else {
       //we are on home screen
       document.getElementById("sidebar").remove();
       document.getElementById("modal").remove();
+      let html = '';
+      for (variant of "standard 960 4 #predecessors chaturanga #different_board_shapes balbo puzzle mini double #silly lol totalrandom spacious checkers".split(" ")) {
+        if (variant.startsWith("#")) {
+          html += '<h1>'+variant.substring(1).replaceAll("_", " ")+'</h1>';
+          continue;
+        }
+        html += '<div class="setup">';
+        html += '<h2>' + gamerules[variant].name + '</h2>';
+        html += '<p>' + gamerules[variant].description + '</h2>';
+        html += '<button onclick="link_to_rules(\''+variant+'\')">Play</button>';
+        html += '</div>';
+      }
+      document.getElementById("menu").innerHTML = html;
     }
     
     function link_to_rules(filename) {
-      location.href += "?rules/" + filename + ".js";
+      window.location.href = location + "?" + filename;
     }
   </script>
 </body>

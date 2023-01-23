@@ -1,16 +1,13 @@
-gamerules.standard = {
-	name: "Standard Game",
-	description: "",
-	establish() {
-		board = [
-			[black_rook, black_knig, black_bish, black_quee, black_king, black_bish, black_knig, black_rook],
-			[black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn],
-			[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-			[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-			[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-			[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
-			[white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn],
-			[white_rook, white_knig, white_bish, white_quee, white_king, white_bish, white_knig, white_rook],
-		];
-	}
-};
+rules_name = "Standard Game";
+rules_description = "Chess played with normal rules.";
+
+board = [
+	[black_rook, black_knig, black_bish, black_quee, black_king, black_bish, black_knig, black_rook],
+	[black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn],
+	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
+	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
+	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
+	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
+	[white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn, white_pawn],
+	[white_rook, white_knig, white_bish, white_quee, white_king, white_bish, white_knig, white_rook],
+];
