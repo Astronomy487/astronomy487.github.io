@@ -206,6 +206,11 @@
       margin: 0.25rem 0;
     }
     
+    #modal input[type="checkbox"] {
+      cursor: pointer;
+      filter: grayscale();
+    }
+    
     #modal label {
       margin-left: 1rem;
     }
@@ -237,23 +242,23 @@
     // - description.
     // - establish(). runs the stuff to get the board (and maybe c) set up
   </script>
-  <script src="_standard.js"></script>
-  <script src="_4.js"></script>
-  <script src="_960.js"></script>
-  <script src="_chaturanga.js"></script>
-  <script src="_balbo.js"></script>
-  <script src="_puzzle.js"></script>
-  <script src="_mini.js"></script>
-  <script src="_double.js"></script>
+  <script src="rules/standard.js"></script>
+  <script src="rules/4.js"></script>
+  <script src="rules/960.js"></script>
+  <script src="rules/chaturanga.js"></script>
+  <script src="rules/balbo.js"></script>
+  <script src="rules/puzzle.js"></script>
+  <script src="rules/mini.js"></script>
+  <script src="rules/double.js"></script>
   
-  <script src="_lol.js"></script>
-  <script src="_totalrandom.js"></script>
-  <script src="_spacious.js"></script>
-  <script src="_checkers.js"></script>
+  <script src="rules/lol.js"></script>
+  <script src="rules/totalrandom.js"></script>
+  <script src="rules/spacious.js"></script>
+  <script src="rules/checkers.js"></script>
   
-  <script src="_2020.js"></script>
-  <script src="_gay.js"></script>
-  <script src="_guillotine.js"></script>
+  <script src="rules/2020.js"></script>
+  <script src="rules/gay.js"></script>
+  <script src="rules/guillotine.js"></script>
   <script>
     let filename = location.search;
     if (filename.startsWith("?")) filename = filename.substring(1);
