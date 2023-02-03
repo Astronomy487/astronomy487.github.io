@@ -1,4 +1,4 @@
-rules_name = "Crossword";
+rules_name = "Crossword Chess";
 rules_description = "Chess except it has random holes in the middle like a crossword puzzle.";
 
 board = [

@@ -1,18 +1,19 @@
-const empty_cell = 1;
-const oob_cell = 0; //important that this casts to false
+let empty_cell = 1;
+let oob_cell = 0; //important that this casts to false
 
 let board = [];
 let board_history = []; //every past value of board
 
 let team_rotations = [];
 let teams;
-let turn; //whose turn it currently is
+let turn = 0; //whose turn it currently is
 let available_moves; //available moves to current turn
 let selection = null; //select piece before acting on it. [row, col]
 let just_happened = null; //the last move that just happened. [row, col]
 let team_names = "White Black Blue Red Yellow".split(" ");
 let ai_teams = [];
 let rotation_enabled = true;
+let coords_enabled = true;
 let rules_name = "Untitled ruleset"; //name displayed
 let rules_description = ""; //rules
 
@@ -20,13 +21,14 @@ function start_game() {
 	//board alone has been initialized. and teams has already been calculated
 	for (row of board) for (cell of row) if (cell.type != undefined) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
 	for (row of board) for (cell of row) if (cell.type != undefined && cell.type.royal) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
-	turn = -1;
 	//read and remove modal
+	rotation_enabled = document.getElementById("rotation_checkbox").checked;
+	coords_enabled = document.getElementById("coords_checkbox").checked;
+	turn = team_names.indexOf(document.getElementById("turn_select").value);
 	for (let i = 0; i < teams; i++) if (document.getElementById("ai_checkbox_"+i).checked) {
 		ai_teams.push(i);
 		team_names[i] += " (CPU)";
 	}
-	rotation_enabled = document.getElementById("rotation_checkbox").checked;
 	document.getElementById("modal").remove();
 	//create board
 	{
@@ -34,11 +36,19 @@ function start_game() {
 		for (let row_count = 0; row_count < board.length; row_count++) {
 			let row = board[row_count];
 			html += '<tr>';
+			if (coords_enabled) html += '<td class="coords">'+(board.length-row_count)+'</td>';
 			for (let col_count = 0; col_count < row.length; col_count++) {
 				let cell = row[col_count];
 				html += '<td id="cell_'+row_count+'_'+col_count+'" onmousedown="click_cell('+row_count+', '+col_count+')" parity="'+((row_count+col_count)%2)+'")>';
 				//html += '<td id="cell_'+row_count+'_'+col_count+'" onmousedown="click_cell('+row_count+', '+col_count+')" onmouseup="click_cell('+row_count+', '+col_count+')" parity="'+((row_count+col_count)%2)+'">';
 				html += '</td>';
+			}
+			html += '</tr>';
+		}
+		if (coords_enabled) {
+			html += '<tr><td class="coords"></td>';
+			for (let col_count = 0; col_count < board[0].length; col_count++) {
+				if (coords_enabled) html += '<td class="coords">'+('abcdefghijklmnopqrstuvwxyz').charAt(col_count)+'</td>';
 			}
 			html += '</tr>';
 		}
@@ -52,8 +62,9 @@ function start_game() {
 	//dereference anything sus in the board
 	board = copy_board(board);
 	board_history = [board];
+	for (let i = 0; i < teams; i++) if (!ai_teams.includes(i)) rotation_css(team_rotations[i]);
 	//start the round
-	do_turn();
+	do_turn(false);
 }
 
 function get_celement(row_count, col_count) {
@@ -152,7 +163,7 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 						//extra condition check: does friend also meet requirements
 						if (move.required_state != undefined && board[current_row][current_col].state != move.required_state) continue;
 						let future_board = copy_board(board);
-						if (move.new_state != undefined) future_board[current_row][current_col].state = move.new_state;
+						if (move.new_state != undefined) future_board[row_count][col_count].state = move.new_state;
 						future_board[row_count+d_row][col_count+d_col] = future_board[current_row][current_col];
 						future_board[current_row][current_col] = empty_cell;
 						if (move.new_state != undefined) future_board[row_count][col_count].state = move.new_state;
@@ -181,23 +192,55 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 								collateral_col += col_count;
 								future_board[collateral_row][collateral_col] = empty_cell;
 							}
+							if (future_board[current_row][current_col].type.promotes) {//if this piece CAN promote and is now facing void... promote
+								let super_void = true;
+								for (let dx = -1; dx <= 1 && super_void; dx++) {
+									let super_void_coord = rotate([dx, 1], future_board[current_row][current_col].direction);
+									super_void_coord[0] += current_row; super_void_coord[1] += current_col;
+									if (in_bounds(future_board, super_void_coord[0], super_void_coord[1])) super_void = false;
+								}
+								if (super_void) { //we can promote. go to each promote state
+									let promotions = future_board[current_row][current_col].type.promotes;
+									for (new_type of promotions) {
+										let futurer_board = copy_board(future_board);
+										futurer_board[current_row][current_col].type = new_type;
+										moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: futurer_board});
+									}
+									break; //continue loop before doing the ordinary moves_list push
+								}
+							}
 							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
 						}
 					} else {
 						if (board[current_row][current_col].team != turn && move.type != "peaceful") { //if hitting enemy, and we aren't peaceful
-							//console.log("looking at "+square_name(row_count, col_count)+" to "+square_name(current_row, current_col));
-							//console.log("hit a piece");
 							if (checking_royal_threat && board[current_row][current_col].type.royal && board[current_row][current_col].team == royal_team) return true;
 							let future_board = copy_board(board);
-							future_board[row_count][col_count].state++;
+							if (move.new_state != undefined) future_board[row_count][col_count].state = move.new_state;
 							if (move.type == "ranged") {
 								future_board[current_row][current_col] = empty_cell;
 							} else if (move.type == "convert") {
 								future_board[current_row][current_col].team = turn;
 								future_board[current_row][current_col].direction = future_board[row_count][col_count].direction;
-							} else { //normal piece moves there. no funny
+							} else { //normal piece moves there and replaces enemy. no funny
 								future_board[current_row][current_col] = future_board[row_count][col_count];
 								future_board[row_count][col_count] = empty_cell;
+							}
+							if (future_board[current_row][current_col].type.promotes) {//if this piece CAN promote and is now facing void... promote STARIGHT UP COPYING CODE OASDGJDFG i need to fix this function
+								let super_void = true;
+								for (let dx = -1; dx <= 1 && super_void; dx++) {
+									let super_void_coord = rotate([dx, 1], future_board[current_row][current_col].direction);
+									super_void_coord[0] += current_row; super_void_coord[1] += current_col;
+									if (in_bounds(future_board, super_void_coord[0], super_void_coord[1])) super_void = false;
+								}
+								if (super_void) { //we can promote. go to each promote state
+									let promotions = future_board[current_row][current_col].type.promotes;
+									for (new_type of promotions) {
+										let futurer_board = copy_board(future_board);
+										futurer_board[current_row][current_col].type = new_type;
+										moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: futurer_board});
+									}
+									break; //continue loop before doing the ordinary moves_list push
+								}
 							}
 							moves_list.push({origin: [row_count, col_count], destination: [current_row, current_col], result: future_board});
 						}
@@ -214,18 +257,19 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 	return moves_list;
 }
 
+function rotation_css(angle) {
+	console.log(angle);
+	let css = "";
+	css += "table{transform:rotate("+angle+"deg);}";
+	css += "span[team],td.coords{transform:rotate(-"+angle+"deg);}";
+	document.getElementById("rotation_css").innerHTML = css;
+}
+
 //once the board is in its good current state, update visuals and get moves ready
 // (to return to a history, use need_rotate=false and set the turn yourself)
 function do_turn(need_rotate = true) {
-	if (need_rotate) {
-		turn = (turn+1)%teams;
-		if (!ai_teams.includes(turn) && rotation_enabled) {
-			let css = "";
-			css += "table{transform:rotate("+team_rotations[turn]+"deg);}";
-			css += "span[team]{transform:rotate(-"+team_rotations[turn]+"deg);}";
-			document.getElementById("rotation_css").innerHTML = css;
-		}
-	}
+	if (need_rotate) turn = (turn+1)%teams;
+	if (!ai_teams.includes(turn) && rotation_enabled) rotation_css(team_rotations[turn]);
 	update_display_all();
 	available_moves = find_legal_moves(turn, board);
 	document.getElementById("current_turn_display").innerText = team_names[turn]+"'s turn";
@@ -236,23 +280,35 @@ function do_turn(need_rotate = true) {
 		} else {
 			end_game("stalemate");
 		}
-	} else {
-		highlight_appropriate_squares();
-		if (ai_teams.includes(turn)) setTimeout(computer_turn, 200);
+	} else if (ai_teams.includes(turn)) setTimeout(computer_turn, 200);
+	highlight_appropriate_squares();
+}
+
+function undo_turn(n = 1) {
+	//pop board history to the board, rotate Turn back, and do the turn
+	for (let undos = 0; undos < n; undos++) if (board_history.length > 1) {
+		board = board_history[board_history.length-2];
+		turn = (turn+teams-1)%teams;
+		board_history.pop();
+		just_happened = null;
+		selection = null;
 	}
+	do_turn(false);
 }
 
 function end_game(kind) {
 	sfx("boom.ogg");
+	highlight_appropriate_squares();
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
-		get_celement(row_count, col_count).setAttribute("highlight", "");
-		get_celement(row_count, col_count).setAttribute("onclick", "");
+		get_celement(row_count, col_count).setAttribute("onmousedown", "");
+		get_celement(row_count, col_count).style.cursor = "default";
 	}
 	document.getElementById("current_turn_display").innerHTML = kind + " on " + team_names[turn];
 	console.log(kind);
 }
 //these functions work with the ui. current board state! no future handling
 function click_cell(row, col) {
+	if (ai_teams.includes(turn)) return;
 	//deselecting space
 	if (selection != null && row == selection[0] && col == selection[1]) {
 		selection = null;
@@ -296,7 +352,7 @@ function sfx(noise) {
 function highlight_appropriate_squares() { //do square highlighting
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
 		let highlight_type = "";
-		if (board[row_count][col_count].team == turn) highlight_type = "owned"; //we own this piece. we can use it
+		if (board[row_count][col_count].team == turn && !ai_teams.includes(turn)) highlight_type = "owned"; //we own this piece. we can use it
 		get_celement(row_count, col_count).setAttribute("highlight", highlight_type);
 	}
 	if (just_happened != null) {
@@ -335,7 +391,7 @@ function copy_board(board) {
 
 function in_bounds(board, row_count, col_count, counting_void = true) {
 	if (row_count < 0 || row_count >= board.length) return false;
-	if (col_count < 0 || col_count >= board[row_count].length) return false;
+	if (col_count < 0 || col_count >= board[row_count].length) return false; 
 	if (board[row_count][col_count] == oob_cell && counting_void) return false;
 	return true;
 }

@@ -112,15 +112,15 @@ c.pawn = {
 		{type: "peaceful", motion: [0, 1], limit: 1, required_state: 2, new_state: 1}, //move single forward on non-0-state
 		{type: "capture", motion: [1, 1], limit: 1, new_state: 1},
 		{type: "capture", motion: [-1, 1], limit: 1, new_state: 1},
-		{type: "peaceful", motion: [1, 1], limit: 1, mandatory_collateral: [1, 0, "pawn", 2]},
-		{type: "peaceful", motion: [-1, 1], limit: 1, mandatory_collateral: [-1, 0, "pawn", 2]}
+		{type: "peaceful", motion: [1, 1], limit: 1, mandatory_collateral: [1, 0, "pawn", 2], new_state: 1},
+		{type: "peaceful", motion: [-1, 1], limit: 1, mandatory_collateral: [-1, 0, "pawn", 2], new_state: 1}
 	]
 };
 
 c.wazir = { //1x rook
 	name: "wazir",
 	letter: "<div style=\"transform: rotate(180deg);\">t</div>",
-	worth: 200,
+	worth: 2,
 	moves: [
 		{type: "normal", motion: [0, 1], limit: 1},
 		{type: "normal", motion: [0, -1], limit: 1},
@@ -131,7 +131,7 @@ c.wazir = { //1x rook
 c.ferz = { //1x bishop
 	name: "ferz",
 	letter: "<div style=\"transform: rotate(180deg);\">v</div>",
-	worth: 200,
+	worth: 2,
 	moves: [
 		{type: "normal", motion: [1, 1], limit: 1},
 		{type: "normal", motion: [-1, -1], limit: 1},
@@ -142,7 +142,7 @@ c.ferz = { //1x bishop
 c.dabbaba = { //2x rook
 	name: "dabbaba",
 	letter: "<div style=\"transform: rotate(90deg);\">t</div>",
-	worth: 400,
+	worth: 4,
 	moves: [
 		{type: "normal", motion: [0, 2], limit: 1},
 		{type: "normal", motion: [0, -2], limit: 1},
@@ -153,7 +153,7 @@ c.dabbaba = { //2x rook
 c.alfil = { //2x bishop
 	name: "alfil",
 	letter: "<div style=\"transform: rotate(90deg);\">v</div>",
-	worth: 200,
+	worth: 2,
 	moves: [
 		{type: "normal", motion: [2, 2], limit: 1},
 		{type: "normal", motion: [-2, -2], limit: 1},
@@ -161,6 +161,8 @@ c.alfil = { //2x bishop
 		{type: "normal", motion: [2, -2], limit: 1}
 	]
 };
+
+c.pawn.promotes = [c.queen, c.bishop, c.rook, c.knight];
 
 let white_rook = {team: 0, direction: 0, state: 0, type: c.rook};
 let black_rook = {team: 1, direction: 2, state: 0, type: c.rook};
@@ -174,3 +176,39 @@ let white_knig = {team: 0, direction: 0, state: 0, type: c.knight};
 let black_knig = {team: 1, direction: 2, state: 0, type: c.knight};
 let white_pawn = {team: 0, direction: 0, state: 0, type: c.pawn};
 let black_pawn = {team: 1, direction: 2, state: 0, type: c.pawn};
+
+function board_from_simple_fen(fen) {
+	let map_map = {
+		" ": empty_cell,
+		"#": oob_cell,
+		"p": black_pawn,
+		"P": white_pawn,
+		"k": black_king,
+		"K": white_king,
+		"q": black_quee,
+		"Q": white_quee,
+		"b": black_bish,
+		"B": white_bish,
+		"r": black_rook,
+		"R": white_rook,
+		"n": black_knig,
+		"N": white_knig,
+	}
+	fen = fen.replaceAll("1", " ");
+	fen = fen.replaceAll("2", "  ");
+	fen = fen.replaceAll("3", "   ");
+	fen = fen.replaceAll("4", "    ");
+	fen = fen.replaceAll("5", "     ");
+	fen = fen.replaceAll("6", "      ");
+	fen = fen.replaceAll("7", "       ");
+	fen = fen.replaceAll("8", "        ");
+	fen = fen.replaceAll("9", "         ");
+	let b = [];
+	for (row of fen.split("/")) {
+		let r = [];
+		for (character of row.split(""))
+			r.push(map_map[character]);
+		b.push(r);
+	}
+	return b;
+}

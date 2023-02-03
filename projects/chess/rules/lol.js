@@ -13,6 +13,8 @@ c.pawn.moves = [
 	{type: "capture", motion: [1, 1], limit: 1}
 ];
 
+delete c.pawn.promotes;
+
 let map = "           PPRBK" +
 					"           PPPBQ" +
 					"  #########PNPPR" +

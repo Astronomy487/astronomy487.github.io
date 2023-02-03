@@ -21,7 +21,8 @@ c.bishop.worth = 2;
 c.knight.name = "ashva";
 c.rook.name = "ratha";
 c.pawn.name = "padati";
-c.pawn.worth = -1000;
+
+c.pawn.promotes = ["queen"];
 
 c.king.moves = c.king.moves.filter(move => {return move.type != "castle"});
 c.queen.moves = [
