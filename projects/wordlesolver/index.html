@@ -15,6 +15,7 @@
     overflow: hidden;
     font-family: Inter, sans-serif;
     text-align: center;
+    user-select: none;
   }
   
   main {
@@ -35,6 +36,13 @@
     padding: 0;
     margin: 0;
     font-family: inherit;
+    cursor: default;
+    user-select: none;
+  }
+  
+  ::selection {
+    background: inherit;
+    color: inherit;
   }
   
   input:focus {
@@ -43,6 +51,10 @@
   
   input::placeholder {
   	color: #888;
+  }
+  
+  section input {
+    cursor: pointer;
   }
   
   button {
@@ -54,18 +66,6 @@
     padding: 0.25rem;
     font-family: inherit;
     width: 10rem;
-  }
-  
-  section button {
-  	height: 1rem;
-    width: 2rem;
-    margin: 0;
-    display: inline;
-    margin-bottom: 0.25rem;
-    color: #fff;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 0.25rem;
   }
   
   button:hover, button:focus {
@@ -199,10 +199,14 @@ function start() {
   display.innerHTML = "";
   for (let i = 0; i < 5; i++) {
     boxes[i] = document.createElement("input");
+    boxes[i].setAttribute("readonly", "true");
     colors[i] = 0;
     update_color(i);
     display.appendChild(boxes[i]);
-    boxes[i].onfocus = function() {
+    boxes[i].onclick = function() {
+      click_color(i);
+    }
+    /*boxes[i].onfocus = function() {
       if (boxes[i].value) {
         boxes[i].placeholder = boxes[i].value;
         boxes[i].value = "";
@@ -223,17 +227,17 @@ function start() {
         if (i < 4) boxes[i+1].focus();
         else boxes[i].blur();
       }
-    }
+    }*/
   }
-  display.appendChild(document.createElement("br"));
+  /*display.appendChild(document.createElement("br"));
   for (let i = 0; i < 5; i++) {
     buttons[i] = document.createElement("button");
     buttons[i].innerText = "color";
     buttons[i].onclick = function() {
       click_color(i);
-    };
+    }
     display.appendChild(buttons[i]);
-  }
+  }*/
   let report = best_guess();
   for (let i = 0; i < 5; i++) {
     boxes[i].placeholder = report.word.charAt(i);
@@ -250,7 +254,7 @@ function click_color(i) {
 
 function update_color(i) {
   boxes[i].style.backgroundColor = ["#333","#ec2","#4c2"][colors[i]];
-  if (buttons[i]) buttons[i].style.backgroundColor = ["#333","#ec2","#4c2"][colors[i]];
+  //if (buttons[i]) buttons[i].style.backgroundColor = ["#333","#ec2","#4c2"][colors[i]];
 }
 
 let report_box = document.querySelector("footer");
