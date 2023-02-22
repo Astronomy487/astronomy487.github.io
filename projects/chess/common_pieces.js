@@ -23,6 +23,7 @@ Each move object includes these attributes (* denotes optional)
 - motion: an [x, y] vector for the offset for this move
 - *limit: the maximum number of times this movement can be made in a turn. for infinitely sliding pieces, limit is undefined
 - *void_condition: if provided, an [x, y] offset that must be out of bounds for this move to be valid
+- *empty_condition
 - *mandatory_collateral: if provided, an [x, y] offset that must be an opponent piece that will be killed also. can also include piece type of opponent and opponent
 - *required_state: a state this piece must be in to take this move
 - *new_state: the new state this piece will become after this move happens
@@ -32,7 +33,10 @@ let c = {}; //piece catalogue
 
 c.rook = {
 	name: "rook",
-	letter: "t",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg"
+	],
 	worth: 5,
 	moves: [
 		{type: "normal", motion: [0, 1], new_state: 1},
@@ -43,7 +47,10 @@ c.rook = {
 };
 c.bishop = {
 	name: "bishop",
-	letter: "v",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg"
+	],
 	worth: 3,
 	moves: [
 		{type: "normal", motion: [1, 1]},
@@ -54,7 +61,10 @@ c.bishop = {
 };
 c.queen = {
 	name: "queen",
-	letter: "w",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg"
+	],
 	worth: 9,
 	moves: [
 		{type: "normal", motion: [1, 1]},
@@ -69,8 +79,11 @@ c.queen = {
 };
 c.king = {
 	name: "king",
-	letter: "l",
-	worth: 100,
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"
+	],
+	worth: 4,
 	royal: true,
 	moves: [
 		{type: "normal", motion: [1, 1], limit: 1, new_state: 1},
@@ -87,7 +100,10 @@ c.king = {
 };
 c.knight = {
 	name: "knight",
-	letter: "m",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg"
+	],
 	worth: 3,
 	moves: [
 		{type: "normal", motion: [2, 1], limit: 1},
@@ -102,65 +118,32 @@ c.knight = {
 };
 c.pawn = {
 	name: "pawn",
-	promotes: ["queen"],
-	letter: "o",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg"
+	],
 	worth: 1,
-	promote: true,
 	moves: [
-		{type: "peaceful", motion: [0, 1], limit: 2, required_state: 0, new_state: 2}, //move double forward
-		{type: "peaceful", motion: [0, 1], limit: 1, required_state: 1, new_state: 1}, //move single forward on non-0-state
-		{type: "peaceful", motion: [0, 1], limit: 1, required_state: 2, new_state: 1}, //move single forward on non-0-state
-		{type: "capture", motion: [1, 1], limit: 1, new_state: 1},
-		{type: "capture", motion: [-1, 1], limit: 1, new_state: 1},
-		{type: "peaceful", motion: [1, 1], limit: 1, mandatory_collateral: [1, 0, "pawn", 2], new_state: 1},
-		{type: "peaceful", motion: [-1, 1], limit: 1, mandatory_collateral: [-1, 0, "pawn", 2], new_state: 1}
+		{type: "peaceful", motion: [0, 1], limit: 1, new_state: 1}, //u can always move one forward
+		{type: "peaceful", motion: [0, 2], limit: 1, empty_condition: [0, 1], new_state: 2, required_state: 0}, //double up
+		{type: "capture", motion: [1, 1], limit: 1, new_state: 1}, //capture left
+		{type: "capture", motion: [-1, 1], limit: 1, new_state: 1}, //capture right
+		{type: "peaceful", motion: [1, 1], limit: 1, mandatory_collateral: [1, 0, "pawn", 2], new_state: 1}, //en passant right
+		{type: "peaceful", motion: [-1, 1], limit: 1, mandatory_collateral: [-1, 0, "pawn", 2], new_state: 1} //en passant left
 	]
 };
 
-c.wazir = { //1x rook
-	name: "wazir",
-	letter: "<div style=\"transform: rotate(180deg);\">t</div>",
-	worth: 2,
+/*c.knight = {
+	name: "rose",
+	svg: [
+		"https://upload.wikimedia.org/wikipedia/commons/1/17/Chess_Nlt45.svg",
+		"https://upload.wikimedia.org/wikipedia/commons/4/43/Chess_Ndt45.svg"
+	],
+	worth: 5,
 	moves: [
-		{type: "normal", motion: [0, 1], limit: 1},
-		{type: "normal", motion: [0, -1], limit: 1},
-		{type: "normal", motion: [-1, 0], limit: 1},
-		{type: "normal", motion: [1, 0], limit: 1}
+		{"type":"normal","motion":[-1,2],"limit":1},{"type":"normal","motion":[-3,3],"limit":1,"empty_condition":[[2,1]]},{"type":"normal","motion":[-5,2],"limit":1,"empty_condition":[[2,1],[3,3]]},{"type":"normal","motion":[-6,0],"limit":1,"empty_condition":[[2,1],[3,3],[2,5]]},{"type":"normal","motion":[-5,-2],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6]]},{"type":"normal","motion":[-3,-3],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5]]},{"type":"normal","motion":[-1,-2],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5],[-3,3]]},{"type":"normal","motion":[-1,-2],"limit":1},{"type":"normal","motion":[-3,-3],"limit":1,"empty_condition":[[-2,1]]},{"type":"normal","motion":[-5,-2],"limit":1,"empty_condition":[[-2,1],[-3,3]]},{"type":"normal","motion":[-6,0],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5]]},{"type":"normal","motion":[-5,2],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6]]},{"type":"normal","motion":[-3,3],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5]]},{"type":"normal","motion":[-1,2],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5],[3,3]]},{"type":"normal","motion":[2,-1],"limit":1},{"type":"normal","motion":[3,-3],"limit":1,"empty_condition":[[2,1]]},{"type":"normal","motion":[2,-5],"limit":1,"empty_condition":[[2,1],[3,3]]},{"type":"normal","motion":[0,-6],"limit":1,"empty_condition":[[2,1],[3,3],[2,5]]},{"type":"normal","motion":[-2,-5],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6]]},{"type":"normal","motion":[-3,-3],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5]]},{"type":"normal","motion":[-2,-1],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5],[-3,3]]},{"type":"normal","motion":[-2,-1],"limit":1},{"type":"normal","motion":[-3,-3],"limit":1,"empty_condition":[[-2,1]]},{"type":"normal","motion":[-2,-5],"limit":1,"empty_condition":[[-2,1],[-3,3]]},{"type":"normal","motion":[0,-6],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5]]},{"type":"normal","motion":[2,-5],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6]]},{"type":"normal","motion":[3,-3],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5]]},{"type":"normal","motion":[2,-1],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5],[3,3]]},{"type":"normal","motion":[1,-2],"limit":1},{"type":"normal","motion":[3,-3],"limit":1,"empty_condition":[[2,1]]},{"type":"normal","motion":[5,-2],"limit":1,"empty_condition":[[2,1],[3,3]]},{"type":"normal","motion":[6,0],"limit":1,"empty_condition":[[2,1],[3,3],[2,5]]},{"type":"normal","motion":[5,2],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6]]},{"type":"normal","motion":[3,3],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5]]},{"type":"normal","motion":[1,2],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5],[-3,3]]},{"type":"normal","motion":[1,2],"limit":1},{"type":"normal","motion":[3,3],"limit":1,"empty_condition":[[-2,1]]},{"type":"normal","motion":[5,2],"limit":1,"empty_condition":[[-2,1],[-3,3]]},{"type":"normal","motion":[6,0],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5]]},{"type":"normal","motion":[5,-2],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6]]},{"type":"normal","motion":[3,-3],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5]]},{"type":"normal","motion":[1,-2],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5],[3,3]]},{"type":"normal","motion":[-2,1],"limit":1},{"type":"normal","motion":[-3,3],"limit":1,"empty_condition":[[2,1]]},{"type":"normal","motion":[-2,5],"limit":1,"empty_condition":[[2,1],[3,3]]},{"type":"normal","motion":[0,6],"limit":1,"empty_condition":[[2,1],[3,3],[2,5]]},{"type":"normal","motion":[2,5],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6]]},{"type":"normal","motion":[3,3],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5]]},{"type":"normal","motion":[2,1],"limit":1,"empty_condition":[[2,1],[3,3],[2,5],[0,6],[-2,5],[-3,3]]},{"type":"normal","motion":[2,1],"limit":1},{"type":"normal","motion":[3,3],"limit":1,"empty_condition":[[-2,1]]},{"type":"normal","motion":[2,5],"limit":1,"empty_condition":[[-2,1],[-3,3]]},{"type":"normal","motion":[0,6],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5]]},{"type":"normal","motion":[-2,5],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6]]},{"type":"normal","motion":[-3,3],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5]]},{"type":"normal","motion":[-2,1],"limit":1,"empty_condition":[[-2,1],[-3,3],[-2,5],[0,6],[2,5],[3,3]]}
 	]
-};
-c.ferz = { //1x bishop
-	name: "ferz",
-	letter: "<div style=\"transform: rotate(180deg);\">v</div>",
-	worth: 2,
-	moves: [
-		{type: "normal", motion: [1, 1], limit: 1},
-		{type: "normal", motion: [-1, -1], limit: 1},
-		{type: "normal", motion: [-1, 1], limit: 1},
-		{type: "normal", motion: [1, -1], limit: 1}
-	]
-};
-c.dabbaba = { //2x rook
-	name: "dabbaba",
-	letter: "<div style=\"transform: rotate(90deg);\">t</div>",
-	worth: 4,
-	moves: [
-		{type: "normal", motion: [0, 2], limit: 1},
-		{type: "normal", motion: [0, -2], limit: 1},
-		{type: "normal", motion: [-2, 0], limit: 1},
-		{type: "normal", motion: [2, 0], limit: 1}
-	]
-};
-c.alfil = { //2x bishop
-	name: "alfil",
-	letter: "<div style=\"transform: rotate(90deg);\">v</div>",
-	worth: 2,
-	moves: [
-		{type: "normal", motion: [2, 2], limit: 1},
-		{type: "normal", motion: [-2, -2], limit: 1},
-		{type: "normal", motion: [-2, 2], limit: 1},
-		{type: "normal", motion: [2, -2], limit: 1}
-	]
-};
+};*/
 
 c.pawn.promotes = [c.queen, c.bishop, c.rook, c.knight];
 
@@ -180,7 +163,7 @@ let black_pawn = {team: 1, direction: 2, state: 0, type: c.pawn};
 function board_from_simple_fen(fen) {
 	let map_map = {
 		" ": empty_cell,
-		"#": oob_cell,
+		"*": oob_cell,
 		"p": black_pawn,
 		"P": white_pawn,
 		"k": black_king,
@@ -206,8 +189,9 @@ function board_from_simple_fen(fen) {
 	let b = [];
 	for (row of fen.split("/")) {
 		let r = [];
-		for (character of row.split(""))
+		for (character of row.split("")) {
 			r.push(map_map[character]);
+		}
 		b.push(r);
 	}
 	return b;

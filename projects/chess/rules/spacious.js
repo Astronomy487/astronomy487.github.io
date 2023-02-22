@@ -1,5 +1,6 @@
 rules_name = "Spacious";
 rules_description = "There are an extra 4 empty spaces on every edge of the board.";
+ai_type = "random";
 
 board = [
 	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],

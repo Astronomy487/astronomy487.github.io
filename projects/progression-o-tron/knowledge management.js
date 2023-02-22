@@ -1,4 +1,3 @@
-// the patterns detected by the c++ program. each attribute of knowledge object is one Library of sources
 let libraries = [];
 
 let color_counter = 2;

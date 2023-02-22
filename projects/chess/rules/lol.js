@@ -3,11 +3,12 @@
 
 rules_name = "League of Legends";
 rules_description = "Chess but the board is shaped like a League of Legends map";
+ai_type = "heuristic";
 
 c.pawn.moves = [
-	{type: "peaceful", motion: [0, 1], limit: 2, condition: {max_uses: 0}},
-	{type: "peaceful", motion: [1, 0], limit: 2, condition: {max_uses: 0}},
-	{type: "capture", motion: [1, 1], limit: 2, condition: {max_uses: 0}},
+	{type: "peaceful", motion: [0, 1], limit: 2},
+	{type: "peaceful", motion: [1, 0], limit: 2},
+	{type: "capture", motion: [1, 1], limit: 2},
 	{type: "peaceful", motion: [0, 1], limit: 1},
 	{type: "peaceful", motion: [1, 0], limit: 1},
 	{type: "capture", motion: [1, 1], limit: 1}

@@ -4,33 +4,45 @@ let oob_cell = 0; //important that this casts to false
 let board = [];
 let board_history = []; //every past value of board
 
-let team_rotations = [];
 let teams;
+let team_rotations = [];
 let turn = 0; //whose turn it currently is
 let available_moves; //available moves to current turn
 let selection = null; //select piece before acting on it. [row, col]
-let just_happened = null; //the last move that just happened. [row, col]
-let team_names = "White Black Blue Red Yellow".split(" ");
+let just_happened_destination = null; //the last move that just happened. [row, col]
+let just_happened_origin = null; //the last move that just happened. [row, col]
 let ai_teams = [];
+
+let coords_enabled = false;
 let rotation_enabled = true;
-let coords_enabled = true;
-let rules_name = "Untitled ruleset"; //name displayed
+let fog_enabled = false;
+
+let rules_name = "Normal rules"; //name displayed
 let rules_description = ""; //rules
+let forbid_self_check = true;
+let team_names = "White Black Green Red Yellow".split(" ");
+let ai_type = "minimax";
 
 function start_game() {
-	//board alone has been initialized. and teams has already been calculated
-	for (row of board) for (cell of row) if (cell.type != undefined) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
-	for (row of board) for (cell of row) if (cell.type != undefined && cell.type.royal) team_rotations[cell.team] = [0, 90, 180, 270][cell.direction];
 	//read and remove modal
-	rotation_enabled = document.getElementById("rotation_checkbox").checked;
-	coords_enabled = document.getElementById("coords_checkbox").checked;
 	turn = team_names.indexOf(document.getElementById("turn_select").value);
+	ai_type = document.getElementById("ai_select").value;
 	for (let i = 0; i < teams; i++) if (document.getElementById("ai_checkbox_"+i).checked) {
 		ai_teams.push(i);
 		team_names[i] += " (CPU)";
 	}
+	coords_enabled = document.getElementById("coords_checkbox").checked;
+	rotation_enabled = document.getElementById("rotation_checkbox").checked;
+	fog_enabled = document.getElementById("fog_checkbox").checked;
 	document.getElementById("modal").remove();
-	//create board
+	//dereference anything sus in the board
+	board = copy_board(board);
+	//fill in the board to ensure it's rectangular
+	let max_row_length = 0;
+	for (row of board) max_row_length = Math.max(max_row_length, row.length);
+	for (row of board) while (row.length < max_row_length) row.push(oob_cell);
+	for (row of board) for (cell of row) if (cell.type) cell.state = 0;
+	//create board html
 	{
 		let html = "";
 		for (let row_count = 0; row_count < board.length; row_count++) {
@@ -59,10 +71,11 @@ function start_game() {
 				get_celement(row_count, col_count).setAttribute("oob", "true");
 		}
 	}
-	//dereference anything sus in the board
-	board = copy_board(board);
 	board_history = [board];
-	for (let i = 0; i < teams; i++) if (!ai_teams.includes(i)) rotation_css(team_rotations[i]);
+	//determine team rotations
+	for (let t = 0; t < teams; t++) for (row of board) for (cell of row) if (cell.team == t) team_rotations[t] = cell.direction;
+	for (let t = 0; t < teams; t++) for (row of board) for (cell of row) if (cell.team == t && cell.type.royal) team_rotations[t] = cell.direction;
+	for (let t = 0; t < teams; t++) if (!ai_teams.includes(t)) set_rotation(team_rotations[t]);
 	//start the round
 	do_turn(false);
 }
@@ -77,8 +90,29 @@ function update_display_all() {
 function update_display(row_count, col_count) { //only updates the character inside! square highlighting is handled by highlight_appropriate_squares
 	if (board[row_count][col_count]) {
 		let cell = board[row_count][col_count];
-		get_celement(row_count, col_count).innerHTML = cell.type==undefined ? '' : '<span team="'+cell.team+'">'+cell.type.letter+'</span>';
+		//get_celement(row_count, col_count).innerHTML = cell.type==undefined ? '' : '<span team="'+cell.team+'">'+cell.type.letter+'</span>';
+		get_celement(row_count, col_count).innerHTML = cell.type==undefined ? '' : '<img draggable="false" src="'+cell.type.svg[cell.team]+'">';
 		get_celement(row_count, col_count).setAttribute("title", (cell.type==undefined?"":team_names[cell.team].toLowerCase()+" "+cell.type.name+" on ")+square_name(row_count, col_count));
+	}
+}
+function clear_fog() {
+	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
+			get_celement(row_count, col_count).setAttribute("fog", "false");
+	}
+}
+function set_fog() {
+	//the turn we use should be whichever person was last not ai
+	let turn_to_use = turn;
+	for (let t = 0; t < teams; t++) {
+		if (!ai_teams.includes(turn_to_use)) break;
+		turn_to_use--;
+		if (turn_to_use < 0) turn_to_use += teams;
+	}
+	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
+		let should_fog = "true";
+		if (board[row_count][col_count].team == turn_to_use) should_fog = "false";
+		for (m of find_legal_moves(turn_to_use, board)) if (m.destination[0] == row_count && m.destination[1] == col_count) should_fog = "false";
+		get_celement(row_count, col_count).setAttribute("fog", should_fog);
 	}
 }
 
@@ -97,6 +131,7 @@ function royalty_threatened_by(board, attacking_team) {
 
 function find_legal_moves(turn, board) {
 	let m = find_moves(turn, board);
+	if (!forbid_self_check) return m;
 	for (let i = 0; i < m.length; i++) {
 		let move = m[i];
 		let illegal = royalty_threatened(move.result, turn);
@@ -132,8 +167,22 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 			for (move of cell.type.moves) {
 				//preliminary checks for conditions for this move
 				if (move.void_condition != undefined) {
-					let [d_row, d_col] = rotate(move.void_condition, cell.direction);
-					if (in_bounds(board, row_count+d_row, col_count+d_col)) continue;
+					let condition_list = typeof(move.void_condition[0])=="number" ? [move.void_condition] : move.void_condition;
+					let should_continue = false;
+					for (cond of condition_list) {
+						let [d_row, d_col] = rotate(cond, cell.direction);
+						if (in_bounds(board, row_count+d_row, col_count+d_col)) should_continue = true;
+					}
+					if (should_continue) continue;
+				}
+				if (move.empty_condition != undefined) {
+					let condition_list = typeof(move.empty_condition[0])=="number" ? [move.empty_condition] : move.empty_condition;
+					let should_continue = false;
+					for (cond of condition_list) {
+						let [d_row, d_col] = rotate(cond, cell.direction);
+						if (!in_bounds(board, row_count+d_row, col_count+d_col) || board[row_count+d_row][col_count+d_col] != empty_cell) should_continue = true;
+					}
+					if (should_continue) continue;
 				}
 				if (move.mandatory_collateral != undefined) {
 					let [collateral_row, collateral_col] = rotate(move.mandatory_collateral, cell.direction);
@@ -141,9 +190,10 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 					collateral_col += col_count;
 					if (!in_bounds(board, collateral_row, collateral_col) || board[collateral_row][collateral_col] == empty_cell) continue;
 					let collateral_cell = board[collateral_row][collateral_col];
-					if (collateral_cell.team == turn) continue;
+					if (collateral_cell.team == turn) continue;;
 					if (move.mandatory_collateral[2] != undefined && move.mandatory_collateral[2] != collateral_cell.type.name) continue;
 					if (move.mandatory_collateral[3] != undefined && move.mandatory_collateral[3] != collateral_cell.state) continue;
+					if (collateral_cell.type.royal && checking_royal_threat) return true;
 				}
 				if (move.required_state != undefined && cell.state != move.required_state) continue;
 				let [d_row, d_col] = rotate(move.motion, cell.direction);
@@ -257,30 +307,44 @@ function find_moves(turn, board, checking_royal_threat = false, royal_team) {
 	return moves_list;
 }
 
-function rotation_css(angle) {
-	console.log(angle);
-	let css = "";
-	css += "table{transform:rotate("+angle+"deg);}";
-	css += "span[team],td.coords{transform:rotate(-"+angle+"deg);}";
-	document.getElementById("rotation_css").innerHTML = css;
-}
-
 //once the board is in its good current state, update visuals and get moves ready
 // (to return to a history, use need_rotate=false and set the turn yourself)
 function do_turn(need_rotate = true) {
 	if (need_rotate) turn = (turn+1)%teams;
-	if (!ai_teams.includes(turn) && rotation_enabled) rotation_css(team_rotations[turn]);
+	if (!ai_teams.includes(turn)) set_rotation(team_rotations[turn]);
 	update_display_all();
+	highlight_appropriate_squares();
+	if (fog_enabled) set_fog();
 	available_moves = find_legal_moves(turn, board);
 	document.getElementById("current_turn_display").innerText = team_names[turn]+"'s turn";
-	if (royalty_threatened(board, turn)) document.getElementById("current_turn_display").innerText += " (in check)";
-	if (available_moves.length == 0) {
+	if (forbid_self_check && royalty_threatened(board, turn)) document.getElementById("current_turn_display").innerText += " (in check)";
+	//check for end-of-game conditions
+	if (forbid_self_check && available_moves.length == 0) {
 		if (royalty_threatened(board, turn)) {
-			end_game("checkmate");
+			end_game("Checkmate", turn);
 		} else {
-			end_game("stalemate");
+			end_game("Stalemate", turn);
 		}
-	} else if (ai_teams.includes(turn)) setTimeout(computer_turn, 200);
+		//highlight_appropriate_squares();
+		return;
+	}
+	if (!forbid_self_check && board_history.length-1) {
+		//compare all royalty counts from history[len-1] and board
+		let royalty_counts = [];
+		for (let t = 0; t < teams; t++)
+			royalty_counts[t] = royal_count(t, board)
+		for (let t = 0; t < teams; t++)
+			royalty_counts[t] -= royal_count(t, board_history[board_history.length-2]);
+		//royalty counts now represents difference
+		for (let t = 0; t < teams; t++) if (royalty_counts[t] != 0) {
+			end_game("Royal capture", t);
+			//highlight_appropriate_squares();
+			return;
+		}
+	}
+	if (ai_teams.includes(turn)) {
+		setTimeout(computer_turn, 50);
+	}
 	highlight_appropriate_squares();
 }
 
@@ -290,20 +354,32 @@ function undo_turn(n = 1) {
 		board = board_history[board_history.length-2];
 		turn = (turn+teams-1)%teams;
 		board_history.pop();
-		just_happened = null;
+		[just_happened_origin, just_happened_destination] = [null, null];
 		selection = null;
 	}
 	do_turn(false);
 }
 
-function end_game(kind) {
+function end_game(kind, turn) {
 	sfx("boom.ogg");
-	highlight_appropriate_squares();
+	clear_fog();
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
 		get_celement(row_count, col_count).setAttribute("onmousedown", "");
 		get_celement(row_count, col_count).style.cursor = "default";
 	}
-	document.getElementById("current_turn_display").innerHTML = kind + " on " + team_names[turn];
+	document.getElementById("current_turn_display").remove();
+	let html = '<div id="modal">';
+	html += '<h1>'+kind+" on "+team_names[turn]+'</h1>';
+	if (kind == "Checkmate") {
+		html += '<p>'+team_names[turn]+' is in check, but has no legal moves. '+team_names[turn]+' loses.</p>';
+	} else if (kind == "Stalemate") {
+		html += '<p>'+team_names[turn]+'\ has no legal moves, but is not in check. This game is a draw.</p>';
+	} else if (kind == "Royal capture") {
+		html += '<p>'+team_names[turn]+'\'s royalty has been captured. '+team_names[turn]+' loses.</p>';
+	}
+	html += '<button onclick="this.parentElement.remove();">Close</button>';
+	html += '</div>';
+	document.body.insertAdjacentHTML("beforeend", html);
 	console.log(kind);
 }
 //these functions work with the ui. current board state! no future handling
@@ -338,25 +414,31 @@ function accept_move(move) {
 	board = move.result;
 	board_history.push(board);
 	selection = null;
-	just_happened = move.destination;
+	just_happened_origin = move.origin;
+	just_happened_destination = move.destination;
 	sfx(evaluation_change == 0 ? "sfxmove.mp3" : "sfxtake.mp3");
 	do_turn();
 }
 
-function sfx(noise) {
-	let a = new Audio("sfx/"+noise);
+function sfx(noise, backwards = false) {
+	let a = new Audio((backwards?"../":"")+"sfx/"+noise);
 	a.volume = 0.5;
 	a.play();
 }
 
 function highlight_appropriate_squares() { //do square highlighting
 	for (let row_count = 0; row_count < board.length; row_count++) for (let col_count = 0; col_count < board[row_count].length; col_count++) {
-		let highlight_type = "";
-		if (board[row_count][col_count].team == turn && !ai_teams.includes(turn)) highlight_type = "owned"; //we own this piece. we can use it
-		get_celement(row_count, col_count).setAttribute("highlight", highlight_type);
+		get_celement(row_count, col_count).setAttribute("highlight", "");
+		if (board[row_count][col_count].team == turn && !ai_teams.includes(turn)) {
+			get_celement(row_count, col_count).setAttribute("highlight", "owned");
+			get_celement(row_count, col_count).offsetHeight;
+		}
 	}
-	if (just_happened != null) {
-		get_celement(just_happened[0], just_happened[1]).setAttribute("highlight", "just_happened"); //actively selected piece
+	if (just_happened_origin != null) {
+		get_celement(just_happened_origin[0], just_happened_origin[1]).setAttribute("highlight", "just_happened"); //actively selected piece
+	}
+	if (just_happened_destination != null) {
+		get_celement(just_happened_destination[0], just_happened_destination[1]).setAttribute("highlight", "just_happened"); //actively selected piece
 	}
 	if (selection != null) {
 		get_celement(selection[0], selection[1]).setAttribute("highlight", "origin"); //actively selected piece
@@ -404,9 +486,18 @@ function square_name(row, col) {
 function computer_turn() {
 	//console.log("thinking...");
 	let time = Date.now();
-	let move = best_move_for(turn, board, 3);
+	let move;
+	if (ai_type == "minimax") {
+		move = best_move_for(turn, board);
+	} else if (ai_type == "heuristic") {
+		move = heuristic_best_move_for(turn, board);
+	} else {
+		move = find_legal_moves(turn, board);
+		move = move[Math.floor(Math.random()*move.length)];
+	}
+	//let move = best_move_for(turn, board);
 	time = Date.now() - time;
-	console.log("took "+time/1000+" seconds");
+	//console.log("took "+time/1000+" seconds");
 	//console.log("done thinking");
 	accept_move(move);
 }
@@ -423,7 +514,7 @@ function board_evaluation(team, board) {
 	return our_advantage;
 }
 
-function best_move_for(team, board, depth) {
+function best_move_for(team, board, depth = 3) {
 	if (depth == 1) {
 		let available = find_legal_moves(team, board);
 		if (available.length == 0) return 0; //this player is trapped. keep that in mind when returning to previous layer
@@ -446,7 +537,9 @@ function best_move_for(team, board, depth) {
 				//they have no available moves here. if they're in danger, checkmate; otherwise, stalemate
 				evals.push(royalty_threatened(next_team, a.result) ? 99999 : 0);
 			} else {
-				evals.push(board_evaluation(team, their_response.result)); //this is how good we'll end up if we go through with their plans
+				//The actual board evaluation for this possible future
+				let the_evaluation = board_evaluation(team, their_response.result);
+				evals.push(the_evaluation); //this is how good we'll end up if we go through with their plans
 			}
 		}
 		let max_eval = evals[0];
@@ -455,4 +548,92 @@ function best_move_for(team, board, depth) {
 		for (let i = 0; i < evals.length; i++) if (evals[i] == max_eval) best_of_available.push(available[i]);
 		return best_of_available[Math.floor(Math.random()*best_of_available.length)];
 	}
+}
+
+let heuristic_weights = {
+	current_material: 30,
+	available_moves: 5,
+	mate: 1000000,
+	they_capture_back: 4000,
+	using_cheap: 5,
+	we_capture_back_with_cheap: 20,
+	using_royalty: -1000000,
+	distance: 5,
+	center_bias: 3,
+	random: 2
+};
+function heuristic_best_move_for(team, board) {
+	let og_eval = board_evaluation(team, board);
+	let available = find_legal_moves(team, board);
+	//create evaluations
+	let highest_quality = Number.NEGATIVE_INFINITY;
+	let best_move;
+	for (av of available) {
+		let heuristic = {
+			current_material: 0,
+			available_moves: 0,
+			mate: 0,
+			they_capture_back: 0,
+			using_cheap: 0,
+			we_capture_back_with_cheap: 0,
+			using_royalty: 0,
+			distance: 0,
+			center_bias: 0
+		}; //contains subscores
+		let this_eval = board_evaluation(team, av.result); //av.result's eval
+		heuristic.current_material = this_eval;
+		let my_next_moves = find_legal_moves(team, av.result); //these are moves if i could go again
+		let their_next_moves = find_legal_moves((team+1)%teams, av.result);
+		heuristic.available_moves += Math.sqrt(my_next_moves.length) - Math.sqrt(their_next_moves.length);
+		if (their_next_moves.length == 0) heuristic.mate = 100;
+		for (each of their_next_moves) { //if any of their responses can penalize us, punish
+			let our_eval_change = board_evaluation(team, each.result) - this_eval; //negative means bad things happen
+			if (our_eval_change < 0) heuristic.they_capture_back = Math.min(heuristic.they_capture_back, our_eval_change); //use worst case
+		}
+		for (each of my_next_moves) { //find if we attack anything with cheap
+			let origin = board[av.origin[0]][av.origin[1]]; //piece we used to cause this
+			let eval_change = board_evaluation(team, each.result) - this_eval; //amount of havoc our next play could cause. positive is good for us
+			if (eval_change) {
+				heuristic.we_capture_back_with_cheap = Math.max(heuristic.we_capture_back_with_cheap, 1 / (origin.type.worth * origin.type.worth));
+			}
+		}
+		//for every possible destination square. my move ++ it by inverse of piece value. their move -- it by inverse of piece value. positive means i control easily with small value pieces
+		heuristic.using_cheap = 1 / board[av.origin[0]][av.origin[1]].type.worth;
+		if (board[av.origin[0]][av.origin[1]].type.royal) heuristic.using_royalty = 1000;
+		heuristic.distance = (Math.abs(av.origin[0] - av.destination[0]) + Math.abs(av.origin[1] - av.destination[1]));
+		heuristic.center_bias = 0 - (Math.abs(board.length*0.5 - av.destination[0]) + Math.abs(board[0].length*0.5 - av.destination[1]));
+		if (board[av.origin[0]][av.origin[1]].type.royal) heuristic.center_bias *= -1;
+		//find heuristic weighted total
+		let heuristic_score = 0;
+		for (subscore of Object.keys(heuristic)) heuristic_score += heuristic_weights[subscore]/(1+Math.exp(0-heuristic[subscore]));
+		heuristic_score += heuristic_weights.random * Math.random();
+		//console.log(heuristic_score);
+		if (heuristic_score > highest_quality) {
+			highest_quality = heuristic_score;
+			best_move = av;
+		}
+	}
+	return best_move;
+}
+
+let last_rotation_deg = 0;
+function set_rotation(n) { //0 up, 1 left, 2 down, 3 right
+	if (!rotation_enabled) return;
+	let deg = n*90; //choice%360 == deg
+	let going_down = last_rotation_deg;
+	while (Math.abs(going_down)%360 != deg) going_down -= 90;
+	let going_up = last_rotation_deg;
+	while (going_up%360 != deg) going_up += 90;
+	deg = Math.abs(going_up - last_rotation_deg) > Math.abs(going_down - last_rotation_deg) ? going_down : going_up;
+	last_rotation_deg = deg;
+	let css = '';
+	css += 'tbody {transform: rotate('+deg+'deg);}';
+	css += 'td img {transform: rotate(-'+deg+'deg);}';
+	document.getElementById("rotation_css").innerHTML = css;
+}
+
+function royal_count(team, board) { //used to check if something happened to royalty over some move. if !forbid_self_check
+	let count = 0;
+	for (row of board) for (cell of row) if (cell.team == team) if (cell.type.royal) count++;
+	return count;
 }

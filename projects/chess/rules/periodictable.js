@@ -15,4 +15,4 @@ black_knig.direction = 1;
 black_quee.direction = 1;
 black_king.direction = 1;
 
-board = board_from_simple_fen("N###############n/RP#########4pr/BP#########4pb/QP58pq/KP58pk/BP58pb/RP58pr/#################/###77/###77");
+board = board_from_simple_fen("N***************n/RP*********4pr/BP*********4pb/QP58pq/KP58pk/BP58pb/RP58pr/*****************/***77/***77");

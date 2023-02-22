@@ -24,6 +24,15 @@ c.pawn.name = "padati";
 
 c.pawn.promotes = ["queen"];
 
+c.bishop.svg = [
+	"https://upload.wikimedia.org/wikipedia/commons/d/d4/Chess_elt45.svg",
+	"https://upload.wikimedia.org/wikipedia/commons/9/93/Chess_edt45.svg"
+];
+c.queen.svg = [
+	"https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_glt45.svg",
+	"https://upload.wikimedia.org/wikipedia/commons/3/31/Chess_gdt45.svg"
+];
+
 c.king.moves = c.king.moves.filter(move => {return move.type != "castle"});
 c.queen.moves = [
 	{type: "normal", motion: [1, 1], limit: 1},

@@ -2,7 +2,7 @@ rules_name = "Crossword Chess";
 rules_description = "Chess except it has random holes in the middle like a crossword puzzle.";
 
 board = [
-	[black_rook, black_knig, black_bish, black_quee, black_king, black_bish, black_knig, black_rook],
+	[black_rook, black_knig, black_bish, black_king, black_quee, black_bish, black_knig, black_rook],
 	[black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn, black_pawn],
 	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
 	[empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell, empty_cell],
