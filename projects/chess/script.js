@@ -24,6 +24,7 @@ let team_names = "White Black Green Red Yellow".split(" ");
 let ai_type = "minimax";
 
 function start_game() {
+	sfx("sfxtake.mp3");
 	//read and remove modal
 	turn = team_names.indexOf(document.getElementById("turn_select").value);
 	ai_type = document.getElementById("ai_select").value;
@@ -377,7 +378,7 @@ function end_game(kind, turn) {
 	} else if (kind == "Royal capture") {
 		html += '<p>'+team_names[turn]+'\'s royalty has been captured. '+team_names[turn]+' loses.</p>';
 	}
-	html += '<button onclick="this.parentElement.remove();">Close</button>';
+	html += '<button onclick="sfx(\'sfxdeselect.mp3\'); this.parentElement.remove();">Close</button>';
 	html += '</div>';
 	document.body.insertAdjacentHTML("beforeend", html);
 	console.log(kind);
@@ -551,13 +552,13 @@ function best_move_for(team, board, depth = 3) {
 }
 
 let heuristic_weights = {
-	current_material: 30,
+	current_material: 500,
 	available_moves: 5,
 	mate: 1000000,
-	they_capture_back: 4000,
+	they_capture_back: 800,
 	using_cheap: 5,
-	we_capture_back_with_cheap: 20,
-	using_royalty: -1000000,
+	we_capture_back_with_cheap: 50,
+	using_royalty: -1000,
 	distance: 5,
 	center_bias: 3,
 	random: 2
@@ -581,20 +582,20 @@ function heuristic_best_move_for(team, board) {
 			center_bias: 0
 		}; //contains subscores
 		let this_eval = board_evaluation(team, av.result); //av.result's eval
-		heuristic.current_material = this_eval;
+		heuristic.current_material = this_eval / 10;
 		let my_next_moves = find_legal_moves(team, av.result); //these are moves if i could go again
 		let their_next_moves = find_legal_moves((team+1)%teams, av.result);
 		heuristic.available_moves += Math.sqrt(my_next_moves.length) - Math.sqrt(their_next_moves.length);
 		if (their_next_moves.length == 0) heuristic.mate = 100;
 		for (each of their_next_moves) { //if any of their responses can penalize us, punish
 			let our_eval_change = board_evaluation(team, each.result) - this_eval; //negative means bad things happen
-			if (our_eval_change < 0) heuristic.they_capture_back = Math.min(heuristic.they_capture_back, our_eval_change); //use worst case
+			if (our_eval_change < 0) heuristic.they_capture_back = Math.min(heuristic.they_capture_back, our_eval_change / 10); //use worst case
 		}
 		for (each of my_next_moves) { //find if we attack anything with cheap
 			let origin = board[av.origin[0]][av.origin[1]]; //piece we used to cause this
 			let eval_change = board_evaluation(team, each.result) - this_eval; //amount of havoc our next play could cause. positive is good for us
 			if (eval_change) {
-				heuristic.we_capture_back_with_cheap = Math.max(heuristic.we_capture_back_with_cheap, 1 / (origin.type.worth * origin.type.worth));
+				heuristic.we_capture_back_with_cheap = Math.max(heuristic.we_capture_back_with_cheap, 1 / (origin.type.worth * origin.type.worth) / 10);
 			}
 		}
 		//for every possible destination square. my move ++ it by inverse of piece value. their move -- it by inverse of piece value. positive means i control easily with small value pieces
@@ -607,6 +608,7 @@ function heuristic_best_move_for(team, board) {
 		let heuristic_score = 0;
 		for (subscore of Object.keys(heuristic)) heuristic_score += heuristic_weights[subscore]/(1+Math.exp(0-heuristic[subscore]));
 		heuristic_score += heuristic_weights.random * Math.random();
+		//if (turn) heuristic_score *= -1;
 		//console.log(heuristic_score);
 		if (heuristic_score > highest_quality) {
 			highest_quality = heuristic_score;

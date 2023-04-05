@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>emoji garden</title>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+    
+    * {
+      font-family: 'Noto Color Emoji', sans-serif;
+      user-select: none;
+      font-weight: normal;
+    }
+    
+    body {
+      margin: 0;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    
+    table {
+      position: fixed;
+      background-color: white;
+      border-collapse: collapse;
+      border: solid 1px black;
+    }
+    
+    th {
+      background-color: black;
+      padding: 0.25rem;
+      height: 1rem;
+      text-align: center;
+      color: white;
+      font-weight: normal;
+      border-bottom: solid 1px black;
+      cursor: move;
+    }
+    
+    td {
+      width: 4rem;
+      height: 4rem;
+      font-size: 3rem;
+      line-height: 4rem;
+      text-align: center;
+      transition: 0.1s;
+    }
+    
+    td:empty {opacity: 0;}
+    
+    td[can_action="true"] {
+      cursor: pointer;
+      /* outline: solid 1px #00000022; */
+    }
+    
+    td[can_action="true"]:hover {
+      background-color: #eee;
+    }
+    
+    /* action particles */
+    
+    @keyframes action_particle_animation {
+      from {opacity: 0; transform: inherit;}
+      25% {opacity: 1; transform: translateY(-1rem);}
+      to {opacity: 0; transform: translateY(-0.5rem);}
+    }
+    i {
+      font-size: 2rem;
+      font-style: normal;
+      position: fixed;
+      animation: 1s action_particle_animation ease-in-out;
+      z-index: 99999;
+      pointer-events: none;
+    }
+    
+    
+    body {background-color: #008081;}
+    th {background-color: #010080;}
+    table {background-color: #C0C0C0; box-shadow: 0.25rem 0.25rem black;}
+    table[dragging="true"] {box-shadow: 0.5rem 0.5rem black; transform: translate(-0.25rem, -0.25rem);}
+    td[can_action="true"]:hover {background-color: #CBCBCB;}
+    
+  </style>
+</head>
+<body onbeforeunload="save_garden();">
+  <div id="field"></div> <!-- all those field rectangles -->
+  <!--<div style="font-size: 3rem; width: 24rem;" id="avatars">👩‍🌾👩🏿‍🌾👩🏾‍🌾👩🏽‍🌾👩🏼‍🌾👩🏻‍🌾<br>🧑‍🌾🧑🏿‍🌾🧑🏾‍🌾🧑🏽‍🌾🧑🏼‍🌾🧑🏻‍🌾<br>👨‍🌾👨🏿‍🌾👨🏾‍🌾👨🏽‍🌾👨🏼‍🌾👨🏻‍🌾</div>-->
+  <script>
+    /*
+    todo list
+    - how to choose which action to take when doing something? if only 1 valid, do it. if several possible, 
+    - create field TYPES
+    - create way to pick up and move a cell
+    */
+    
+    let file = {}; //The Save File Of All Your Info. it's constantly saved into localstorage. it includes elements
+    
+    function save_garden() {
+      file.last_saved = Date.now();
+      localStorage.setItem("garden_data", JSON.stringify(file));
+      console.log("saved!");
+    }
+    setInterval(save_garden, 1000*15);
+    
+    function delete_garden_permanently() {
+      file = {};
+      localStorage.removeItem("garden_data");
+      location.reload();
+    }
+    
+    /* field = the things you have out in the world that have some position. every object will include:
+      - x y z
+      - width height, how many cells it takes
+      - table_element
+      - plot_type       "land", "water". invisible. determines what kinds of objects can be here
+      - title           user-provided name for this thing
+      - cells[]
+      
+      PlotCell
+      - next_ready      timestamp when this cell will next be ready
+      - display         visually what to draw here 🌾
+      - td_element
+      - action[]        what can we do once ready
+        - display       🥛Milk
+        - cooldown      1000*8
+        - gain[]        what does this change of our resources
+          - resource    🥛
+          - amt         +1
+        - special       what do after this action? "delete"? "spread"?
+    */
+    
+    try {
+      file = localStorage.getItem("garden_data");
+      file = JSON.parse(file);
+      if (file.field == undefined) throw "";
+    } catch (exception) {
+      file = {};
+      file.last_saved = Date.now();
+      file.field = [];
+      
+      file.field[0] = {
+        x: 100, y: 100, z: 1,
+        plot_type: "land",
+        title: "My cows",
+        cells: [
+          [null,null,null,a_cow(),null],
+          [null,null,a_cow(),null,null],
+          [a_cow(),null,null,null,null]
+        ]
+      };
+      for(r of file.field[0].cells)for(let j=0;j<r.length;j++)if(r[j]===null)r[j]=a_stalk();
+      
+      file.field[1] = {
+        x: 100, y: 500, z: 1,
+        plot_type: "land",
+        title: "My cows",
+        cells: [
+          [null,a_tree(),null],
+          [null,null,null]
+        ]
+      };
+      console.log("constructed a new garden :)");
+      
+      file.field[2]={x:500,y:50,z:2,plot_type:"land",title:"stalks of rice",cells:[[a_stalk(),a_stalk(),a_stalk()],[a_stalk(),a_stalk(),a_stalk()],[a_stalk(),a_stalk(),a_stalk()]]};
+      file.field[3]={x:500+300,y:50,z:2,plot_type:"land",title:"stalks of rice",cells:[[a_corn(),a_corn(),a_corn()],[a_corn(),a_corn(),a_corn()],[a_corn(),a_corn(),a_corn()]]};
+      file.field[4]={x:500,y:50+300,z:2,plot_type:"land",title:"stalks of rice",cells:[[a_pumpkin(),a_pumpkin(),a_pumpkin()],[a_pumpkin(),a_pumpkin(),a_pumpkin()],[a_pumpkin(),a_pumpkin(),a_pumpkin()]]};
+      file.field[5]={x:500+300,y:50+300,z:2,plot_type:"land",title:"stalks of rice",cells:[[null,null,null],[null,a_flower(),null],[null,null,null]]};
+    }
+    
+    let yoinked_plot = null; //null, or plot element
+    let yoinked_origin = null; //mouse coords
+    let global_scroll = [0, 0]; //added to fixed left right things
+    let global_scroll_origin = null;
+    
+    //wait, let's normalize the x y positions of all plots
+    let sum_x = 0; let sum_y = 0;
+    for (p of file.field) {
+      sum_x += p.x + p.cells[0].length*32;
+      sum_y += p.y + p.cells.length*32 + 12;
+    }
+    sum_x /= file.field.length;
+    sum_y /= file.field.length;
+    sum_x -= window.innerWidth/2;
+    sum_y -= window.innerHeight/2;
+    for (p of file.field) {
+      p.x -= sum_x;
+      p.y -= sum_y;
+    }
+    
+    construct_html();
+    
+    //loaded. lets see how many iterations we have to catch up on
+    
+    //construct html for all the fields. when fields added / removed, this is re called
+    function construct_html() {
+      while (document.getElementById("field").firstChild) document.getElementById("field").firstChild.remove();
+      for (plot of file.field) {
+        construct_plot_html(plot);
+      }
+    }
+    
+    let z_counter = 0; //ever increasing, highest z count
+    for (plot of file.field) z_counter = Math.max(z_counter, plot.z);
+    function z_count() {z_counter++; return z_counter;}
+    
+    function construct_plot_html(plot) {
+      if (plot == yoinked_plot) return;
+      if (plot.table_element) try{plot.table_element.remove()}catch(e){};
+      let table = document.createElement("table");
+      plot.table_element = table;
+      table.style.left = plot.x + "px";
+      table.style.top = plot.y + "px";
+      table.style.zIndex = plot.z;
+      table.onmousedown = function(event){event.stopPropagation();}
+      let grabber_tr = document.createElement("tr");
+      let grabber_th = document.createElement("th");
+      grabber_th.setAttribute("colspan", plot.cells[0].length);
+      table.appendChild(grabber_tr);
+      grabber_tr.appendChild(grabber_th);
+      //grabber_th.innerText = plot.title;
+      grabber_th.onmousedown = function(event) {
+        for (plot of file.field) if (plot.table_element == table) {
+          yoinked_plot = plot;
+          yoinked_plot.z = z_count();
+          yoinked_plot.table_element.style.zIndex = yoinked_plot.z;
+          yoinked_plot.table_element.setAttribute("dragging", "true");
+        }
+        yoinked_origin = [event.pageX, event.pageY];
+      }
+      for (row of plot.cells) {
+        let tr = document.createElement("tr");
+        for (cell of row) {
+          let td = document.createElement("td");
+          tr.appendChild(td);
+          if (cell == null) continue;
+          cell.td_element = td;
+          td.innerText = cell.display;
+          update_action_indicator(cell);
+          td.onmousedown = function(event) {
+            for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) if (cell.td_element == this) {
+              act_on_cell(plot, cell, 0, event.pageX, event.pageY);
+            }
+          }
+        }
+        table.appendChild(tr);
+      }
+      document.getElementById("field").appendChild(table);
+      return table;
+    }
+    
+    document.onmouseup = function() {
+      if (yoinked_plot) {
+        yoinked_plot.x = yoinked_plot.x + event.pageX - yoinked_origin[0];
+        yoinked_plot.y = yoinked_plot.y + event.pageY - yoinked_origin[1];
+        yoinked_plot.table_element.style.left = yoinked_plot.x + "px";
+        yoinked_plot.table_element.style.top = yoinked_plot.y + "px";
+        yoinked_plot.table_element.setAttribute("dragging", "false");
+        yoinked_plot = null;
+        yoinked_origin = null;
+      }
+      if (global_scroll_origin) {
+        global_scroll_origin = null;
+      }
+    }
+    
+    document.onmousemove = function(event) {
+      if (yoinked_plot) {
+        yoinked_plot.table_element.style.left = yoinked_plot.x + event.pageX - yoinked_origin[0] + "px";
+        yoinked_plot.table_element.style.top = yoinked_plot.y + event.pageY - yoinked_origin[1] + "px";
+      }
+      if (global_scroll_origin) {
+        for (p of file.field) {
+          p.x += event.pageX - global_scroll_origin[0];
+          p.y += event.pageY - global_scroll_origin[1];
+        }
+        global_scroll_origin = [event.pageX, event.pageY];
+        update_plot_positions();
+      }
+    }
+    
+    //overall page scrolling
+    document.onmousedown = function(event) {
+      if (global_scroll_origin) return;
+      global_scroll_origin = [event.pageX, event.pageY];
+    }
+    
+    //TODO: find more scenarios where essentially a plot's position has to be fixed up, based on file.field[i].x,.y
+    function update_plot_positions() {
+      for (p of file.field) {
+        p.table_element.style.left = p.x + "px";
+        p.table_element.style.top = p.y + "px";
+      }
+    }
+    
+    //visually update cells that are ready to have actions done
+    setInterval(function(){
+      for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) {
+        update_action_indicator(cell);
+      }
+    }, 100);
+    function update_action_indicator(cell) {
+      cell.td_element.setAttribute("can_action", (Date.now() - cell.next_ready > 0) && cell.action.length > 0);
+      if (["🌾","🌽","🎃"].includes(cell.display)) cell.td_element.innerText = (Date.now() - cell.next_ready > 0) ? cell.display : "🌱";
+    }
+    
+    //every second, Do the cellular automata (probabilistically)
+    //for every hour, do 7200 iterations of sim. max 172800 iterations (= 48 hours)
+    setInterval(function(){
+      for (plot of file.field) /*if (yoinked_plot != plot)*/ do_simulation_on_plot(plot, 1);
+    }, 500); //2 steps per second
+    
+    //update each plot on file.field N number of times, and if changes made, construct plot html
+    function do_simulation_on_plot(plot, n) {
+      if (n > 345600) n = 345600;
+      let previous_plot = JSON.stringify(plot);
+      for (let iterations = 0; iterations < n; iterations++) {
+        for (let y = 0; y < plot.cells.length; y++) for (let x = 0; x < plot.cells[y].length; x++) {
+          if (!plot.cells[y][x]) continue;
+          //plot.cells[y][x] is a PlotCell
+          let this_cell = plot.cells[y][x]
+          //if animal, wander around maybe
+          determine_what_to_do:
+          if (["🐄"].includes(this_cell.display) && chance(8)) { //wander behavior
+            let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+            for (offset of offsets) try {
+              if (y+offset[0] < 0) continue;
+              if (x+offset[1] < 0) continue;
+              let neighbor = plot.cells[y+offset[0]][x+offset[1]];
+              if (neighbor === null) {
+                plot.cells[y+offset[0]][x+offset[1]] = this_cell;
+                plot.cells[y][x] = null;
+                break determine_what_to_do; //break outside offsets loop.
+              } else if (neighbor.display == "🌾") {
+                plot.cells[y+offset[0]][x+offset[1]] = null;
+                break determine_what_to_do;
+              }
+            } catch(e) {}
+          } else if (["🌷","🌹","🌸","🌺","🌼","🌻","🏵"].includes(this_cell.display) && chance(0.0001)) { //flowers spread
+            let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+            for (offset of offsets) try {
+              if (y+offset[0] < 0) continue;
+              if (x+offset[1] < 0) continue;
+              let neighbor = plot.cells[y+offset[0]][x+offset[1]];
+              if (neighbor === null) {
+                plot.cells[y+offset[0]][x+offset[1]] = JSON.parse(JSON.stringify(this_cell));
+              }
+            } catch(e) {}
+          } else if (this_cell.display == "🌴" && chance(0.03*300)) { //
+            let offsets = [,[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+            for (offset of offsets) try {
+              if (y+offset[0] < 0) continue;
+              if (x+offset[1] < 0) continue;
+              let neighbor = plot.cells[y+offset[0]][x+offset[1]];
+              if (neighbor === null) {
+                plot.cells[y+offset[0]][x+offset[1]] = a_coconut();
+                break determine_what_to_do; //break outside offsets loop.
+              }
+            } catch(e) {}
+            
+          }
+        }
+      }
+      if (previous_plot != JSON.stringify(plot)) {
+        construct_plot_html(plot);
+      }
+    }
+    
+    function act_on_cell(plot, cell, action_number, mouse_x, mouse_y) {
+      if (!cell) return;
+      if (!cell.action[action_number]) return;
+      if (cell.next_ready > Date.now()) return;
+      //carry through with action
+      cell.next_ready = Date.now() + cell.action[action_number].cooldown;
+      special_actions:
+      if (cell.action[action_number].special == "delete") {
+        for (row of plot.cells) for (let c = 0; c < row.length; c++) {
+          if (row[c] == cell) row[c] = null;
+        }
+      } else if (cell.action[action_number].special == "spread") {
+        for (let y = 0; y < plot.cells.length; y++) for (let x = 0; x < plot.cells[y].length; x++) if (plot.cells[y][x] == cell) {
+          let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+          for (offset of offsets) try {
+            if (y+offset[0] < 0) continue;
+            if (x+offset[1] < 0) continue;
+            let neighbor = plot.cells[y+offset[0]][x+offset[1]];
+            if (neighbor === null) {
+              plot.cells[y+offset[0]][x+offset[1]] = JSON.parse(JSON.stringify(cell));
+              break special_actions;
+            }
+          } catch(e) {}
+        }
+      }
+      let action_particle_element = document.createElement("i");
+      action_particle_element.innerText = cell.action[action_number].display;
+      action_particle_element.style.left = cell.td_element.getBoundingClientRect().left+6+Math.random()*12 + "px";
+      action_particle_element.style.top = cell.td_element.getBoundingClientRect().top + "px";
+      document.body.appendChild(action_particle_element);
+      setTimeout(function(action_particle_element){
+        action_particle_element.remove();
+      }, 1000, action_particle_element);
+      construct_plot_html(plot);
+    }
+    
+    function a_cow() {
+      return {next_ready:0,display:"🐄", action: [{
+        display: "🥛",
+        cooldown: 5000,
+        gain: []
+      }]};
+    }
+    
+    function a_coconut() {
+      return {next_ready:0,display:"🥥", action: [{
+        display: "🧺",
+        cooldown: 1000,
+        gain: [],
+        special: "delete"
+      }]};
+    }
+    
+    function a_flower() {
+      let f = ["🌷","🌹","🌸","🌺","🌼","🌻","🏵"];
+      f = f[Math.floor(Math.random()*f.length)];
+      return {next_ready:0,display:f, action: [{
+        display: "🌱",
+        cooldown: 1,
+        gain: [],
+        special: "spread"
+      },{
+        display: "❌",
+        cooldown: 10,
+        gain: [],
+        special: "delete"
+      }]};
+    }
+    
+    function a_stalk(){return{next_ready:0,display:"🌾",action:[{display:"🧺",cooldown:1000*60*1,gain:[]}]}}
+    function a_corn(){return{next_ready:0,display:"🌽",action:[{display:"🧺",cooldown:1000*60*2,gain:[]}]}}
+    function a_pumpkin(){return{next_ready:0,display:"🎃",action:[{display:"🧺",cooldown:1000*60*3,gain:[]}]}}
+    
+    function a_tree() {
+      return {next_ready:Number.POSITIVE_INFINITY,display:"🌴", action: []};
+    }
+    
+    function chance(percent) {return Math.random() < percent*0.01;}
+    
+    function human_readable_time(ms) {
+      if (ms < 60*1000) return Math.floor(ms/1000)+"s";
+      if (ms < 60*60*1000) return Math.floor(ms/1000/60)+"m";
+      if (ms < 24*60*60*1000) return Math.floor(ms/1000/60/60)+"h";
+      if (ms < Number.POSITIVE_INFINITY) return Math.floor(ms/1000/60/60/24)+"d";
+      return "∞";
+    }
+  </script>
+</body>
+</html>

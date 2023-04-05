@@ -217,6 +217,14 @@ section.buttons button:hover, section.buttons button:focus {
 	outline: none;
 }
 
+.node {
+	border-radius: 0.375rem;
+}
+
+.node section, .node textarea {
+	border-radius: 0.25rem;
+}
+
 ::selection {
 	background: white;
 	color: black;

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Niachāng</title>
+  <link rel="icon" href="icon.png"></link>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;900&display=swap');
+    
+    :root {
+      --black: #111;
+      --white: #ccc;
+      --gray: #333;
+      --lightgray: #777;
+      
+      /* --black: #e8e8e8;
+      --white: #444;
+      --gray: #ddd;
+      --lightgray: #888; */
+      
+      --n0: #34DB22;
+      --n1: #3FC9E9;
+      --n2: #A050E4;
+      --n3: #E22D7E;
+      
+      --l0: #44EB32;
+      --l1: #4FD9F9;
+      --l2: #B060F4;
+      --l3: #F23D8E;
+    }
+    
+    ::selection {background: var(--white); color: var(--black);}
+
+    body {
+      font-family: 'Libre Franklin', sans-serif;
+      margin: 0;
+      background-color: var(--black);
+      color: var(--white);
+      font-size: 1rem;
+      overflow-y: scroll;
+    }
+    
+    @keyframes enter {
+      from {opacity: 0; transform: translateY(2rem);}
+    }
+
+    article {
+      width: 40rem;
+      margin: 4rem auto;
+      font-size: 1.125rem;
+      margin-top: 8rem;
+      animation: enter 1s;
+      line-height: 150%;
+    }
+    
+    @keyframes enter_h2 {
+      from {transform: translateY(1rem);}
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: bold;
+      border: solid 0 var(--gray);
+      line-height: 100%;
+      text-align: center;
+      animation: enter_h2 1s;
+      margin-bottom: 3rem;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      text-align: center;
+      border-collapse: collapse;
+      animation: enter_h2 0.5s;
+    }
+    
+    table:not(.hidden_border) {
+      border: solid 0.125rem var(--gray);
+    }
+    
+    hr {
+      border: none;
+      height: 0.125rem;
+      background-color: var(--gray);
+    }
+    
+    p, table, hr {
+      margin: 1.5rem 0;
+    }
+
+    th {
+      font-weight: normal;
+      background-color: var(--gray);
+      background-color: var(--gray);
+    }
+
+    th, td, caption {
+      padding: 0.375rem 0;
+    }
+    
+    th:empty {
+      padding: 0.0625rem 0;
+    }
+    
+    span {
+      color: var(--lightgray);
+    }
+
+    a {
+      color: inherit;
+      font-weight: normal;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    b {
+      color: var(--lightgray);
+      transition: 0.2s color;
+    }
+    
+    b.n0 {color: var(--n0);}
+    b.n1 {color: var(--n1);}
+    b.n2 {color: var(--n2);}
+    b.n3 {color: var(--n3);}
+    b.n0:hover {color: var(--l0);}
+    b.n1:hover {color: var(--l1);}
+    b.n2:hover {color: var(--l2);}
+    b.n3:hover {color: var(--l3);}
+
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    dl {
+      margin: 0;
+      padding-top: 0.5rem;
+    }
+    
+    dt {
+      height: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    dd {
+      margin-left: 7rem;
+      margin-top: -0.5rem;
+    }
+    
+    dd b {
+      width: 5rem;
+      display: inline-block;
+    }
+    
+    dd i {
+      font-style: normal;
+      font-weight: bold;
+    }
+    
+    code {
+      height: 16rem;
+      overflow-y: scroll;
+      display: block;
+      font-size: 0.75rem;
+      line-height: 100%;
+      border: solid 0.125rem var(--gray);
+      padding: 1rem;
+      animation: enter_h2 0.5s;
+    }
+    
+    #parser td {
+      text-align: left;
+      padding: 0.5rem;
+      vertical-align: top;
+      height: 6rem;
+    }
+    
+    #parser_input:focus {
+      background-color: var(--gray);
+      outline: none;
+    }
+    
+    @keyframes enter_nav {
+      from {opacity: 0; transform: translateX(-4rem);}
+    }
+    
+    nav {
+      position: fixed;
+      top: 4rem;
+      padding: 2rem;
+      width: 8rem;
+      border: solid 0.125rem var(--gray);
+      border-left-width: 0;
+      animation: enter_nav 1s;
+      font-weight: bold;
+      left: -3rem;
+      transition: 0.5s;
+    }
+    
+    nav:hover {
+      left: 0;
+    }
+    
+    nav p {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border-left: solid 0 var(--gray);
+      text-align: right;
+    }
+    
+    nav p:hover, nav p[disabled="true"] {
+      border-left-width: 0.5rem;
+    }
+    
+    nav p[disabled="true"] {
+      cursor: default;
+    }
+    
+    nav p[disabled="true"].n0, nav p:hover.n0 {color: var(--n0) !important;}
+    nav p[disabled="true"].n1, nav p:hover.n1 {color: var(--n1) !important;}
+    nav p[disabled="true"].n2, nav p:hover.n2 {color: var(--n2) !important;}
+    nav p[disabled="true"].n3, nav p:hover.n3 {color: var(--n3) !important;}
+    nav p[disabled="true"]:hover.n0 {color: var(--l0) !important;}
+    nav p[disabled="true"]:hover.n1 {color: var(--l1) !important;}
+    nav p[disabled="true"]:hover.n2 {color: var(--l2) !important;}
+    nav p[disabled="true"]:hover.n3 {color: var(--l3) !important;}
+    
+    .ipa, table td span {
+      color: var(--lightgray);
+      font-family: system-ui, sans-serif, serif;
+    }
+    
+    input, button {
+      border: solid 0.125rem var(--gray);
+      background-color: inherit;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.5rem;
+      display: block;
+      width: calc(100% - 1.25rem);
+    }
+    
+    input:hover, input:focus, button:hover {
+      background-color: var(--gray);
+      outline: none;
+    }
+    
+    #the_story p {
+      margin: 0.25rem 0;
+    }
+    
+    #cover {
+      width: 100vw;
+      height: 100vh;
+      background-color: inherit;
+      position: fixed;
+      top: 0;
+      line-height: 100vh;
+      text-align: center;
+    }
+    
+    @keyframes intro_img {
+      from {opacity: 0; transform: translate(-50%, -50%) translateY(2rem);}
+      75% {opacity: 1; transform: translate(-50%, -50%);}
+      to {opacity: 0; transform: translate(-50%, -50%) translateY(1rem);}
+    }
+    
+    img {
+      image-rendering: pixelated;
+      user-select: none;
+    }
+    
+    #cover img {
+      height: 8rem;
+      left: 50%;
+      position: fixed;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      animation: 1.5s intro_img;
+    }
+  </style>
+</head>
+<body>
+  <!--<img src="icon.png" style="position: fixed; right: 2rem; bottom: 2rem; height: 2rem;">-->
+  <nav id="nav"></nav>
+  <article>
+    <h2>About : <b>Dzuo Lē</b></h2>
+    <p><b class="include_ipa">Niachāng</b> is a minimalist logical language I made for fun. It is primarily inspired by <a href="https://toaq.net/" target="_blank">Toaq</a>, <a href="https://tokipona.org/" target="_blank">Toki Pona</a>, <a href="https://mw.lojban.org" target="_blank">Lojban</a>, <a href="https://www.youtube.com/watch?v=mxhcEJ0AQVM" target="_blank">Bit Language</a>, and the loglangs I've made before, of which <b>Niachāng</b> is essentially an improved rehash.</p>
+    <p><b>Niachāng</b> is designed with code and the modern web experience in mind. The orthography takes advantage of color to communicate tone. Parsing, grammatical analysis, and translation are available in a single JavaScript function, which also uses HTML title attributes for text. The entire lexicon is encapsulated in a JSON object that can be readily used for anything involving <b>Niachāng</b>. And, most important of all, it is fun to play around with and explore!</p>
+    <!--<p>Although I label it a loglang, it does not run on predicate logic. In fact, it is semantically vague, similar to how Toki Pona is. I call it a loglang because there is a clear syntactic hierarchy and decomposition of phrases, in a way that is very friendly with code.</p>-->
+    <!--<p><b>Ná Niachāng, dó gá yingjuāi yingniāo, niā. Húng kēi shā. Kú gá o Tuāng, gá o Toki Ponā, gá o Lojobāng, ba fuóshā yi niā, dó Niachāng bī.</b></p>-->
+    <p><b>Kei bu0!</b></p>
+    <p><span>* This language is still in development, especially in regards to its lexicon!</span></p>
+    <!--<p><span>by <a href="https://astronomy487.github.io/">Astro</a></span></p>-->
+  </article>
+  <article>
+    <h2>Phonology : <b>Chuonēi</b></h2>
+    <p><b>Niachāng</b> is phonaesthetically inspired by Mandarin and Toaq. There are 19 initials and 26 finals, and all combinations are valid.</p>
+    <table>
+      <tr><th>Nasals</th><td>m <span>/m/</span></td><td>n <span>/n/</span></td></tr>
+      <tr><th rowspan="2">Plosives</th><td>p <span>/pʰ/</span></td><td>t <span>/tʰ/</span></td><td></td><td>k <span>/kʰ/</span></td></tr>
+      <tr><td>b <span>/b/</span></td><td>d <span>/d/</span></td><td></td><td>g <span>/g/</span></td></tr>
+      <tr><th rowspan="2">Affricates</th><td></td></td><td>ts <span>/tsʰ/</span></td><td>ch <span>/tʃʰ/</span></td></tr>
+      <tr><td></td></td><td>dz <span>/dz/</span></td><td>j <span>/dʒ/</span></td></tr>
+      <tr><th>Fricatives</th><td>f <span>/f/</span></td><td>s <span>/s/</span></td><td>sh <span>/ʃ/</span></td><td>h <span>/h/</span></td></tr>
+      <tr><th>Lateral</th><td></td><td>l <span>/l/</span></td></tr>
+      <tr><th>Tap</th><td></td><td>r <span>/ɾ/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><td colspan="5">∅ <span>null initial</span></td></tr>
+    </table>
+    <table>
+      <tr><th rowspan="3">A</th><td>a <span>/a/</span></td><td>ai <span>/aj/</span></td><td>ao <span>/aw/</span></td><td>ang <span>/aŋ/</span></td></tr>
+      <tr><td>ia <span>/ja/</span></td><td></td><td>iao <span>/jaw/</span></td><td>iang <span>/jaŋ/</span></td></tr>
+      <tr><td>ua <span>/wa/</span></td><td>uai <span>/waj/</span></td><td></td><td>uang <span>/waŋ/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th rowspan="3">E</th><td>e <span>/ɛ/</span></td><td>ei <span>/ej/</span></td></tr>
+      <tr><td>ie <span>/jɛ/</span></td></tr>
+      <tr><td></td><td>uei <span>/wej/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th rowspan="3">O</th><td>o <span>/ɔ/</span></td><td></td><td>ou <span>/ow/</span></td></tr>
+      <tr><td>uo <span>/wɔ/</span></td></tr>
+      <tr><td></td><td></td><td>iou <span>/jow/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th>I</th><td>i <span>/i/</span></td><td></td><td></td><td>ing <span>/iŋ/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th>U</th><td>u <span>/u/</span></td><td></td><td></td><td>ung <span>/uŋ/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th>EO</th><td>eo <span>/ə/</span></td><td></td><td></td><td>eong <span>/əŋ/</span></td></tr>
+      <tr><th colspan="5"></th></tr>
+      <tr><th>IU</th><td>iu <span>/ɨ/</span></td><td></td><td></td><td>iung <span>/ɨŋ/</span></td></tr>
+    </table>
+    <p>When after a null initial, <b>i</b> or <b>u</b> become <b>y</b> and <b>w</b> respectively; if that is the only vowel letter of the syllable, they are inserted before instead of replaced. e.g. <b>*uang</b>-><b>wang</b>, <b>*ung</b>-><b>wung</b>.</p>
+    <p><b>Niachāng</b> also has four tones, which are post-lexically significant for grammatical reasons. Words can be expressed through different tones to express different syntactic relationships. For example, the word for "change" has these forms:</p>
+    <table>
+      <tr><th>Degree</th><td>0</td><td>1</td><td>2</td><td>3</td></tr>
+      <tr><th>Word</th><td><b>siē</b></td><td><b>sie</b></td><td><b>sié</b></td><td><b>siè</b></td></tr>
+      <tr><th>Tone</th><td>high <span>/˥/</span></td><td>low <span>/˩/</span></td><td>rising <span>/˩˥/</span></td><td>falling <span>/˥˩/</span></td></tr>
+    </table>
+    <p>Tone is simultaneously written with tone diacritics (<b class="n0">macron</b>, <b class="n1">none</b>, <b class="n2">acute</b>, <b class="n3">grave</b>) and colors (<b class="n0">#34DB22</b>, <b class="n1">#3FC9E9</b>, <b class="n2">#A050E4</b>, <b class="n3">#E22D7E</b>). It is preffered that <b>Niachāng</b> text is rendered in bolder type so that the colors are easier to read. The JavaScript used to automatically recolor text is provided under Code.</p>
+    <p>Here are all the non-punctuation characters used in <b>Niachāng</b> orthography.</p>
+    <table class="hidden_border"><tr><td>Ā</td><td>A</td><td>Á</td><td>À</td><td>B</td><td>C</td><td>D</td><td>Ē</td><td>E</td><td>É</td><td>È</td><td>F</td><td>G</td><td>H</td><td>Ī</td><td>I</td><td>Í</td><td>Ì</td><td>J</td><td>K</td><td>L</td><td>M</td><td>N</td><td>Ō</td><td>O</td><td>Ó</td><td>Ò</td><td>P</td><td>R</td><td>S</td><td>T</td><td>Ū</td><td>U</td><td>Ú</td><td>Ù</td><td>W</td><td>Y</td><td>Z</td></tr><tr><td>ā</td><td>a</td><td>á</td><td>à</td><td>b</td><td>c</td><td>d</td><td>ē</td><td>e</td><td>é</td><td>è</td><td>f</td><td>g</td><td>h</td><td>ī</td><td>i</td><td>í</td><td>ì</td><td>j</td><td>k</td><td>l</td><td>m</td><td>n</td><td>ō</td><td>o</td><td>ó</td><td>ò</td><td>p</td><td>r</td><td>s</td><td>t</td><td>ū</td><td>u</td><td>ú</td><td>ù</td><td>w</td><td>y</td><td>z</td></tr></table>
+    <p>Punctuation is free to be used as an author sees fit, as long as it is not placed within a morpheme.</p>
+  </article>
+  <article>
+    <h2>Syntax : <b>Fiou Niao Shāo</b></h2>
+    <p>Every word can express itself into four forms through the aforementioned tones. The degree, an integer from 0 to 3, determines the tone of a word and the number of phrases that must proceed to form a full phrase.</p>
+    <p>For example, the <b class="n0">n=0</b> form of a word is complete on its own; <b>gū</b> is a well-formed phrase. An <b class="n1">n=1</b> word like <b>gu</b> needs one complete phrase as an argument, like <b>gu rang0</b>. This extends to higher degrees (e.g. <b>rò bā sī shū</b>), and non-<b class="n0">n=0</b> arguments will in turn call upon other arguments (e.g. <b>gu gá bā shū</b>).</p>
+    <p>Because the arity of each word is known, the nested structure of a phrase and its arguments is always unambiguous.</p>
+    <p>Word classes like nouns and verbs are only semantic concepts in <b>Niachāng</b>. Although <b class="n0">n=0</b> definitions tend to be nouns and <b class="n1">n=1</b> definitions tend to be adjectives or verbs, this is not embedded in the syntax of the language. In this sense, every word is only thought of as an abstract "semantic function" of its arguments. If Lojban is a strongly typed programming language, <b>Niachang0</b> is weakly typed and lacks parentheses.</p>
+    <p>The argument slots between different degrees of a word may not always line up. The first slots of both <b>pe1</b> and <b>pe2</b> ('go') are destinations, whereas the first of <b>bu1</b> but the second of <b>bu2</b> ('observe') are the observed object. In general, the slots of a word aim not to line up across degrees but instead aim to put commentative arguments that are likely to be short first.</p>
+    <!--Whether or not the word as a whole is translated as an adjective phrase, a prepositional phrase, or a full clause. that is vibes-->
+    <p></p>
+  </article>
+  <article>
+    <h2>Semantics : <b>Tsuo Shāo</b></h2>
+    <p>Like Toki Pona, <b>Niachāng</b> has a small vocabulary, and each word is purposefully broad and abstract in meaning. Only 494 initial-final combinations exist, and the goal is for all to be filled. This is three times as many base lexica as Toki Pona and one third of Lojban gismu. The quintessential design problem of this language is to determine which 494 concepts are the pertinent enough to encode as unique morphemes.</p>
+    <p><b>Niachang0</b>'s number system is one of very few sets of words that break the "semantic function" model of phrase interpretation. Truly holding to that model would require a word be defined for each prime number in order to ensure any integer can be composed by a sequence of words. This is impractical (though very funny), so <b>Niachang0</b> instead uses base 6 with the digits <b>pa re shi wo mu</b> (1-5) and <b>nou</b> (0), etymologically lifted directly from Lojban. They are assembled into sequences of <b class="n1">n=1</b> words, or optionally, the final digit may be <b class="n0">n=0</b> to constitute a standalone numeral. 487<sub>10</sub> = 2131<sub>6</sub> = <b>repashipa0</b>.</p>
+    <p><b>o</b> most significantly disrupts the "semantic function" model by not at all being a function of the meaning of the provided argument; instead, <b>o</b> constructs a phrase denoted by the sounds provided in the argument. In short, it is a name. Names are <b>Niachang0</b>ified by constructing compatible syllables, all of which carry the <b class="n1">n=1</b> tone except for a final <b class="n0">n=0</b> syllable, and preceeding it with <b>o</b>; 'Alexander' is something like <b>o Aledzangda0</b>.</p>
+  </article>
+  <article>
+    <h2>Code : <b>Tsanggiū</b></h2>
+    <table id="parser">
+      <tr><td id="parser_input">Á sha hualiā, fu hing dó Niachāng lē.</td></tr>
+      <tr><td id="parser_output"></td></tr>
+      <tr><td id="parser_translation" class="ipa"></td></tr>
+      <tr><td id="parser_gloss"></td></tr>
+    </table>
+    <p>Here is the JSON for the entire dictionary.</p>
+    <code id="dictionary_json"></code>
+  </article>
+  <article>
+    <h2>Dictionary : <b>Ruoshāo</b></h2>
+    <input id="dictionary_search" oninput="dictionary_search()" placeholder="search ...">
+    <dl style="color: var(--lightgray);">
+      <dt>gloss</dt>
+      <dd><b style="font-weight: inherit; color: inherit;">word</b> definition</dd>
+    </dl>
+    <div id="dictionary"></div>
+    <p><span id="dictionary_report"></span></p>
+    <!--<button id="dictionary_unused_word">Pick random unused word</button><script>document.getElementById("dictionary_unused_word").onclick = function(){let av = []; for (e of Object.keys(dictionary)) if (!dictionary[e].def) av.push(e); document.getElementById("dictionary_unused_word").innerText = av[Math.floor(Math.random()*av.length)];};</script>-->
+  </article>
+  <article>
+    <h2>Babel Text : <b>Dzang ó Babelo0 Rāng</b></h2>
+    <p>Here is The Tower of Babel (Genesis 11:1–9) translated into <b>Niachang0</b>, including subscripted glosses.</p>
+    <div id="the_story"></div>
+  </article>
+  <div id="cover">
+    <img src="icon.png">
+  </div>
+  <script>
+    
+    let dictionary = {};
+    let word_forms = []; //sorted from longest to shortest. used for parsing
+
+
+
+log('a','at','place; area; location; spot','being at A; the state of being at A','at A, B',''); log('ai','same','similarity; shared feature','A is similar or alike','A is similar to B; B, like A',''); log('ang','','','','',''); log('ao','','','','',''); log('ba','me','I; me','my A','',''); log('bai','','','','',''); log('bang','bad','bad thing; badness','bad or un-pona A','',''); log('bao','land','land; territory','land of A','',''); log('be','','','','',''); log('bei','','',' ','',''); log('beo','','','','',''); log('beong','','','','',''); log('bi','think','idea; thought; thinking','the idea that A','A thinks of B; A thinks about B',''); log('bia','conflict','conflict; fight; dispute; friction','conflict A','A conflicts with B; A fights B','A and B conflict in fight C'); log('biang','','','','',''); log('biao','','','','',''); log('bie','child','child','child of A','under system A, child of B',''); log('bing','','','','',''); log('biou','respect','respect','respected A','A respects B',''); log('biu','','','','',''); log('biung','fast','fast movements','fast A','',''); log('bo','particular','something in particular; certain something','a certain A; particularly A','A is the certain B',''); log('bou','fall','fall; trip; collapse','falling A; collapsing A','A is the certain B',''); log('bu','observe','observation','observed A; witnessed A','A witnesses B',''); log('bua','low','low thing; thing below','low A; short A','shorter than A, B; B is shorter than A',''); log('buai','','','','',''); log('buang','','','','',''); log('buei','case','case; example; instance','case of A; example of A; instance of A','A is a case of B',''); log('bung','blood','blood','bleeding A; bloody A','',''); log('buo','black','black; darkness','black A','',''); log('cha','all','all; everything','all A','',''); log('chai','know','knowledge; understanding','known A; understood A','A knows or understands B',''); log('chang','tree','tree; hierarchical structure','tree of A; tree made of A','tree of nodes A and links B','nodes A and links B construct tree C'); log('chao','','','','',''); log('che','clean','clean thing; polished thing; washed thing','clean A; polished A; washed A','A cleans B; A polishes B; A washes B',''); log('chei','','','','',''); log('cheo','','','','',''); log('cheong','','','','',''); log('chi','hand','hand','manual A; laborious A','',''); log('chia','','','','',''); log('chiang','','','','',''); log('chiao','','','','',''); log('chie','get','gotten thing; taken thing; retrieved thing','gotten A; taken A; retrieved A','A gets B; A takes B; A retrieves B',''); log('ching','','','','',''); log('chiou','','','','',''); log('chiu','','','','',''); log('chiung','life','life; alive things; organism; being','alive A; living A','',''); log('cho','','','','',''); log('chou','circle','circle; round thing','circle of A','',''); log('chu','sea','sea; ocean; lake; body of water; river','marine A; oceanic A','',''); log('chua','state','state; status','state of A; status of A','A is in state B',''); log('chuai','','','','',''); log('chuang','','','','',''); log('chuei','','','','',''); log('chung','','','','',''); log('chuo','audio','audio; sound','auditory A; sound A','',''); log('da','art','art; creativity; expression','artistic A; creative A; expression of A','',''); log('dai','','','','',''); log('dang','collect','collection; gathering; hunting','collected A; gathered A; hunted A','A collects B; A gathers B',''); log('dao','water','water','liquid A; fluid A','',''); log('de','or','choice; decision','','A or B; A and/or B',''); log('dei','','','','',''); log('deo','','','','',''); log('deong','','','','',''); log('di','','','','',''); log('dia','','','','',''); log('diang','claw','claw; nail; hook','','',''); log('diao','','','','',''); log('die','','','','',''); log('ding','blue','blue; blueness','blue A','',''); log('diou','','','','',''); log('diu','','','','',''); log('diung','','','','',''); log('do','of','object; thing','object of A; thing of A','of A, B; B of A; A\'s B',''); log('dou','day','daytime','','',''); log('du','','','','',''); log('dua','','','','',''); log('duai','','','','',''); log('duang','','','','',''); log('duei','','','','',''); log('dung','','','','',''); log('duo','front','front','front of A','in front of A, B',''); log('dza','control','control; power','control for A','A controls B; A leads B','for A, B controls C'); log('dzai','big','big thing','big A; large A; grand A; great A','',''); log('dzang','story','story; narrative; description; account; retelling','story of A; description of A; explanation of A','A recounts B; A is the story of B',''); log('dzao','','','','',''); log('dze','','','','',''); log('dzei','start','start; beginning','A starts; A begins','A starts with B; B begins A',''); log('dzeo','','','','',''); log('dzeong','','','','',''); log('dzi','','','','',''); log('dzia','smoke','smoke; dust','A smokes; A gives off dust','',''); log('dziang','converge','convergence; convergent things','converging A','A and B converge','to A, B and C converge together'); log('dziao','','','','',''); log('dzie','exterior','exterior; outside','exterior of A; outside A','outside of A, B; B out of A',''); log('dzing','','','','',''); log('dziou','','','','',''); log('dziu','','','','',''); log('dziung','','','','',''); log('dzo','','','','',''); log('dzou','salt','salt','salty A','',''); log('dzu','cold','cold A','A cools B; A chills B','',''); log('dzua','after','after','after A','after A, B',''); log('dzuai','','','','',''); log('dzuang','stop','stop; prevention; obstacle; lock','prevented A; stopped A; blocked A; stopped A','',''); log('dzuei','white','white; brightness','white A','',''); log('dzung','','','','',''); log('dzuo','general','generalization','general A; generalized A; applicable A; nonspecific A','',''); log('e','','','','',''); log('ei','','','','',''); log('eo','','','','',''); log('eong','hot','heat; warmth; fire','hot A; A is warm','A heats B; A warms B',''); log('fa','','','','',''); log('fai','hurt','hurt; pain; damage','pain in A; A hurts','',''); log('fang','difficult','difficult task; difficulty','difficult A; hard A','',''); log('fao','','','','',''); log('fe','','','','',''); log('fei','near','proximity; vicinity; nearby area; closeness','nearby A; close to A','near A, B; B is near A; B is close to A',''); log('feo','','','','',''); log('feong','','','','',''); log('fi','','','','',''); log('fia','parent','parent','parent of A','under system A, parent of B',''); log('fiang','','','','',''); log('fiao','','','','',''); log('fie','','','','',''); log('fing','','','','',''); log('fiou','rule','rule; protocol; procedure','rule for A; rules dictating A','A dictates B',''); log('fiu','','','','',''); log('fiung','','','','',''); log('fo','','','','',''); log('fou','','','','',''); log('fu','able','ability; possibility','possible A; A can happen','if A, B is possible; as long as A, B can happen',''); log('fua','eat','food','eaten A; edible A; food A','A eats B',''); log('fuai','','','','',''); log('fuang','','','','',''); log('fuei','topic','topic; context; discussion; relevance','the topical A; the contextual A; A is relevant','A is relevant to topic B',''); log('fung','','','','',''); log('fuo','before','before; the past','before A; in the past from A','before A, B',''); log('ga','and','union; joining together','','A and B',''); log('gai','','','','',''); log('gang','','','','',''); log('gao','','','','',''); log('ge','','','','',''); log('gei','','','','',''); log('geo','','','','',''); log('geong','dead','death','dead A','by A, B is dead; A killed B',''); log('gi','','','','',''); log('gia','','','','',''); log('giang','','','','',''); log('giao','','','','',''); log('gie','search','search; hunt','A is searched for; sought after A','A searches for B; A looks out for B; A wants to find B',''); log('ging','','','','',''); log('giou','shame','shame; guilt; embarassment','shameful A','',''); log('giu','machine','machine; computer','machine for A','',''); log('giung','transparent','glass; window','transparent A; invisible A','',''); log('go','not','no; not; nothing; none','not A','',''); log('gou','','','','',''); log('gu','find','finding; discovery; revelation','found A; discovered A','A finds B; A discovers B','by A, B finds C; by A, B discovers C'); log('gua','','','','',''); log('guai','','','','',''); log('guang','','','','',''); log('guei','','','','',''); log('gung','','','','',''); log('guo','barrier','barrier; wall; division; dividing line','wall in A','',''); log('ha','only','loneliness; singularity; only','only A','the only A, B',''); log('hai','','','','',''); log('hang','','','','',''); log('hao','sweet','sweetness; sugar','sweet A; sugary A','A sweetens B; B is sweet by A',''); log('he','','','','',''); log('hei','time','time','time when A; whenever A','when A, B',''); log('heo','','','','',''); log('heong','flat','flatness; sheet; calm; horizontal','flat A','',''); log('hi','way','way; path; method','the way of A; the path towards B','',''); log('hia','too','too much; bad excess','too much A; too A','too A, B; B is too much A',''); log('hiang','','','','',''); log('hiao','','','','',''); log('hie','complex','complicated thing','complex A; intricate A','',''); log('hing','analyze','analysis; inspection; report','analyzed A; A is inspected','A analyzes B; A inspects B; A looks at B in detail',''); log('hiou','body','body; body part','body part for function A; body for A','',''); log('hiu','','','','',''); log('hiung','friend','friend; companion; comrade','friend of A','friend of A in shared B',''); log('ho','','','','',''); log('hou','','','','',''); log('hu','','','','',''); log('hua','part','part; element; aspect','part of A; element of A','part of A, B; B is part of A',''); log('huai','','','','',''); log('huang','','','','',''); log('huei','','','','',''); log('hung','purpose','reason; purpose','purpose A; reason of A','for purpose A, B; for reason A, B',''); log('huo','','','','',''); log('iu','','','','',''); log('iung','','','','',''); log('ja','','','','',''); log('jai','interior','interior; inside','interior of A; inside A','inside of A, B; B in A',''); log('jang','yellow','yellow; yellowness','yellow A','',''); log('jao','','','','',''); log('je','','','','',''); log('jei','','','','',''); log('jeo','','','','',''); log('jeong','','','','',''); log('ji','','','','',''); log('jia','side','side; periphery','side of A; beside A','',''); log('jiang','','','','',''); log('jiao','','','','',''); log('jie','','','','',''); log('jing','simple','simple thing','simple or minimal A','',''); log('jiou','','','','',''); log('jiu','','','','',''); log('jiung','','','','',''); log('jo','','','','',''); log('jou','light','light; brightness','light A; bright A','',''); log('ju','','','','',''); log('jua','','','','',''); log('juai','less','reduction; diminishment; diminished version','reduced A; lessened A','from A, B is reduced; B is the lessened A','A reduces B to C'); log('juang','','','','',''); log('juei','','','','',''); log('jung','','','','',''); log('juo','','','','',''); log('ka','','','','',''); log('kai','again','again; repeat; one more','A again; once more A; A anew; another A','',''); log('kang','easy','easy task; ease','easy A; doable A','',''); log('kao','','','','',''); log('ke','need','requirement; need; necessary; requisite','required A; needed A','A requires B; B is needed for A','A needs for B C; A needs C for B'); log('kei','fun','fun activity; game','fun A; interesting A','',''); log('keo','','','','',''); log('keong','','','','',''); log('ki','','','','',''); log('kia','','','','',''); log('kiang','fake','falsehood; impostor','fake A','',''); log('kiao','','','','',''); log('kie','','','','',''); log('king','','','','',''); log('kiou','bitter','bitterness; gross taste','bitter A','',''); log('kiu','','','','',''); log('kiung','','','','',''); log('ko','','','','',''); log('kou','','','','',''); log('ku','cause','cause; origin; reason','cause for A; origin of A','because A, B; A causes B',''); log('kua','','','','',''); log('kuai','','','','',''); log('kuang','','','','',''); log('kuei','','','','',''); log('kung','','','','',''); log('kuo','','','','',''); log('la','','','','',''); log('lai','','','','',''); log('lang','','','','',''); log('lao','we','we; us','our A','',''); log('le','info','info; text; speech; data','text "A"; the info "A"','A says info "B"; A expresses "B"',''); log('lei','','','','',''); log('leo','','','','',''); log('leong','visual','visual; imagery; sight; image; photo','visual A; imaged A; seen A','',''); log('li','','','','',''); log('lia','document','document; website; lipu','document for A; website of A','',''); log('liang','oil','oil; fat; fuel; grease','oily A; greasy A; fatty A','with A, B is oily; B is fat with A',''); log('liao','','','','',''); log('lie','iff','coinstance; coocurrence','','A iff B; A xnor B',''); log('ling','real','reality; yes','real A; true A','',''); log('liou','','','','',''); log('liu','','','','',''); log('liung','','','','',''); log('lo','is-it','hm?','A?; is it that A; is A true','',''); log('lou','','','','',''); log('lu','','','','',''); log('lua','','','','',''); log('luai','','','','',''); log('luang','','','','',''); log('luei','repeat','repetition; rhythm; beat; blinking','repeated A; rhythmic A','',''); log('lung','','','','',''); log('luo','','','','',''); log('ma','','','','',''); log('mai','','','','',''); log('mang','god','god; divinity','divine A; holy A','',''); log('mao','','','','',''); log('me','what','what','which A; which from set A','',''); log('mei','','','','',''); log('meo','','','','',''); log('meong','','','','',''); log('mi','','','','',''); log('mia','','','','',''); log('miang','','','','',''); log('miao','kitty','itty bitty kitty cat :3','','',''); log('mie','group','group; crowd; collection','group of A','group of A with common B',''); log('ming','','','','',''); log('miou','','','','',''); log('miu','','','','',''); log('miung','lame','tedium; lame task; boring','lame A; tedious A; boring A','to A, B is lame',''); log('mo','','','','',''); log('mou','zero','zero','zero A','',''); log('mu','five','five','five A','',''); log('mua','sour','sourness; acidity','sour A; acidic A','',''); log('muai','','','','',''); log('muang','','','','',''); log('muei','familiar','familiar thing','familiar A; known A','A is familliar with B; A connaît B',''); log('mung','behind','behind','the behind of A','behind A is B',''); log('muo','','','','',''); log('na','category','category; grouping; type; class; kind','the category of A; the type of A','A is a B; A is in class B','in attribute A, B is a C'); log('nai','','','','',''); log('nang','','','','',''); log('nao','','','','',''); log('ne','good','good thing; goodness','good A; pona A','',''); log('nei','small','small thing; particle; speck','small A; tiny A; A is little','',''); log('neo','','','','',''); log('neong','','','','',''); log('ni','','','','',''); log('nia','language','language; system of communication; protocol','language of A; protocol of tokens A','',''); log('niang','','','','',''); log('niao','structure','structure; form; internal mechanism','structure of A; arrangement of A; relationships within A','',''); log('nie','','','','',''); log('ning','','','','',''); log('niou','with','partner; something alongside; mutual','partner with A; along with A','along with A, B',''); log('niu','','','','',''); log('niung','','','','',''); log('no','','','','',''); log('nou','zero','zero','zero A','',''); log('nu','come','coming thing','coming A; A arrives','from A, B comes; B arrives from A',''); log('nua','sign','sign; symbol; mark; character; writing','','',''); log('nuai','continue','continuation; unchanging','still A; continued A; A goes on','',''); log('nuang','believe','belief','believed A','A believes B','because A, B believes C'); log('nuei','','','','',''); log('nung','help','help; assistance','helpful A','A helps B','in task A, B helps C'); log('nuo','make','creation; made thing','made A; prepared A; created A','A made B; A created B','A uses B to make C; A turns B into C'); log('o','name','name','"A"','"A", B; B is named "A"',''); log('ou','soft','soft; gentle; flexible; chill; calm; kind','soft A; gentle A','',''); log('pa','one','one','one A','',''); log('pai','exceed','excess; extra; more than expected','A is extra','A is extra for B; A exceeds normal B','in A, B is extra for C'); log('pang','below','area below; space beneath','the area below A','below A, B',''); log('pao','','','','',''); log('pe','go','motion; going; travel','going A; moving A','to A, B moves; B goes to A',''); log('pei','','','','',''); log('peo','','','','',''); log('peong','','','','',''); log('pi','','','','',''); log('pia','function','function; mapping','function named (o) A','function named (o) A evaluated at B; (o) A of B',''); log('piang','','','','',''); log('piao','','','','',''); log('pie','want','want; desire','wanted A; desired A','A desires B; A wants B',''); log('ping','square','square; cube','square of A','',''); log('piou','','','','',''); log('piu','red','red; redness','red A','',''); log('piung','','','','',''); log('po','should','obligation; duty','A should happen; duty for A','A holds duty B; A should B',''); log('pou','high','high thing','high A; tall A','',''); log('pu','animal','animal; creature','animal of habitat B','',''); log('pua','','','','',''); log('puai','','','','',''); log('puang','','','','',''); log('puei','rod','rod; stick; staff','long stiff A','',''); log('pung','','','','',''); log('puo','','','','',''); log('ra','person','person','','',''); log('rai','','','','',''); log('rang','building','building; structure; tomo','building of A; structure of A','',''); log('rao','','','','',''); log('re','two','two','two A','',''); log('rei','','','','',''); log('reo','','','','',''); log('reong','','','','',''); log('ri','','','','',''); log('ria','','','','',''); log('riang','','','','',''); log('riao','','','','',''); log('rie','','','','',''); log('ring','','','','',''); log('riou','','','','',''); log('riu','','','','',''); log('riung','','','','',''); log('ro','give','giving; provision; gift','given A','A receives B; gift B given to A','A gives to B C'); log('rou','different','difference','unique A; A is different','differing from A, B; B is unique from A','A differs B from C'); log('ru','','','','',''); log('rua','memory','memory; remembering','memory A; remembered A','A remembers B',''); log('ruai','','','','',''); log('ruang','','','','',''); log('ruei','','','','',''); log('rung','container','container; box; poki','container of A','',''); log('ruo','list','list; table; collection','list of A','',''); log('sa','','','','',''); log('sai','','','','',''); log('sang','','','','',''); log('sao','','','','',''); log('se','','','','',''); log('sei','','','','',''); log('seo','','','','',''); log('seong','','','','',''); log('sha','the','that; this','that A; this A; the A','',''); log('shai','','','','',''); log('shang','bone','bone; integral part','bone in system A','in system A, bone B',''); log('shao','term','term; word','term for A; word for A','','A uses term B for C'); log('she','instance','instance; time; fois','instance of A; one time, B','A instances of B; B happens A times',''); log('shei','','','','',''); log('sheo','','','','',''); log('sheong','','','','',''); log('shi','three','three','three A','',''); log('shia','','','','',''); log('shiang','','','','',''); log('shiao','','','','',''); log('shie','','','','',''); log('shing','','','','',''); log('shiou','fruit','fruit; vegetable','A is fruitlike','',''); log('shiu','','','','',''); log('shiung','','','','',''); log('sho','','','','',''); log('shou','stone','stone; rock; hardness','','',''); log('shu','you','you','your A','',''); log('shua','','','','',''); log('shuai','','','','',''); log('shuang','','','','',''); log('shuei','energy','energy','energetic A; active A; alive A','',''); log('shung','','','','',''); log('shuo','','','','',''); log('si','it','it; she; he; they','its A; her A; his A; their A','',''); log('sia','','','','',''); log('siang','','','','',''); log('siao','','','','',''); log('sie','change','change; shift','changed A; altered A','from A, B is altered','A changes B to C'); log('sing','expert','expert; master','expert in A; master in A','A has mastered B',''); log('siou','','','','',''); log('siu','','','','',''); log('siung','','','','',''); log('so','','','','',''); log('sou','','','','',''); log('su','','','','',''); log('sua','dirty','dirty thing; gross thing; uncleanliness','dearty A; gross A','A made B dirty; B, gross with A','A uses B to make C dirty; A makes C dirty with B'); log('suai','','','','',''); log('suang','love','love','','',''); log('suei','','','','',''); log('sung','','','','',''); log('suo','wait','wait; stay; rest','waiting A; resting A; staying A','through A, B stays; B endures A',''); log('ta','','','','',''); log('tai','value','value; money; worth','value of A; A\'s worth','A is the value of B; B, worth A',''); log('tang','','','','',''); log('tao','','','','',''); log('te','they','they','their A','',''); log('tei','','','','',''); log('teo','','','','',''); log('teong','shop','shop; store; market','market for A; shop for B','',''); log('ti','context','context; environment','context for A; environment of B','in context A, B; A la B but not in a causal way',''); log('tia','ready','preparation; readiness','ready A; A is fit; A is properly prepared','for A, B is ready',''); log('tiang','reflect','reflection; mirroring; mirror image','reflected A; mirror version of A','A reflects B; B, mirrored in A',''); log('tiao','','','','',''); log('tie','','','','',''); log('ting','above','space above','above A; space above A','above A, B',''); log('tiou','','','','',''); log('tiu','','','','',''); log('tiung','','','','',''); log('to','','','','',''); log('tou','full','fullness','filled A; A is full','A fills B; B is full of A',''); log('tsa','new','new thing; novelty','new A; A is novel','to A, B is new; B is newer than A',''); log('tsai','','','','',''); log('tsang','command','command; code; instruction','commands for A; code for A; instructions for A','',''); log('tsao','','','','',''); log('tse','','','','',''); log('tsei','end','end; stop; finish','end of A; A is finished','',''); log('tseo','','','','',''); log('tseong','strong','strength; power','strong A; powerful A','in power A, B is strong; B is powerful with A','by A, in power B, C is strong; by A, C is powerful in B'); log('tsi','','','','',''); log('tsia','','','','',''); log('tsiang','green','green; greenness','green A','',''); log('tsiao','','','','',''); log('tsie','','','','',''); log('tsing','','','','',''); log('tsiou','','','','',''); log('tsiu','','','','',''); log('tsiung','','','','',''); log('tso','size','size; measurement; taille','size of A; measurement of A','A is the size of B; B, of measurements A',''); log('tsou','','','','',''); log('tsu','','','','',''); log('tsua','choose','choice; decision; pick; selection','decided A; A is chosen; A is picked','A decides B; A picks B',''); log('tsuai','','','','',''); log('tsuang','','','','',''); log('tsuei','sky','sky; weather; day; heaven; tian','','',''); log('tsung','','','','',''); log('tsuo','meaning','meaning; interpretation; significance','meaning of A','',''); log('tu','','','','',''); log('tua','emit','emission; ejection','emitted A; ejection A','A emits B; from A; B is ejected',''); log('tuai','','','','',''); log('tuang','','','','',''); log('tuei','solid','solid; thick object','solid A; thick A','',''); log('tung','','','','',''); log('tuo','break','damage; broken thing; disfunctional thing','damaged A; broken A; disfunctional A','A breaks B; A ruins B; B, damaged by A','A uses B to damage C'); log('wa','','','','',''); log('wai','','','','',''); log('wang','empty','emptiness','empty A; lacking A; void A','A is void from B; B lacks A',''); log('wei','','','','',''); log('wo','four','four','four A','',''); log('wu','event','event; happening; occurence; process','event of A; process of A; act of A','',''); log('wung','allow','allowance, permission','allowed A','A allows B; A permits B; B is legal under A',''); log('ya','very','very; yes','very A','',''); log('yang','','','','',''); log('yao','','','','',''); log('ye','use','tool; usable object; utility; mechanism; instrument','A is used; tool A','A uses tool B','for A, B uses tool C'); log('yi','several','several; multitudes; many','several A; multiple A; plural A','',''); log('ying','philosophy','philosophy; principles; mindset; field; understanding','philosophy of A; principles guided by A','',''); log('you','final','final thing; last','final element of A','A, last of B; A is the final B','');
+
+
+
+    
+    
+    function log(form, gloss, n0, n1, n2, n3) {
+      [form, gloss, n0, n1, n2, n3] = [form, gloss, n0.trim(), n1.trim(), n2.trim(), n3.trim()];
+      //[n0,n1,n2,n3]=[n0+"!",n1+"!",n2+"!",n3+"!"];
+      word_forms.push(form);
+      if (gloss) { //when gloss in fact provided
+        dictionary[form] = {
+          gloss: gloss,
+          def: []
+        };
+        dictionary[form].def[0] = n0 ? n0.split("; ") : [];
+        dictionary[form].def[1] = n1 ? n1.split("; ") : [];
+        dictionary[form].def[2] = n2 ? n2.split("; ") : [];
+        dictionary[form].def[3] = n3 ? n3.split("; ") : [];
+      } else { //no gloss, just reserved space
+        dictionary[form] = {gloss: "?", def: null};
+      }
+    }
+    {
+      //alphabetize keys in dictionary :3c
+      let x = {};
+      for (key of Object.keys(dictionary).sort()) x[key] = dictionary[key];
+      dictionary = x;
+    }
+    word_forms = word_forms.sort((a, b) => b.length - a.length);
+    word_forms.push("*"); //the bad word form. if we get to this point, bad things have happened. lazy solution so i can write lazy code
+    
+    function analyze(text) {
+      //filter only actual text chars
+      let stream = "";
+      for (character of text.split("")) if ("ĀAÁÀBCDĒEÉÈFGHĪIÍÌJKLMNŌOÓÒPRSTŪUÚÙWYZāaáàbcdēeéèfghīiíìjklmnōoóòprstūuúùwyz !.,?:;-'\"(){}[]0123".includes(character)) stream += character;
+      stream = stream.trim();
+      //find the syllables
+      let a = [];
+      while (stream.length && " !.,?:;-'\"(){}[]".includes(stream.charAt(0))) {
+        a.push({is_token: false, text: stream.charAt(0)});
+        stream = stream.substring(1);
+      }
+      while (stream.length) {
+        let word_i = 0;
+        word_form_loop:
+        while (word_i < word_forms.length) {
+          for (let deg = 0; deg <= 3; deg++) {
+            let possible_form = add_tone(word_forms[word_i], deg);
+            if (stream.toLowerCase().startsWith(possible_form)) {
+              if (!dictionary[word_forms[word_i]].def || !dictionary[word_forms[word_i]].def[deg]) { //no definition here
+                a.push({
+                  text: stream.substring(0, possible_form.length),
+                  arity: deg,
+                  gloss: null,
+                  definitions: ["???"],
+                  children: [],
+                  root: false,
+                  is_token: true
+                });
+              } else {
+                a.push({
+                  text: stream.substring(0, possible_form.length),
+                  arity: deg,
+                  gloss: dictionary[word_forms[word_i]].gloss,
+                  definitions: dictionary[word_forms[word_i]].def[deg],
+                  children: [],
+                  root: false,
+                  is_token: true,
+                });
+              }
+              stream = stream.substring(possible_form.length);
+              for (let repl_degree = 0; repl_degree <= 3; repl_degree++) if (stream.charAt(0) == ""+repl_degree) {
+                a[a.length-1].arity = repl_degree;
+                a[a.length-1].text = add_tone(remove_tone(a[a.length-1].text), repl_degree);
+                //console.log("repl_degree: "+repl_degree);
+                try { a[a.length-1].definitions = dictionary[word_forms[word_i]].def[repl_degree]; } catch(e) {}
+                stream = stream.substring(1);
+              }
+              while (stream.length && " !.,?:;-'\"(){}[]".includes(stream.charAt(0))) {
+                a.push({is_token: false, text: stream.charAt(0)});
+                stream = stream.substring(1);
+              }
+              break word_form_loop;
+            }
+          }
+          word_i++;
+        }
+        if (word_i == word_forms.length) return;
+      }
+      //front to back parent assignment
+      for (let i = 0; i < a.length; i++) {
+        if (!a[i].is_token) continue;
+        //go back, try to find a good parent
+        let parent_index = i-1;
+        while (parent_index >= 0) {
+          if (!a[parent_index].is_token) {parent_index--; continue;}
+          if (a[parent_index].children.length < a[parent_index].arity) {
+            a[parent_index].children.push(i);
+            break;
+          }
+          parent_index--;
+        }
+        if (parent_index == -1) a[i].root = true;
+      }
+      //back to front translation (always using first definition
+      for (w of a) if (w.is_token) w.translation = w.definitions[0];
+      for (let i = a.length-1; i >= 0; i--) {
+        if (!a[i].is_token) continue;
+        /*try {if (a[i].arity >= 1) a[i].translation = a[i].translation.replaceAll("A", a[a[i].children[0]].translation);} catch(e) {}
+        try {if (a[i].arity >= 2) a[i].translation = a[i].translation.replaceAll("B", a[a[i].children[1]].translation);} catch(e) {}
+        try {if (a[i].arity >= 3) a[i].translation = a[i].translation.replaceAll("C", a[a[i].children[2]].translation);} catch(e) {}*/
+        try {if (a[i].arity >= 1) a[i].translation = a[i].translation.replaceAll("A", '('+a[a[i].children[0]].translation)+')';} catch(e) {}
+        try {if (a[i].arity >= 2) a[i].translation = a[i].translation.replaceAll("B", '('+a[a[i].children[1]].translation)+')';} catch(e) {}
+        try {if (a[i].arity >= 3) a[i].translation = a[i].translation.replaceAll("C", '('+a[a[i].children[2]].translation)+')';} catch(e) {}
+      }
+      //create htmls
+      let html = [];
+      let ortho_html = [];
+      let glossy_html = [];
+      let ipa_html = [];
+      for (word of a) {
+        if (word.is_token && word.gloss) { //existing word
+          html.push('<b class="n'+word.arity+'" title="('+word.arity+') '+(word.text.toLowerCase())+' \''+word.gloss+'\': '+word.definitions.join('; ')+'">'+word.text+'</b>');
+          ortho_html.push('<b class="n'+word.arity+'" title="('+word.arity+') '+(word.text.toLowerCase())+' \''+word.gloss+'\': '+word.definitions.join('; ')+'">'+to_ortho(word.text)+'</b>');
+          glossy_html.push("`" + word.gloss + "<sub>"+word.arity+"</sub>");
+          ipa_html.push(to_ipa(word.text));
+        } else if (word.is_token) { //reserved space
+          html.push('<b class="n'+word.arity+'" title="('+word.arity+') '+word.text.toLowerCase()+': no term yet">'+word.text+'</b>');
+          ortho_html.push('<b class="n'+word.arity+'" title="('+word.arity+') '+word.text.toLowerCase()+': no term yet">'+to_ortho(word.text)+'</b>');
+          glossy_html.push('<b class="n'+word.arity+'" title="('+word.arity+') '+word.text.toLowerCase()+': no term yet">'+word.gloss+'</b>');
+          ipa_html.push(to_ipa(word.text));
+        } else { //punctuation
+          html.push(word.text);
+          ortho_html.push(word.text);
+          glossy_html.push(word.text);
+        }
+      }
+      return {
+        analysis: a,
+        html: html.join(""),
+        glossy_html: glossy_html.join("").replaceAll("</sub>`", "</sub> `").replaceAll("`", ""),
+        ipa_html: "/"+ipa_html.join(" ")+"/"
+      };
+    }
+    
+    let ortho_c = {
+      m: "m",
+      n: "n",
+      p: "p",
+      t: "t",
+      k: "k",
+      b: "b",
+      d: "d",
+      g: "g",
+      ts: "ts",
+      ch: "ch",
+      dz: "dz",
+      j: "j",
+      f: "f",
+      s: "s",
+      sh: "sh",
+      h: "h",
+      l: "l",
+      r: "r",
+      'null': "!"
+    };
+    let ortho_v = {
+      a: "a",
+      ai: "ai",
+      ang: "ang",
+      ao: "ao",
+      e: "e",
+      ei: "ei",
+      eo: "eo",
+      eong: "eong",
+      i: "i",
+      ia: "ia",
+      iang: "iang",
+      iao: "iao",
+      ie: "ie",
+      ing: "ing",
+      iou: "iou",
+      iu: "iu",
+      iung: "iung",
+      o: "o",
+      ou: "ou",
+      u: "u",
+      ua: "ua",
+      uai: "uai",
+      uang: "uang",
+      uei: "uei",
+      ung: "ung",
+      uo: "uo"
+    };
+    let ortho_t = ["", ".", "..", "..."];
+    
+    function to_ortho(roman) {
+      let c = ""; let v = ""; let t = arity_of(roman);
+      roman = remove_tone(roman.toLowerCase());
+      for (pair of "m n p ts t k b dz d g ch j f sh s h l r".split(" ")) {
+        if (roman.startsWith(pair)) {
+          c = pair;
+          v = roman.substring(pair.length);
+          break;
+        }
+      }
+      if (c == "") {c = "null"; v = roman;}
+      v = v.replaceAll("y", "i").replaceAll("w", "u").replaceAll("ii", "i").replaceAll("uu", "u");
+      return ortho_c[c] + ortho_v[v] + ortho_t[t];
+    }
+    
+    function to_ipa(roman) {
+      let c = ""; let v = ""; let t = arity_of(roman);
+      roman = remove_tone(roman.toLowerCase());
+      for (pair of "m n p ts t k b dz d g ch j f sh s h l r".split(" ")) {
+        if (roman.startsWith(pair)) {
+          c = pair;
+          v = roman.substring(pair.length);
+          break;
+        }
+      }
+      if (c == "") {c = "null"; v = roman;}
+      v = v.replaceAll("y", "i").replaceAll("w", "u").replaceAll("ii", "i").replaceAll("uu", "u");
+      c = {m:"m",n:"n",p:"pʰ",t:"tʰ",k:"kʰ",b:"b",d:"d",g:"g",ts:"tsʰ",ch:"tʃʰ",dz:"dz",j:"dʒ",f:"f",s:"s",sh:"ʃ",h:"h",l:"l",r:"ɾ",null:""}[c];
+      v = {a:"a",ai:"aj",ang:"aŋ",ao:"aw",e:"ɛ",ei:"ej",eo:"ə",eong:"əŋ",i:"i",ia:"ja",iang:"jaŋ",iao:"jaw",ie:"jɛ",ing:"iŋ",iou:"jow",iu:"ɨ",iung:"ɨŋ",o:"ɔ",ou:"ow",u:"u",ua:"wa",uai:"waj",uang:"waŋ",uei:"wej",ung:"uŋ",uo:"wɔ"}[v];
+      t = "́̀̌̂".charAt(t);
+      //put t after first vowel of v
+      for (let i = 0; i < v.length; i++) if ("aɛeiɔouɨə".includes(v.charAt(i))) {
+        v = v.substring(0, i+1) + t + v.substring(i+1);
+        break;
+      }
+      return c + v;
+    }
+    
+    function arity_of(word) { //goes by diacritics
+      for (character of word.split("")) {
+        if ("ĀāĒēĪīŌōŪū".includes(character)) return 0;
+        if ("ÁáÉéÍíÓóÚú".includes(character)) return 2;
+        if ("ÀàÈèÌìÒòÙù".includes(character)) return 3;
+      }
+      return 1;
+    }
+    
+    function remove_tone(word) {
+      return replacement(word, "ĀāĒēĪīŌōŪūÁáÉéÍíÓóÚúÀàÈèÌìÒòÙù", "AaEeIiOoUuAaEeIiOoUuAaEeIiOoUu");
+    }
+    
+    function add_tone(word, tone) {
+      //put the tone on first non-i-u vowel. if never put tone, try put on u of iu. otherwise, put on first vowel
+      for (let i = 0; i < word.length; i++) {
+        if ("aeoAEO".includes(word.charAt(i))) {
+          return word.substring(0, i) + get_tone_letter(word.charAt(i), tone) + word.substring(i+1);
+        }
+      }
+      for (let i = 1; i < word.length; i++) {
+        if ((word.charAt(i-1) + word.charAt(i)).toLowerCase() == "iu") {
+          return word.substring(0, i) + get_tone_letter(word.charAt(i), tone) + word.substring(i+1);
+        }
+      }
+      for (let i = 0; i < word.length; i++) {
+        if ("iuIU".includes(word.charAt(i))) {
+          return word.substring(0, i) + get_tone_letter(word.charAt(i), tone) + word.substring(i+1);
+        }
+      }
+    }
+    
+    function get_tone_letter(vowel, tone) {
+      //vowel = vowel.toLowerCase();
+      if (vowel == "a") return "āaáà".charAt(tone);
+      if (vowel == "e") return "ēeéè".charAt(tone);
+      if (vowel == "i") return "īiíì".charAt(tone);
+      if (vowel == "o") return "ōoóò".charAt(tone);
+      if (vowel == "u") return "ūuúù".charAt(tone);
+      if (vowel == "A") return "ĀAÁÀ".charAt(tone);
+      if (vowel == "E") return "ĒEÉÈ".charAt(tone);
+      if (vowel == "I") return "ĪIÍÌ".charAt(tone);
+      if (vowel == "O") return "ŌOÓÒ".charAt(tone);
+      if (vowel == "U") return "ŪUÚÙ".charAt(tone);
+    }
+    
+    function replacement(word, og, nu) {
+      [og, nu] = [og.split(""), nu.split("")];
+      for (let i = 0; i < og.length; i++) word = word.replaceAll(og[i], nu[i]);
+      return word;
+    }
+    
+    let articles = document.querySelectorAll("article");
+    let nav = document.getElementById("nav");
+    for (let i = 0; i < articles.length; i++)
+      nav.innerHTML += '<p onclick="open_article('+i+')" class="n'+i%4+'" disabled="false">' + articles[i].querySelector("h2").innerHTML.split(" : ")[0] + '</p>';
+    for (let i = 0; i < articles.length; i++)
+      articles[i].querySelector("h2").innerHTML = articles[i].querySelector("h2").innerHTML.split(" : ").join("&ensp;·&ensp;");
+    let last_article;
+    nav.remove();
+    setTimeout(function(){
+      open_article(0);
+      document.getElementById("cover").remove();
+      document.body.appendChild(nav);
+    }, 1500);
+    function open_article(n) {
+      if (last_article == articles[n]) return;
+      last_article = articles[n];
+      for (each of articles) each.remove();
+      document.body.appendChild(articles[n]);
+      window.scrollTo(0, 0);
+      for (let i = 0; i < articles.length; i++) nav.querySelectorAll("p")[i].setAttribute("disabled", i==n);
+    }
+    
+    //run the bolds
+    let bolds = document.querySelectorAll("b");
+    for (each of bolds) {
+      let already_assigned = false;
+      for (c of ["n0", "n1", "n2", "n3"])
+        if (each.className.includes(c)) already_assigned = true; //if already assigned color, don't recolor.
+      if (already_assigned) continue;
+      let analysis = analyze(each.innerText);
+      if (analysis) each.outerHTML = analysis.html + (each.className.includes("include_ipa")?' <span class="ipa">'+analysis.ipa_html+'</span>':'');
+    }
+    
+    //make the translated story thing
+    for (excerpt of [
+      ["And the whole earth was of one language, and of one speech.", "Fuo2sha0, ye2 chara0 ha pa nia0."],
+      ["And it came to pass, as they journeyed from the east, that they found a plain in the land of Shinar; and they dwelt there.","Hei2 nu te0, gu2 te0 o2 Shinara0 heongbao0. Nuai a2 shabao0 te0."],
+      ["And they said one to another, Go to, let us make brick, and burn them thoroughly. And they had brick for stone, and slime had they for morter.","Le2 te0, \"ponuo3 lao0 eong0 pingshou0\". Ju2 te0 shing0."],
+      ["And they said, Go to, let us build us a city and a tower, whose top may reach unto heaven; and let us make us a name, lest we be scattered abroad upon the face of the whole earth.",'Le2 te0 ga2, "ponuo ga2 mierang0, pourang0!" "Shuai2 keong pourang0 poutsuei0!"'],
+      ["And the Lord came down to see the city and the tower, which the children of men builded.","a0"],
+      ["And the Lord said, Behold, the people is one, and they have all one language; and this they begin to do: and now nothing will be restrained from them, which they have imagined to do.","a0"],
+      ["Go to, let us go down, and there confound their language, that they may not understand one another's speech.","a0"],
+      ["So the Lord scattered them abroad from thence upon the face of all the earth: and they left off to build the city.","a0"],
+      ["Therefore is the name of it called Babel; because the Lord did there confound the language of all the earth: and from thence did the Lord scatter them abroad upon the face of all the earth.","a0"]
+    ]) {
+      let english = excerpt[0];
+      let text = excerpt[1];
+      let analysis = analyze(text);
+      if (!analysis) continue;
+      document.getElementById("the_story").innerHTML += '<hr><p>'+english+'</p>' + '<p>'+analysis.html+'</p>' + '<p>'+analysis.glossy_html+'</p>';
+    }
+    
+    //make the dictionary
+    //put after bolds so that i can diy bolds and not require intense analysis
+    {
+      let defined_count = 0;
+      let html = "";
+      for (entry of Object.keys(dictionary).sort()) {
+        html += '<dl>';
+        if (dictionary[entry].def) {
+          html += '<dt>'+dictionary[entry].gloss+'</dt>';
+          for (let deg = 0; deg <= 3; deg++) if (dictionary[entry].def[deg].length) {
+            html += '<dd><b class="n'+deg+'" title="('+deg+') '+entry+' \''+dictionary[entry].gloss+'\': '+dictionary[entry].def[deg].join('; ')+'">'+add_tone(entry, deg)+'</b> '+dictionary[entry].def[deg].join("; ").replaceAll("A","<i>A</i>").replaceAll("B","<i>B</i>").replaceAll("C","<i>C</i>")+'</dd>';
+            //html += '<dd><b class="n'+deg+'" title="('+deg+') '+entry+' \''+dictionary[entry].gloss+'\': '+dictionary[entry].def[deg].join('; ')+'">'+add_tone(entry, deg)+'</b> <span class="ipa">/'+to_ipa(add_tone(entry, deg))+'/</span> '+dictionary[entry].def[deg].join("; ").replaceAll("A","<i>A</i>").replaceAll("B","<i>B</i>").replaceAll("C","<i>C</i>")+'</dd>';
+          }
+          defined_count++;
+        } else { //no definitions provided
+          html += '<dt></dt>';
+          html += '<dd><b title="'+entry+': no term yet">'+entry+'</b></dd>';
+        }
+        html += '</dl>';
+      }
+      html += "<p id=\"dictionary_search_fail\">no results ...</p>"
+      document.getElementById("dictionary").innerHTML = html;
+      document.getElementById("dictionary_report").innerHTML = defined_count + "/" + Object.keys(dictionary).length + " ("+Math.round(100*defined_count/Object.keys(dictionary).length)+"%) of word space used";
+      document.getElementById("dictionary_json").innerText = JSON.stringify(dictionary);
+    }
+    
+    document.getElementById("dictionary_search").value = "";
+    dictionary_search();
+    function dictionary_search() {
+      let text = document.getElementById("dictionary_search").value.toLowerCase();
+      let show_any = false;
+      for (each of document.getElementById("dictionary").querySelectorAll("dl")) {
+        let show = each.innerText.toLowerCase().includes(text)
+        each.hidden = !show;
+        if (show) show_any = true;
+      }
+      document.getElementById("dictionary_search_fail").hidden = show_any;
+    }
+    
+    document.getElementById("parser_input").contentEditable = true;
+    document.getElementById("parser_input").spellcheck = false;
+    document.getElementById("parser_input").oninput = do_parser;
+    do_parser();
+    function do_parser() {
+      let text = document.getElementById("parser_input").innerText;
+      let html, html2, html3;
+      try {
+        let analysis = analyze(text);
+        html = analysis.html;
+        html2 = analysis.ipa_html;
+        //for (word of analysis.analysis) if (word.root) html2.push(word.translation);
+        html3 = analysis.glossy_html;
+      } catch(e) {
+        html = '<span>*invalid input</span>';
+        html2 = [];
+        html3 = "";
+      }
+      document.getElementById("parser_output").innerHTML = html;
+      document.getElementById("parser_translation").innerHTML = html2;
+      document.getElementById("parser_gloss").innerHTML = html3;
+    };
+  </script>
+</body>
+</html>
+
+<!--
+A	a	ai	ao	ang
+	ia		iao	iang
+	ua	uai		uang
+E	e	ei
+	ie
+		uei
+O	o		ou
+	uo
+			iou
+I	i			ing
+U	u			ung
+EO ə	eo			eong
+IU ɨ	iu			iung
+
+a/ai/ao/ang/ia/iao/iang/ua/uai/uang/e/ei/ie/uei/o/ou/uo/iou/i/ing/u/ung/eo/eong/iu/iung
+m/n/-/p/t/k/b/d/g/ts/ch/dz/j/f/s/sh/x/h/l/r
+
+m	n		-
+p	t		k
+b	d		g
+	ts	ch
+	dz	j
+f	s	sh	x	h
+	l
+	r
+
+ĀAÁÀBCDĒEÉÈFGHĪIÍÌJKLMNŌOÓÒPRSTŪUÚÙWYZ
+āaáàbcdēeéèfghīiíìjklmnōoóòprstūuúùwyz
+-->
