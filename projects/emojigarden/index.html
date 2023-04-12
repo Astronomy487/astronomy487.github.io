@@ -5,12 +5,17 @@
   <meta charset="UTF-8">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
     
     * {
-      font-family: 'Noto Color Emoji', 'Inter', sans-serif;
+      font-family: 'Inter', 'Noto Color Emoji', sans-serif;
       user-select: none;
       font-weight: normal;
+    }
+    
+    ::selection {
+      background: black;
+      color: white;
     }
     
     body {
@@ -20,21 +25,22 @@
       top: 0;
     }
     
+    /* TABLE - yknow the plots */
     table {
       position: fixed;
       border-collapse: collapse;
       border: solid 1px black;
       transition: 0.1s box-shadow, 0.1s transform;
       box-shadow: 0.25rem 0.25rem black;
-      background-color: #FFFFFF20;
+      background-color: #FFFFFF40;
       backdrop-filter: blur(0.5rem);
+      table-layout: fixed;
     }
-    
+    @keyframes table_enter {from{opacity:0; transform: translateY(2rem);}}
     table[dragging="true"] {
       box-shadow: 0.5rem 0.5rem black;
       transform: translate(-0.25rem, -0.25rem);
     }
-    
     th {
       background-color: white;
       padding: 0.25rem;
@@ -45,7 +51,6 @@
       border-bottom: solid 1px black;
       cursor: move;
     }
-    
     td {
       width: 4rem;
       height: 4rem;
@@ -55,16 +60,13 @@
       transition: 0.1s;
       border-radius: 4rem;
     }
-    
     td:empty {opacity: 0;}
-    
     td[can_action="true"]:hover, td[dropdowned="true"] {
       background-color: #FFFFFF60;
       cursor: pointer;
     }
     
-    /* action particles */
-    
+    /* I - action particles */
     @keyframes action_particle_animation {
       from {opacity: 0; transform: inherit;}
       25% {opacity: 1; transform: translateY(-1rem);}
@@ -75,60 +77,32 @@
       font-style: normal;
       position: fixed;
       animation: 1s action_particle_animation ease-in-out;
-      z-index: 99999;
+      opacity: 0;
+      transform: translateY(-1rem);
+      z-index: 1002;
       pointer-events: none;
     }
     
-    nav {
-      z-index: 99999;
-      font-size: 1.25rem;
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      padding: 2rem;
-      font-family: 'Material Symbols Outlined';
-      opacity: 0.25;
-      transition: 0.1s opacity;
-    }
-    
-    nav:hover {
-      opacity: 1;
-    }
-    
-    button {
-      display: block;
-      margin: 0;
-      cursor: pointer;
-      background-color: #eee;
-      border: solid 1px black;
-      color: black;
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-    }
-    
-    button:hover, button:focus {
-      background-color: white;
-    }
-    
     @keyframes enter_below {
-      from {opacity: 0; transform: translateY(1rem);}
+      from {opacity: 0; transform: translateX(-1rem);}
     }
-    
     @keyframes exit_below {
       to {opacity: 0; transform: translateY(1rem);}
     }
-    
+    /* ASIDE - dropdowns */
     aside {
       font-size: 1.5rem;
       position: fixed;
-      z-index: 9999;
+      z-index: 1001;
       animation: 0.25s enter_below;
     }
-    
+    @keyframes dropdown_item_enter {
+      from {margin-left: -1rem;}
+    }
     aside a:not(:first-child) {
       margin-left: 0.5rem;
+      animation: 0.5s dropdown_item_enter;
     }
-    
     aside a {
       border: solid 1px black;
       background-color: #eee;
@@ -137,23 +111,28 @@
       border-radius: 4rem;
       padding: 1rem;
     }
-    
     aside a:hover {
       background-color: white;
     }
     
+    /* ARTICLE - the bottom left thing */
     article {
       display: block;
       background-color: white;
       border: solid 1px black;
+      border-left-width: 0;
       padding: 1rem;
-      width: 16rem;
+      padding-left: 2rem;
+      width: 18rem;
       position: fixed;
-      left: 2rem;
+      left: -20.125rem;
+      transition: 0.5s left, 0.5s height;
       bottom: 2rem;
-      z-index: 9999999;
+      z-index: 1002;
     }
-    
+    article:hover {
+      left: 0;
+    }
     article input[type="color"] {
       padding: 0;
       border: none;
@@ -161,52 +140,173 @@
       height: 2rem;
       vertical-align: middle;
     }
-    
     article input {
       height: 1rem;
       font-size: 1rem;
       padding: 0.5rem;
-      width: 10rem;
+      width: 14.5rem;
       vertical-align: middle;
       background-color: white;
       border: none;
     }
-    
     article input:focus {
       outline: none;
       background-color: #eee;
     }
-    
     article button {
+      display: block;
+      margin: 0;
       margin-top: 1rem;
-      width: 16rem;
+      cursor: pointer;
+      background-color: #eee;
+      border: solid 1px black;
+      color: black;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      width: 18rem;
+    }
+    article button:hover {
+      background-color: white;
+    }
+    
+    /* HEADER - the held object */
+    @keyframes holding_enter {
+      from {opacity: 0; transform: translateX(-5rem);}
+    }
+    @keyframes holding_exit {
+      to {opacity: 0; transform: translateX(-5rem);}
+    }
+    header {
+      background-color: white;
+      font-size: 3rem;
+      padding: 1rem;
+      position: fixed;
+      top: 2rem;
+      border: solid 1px black;
+      border-left-width: 0;
+      animation: 0.5s holding_enter;
+      z-index: 1002;
+    }
+    header a {
+      font-size: 1.5rem;
+      border: solid 1px black;
+      background-color: #eee;
+      cursor: pointer;
+      transition: background-color 0.1s;
+      border-radius: 4rem;
+      padding: 1rem;
+      position: fixed;
+      display: block;
+      margin-top: 2rem;
+    }
+    header a:hover {
+      background-color: white;
+    }
+    
+    /* NAV - the inventory */
+    nav {
+      background-color: white;
+      border-left: solid 1px black;
+      position: fixed;
+      width: 5rem;
+      right: -6rem;
+      transition: 0.5s right;
+      height: 100vh;
+      overflow-y: scroll;
+      padding: 1rem;
+      text-align: center;
+      z-index: 1002;
+    }
+    nav:hover {right: 0;}
+    nav a {
+      font-size: 3rem;
+      display: block;
+      border-radius: 4rem;
+      transition: background-color 0.1s;
+    }
+    nav a[onclick]:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+    nav :last-child {margin-bottom: 2rem;}
+    nav span {
+      margin-bottom: 1rem;
+      display: block;
+      font-size: 1rem;
+    }
+    
+    /* FOOTER - market */
+    footer {
+      background-color: white;
+      border: solid 1px black;
+      border-width: 1px 1px 0 1px;
+      z-index: 1002;
+      width: 24rem;
+      height: 18rem;
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -19rem;
+      padding: 1rem;
+      transition: 0.5s bottom;
+      font-size: 0;
+    }
+    footer:hover {
+      bottom: 0;
+    }
+    footer div {
+      display: inline-block;
+      width: 4rem;
+      height: 5rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      transition: 0.1s;
+    }
+    footer div a {
+      width: 3rem;
+      height: 3rem;
+      font-size: 3rem;
+      transition: background-color 0.1s;
+      border-radius: 3rem;
+    }
+    footer div:not([disabled]) a:hover {
+      cursor: pointer;
+      background-color: #eee;
+    }
+    footer div[disabled] {
+      filter: grayscale(100%);
+      opacity: 0.5;
+    }
+    footer div span {
+      font-size: 1rem;
+    }
+    footer b {
+      font-size: 1rem;
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
     }
   </style>
 </head>
 <body onbeforeunload="save_garden();">
-  <nav>
-    <button onclick="document.querySelector('article').style.display = 'block';" style="border-radius: 4rem;">i</button>
-  </nav>
-  <article style="display: none;">
+  <article> <!-- bottom left setting thing -->
     <input type="color" id="input_bg" oninput="file.bg = this.value; document.body.style.backgroundColor = this.value;">
     <input type="text" id="input_title" oninput="file.title = this.value; document.querySelector('title').innerText = this.value ? this.value : '-';">
-    <button onclick="document.querySelector('article').style.display = 'none';" style="border-width: 0 0 1px 1px; display: inline-block; padding: 0.5rem 0; width: 2.5rem; position: absolute; top: -1rem; right: 0; text-align: center;">×</button>
-    <button onclick="ask_delete_garden_permanently();">Reset garden (permanent)</button>
+    <button onclick="if (confirm('Are you sure you want to reset your garden? This cannot be undone.')) delete_garden_permanently();">Reset garden</button>
+    <button onclick="if (confirm('Are you sure you want to use the infinite items cheat?')) for(tile of Object.keys(actions)){for(action of actions[tile]){for(resource of Object.keys(action.gain)){file.inventory[resource]=2000000000;}}}visually_update_inventory();make_action_particle('💵',this);">Infinite items (cheat)</button>
+    <button onclick="if (confirm('Are you sure you want to skip 1 hour? (This is a debug feature, not a gameplay feature!)')) for(let p=0;p<file.field.length;p++)do_simulation_on_plot(p,7200);for(let p=0;p<file.field.length;p++)for(let r=0;r<file.field[p].cells.length;r++)for(let c=0;c<file.field[p].cells[r].length;c++)if(file.field[p].cells[r][c])file.field[p].cells[r][c].next_ready-=3600000;file.experience+=1000*60*60;make_action_particle('⌛',this);">Time skip 1hr (cheat)</button>
   </article>
   <div id="field"></div> <!-- all those field rectangles -->
+  <nav></nav> <!-- inventory -->
+  <footer></footer> <!-- market -->
   <!--<div style="font-size: 3rem; width: 24rem;" id="avatars">👩‍🌾👩🏿‍🌾👩🏾‍🌾👩🏽‍🌾👩🏼‍🌾👩🏻‍🌾<br>🧑‍🌾🧑🏿‍🌾🧑🏾‍🌾🧑🏽‍🌾🧑🏼‍🌾🧑🏻‍🌾<br>👨‍🌾👨🏿‍🌾👨🏾‍🌾👨🏽‍🌾👨🏼‍🌾👨🏻‍🌾</div>-->
+  <!-- 🥝🥥🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🍆🌶🍄🥑🥒🥬🥦🥔🧄🧅🥕🥜🌲🍁🍃 -->
   <script>
     /*
     todo list
-    - do field TYPES. 🦑🐟🐡🐠🦈<== these beasts only exist in the ocean
-    - make Info/Settings page look good, include user text to put in <title>
-      things that are in settings:
-        - bg color
-        - reset your save
-      info page is regrettable because i want as little text as possible
+    - when dropdown open, freeze that plot. and auto close dropdown after x amount of time. (merge this freezing with dragging freezing?)
     - design uncertainty: how should you acquire new plots / plants / animals? i dont want this to be an economics game
-    - in general What tiles should exist
-        currently have 🌾🌽🎃  🐑🐕  🌴🥥  🌷🌸🌹🌺🌼🌻🏵
+    - somehow deeply overhaul the automata simulation part. it must be so inefficient
     */
     
     let file = {}; //The Save File Of All Your Info. it's constantly saved into localstorage. it includes elements
@@ -229,20 +329,6 @@
       file = {};
       localStorage.removeItem("garden_data");
       location.reload();
-    }
-    function ask_delete_garden_permanently() {
-      let notice = document.createElement("article");
-      notice.style.left = "50%";
-      notice.style.top = "50%";
-      notice.style.transform = "translate(-50%, -50%)";
-      let par = document.createElement("p");
-      notice.appendChild(par);
-      par.innerText = "Your garden will be permanently reset to the default state. None of your posessions or friends will survive.";
-      let button = document.createElement("button");
-      button.onclick = delete_garden_permanently;
-      button.innerText = "Seriously, delete my garden";
-      notice.appendChild(button);
-      document.body.appendChild(notice);
     }
     
     /* field = the things you have out in the world that have some position. every object will include:
@@ -272,17 +358,20 @@
       file = {};
       file.last_saved = Date.now();
       file.field = [];
-      file.bg = "#008080";
+      file.bg = "#"+shuffle("cff4a6 04656e faafdd 42366e 37523b e6b370".split(" "))[0];
       file.title = "my emoji garden";
+      file.inventory = {};
+      file.experience = 86400000/2; //just time spent in ms, but spent. money = floor(experience/60000) ie one minute is one money
+      file.holding = null;
       file.field[0] = {
         x: 0, y: 0, z: 1,
         plot_type: "land",
-        cells: new_field("🌾 🌾 🐑 🌾 🌾/🌾 🐑 🌾 🌾 🌾/🌾 🌾 🌾 🐑 🐕")
+        cells: new_field("🌾 🌾 🐑 🌾 🌾/🌾 🐑 🪨 🌾 🌾/🌾 🌾 🌾 🐑 🐕")
       };
       file.field[1] = {
         x: 200, y: 300, z: 1,
         plot_type: "land",
-        cells: new_field("🌾 🌾 🌾/🌽 🌽 🌽/🎃 🎃 🎃")
+        cells: new_field("🌾 🌾 🍅 🍅/🌾 🌾 🍅 🍅/🌾 🌾 🍅 🍅/🌾 🌾 🍅 🍅")
       };
       file.field[2] = {
         x: -100, y: 300, z: 1,
@@ -290,9 +379,9 @@
         cells: new_field("# # #/# 🏵 #/# # #")
       };
       file.field[3] = {
-        x: -300, y: 100, z: 1,
+        x: -400, y: 50, z: 1,
         plot_type: "land",
-        cells: new_field("# 🌴 #/# 🥥 #")
+        cells: new_field("🪨 # #/# 🌴 #/# # 🪨/🪨 # #/# 🌴 #/# # 🪨")
       };
     }
     
@@ -319,42 +408,157 @@
     //define all cell actions here
     let actions = {};
     
+    //FAMILY: ANIMALS
     actions["🐑"] = [{
       display: "💙",
-      cooldown: 5000,
-      gain: []
+      cooldown: 0,
+      gain: {}
+    },{
+      display: "📦",
+      cooldown: 0,
+      gain: {"🐑":1},
+      special: "delete"
+    }];
+    actions["🐏"] = [{
+      display: "💚",
+      cooldown: 0,
+      gain: {}
+    },{
+      display: "📦",
+      cooldown: 0,
+      gain: {"🐏":1},
+      special: "delete"
+    }];
+    actions["🐕"] = [{
+      display: "📦",
+      cooldown: 0,
+      gain: {"🐕":1},
+      special: "delete"
     }];
     
+    //FAMILY: FLOWERS
+    for (f of ["🏵","🌷","🌹","🌸","🌺","🌼","🌻","🪻"]) { //suspicious lack of lotus 🪷 because they grow in water
+      actions[f] = [{
+        display: f,
+        cooldown: 1000*60,
+        gain: {},
+        special: "spread",
+        special_arg: f
+      },{
+        display: "🧺",
+        cooldown: 0,
+        gain: {},
+        special: "delete"
+      }];
+      actions[f][1].gain[f] = 1;
+    }
+    
+    //FAMILY: CROPS. simple, minor, major 🌾🍅 🥕🥬🫑🍓🥦🥔🧅 🍈🍆🍍🍠🌽🎃🥒 
+    actions["🌾"] = [{display:"🧺",cooldown:1000*60*5,gain:{'🌾':1}}]; //rice/wheat
+    actions["🍅"] = [{display:"🧺",cooldown:1000*60*5,gain:{'🍅':1}}]; //tomato
+    
+    actions["🥕"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🥕':1}}]; //carrot
+    actions["🥬"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🥬':1}}]; //lettuce
+    actions["🫑"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🫑':1}}]; //bell pepper
+    actions["🍓"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🍓':1}}]; //strawberry
+    actions["🥦"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🥦':1}}]; //broccoli
+    actions["🥔"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🥔':1}}]; //potat
+    actions["🧅"] = [{display:"🧺",cooldown:1000*60*10,gain:{'🧅':1}}]; //oniono
+    
+    actions["🍈"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🍈':1}}]; //melon
+    actions["🍆"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🍆':1}}]; //eggplant
+    actions["🍍"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🍍':1}}]; //pineapple
+    actions["🍠"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🍠':1}}]; //sweet potato
+    actions["🌽"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🌽':1}}]; //corn
+    actions["🎃"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🎃':1}}]; //pumpkin
+    actions["🥒"] = [{display:"🧺",cooldown:1000*60*15,gain:{'🥒':1}}]; //cucumber
+    
+    //FAMILY: TREES
+    actions["🌴"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain:{"🌴":1},
+      special: "delete"
+    },{
+      display: "🪓",
+      cooldown: 0,
+      gain:{"🪵":3},
+      special: "delete"
+    }];
     actions["🥥"] = [{
       display: "🧺",
-      cooldown: 1000,
-      gain: [],
+      cooldown: 0,
+      gain: {'🥥':1},
       special: "delete"
     }];
-    
-    actions["🏵"] = [{
-      display: "🌱",
-      cooldown: 1,
-      gain: [],
-      special: "spread"
+    actions["🌳"] = [{
+      display: "🌰",
+      cooldown: 1000*30,
+      gain: {},
+      special: "spread",
+      special_arg: "🌰"
     },{
-      display: "🗑️",
-      cooldown: 10,
-      gain: [],
+      display: "🧺",
+      cooldown: 0,
+      gain:{"🌳":1},
+      special: "delete"
+    },{
+      display: "🪓",
+      cooldown: 0,
+      gain:{"🪵":3},
       special: "delete"
     }];
-    for (f of ["🌷","🌹","🌸","🌺","🌼","🌻"]) actions[f] = actions["🏵"];
+    actions["🌰"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {'🌰':1},
+      special: "delete"
+    }];
+    actions["🌿"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {'🌿':1},
+      special: "delete"
+    }];
+    actions["🪵"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {"🪵":1},
+      special: "delete"
+    }];
     
-    actions["🌾"] = [{display:"🧺",cooldown:1000*60*1,gain:[]}]
-    actions["🌽"] = [{display:"🧺",cooldown:1000*60*2,gain:[]}]
-    actions["🎃"] = [{display:"🧺",cooldown:1000*60*3,gain:[]}]
+    //FAMILY: OTHER
+    actions["🪨"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {"🪨":1},
+      special: "delete"
+    }];
+    actions["🍀"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {"🍀":1},
+      special: "delete"
+    }];
+    actions["🌵"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {"🌵":1},
+      special: "delete"
+    }];
+    actions["🍄"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain: {"🍄":1},
+      special: "delete"
+    }];
     
-    actions["🐕"] = [];
-    actions["🌴"] = [];
-    
-    function new_cell(emoji) {
+    function new_cell(emoji, have_cooldown = false) {
+      if (emoji == "#") return null;
+      let t = Date.now();
+      if (have_cooldown) for (a of actions[emoji]) t += a.cooldown;
       return {
-        next_ready: Date.now(),
+        next_ready: t,
         display: emoji
       };
     }
@@ -373,23 +577,28 @@
     let dropdown_open = null;
     
     //apply cellular automata for however long we've been gone
-    for (p of file.field) do_simulation_on_plot(p, Math.floor(Date.now() - file.last_saved)/500);
+    for (let plot_number = 0; plot_number < file.field.length; plot_number++)
+      do_simulation_on_plot(plot_number, Math.floor(Date.now() - file.last_saved)/500);
+    file.experience += Math.floor(Date.now() - file.last_saved);
     file.last_saved = Date.now();
     
     //construct html for all the fields. when fields added / removed, this is re called
     construct_html();
     function construct_html() {
       while (document.getElementById("field").firstChild) document.getElementById("field").firstChild.remove();
-      for (plot of file.field) {
-        construct_plot_html(plot);
+      for (let plot_number = 0; plot_number < file.field.length; plot_number++) {
+        construct_plot_html(plot_number);
       }
+      for (element of document.getElementById("field").querySelectorAll("table"))
+        element.style.animation = "0.5s table_enter";
     }
     
     let z_counter = 0; //ever increasing, highest z count
     for (plot of file.field) z_counter = Math.max(z_counter, plot.z);
     function z_count() {z_counter++; return z_counter;}
     
-    function construct_plot_html(plot) {
+    function construct_plot_html(plot_number) {
+      let plot = file.field[plot_number];
       if (plot == yoinked_plot) return;
       if (plot.table_element) try{plot.table_element.remove()}catch(e){};
       let table = document.createElement("table");
@@ -405,32 +614,58 @@
       grabber_tr.appendChild(grabber_th);
       grabber_th.onmousedown = function(event) {
         for (plot of file.field) if (plot.table_element == table) {
-          yoinked_plot = plot;
-          yoinked_plot.z = z_count();
-          yoinked_plot.table_element.style.zIndex = yoinked_plot.z;
-          yoinked_plot.table_element.setAttribute("dragging", "true");
-          if (dropdown_open) {
-            close_dropdown();
+          //plot is our plot
+          if (false && event.altKey && event.shiftKey) {
+            file.field = file.field.filter((a)=>(a!=plot));
+            construct_html();
+          } else {
+            yoinked_plot = plot;
+            yoinked_plot.z = z_count();
+            yoinked_plot.table_element.style.zIndex = yoinked_plot.z;
+            yoinked_plot.table_element.setAttribute("dragging", "true");
+            if (dropdown_open) {
+              close_dropdown();
+            }
           }
         }
         yoinked_origin = [event.pageX, event.pageY];
       }
-      for (row of plot.cells) {
+      for (let row_number = 0; row_number < plot.cells.length; row_number++) {
+        let row = plot.cells[row_number];
         let tr = document.createElement("tr");
-        for (cell of row) {
+        for (let column_number = 0; column_number < row.length; column_number++) {
+          let cell = row[column_number];
           let td = document.createElement("td");
           tr.appendChild(td);
-          if (cell == null) continue;
+          td.setAttribute("plot_number", plot_number);
+          td.setAttribute("row_number", row_number);
+          td.setAttribute("column_number", column_number);
+          if (cell == null) {
+            td.innerText = "　";
+            td.onmousedown = function(event) { //click on empty cell
+              if (!file.holding) return;
+              let plot_number = parseInt(this.getAttribute("plot_number")); //this is so silly. i hate that js callbacks cant remember their variable values
+              let row_number = parseInt(this.getAttribute("row_number"));
+              let column_number = parseInt(this.getAttribute("column_number"));
+              let replenished = file.holding.display;
+              ungrab_cell(plot_number, row_number, column_number);
+              if (event.altKey) grab_from_inventory(replenished);
+            }
+            continue;
+          }
           cell.td_element = td;
           td.innerText = cell.display;
           update_action_indicator(cell);
           td.onmousedown = function(event) {
-            for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) if (cell.td_element == this) {
-              if (event.button == 0)
-              act_on_cell(plot, cell);
-              else
-              ask_act_on_cell(plot, cell);
-            }
+            let plot_number = parseInt(this.getAttribute("plot_number")); //this is so silly. i hate that js callbacks cant remember their variable values
+            let row_number = parseInt(this.getAttribute("row_number"));
+            let column_number = parseInt(this.getAttribute("column_number"));
+            if (event.shiftKey)
+            grab_cell(plot_number, row_number, column_number, null, event.altKey);
+            else if (event.button == 0 && !file.holding)
+            act_on_cell(plot_number, row_number, column_number);
+            else if (event.button == 2 || (event.button == 0 && file.holding))
+            ask_act_on_cell(plot_number, row_number, column_number);
           }
           td.setAttribute("oncontextmenu", "return false;"); //people online call this immoral but i want to stop right clicking from doing that
         }
@@ -493,41 +728,91 @@
       for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) {
         update_action_indicator(cell);
       }
-    }, 100);
+    }, 200);
     function update_action_indicator(cell) {
       cell.td_element.setAttribute("can_action", (Date.now() - cell.next_ready > 0) && actions[cell.display].length > 0);
-      if (["🌾","🌽","🎃"].includes(cell.display)) cell.td_element.innerText = (Date.now() - cell.next_ready > 0) ? cell.display : "🌱";
+      if (["🌾","🌽","🎃","🍅"].includes(cell.display)) cell.td_element.innerText = (Date.now() - cell.next_ready > 0) ? cell.display : "🌱";
     }
     
     //for every hour, do 7200 iterations of sim. max 172800 iterations (= 48 hours)
     setInterval(function(){
-      for (plot of file.field) /*if (yoinked_plot != plot)*/ do_simulation_on_plot(plot, 1);
+      file.experience += 500;
+      for (let plot_number = 0; plot_number < file.field.length; plot_number++)
+        do_simulation_on_plot(plot_number, 1);
     }, 500); //2 steps per second
     
+    //settings stuff on load
     document.querySelector("#input_bg").value = file.bg;
     document.body.style.backgroundColor = file.bg;
     document.querySelector("#input_title").value = file.title;
     document.querySelector("title").innerText = file.title ? file.title : '-';
     
+    //determine market on load
+    let conversion_factor = 60000; //number of milliseconds in one coin
+    let market = [ [], [], [], [], [], [], []];
+    for (m of market) m.push({object:"🏵",cost:10});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌺","🌹","🌻","🌼","🪻","🌸","🌷"][m], cost: 10});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌷","🌺","🌹","🌻","🌼","🪻","🌸"][m], cost: 15});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌸","🌷","🌺","🌹","🌻","🌼","🪻"][m], cost: 20});
+    for (m of market) m.push({object:"🌳",cost:60});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌵","🍄","🌴","🪨","🌵","🍄","🌴"][m], cost: 60});
+    for (m of market) m.push({object:"🍅",cost:10});
+    for (m of market) m.push({object:"🌾",cost:10});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🥬","🫑","🍓","🥦","🥔","🧅","🥕"][m], cost: 15});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🥕","🥬","🫑","🍓","🥦","🥔","🧅"][m], cost: 20});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🍈","🍆","🍍","🍠","🌽","🎃","🥒"][m], cost: 30});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🐏","🐑","🐕","🐏","🐑","🐕","🐏"][m], cost: 100});
+    document.querySelector("footer").onmouseenter = visually_update_market;
+    function visually_update_market() {
+      while (document.querySelector("footer").firstChild) document.querySelector("footer").firstChild.remove();
+      let b = document.createElement("b");
+      b.innerText = Math.floor(file.experience/conversion_factor) + "🪙";
+      document.querySelector("footer").appendChild(b);
+      for (trade of market[new Date().getDay()]/*.sort((a,b)=>(a.cost>b.cost?1:-1))*/) {
+        let div = document.createElement("div");
+        div.setAttribute("cost", trade.cost);
+        if (file.experience/conversion_factor<trade.cost) div.setAttribute("disabled", "true");
+        let a = document.createElement("a");
+        div.appendChild(a);
+        a.innerText = trade.object;
+        let span = document.createElement("span");
+        div.appendChild(span);
+        span.innerText = trade.cost + "🪙";
+        document.querySelector("footer").appendChild(div);
+        div.onclick = function() {
+          if (this.getAttribute("disabled")) return;
+          let cost = parseInt(this.getAttribute("cost"));
+          file.experience -= cost*conversion_factor;
+          add_to_inventory(a.innerText, 1);
+          make_action_particle("🪙", a);
+          visually_update_market();
+        }
+      }
+    }
+    
+    
     //update each plot on file.field N number of times, and if changes made, construct plot html
-    function do_simulation_on_plot(plot, n) {
-      if (n > 345600) n = 345600;
+    //if a given event has chance(x) of happening, it will on average take 0.01389/x hours
+    function do_simulation_on_plot(plot_number, n) {
+      let plot = file.field[plot_number];
+      if (n > 172800) n = 172800;
       let previous_plot = JSON.stringify(plot);
       let this_plot_contains_dropdowned = (dropdown_open!=null) && plot.table_element.contains(dropdown_open.td_element);
       for (let iterations = 0; iterations < n; iterations++) {
         //get all (x,y) coords in RANDOM ORDER so theres no left-wandering bias!
         let pairs = [];
         for (let y = 0; y < plot.cells.length; y++) for (let x = 0; x < plot.cells[y].length; x++) pairs.push([x,y]);
-        pairs.sort((a,b)=>chance(50)?1:-1);
+        shuffle(pairs);
         for (pair of pairs) {
-          let x = pair[0]; let y = pair[1]
+          let x = pair[0]; let y = pair[1];
           if (!plot.cells[y][x]) continue;
           //plot.cells[y][x] is a PlotCell
-          let this_cell = plot.cells[y][x]
+          let this_cell = plot.cells[y][x];
           //if animal, wander around maybe
+          let offsets = [[-1,0],[1,0],[0,-1],[0,1]];
+          shuffle(offsets);
           determine_what_to_do:
-          if ((["🐑"].includes(this_cell.display) && chance(4)) || (["🐕"].includes(this_cell.display)&&chance(30))) { //wander behavior
-            let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+          if ((["🐑","🐏"].includes(this_cell.display) && chance(4)) || (["🐕"].includes(this_cell.display)&&chance(30))) { //wander+eat behavior
             for (offset of offsets) try {
               if (y+offset[0] < 0) continue;
               if (x+offset[1] < 0) continue;
@@ -536,59 +821,66 @@
                 plot.cells[y+offset[0]][x+offset[1]] = this_cell;
                 plot.cells[y][x] = null;
                 break determine_what_to_do; //break outside offsets loop.
-              } else if (neighbor.display == "🌾") {
+              } else if (["🌾","🌿"].includes(neighbor.display)) {
                 plot.cells[y+offset[0]][x+offset[1]] = null;
                 break determine_what_to_do;
               }
             } catch(e) {}
-          } else if (["🌷","🌹","🌸","🌺","🌼","🌻","🏵"].includes(this_cell.display) && chance(0.0001)) { //flowers spread
-            let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+          } else if (["🌴","🌳","🍄"].includes(this_cell.display) && chance(0.009)) { //drop behavior
             for (offset of offsets) try {
               if (y+offset[0] < 0) continue;
               if (x+offset[1] < 0) continue;
               let neighbor = plot.cells[y+offset[0]][x+offset[1]];
               if (neighbor === null) {
-                plot.cells[y+offset[0]][x+offset[1]] = JSON.parse(JSON.stringify(this_cell));
-              }
-            } catch(e) {}
-          } else if (this_cell.display == "🌴" && chance(1)) { //
-            let offsets = [,[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
-            for (offset of offsets) try {
-              if (y+offset[0] < 0) continue;
-              if (x+offset[1] < 0) continue;
-              let neighbor = plot.cells[y+offset[0]][x+offset[1]];
-              if (neighbor === null) {
-                plot.cells[y+offset[0]][x+offset[1]] = new_cell("🥥");
+                plot.cells[y+offset[0]][x+offset[1]] = new_cell({"🌴":"🥥","🌳":"🌿","🍄":"🍄"}[this_cell.display]);
                 break determine_what_to_do; //break outside offsets loop.
               }
             } catch(e) {}
-            
+          } else if (["🌰"].includes(this_cell.display) && chance(0.007)) { //become behavior
+            plot.cells[y][x] = new_cell({"🌰":"🌳"}[this_cell.display]);
+          }
+        }
+        if (chance(0.00005)) { //once in blue moon
+          for (pair of pairs) {
+            let x = pair[0]; let y = pair[1];
+            if (plot.cells[y][x] == null) {
+              plot.cells[y][x] = new_cell("🍀");
+              break;
+            }
           }
         }
       }
       if (previous_plot != JSON.stringify(plot)) {
-        construct_plot_html(plot);
+        construct_plot_html(plot_number);
         if (this_plot_contains_dropdowned) close_dropdown();
       }
     }
     
     let preffered_actions = {}; //users pick what actions
-    function act_on_cell(plot, cell, aside) {
+    function act_on_cell(plot_number, row_number, column_number) {
+      let plot = file.field[plot_number];
+      let cell = plot.cells[row_number][column_number];
       if (!cell) return;
       if (cell.next_ready > Date.now()) return;
       let these_actions = actions[cell.display];
       let action_number;
-      if (these_actions.length <= 1) {
+      if (these_actions.length == 0) {
+        return;
+      } else if (these_actions.length == 1) {
         action_number = 0;
       } else if (preffered_actions[cell.display] != undefined) { //several actions, but one is preffered
         action_number = preffered_actions[cell.display];
       } else { //we just need to ask you
-        ask_act_on_cell(plot, cell);
+        ask_act_on_cell(plot_number, row_number, column_number);
         return;
       }
       if (dropdown_open) close_dropdown();
       let this_action = these_actions[action_number];
       if (!these_actions[action_number]) return;
+      for (resource of Object.keys(this_action.gain)) {
+        let amt = this_action.gain[resource];
+        if (amt < 0) if (!inventory_has(resource, amt)) return;
+      }
       //carry through with action
       cell.next_ready = Date.now() + this_action.cooldown;
       special_actions:
@@ -598,31 +890,46 @@
         }
       } else if (this_action.special == "spread") {
         for (let y = 0; y < plot.cells.length; y++) for (let x = 0; x < plot.cells[y].length; x++) if (plot.cells[y][x] == cell) {
-          let offsets = [[-1,0],[1,0],[0,-1],[0,1]].sort((a,b)=>chance(50));
+          let offsets = [[-1,0],[1,0],[0,-1],[0,1]];
+          shuffle(offsets);
           for (offset of offsets) try {
             if (y+offset[0] < 0) continue;
             if (x+offset[1] < 0) continue;
             let neighbor = plot.cells[y+offset[0]][x+offset[1]];
             if (neighbor === null) {
-              plot.cells[y+offset[0]][x+offset[1]] = JSON.parse(JSON.stringify(cell));
+              plot.cells[y+offset[0]][x+offset[1]] = new_cell(this_action.special_arg, true);
+              plot.cells[y+offset[0]][x+offset[1]]
               break special_actions;
             }
           } catch(e) {}
         }
       }
+      //add to inventory
+      for (resource of Object.keys(this_action.gain)) {
+        let amt = this_action.gain[resource];
+        if (amt > 0) add_to_inventory(resource, amt);
+      }
+      make_action_particle(this_action.display, cell.td_element);
+      construct_plot_html(plot_number);
+    }
+    function make_action_particle(emoji, td_element) {
       let action_particle_element = document.createElement("i");
-      action_particle_element.innerText = this_action.display;
-      action_particle_element.style.left = cell.td_element.getBoundingClientRect().left+6+Math.random()*12 + "px";
-      action_particle_element.style.top = cell.td_element.getBoundingClientRect().top + "px";
+      action_particle_element.innerText = emoji;
+      action_particle_element.style.left = td_element.getBoundingClientRect().left+6+Math.random()*12 + "px";
+      action_particle_element.style.top = td_element.getBoundingClientRect().top + "px";
       document.body.appendChild(action_particle_element);
       setTimeout(function(action_particle_element){
         action_particle_element.remove();
       }, 1000, action_particle_element);
-      construct_plot_html(plot);
     }
     
-    function ask_act_on_cell(plot, cell) {
-      if (dropdown_open) return;
+    function ask_act_on_cell(plot_number, row_number, column_number) {
+      let plot = file.field[plot_number];
+      let cell = plot.cells[row_number][column_number];
+      if (actions[cell.display].length == 0) return;
+      if (!cell) return;
+      if (cell.next_ready > Date.now()) return;
+      if (dropdown_open) close_dropdown();
       cell.td_element.setAttribute("dropdowned", "true");
       //there are several options
       let rectangle = cell.td_element.getBoundingClientRect();
@@ -636,13 +943,14 @@
         a.innerText = actions[cell.display][i].display;
         a.onclick = function() {
           preffered_actions[cell.display] = i;
-          act_on_cell(plot, cell, aside);
+          act_on_cell(plot_number, row_number, column_number);
           close_dropdown();
         }
         aside.appendChild(a);
       }
       document.body.appendChild(aside);
     }
+    
     function close_dropdown() {
       if (!dropdown_open) return;
       dropdown_open.td_element.setAttribute("dropdowned", "false");
@@ -654,7 +962,127 @@
       }, 240);
     }
     
+    function grab_cell(plot_number, row_number, column_number, cell = null, immediately_destroy = false) {
+      if (file.holding) return;
+      if (immediately_destroy) {
+        let ideal_particle = "🗑";
+        if (Date.now() >= file.field[plot_number].cells[row_number][column_number].next_ready) //only show collection if ready
+        for (action of actions[file.field[plot_number].cells[row_number][column_number].display]) {
+          if (action.special == "delete") {
+            ideal_particle = action.display
+            break;
+          }
+        }
+        make_action_particle(ideal_particle, file.field[plot_number].cells[row_number][column_number].td_element);
+      }
+      if (!cell) {
+        cell = file.field[plot_number].cells[row_number][column_number];
+        file.field[plot_number].cells[row_number][column_number] = null;
+      }
+      construct_plot_html(plot_number);
+      file.holding = cell;
+      if (immediately_destroy) {
+        ungrab_cell(-1, -1, -1, false);
+        return;
+      }
+      let header = document.createElement("header");
+      header.innerText = file.holding.display;
+      document.body.appendChild(header);
+      let button = document.createElement("a");
+      button.innerText = "🗑";
+      if (Date.now() >= file.holding.next_ready)
+      for (action of actions[file.holding.display]) {
+        if (action.special == "delete") {
+          button.innerText = action.display;
+          break;
+        }
+      }
+      button.onclick = function() {
+        ungrab_cell(-1, -1, -1, false);
+      }
+      header.appendChild(button);
+      close_dropdown();
+    }
+    function ungrab_cell(plot_number, row_number, column_number, actually_put = true) {
+      if (actually_put) {
+        file.field[plot_number].cells[row_number][column_number] = file.holding; //put it there
+        construct_plot_html(plot_number);
+      } else {
+        //this is being thrown away... if it has delete action, add to inventory <3
+        if (Date.now() >= file.holding.next_ready) for (action of actions[file.holding.display]) if (action.special == "delete") {
+          for (resource of Object.keys(action.gain)) if (action.gain[resource] > 0) add_to_inventory(resource, action.gain[resource]);
+          break; //only do one delete
+        }
+      }
+      file.holding = null;
+      close_dropdown();
+      try {
+        document.querySelector("header").style.animation = "0.5s holding_exit";
+        setTimeout(function(){
+          document.querySelector("header").remove();
+        }, 490);
+      } catch(e) {}
+    }
+    //on start, if grabbing something, place it and pick it up lol
+    load_grab_check();
+    function load_grab_check() {
+      if (!file.holding) return;
+      for (let plot_number = 0; plot_number < file.field.length; plot_number++) {
+        for (let row_number = 0; row_number < file.field[plot_number].cells.length; row_number++) {
+          for (let column_number = 0; column_number < file.field[plot_number].cells[row_number].length; column_number++) {
+            if (file.field[plot_number].cells[row_number][column_number] != null) continue;
+            ungrab_cell(plot_number, row_number, column_number);
+            grab_cell(plot_number, row_number, column_number);
+            return;
+          }
+        }
+      }
+    }
+    
+    function grab_from_inventory(emoji) { //if possible, take a resource from the inventory and put it in holding
+      if (file.inventory[emoji] == undefined) return;
+      if (file.inventory[emoji] == 0) return;
+      if (actions[emoji] == undefined) return;
+      if (file.holding) return;
+      file.inventory[emoji]--;
+      grab_cell(-1, -1, -1, new_cell(emoji, true));
+      visually_update_inventory();
+    }
+    function add_to_inventory(emoji, count) {
+      if (file.inventory[emoji] == undefined) file.inventory[emoji] = 0;
+      file.inventory[emoji] += count;
+      visually_update_inventory();
+    }
+    function inventory_has(emoji, count) {
+      if (file.inventory[emoji] == undefined) return false;
+      return file.inventory[emoji] >= count;
+    }
+    visually_update_inventory();
+    function visually_update_inventory() {
+      while (document.querySelector("nav").firstChild) document.querySelector("nav").firstChild.remove();
+      let how_many = 0;
+      for (entry of Object.keys(file.inventory).sort()) {
+        if (file.inventory[entry] == 0) continue;
+        how_many++;
+        //for (let i = 0; i < file.inventory[entry]; i++) {
+        let a = document.createElement("a");
+        a.innerText = entry;
+        if (actions[entry]) a.setAttribute("onclick", "grab_from_inventory('"+entry+"')"); //using this instead of events because i cant take it anymore
+        document.querySelector("nav").appendChild(a);
+        //}
+        let span = document.createElement("span");
+        span.innerText = file.inventory[entry]>1000000000?"":file.inventory[entry];
+        document.querySelector("nav").appendChild(span);
+      }
+      if (how_many == 0) {
+        let span = document.createElement("span");
+        span.innerText = "(empty)";
+        document.querySelector("nav").appendChild(span);
+      }
+    }
+    
     function chance(percent) {return Math.random() < percent*0.01;}
+    function shuffle(t){let f=t.length,n;for(;0!=f;)n=Math.floor(Math.random()*f),f--,[t[f],t[n]]=[t[n],t[f]];return t}
     
     function human_readable_time(ms) {
       if (ms < 60*1000) return Math.floor(ms/1000)+"s";
@@ -663,8 +1091,6 @@
       if (ms < Number.POSITIVE_INFINITY) return Math.floor(ms/1000/60/60/24)+"d";
       return "∞";
     }
-    
-    console.log("done loadin");
   </script>
 </body>
 </html>
