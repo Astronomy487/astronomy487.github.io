@@ -37,6 +37,7 @@
       width: 100%;
       border-collapse: collapse;
       border: solid 1px black;
+      margin: 1rem 0;
     }
     table th {
       background-color: #ddd;
@@ -45,8 +46,13 @@
     table th, table td {
       padding: 0.5rem;
     }
-    table tr:nth-child(2n+1) {
+    table tr:nth-child(2n) {
       background-color: #eee;
+    }
+    table.emoji_index td:first-child {
+      font-size: 3rem;
+      padding: 0.5rem;
+      width: 15rem;
     }
     
     h1 {
@@ -55,10 +61,8 @@
       margin: 0;
     }
     
-    h2 {
-      border-top: solid 1px black;
-      padding-top: 1rem;
-      margin-top: 4rem;
+    h2 {;
+      margin-top: 6rem;
     }
     
     b {
@@ -82,25 +86,19 @@
       font-family: monospace;
       font-size: 1rem;
     }
-    
-    table {
-      margin: 1rem 0;
-    }
-    
-    table.emoji_index td:first-child {
-      font-size: 3rem;
-      padding: 0.125rem 0.5rem;
-    }
   </style>
 </head>
 <body>
   <article>
     <h1>🏵EmojiGarden</h1>
-    <p style="margin: 2rem 0; text-align: center;">demo version ! contains bugs !</p>
+    <p style="margin: 2rem 0; text-align: center;">demo version ! contains bugs ! name undecided !</p>
     <p><a href="http://astronomy487.github.io/projects/emojigarden/">🏵EmojiGarden</a> is a simulator sandbox game where you can construct your own virtual garden using emojified cellular automata. you can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>
-    <p>it is inspired by <a href="https://hayday.com">hay day</a>, <a href="https://ncase.me/sim">ncase's emoji simulator</a>.</p>
+    <p>it is inspired by <a href="https://hayday.com">hay day</a>, <a href="https://ncase.me/sim">ncase's emoji simulator</a>, and <a href="https://twitter.com/emoji_garden?lang=en">@emoji_garden on twitter</a>.</p>
+    <p>my design goals include cuteness, minimalism, and positive vibes. i want the game to be playable without looking at this page (ಠ_ಠ) and i want there to be no non-numeral non-user text.</p>
     <h2>how to play</h2>
     <p>your garden consists of fields, which you can drag around like windows using their grabber.</p>
+    <p>you can click a cell with an object to act on it. if a cell type has several actions, a dropdown will appear (also accessible by right click). actions include spreading a tile like a flower, dropping other tiles like a tree with acorns, harvesting a crop like a tomato, or removing an object altogether. all objects have at least one remove action.</p>
+    <p>you can shift click an object to temporarily carry it, and click to set it somewhere new. this is not equivalent to storing into an inventory because of logistics with the cooldown. while held, an object can be deleted (harvested for resources if cooldown allows, otherwise just deleted). alt+shift+click will quickly perform this deletion process too.</p>
     <p>🏵EmojiGarden does not use cookies, and i (astro) (the guy who made this) can't see any of your data. your file is saved using <code>localStorage</code>, meaning your browser remembers a small text file that only 🏵EmojiGarden can access.</p>
     <h2>input chart</h2>
     <table>
@@ -114,6 +112,14 @@
     <h2>index of all tiles</h2>
     <p>here is an index of all tiles (i.e. objects that can exist in the world), sorted roughly by behavior.</p>
     <table class="emoji_index">
+      <tr><td>🐑🐏🐕</td><td>Animal: wanders and eats 🌾, can be put into 📦</td></tr>
+      <tr><td>🏵🌷🌹🌸🌺🌼🌻🪻</td><td>Flower: can be spread with a 1-minute cooldown, costs 10~20🪙 to acquire on a rotating schedule</td></tr>
+      <tr><td>🌾🍅</td><td>Crop I: grows in 5 minutes, costs 10🪙 to acquire</td></tr>
+      <tr><td>🥕🥬🫑🍓🥦🥔🧅</td><td>Crop II: grows in 10 minutes, costs 15~20🪙 to acquire on a rotating schedule</td></tr>
+      <tr><td>🍈🍆🍍🍠🌽🎃🥒</td><td>Crop III: grows in 15 minutes, costs 30🪙 to acquire on a rotating schedule</td></tr>
+      <tr><td>🌴🥥🌳🌰🌿🪵🪨🍀🌵🍄</td><td>other</td></tr>
+    </table>
+    <!--<table class="emoji_index">
       <tr><th colspan="3">Crops</th></tr>
       <tr><td>🌾</td><td>Rice/Wheat</td><td>takes 1 minute</td></tr>
       <tr><td>🌽</td><td>Corn</td><td>takes 2 minutes</td></tr>
@@ -151,7 +157,7 @@
       <tr><td>🍀</td><td>Lucky clover</td><td>appears on extremely rare occasions</td></tr>
       <tr><td>🌵</td><td>Cactus</td><td></td></tr>
       <tr><td>🍄</td><td>Mushroom</td><td>rapidly reproduces and spreads</td></tr>
-    </table>
+    </table>-->
   </article>
   <script>
     let color;

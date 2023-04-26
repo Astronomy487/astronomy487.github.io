@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+    	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+        
+    	body {
+        	margin: 0;
+            background-color: #222;
+            color: white;
+        }
+        
+        * {font-family: 'Inter', sans-serif;}
+        
+    	nav {
+        	display: block;
+            position: fixed;
+            width: 15vw;
+            height: 100vh;
+            background-color: #333;
+            box-shadow: 0 0 0.5rem black;
+            padding: 1rem;
+            margin-top: -2rem;
+            overflow-y: scroll;
+        }
+        
+        main {
+        	display: block;
+            position: fixed;
+            width: calc(100vw - 14rem);
+            right: 0;
+            height: 100vh;
+            overflow: scroll;
+        }
+        
+        nav input, nav select, nav button {
+        	width: calc(15vw - 2rem);
+            margin: 0;
+            background-color: #444;
+            padding: 0.25rem;
+            border: solid 0.125rem #444;
+            color: inherit;
+            font-size: 1rem;
+        }
+        
+        nav input:focus, nav select:focus, nav button:hover {
+            border: solid 0.125rem #555;
+            outline: none;
+        }
+        
+        nav button {
+        	width: calc(15vw - 1.25rem);
+            margin-top: 2rem;
+            height: 6rem;
+            cursor: pointer;
+        }
+        
+        nav select {
+        	width: 11.75rem;
+        }
+        
+        nav p {
+        	margin-bottom: 0.25rem;
+        }
+        
+        nav p a {
+          color: inherit;
+          text-decoration: underline;
+        }
+        
+        nav h2 {
+        	text-transform: uppercase;
+            text-align: center;
+            margin: 0.5rem 0;
+            margin-top: 3rem;
+            font-size: 1rem;
+        }
+        
+        p span { /* used for information hovers */
+        	user-select: none;
+            display: none;
+        }
+        
+        main table {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.125rem;
+            position: absolute;
+            border-collapse: collapse;
+            max-width: calc(100vw - 16rem);
+            overflow-x: scroll;
+        }
+        
+        main table th, main table td {
+        	padding: 0.5rem;
+            background-color: #333;
+        }
+        
+        main table th {
+        	background-color: blue;
+        }
+        
+        main table td:first-child {
+        	background-color: inherit;
+        }
+        
+        ul li {
+        	margin-left: -1rem;
+        }
+        
+      	th.chord0 {background-color: #DA4C4C;}
+      	th.chord7 {background-color: #E89841;}
+      	th.chord2 {background-color: #EFCF30;}
+      	th.chord9 {background-color: #B2DD3C;}
+      	th.chord4 {background-color: #30DC29;}
+      	th.chord11 {background-color: #41D9A8;}
+      	th.chord6 {background-color: #48E0E0;}
+      	th.chord1 {background-color: #32ABDC;}
+      	th.chord8 {background-color: #4D58D0;}
+      	th.chord3 {background-color: #9E4DD4;}
+      	th.chord10 {background-color: #D052CC;}
+      	th.chord5 {background-color: #D94F96;}
+    </style>
+</head>
+<body>
+	<nav>
+    	<h2>Note input</h2>
+    	<p>Chord progression</p>
+    	<input placeholder="Fmaj7 E7 Am7" id="input_progression" value="Fmaj7 E7 Am7" spellcheck="false">
+    	<p>Upper melody (optional)</p>
+    	<input placeholder="E5 D5 C5" id="input_melody" value="" spellcheck="false">
+        <p>Semitone offset</p>
+        <!--<input type="range" min="-12" max="12" value="0">-->
+        <input type="number" min="-12" max="12" value="0" id="input_offset">
+        <p>Number of voices</p>
+        <input type="number" min="2" max="5" value="4" id="input_voices_count">
+    	<button onclick="perform();">Do it!</button>
+    	<h2>Advanced</h2>
+        <p>Temperature <span title="How risky the program is on each step.&#10;NOT how risky the evaluated style is!.">🛈</span></p>
+        <input type="number" min="1" max="6" value="3" id="input_temperature">
+        <p>Trials <span title="How many attempts to make.">🛈</span></p>
+        <input type="number" min="1" max="20" value="10" id="input_trials">
+        <p>Show sharps or flats?</p>
+        <select id="input_flats">
+        	<option value="false">Sharps</option>
+            <option value="true">Flats</option>
+        </select>
+        <h2>About</h2>
+        <p>This is a tool that can voice lead a chord progression, i.e. render a sequence of chords into a sequence of notes in each voice.</p>
+        <p>It follows these goals:</p>
+        <ul>
+        	<li>Minimal distance between frames</li>
+        	<li>Represent all members of the chord</li>
+            <li>Avoid parallel octaves and fifths</li>
+        	<li>Make sure your bass note is the bass note</li>
+            <li>Avoid voices being out of order</li>
+        </ul>
+        <p>Can't think of good chords? Check out my <a href="http://astronomy487.github.io/projects/progression-o-tron/">PROGRESSION-O-TRON</a>, a related tool that generates chord progressions in the style of a library of music. Some of its code was reused for this.</p>
+    </nav>
+    <main>
+    	<table><tr><td>Output will appear here</td></tr></table>
+    </main>
+    <script>
+
+
+//SIDEBAR CONTENTS
+//Note input
+let provided_chords = "Fmaj7 E7 Am7"; //a string
+let provided_melody = "E D C"; //maybe also do provided_bass
+let total_offset = 0; //0-11
+let using_flats = false; //just for display
+let voices_count = 4; //ideal ranges scaled from here
+
+//Advanced Settings
+let temperature = 3; //1-5
+let attempts = 20; //1-50
+//insert technical explanation of how it works (frame by frame, try chord members, evaluate, pick one of N best, continue, making N attempts)
+//see also progression-o-tron, this project uses some of the code there, namely the tools to analyze members of chord string like "Fmaj7"
+//also note known bugs (sometimes voices cross another and get out of order) (weights currently imbalanced, would rather have non-root(or incorrectly inverted) bass than omit a fifth or something)
+
+//then also some input scheme for number of voices and their ideal ranges
+// SOPRANO : 24-48 / C4 - C6
+// ALTO    : X - X
+
+//THE OUTPUT ON THE RIGHT WILL BE IN A TABLE LIKE THIS
+/*
+theor
+etical
+chord   +-----+-----+-----+
+members |F,A..|A,G..|D,F..|
+        +-----+-----+-----+
+Chord   |Fmaj7| Am7 | Dm7 | <-- click on this to play a whole chord at once
+        +-----+-----+-----+
+Soprano | C5  | E5  | F5  | <-- click on these to play one note at a time
+        +-----+-----+-----+
+Alto    | C5  | E5  | F5  |
+*/
+
+
+let note_names = "C C# D D# E F F# G G# A A# B".split(" ");
+//note_names = "C Db D Eb E F Gb G Ab A Bb B".split(" ");
+
+function note_name(note) {
+  //return note;
+  let octave = Math.floor(2+note/12);
+  //return octave;
+  while (note<0) note+=12;
+  if (using_flats) return " C/Db/ D/Eb/ E/ F/Gb/ G/Ab/ A/Bb/ B".split("/")[note%12] + octave;
+  return " C/C#/ D/D#/ E/ F/F#/ G/G#/ A/A#/ B".split("/")[note%12] + octave;
+}
+
+function copy(x) {
+  return JSON.parse(JSON.stringify(x));
+}
+
+function print_voices(voices) {
+  //console.log(voices);
+  for (v of voices) {
+    let txt = [];
+    let first_skipped = false;
+    txt.push(v.label);
+    for (n of v.notes) {
+      if (!first_skipped) {first_skipped = true; continue;}
+      txt.push(note_name(n));
+    }
+    console.log(txt.join(" "));
+  }
+}
+
+//pretend return type voice
+function new_voice(l, mi, ma, s) {
+  return {
+    label: l,
+    min: mi,
+    max: ma,
+    notes: s
+  };
+}
+
+function in_range(v, note) {
+  return note >= v.min && note <= v.max;
+}
+
+function how_out_of_range(v, note) {
+  let bot_distance = (v.min+9)-note;
+  let top_distance = note-(v.max-9);
+  let danger_amount = 0;
+  if (bot_distance)
+    danger_amount += bot_distance;
+  if (top_distance)
+    danger_amount += top_distance;
+  return danger_amount * danger_amount;
+}
+
+function generate_voice_leading(voices, chords) {
+  for (c of chords)
+    for (let i = 0; i < c.length; i++)
+      c[i] %= 12; //make chord notes down within octave
+  //voices = [v, v]
+  //chords = [[0,2,4], [4,6,8]]
+  voices = copy(voices);
+  let global_cost = 0;
+  for (let frame = 1; frame < chords.length; frame++) {
+    //if this frame totally defined, skip
+    {
+      let all_defined = true;
+      for (v of voices)
+        if (v.length <= frame) 
+          all_defined = false;
+      //if (all_defined) continue;
+    }
+    //make all possible next chords (come from notes in chord). from bottom voice to top voice. lowkey recursive in this aspect
+    let possibles = [[]];
+    for (v of voices) {
+      //alr defined, required in all possibles
+      if (v.notes[frame] != undefined) {
+        for (p of possibles) p.push(v.notes[frame]);
+      } else {
+        //find all members of chords up+down from this note
+        let new_possibles = [];
+        for (each of possibles) {
+          let next_notes = []; //notes that voice v could go to after v.notes[frame-1]
+          for (member of chords[frame]) {
+            let m_hi = member-120;
+            let m_low = member+120;
+            while (m_low>v.notes[frame-1])
+              m_low -= 12;
+            while (m_hi<v.notes[frame-1])
+              m_hi += 12;
+            next_notes.push(m_hi);
+            next_notes.push(m_low);
+          }
+          for (n of next_notes) {
+            let x = copy(each);
+            x.push(n);
+            new_possibles.push(x);
+          }
+        }
+        possibles = new_possibles;
+      }
+    }
+    //possibles is a list of all ways this could go on
+    //lets make sure they are strictly decreasing
+    {
+    	let verified_possibles = [];
+        for (p of possibles) {
+        	let valid = true;
+            for (let i = 1; i < p.length; i++) {
+            	if (p[i] >= p[i-1]) valid = false;
+            }
+            if (valid) verified_possibles.push(p);
+        }
+        possibles = verified_possibles;
+    }
+    //judge the n possible motions. cost array
+    let prev_chord = [];
+    for (v of voices) prev_chord.push(v.notes[frame-1]);
+    let costs = [];
+    for (this_chord of possibles) {
+      //compare prev_chord to this_chord
+      let cost = 0;
+      //distances. smaller better
+      for (let v=0;v<voices.length;v++) {
+        let dist = this_chord[v] - prev_chord[v];
+        //console.log(this_chord, prev_chord);
+        cost += dist * dist;
+        if (dist == 0) cost -= 20;
+        if (dist == 1) cost -= 50;
+        if (dist == -1) cost -= 50;
+      }
+      //chord members
+      let member_counts = [];
+      for (member of chords[frame]) {
+        //find how many notes%12 match member
+        //console.log(member, this_chord);
+        let count = 0;
+        for (part of this_chord)
+          if (part%12 == member%12) count++;
+        if (count == 0) cost += 30000000;
+        //if (count && member%12 == chords[frame][0]%12)
+        //  cost += 30000000; //super bad if bass
+        //if (!member_counts.length) //if bottom of the provided chord
+        //  if (count > 1) cost += 20;
+        member_counts.push(count);
+      }
+      //punish if bass voice (this_chord[this_chord.length-1]) doesn't match bottom member (chords[frame][0])
+      if (this_chord[this_chord.length-1]%12 != chords[frame][0]%12) cost += 100000;
+      //punish out of range / unordered
+      for (let vi = 0; vi < voices.length; vi++) {
+        let v = voices[vi];
+        cost += 1 * how_out_of_range(v, this_chord[vi]);
+        //if (vi) if (this_chord[vi] - this_chord[vi-1]) cost += 500000;
+      }
+      //punish para moving octave/4th/5th
+      //for each pair of voices (a,b),
+      //find a-b interval on either frame
+      //if intervals same, and if motion is special number (non-0), punish
+      for (let vi = 0; vi < voices.length; vi++) {
+        for (vj = vi+1; vj < voices.length; vj++) {
+          //vj is always a lower voice
+          let prev_interval = prev_chord[vi] - prev_chord[vj];
+          let this_interval = this_chord[vi] - this_chord[vj];
+          let change_in_lower = this_chord[vj] - prev_chord[vj];
+          if (change_in_lower == 0) continue;
+          if (prev_interval != this_interval) continue;
+          change_in_lower %= 12;
+          //if change in lower is special motion, then theres parallel motion and thats bad
+          if (change_in_lower == 0) cost += 400;
+          if (change_in_lower == 5) cost += 200;
+          if (change_in_lower == 7) cost += 200;
+          if (change_in_lower == 4) cost += 10;
+          if (change_in_lower == 3) cost += 10;
+          if (change_in_lower == 8) cost += 10;
+          if (change_in_lower == 9) cost += 10;
+        }
+      }
+      costs.push(cost);
+    }
+    //compile costs and possibles, and pick a random from lowest #temperature costs
+    let futures = [];
+    for (let i = 0; i < possibles.length; i++)
+      futures[i] = {chord: possibles[i], cost: costs[i]};
+    futures.sort((a, b)=>(a.cost - b.cost));
+    let decision = Math.min(Math.floor(Math.random()*temperature), futures.length-1);
+    if (frame == chords.length - 1) decision = 0;
+    let pick = futures[decision].chord;
+    global_cost += futures[decision].cost;
+    for (let v = 0; v < voices.length; v++) {
+      voices[v].notes[frame] = pick[v];
+    }
+  }
+  return {voices: voices, global_cost: global_cost};
+}
+
+function perform() {
+  provided_chords =  document.getElementById("input_progression").value;
+  provided_melody =  document.getElementById("input_melody").value;
+  total_offset = parseInt(document.getElementById("input_offset").value);
+  using_flats = document.getElementById("input_flats").value == "true";
+  temperature = parseInt(document.getElementById("input_temperature").value);
+  trials = parseInt(document.getElementById("input_trials").value);
+  voices_count = parseInt(document.getElementById("input_voices_count").value);
+  document.querySelector("table").innerHTML = "<tr><td>running...</td></tr>";
+  setTimeout(function(){
+    try {
+      let music = run();
+      let html = "";
+      html += '<tr><td></td>';
+      for (b of provided_chords.trim().split(" ")) {
+        html += '<th class="chord'+clean_and_transpose(b,total_offset,true)+'">'+clean_and_transpose(b,total_offset)+'</th>';
+      }
+      html += '</tr>';
+      for (v of music) {
+      	html += '<tr>';
+        html += '<td>'+v.label+'</td>';
+      	for (let frame = 1; frame < v.notes.length; frame++) {
+          html += '<td>'+note_name(v.notes[frame])+'</td>';
+        }
+        html += '</tr>';
+      }
+      //html += '<tr><td colspan="'+provided_chords.trim().split(" ").length+'">'+JSON.stringify(music)+'</td></tr>'
+      document.querySelector("table").innerHTML = html;
+    } catch(e) {
+      document.querySelector("table").innerHTML = "<tr><td>failed</td></tr>";
+    }
+  },1);
+}
+
+let voice_names = [
+	[],
+    ["Soprano"],
+    ["Soprano", "Bass"],
+    ["Soprano", "Alto", "Bass"],
+    ["Soprano", "Alto", "Tenor", "Bass"],
+    ["Soprano", "Alto", "Tenor", "Baritone", "Bass"],
+    ["Soprano", "Mezzo", "Alto", "Tenor", "Baritone", "Bass"],
+]
+
+function run() {
+  let vox = []; //v[0] soprano, v[1] alto, ... initialized with just ideal notes
+  //bassest should start at 8, highest should start at 40
+  for (let vi = 0; vi < voices_count; vi++) {
+  	let t = vi/(voices_count - 1); //0-1
+    vox.push([40-t*32])
+  }
+  //document.body.innerHTML += JSON.stringify(vox);
+  let chords = [
+    [0], //null chord to start. this just initializes their positions!
+  ];
+  
+  for (ch of provided_chords.trim().split(" ")) {
+    let m = [];
+    for (member of notes_of_chord(ch)) {
+      m.push(note_names.indexOf(member));
+    }
+    chords.push(m);
+  }
+  
+  for (n of provided_melody.trim().toUpperCase().split(" ")) {
+    if (!n) continue;
+    //find octave
+    let octave = "";
+    while ("0123456789".includes(n.charAt(n.length-1))) {
+      octave += n.charAt(n.length-1);
+      n = n.substring(0, n.length-1);
+    }
+    if (!octave) octave = "5";
+    octave = parseInt(octave);
+    //find note
+    let accidental = 0;
+    while (n.endsWith("#")) {
+      n = n.substring(0, n.length-1);
+      accidental++;
+    }
+    while (n.endsWith("b")) {
+      n = n.substring(0, n.length-1);
+      accidental--;
+    }
+    n = (note_names.indexOf(n)+accidental+12)%12 + 12*octave - 24;
+    //document.querySelector("main").innerHTML += '<p>'+n+'</p>';
+    vox[0].push(n);
+    //vox[0] = [n];
+    //console.log(n);
+  }
+  
+  for (c of chords) for (let i = 0; i < c.length; i++) c[i] = (c[i]+120+total_offset%12);
+  for (c of vox) for (let i = 0; i < c.length; i++) c[i] += total_offset;
+
+  //for some weird reason, every note put into [vi] has been stringed and * 10ed...this is goofy and must stop.
+  /*for (v of vox) {
+  	for (let j =0; j < v.length; j++) {
+      v[j] = parseInt(v[j].substring(0, v[j].length-1));
+    }
+  }*/
+  
+  for (let vi = 0; vi < vox.length; vi++) {
+    vox[vi] = new_voice(voice_names[voices_count][vi], vi-8, vi+8, vox[vi]);
+  }
+  
+  let best_result = {voices: [], global_cost: Number.POSITIVE_INFINITY};
+  for (let i = 0; i < attempts; i++) {
+    console.log(Math.floor(100*i/attempts)+"%");
+    let result = generate_voice_leading(vox, chords);
+    if (result.global_cost < best_result.global_cost)
+      best_result = result;
+  }
+  console.log("\n\n");
+  return best_result.voices;
+  //console.log("$"+best_result.global_cost);
+}
+
+
+
+/*
+
+ E4 G#4  A4 G#4  G4  G4
+ A3 G#3  G3 F#3  F3  E3
+ F3  E3  E3 D#3  D3  D3
+ C3  B2  C3  B2 A#2 A#2
+ F2  E2  A2 G#2  G2  C2
+
+*/
+
+
+
+
+
+
+
+
+
+//FUNCTIONS FROM THE PROGRESSION-O-TRON PROJECT
+
+//returns array of chord members
+//assumed chord structure: root, primary quality, 7 9 11 13 info (assume upto unless add before) (can include # b before), inversion information
+function notes_of_chord(chord) {
+	chord = clean_and_transpose(chord);
+	let root_num = note_names.indexOf(chord.charAt(0));
+	if (root_num == -1) return [];
+	chord = chord.substring(1);
+	while (chord.charAt(0) == "#") {
+		root_num = (root_num+1)%12;
+		chord = chord.substring(1);
+	}
+	let quality = "";
+	for (q of "M m + *".split(" ")) if (chord.startsWith(q)) {
+		quality = q;
+		chord = chord.substring(q.length);
+	}
+	if (quality == "") quality = "%"; //special case for dominant
+	//let triad = [0, null, quality=="m"||quality=="*"?3:4, null, quality=="*"?6:quality==""];
+	let triad = []; //indexed weird! third is stored in [3], fifth is stored in [5]. this is javascript so we can do that
+	//bank of the note values for upper extensions. i.e. if the quality is Major, this is what 5th 7th 9th etc will look like
+	let upper = {
+		"M": [0, 2, 4, 5, 7, 9, 11],
+		"m": [0, 2, 3, 5, 7, 8, 10],
+		"*": [0, 2, 3, 4, 6, 8, 9],
+		"+": [0, 2, 4, 5, 8, 9, 11],
+		"%": [0, 2, 4, 5, 7, 9, 10]
+	}; //technically also stored lower. this is how things are generated up to fifth
+	chord = "/5/"+chord;
+	let iterations = 0;
+	while (chord.length > 0 && iterations < 10) {
+		iterations++;
+		//parse a Later Part of the chord (i.e. 7, add#11, /Gb)
+		while (chord.startsWith("/")) chord = chord.substring(1);
+		let add = chord.startsWith("add");
+		if (add) chord = chord.substring(3);
+		let sus = chord.startsWith("sus");
+		if (sus) chord = chord.substring(3);
+		let no = chord.startsWith("no");
+		if (no) chord = chord.substring(2);
+		let accidental_offset = 0;
+		while (chord.startsWith("#")) {
+			accidental_offset = (accidental_offset+1)%12;
+			chord = chord.substring(1);
+		}
+		while (chord.startsWith("b")) {
+			accidental_offset = (accidental_offset+11)%12;
+			chord = chord.substring(1);
+		}
+		while (chord.startsWith("*")) {
+			accidental_offset = (accidental_offset+10)%12;
+			chord = chord.substring(1);
+		}
+		while (chord.startsWith("+")) {
+			accidental_offset = (accidental_offset+2)%12;
+			chord = chord.substring(1);
+		}
+		if (chord.length == 0) continue;
+		let content = chord.charAt(0); chord = chord.substring(1); //take content from chord until we hit a new token for the chord
+		while (chord.length>0 && !chord.startsWith("add") && !chord.startsWith("sus") && !chord.startsWith("no") && !chord.startsWith("/") && !chord.startsWith("b") && !chord.startsWith("#") && !chord.startsWith("*") && !chord.startsWith("+")) { //SUUUUPER messy. this is just a token parser thing that stops whenever these tokens come up
+			content += chord.charAt(0);
+			chord = chord.substring(1);
+		}
+		if (sus) {
+			triad[3] = upper[quality][parseInt(content)-1];
+		} else if (no) {
+			delete triad[parseInt(content)];
+		} else if (note_names.includes(content.charAt(0))) {
+			//probably inversion presented
+			let inversion_num = note_names.indexOf(content.charAt(0));
+			content = content.substring(1);
+			//chord might possible still have # and b which we decided not to pick up... lets pick them up now
+			while (chord.charAt(0) == "#") {
+				inversion_num = (inversion_num+1)%12;
+				chord = chord.substring(1);
+			}
+			while (chord.charAt(0) == "b") {
+				inversion_num = (inversion_num-1==+11)%12;
+				chord = chord.substring(1);
+			}
+			triad[0] = inversion_num - root_num; //offset by root num so that it goes back up there
+			//console.log("inversion " + note_names[inversion_num%12]);
+		} else {
+			//integer presented. upper chord extension
+			content = parseInt(content);
+			if (content > 24) continue;
+			//console.log("upper " + content + " +"+accidental_offset);
+			//insert from below
+			if (!add) for (let i = 1; i < content; i += 2) {
+				if (triad[i] == undefined) {
+					triad[i] = upper[quality][(i-1)%7];
+				}
+			}
+			if (content == 5 && triad[5] != undefined && accidental_offset == 0) {
+				delete triad[3]; //special case: remove 3rd when told 5th 
+			}
+			triad[content] = upper[quality][(content-1)%7]+accidental_offset;
+		}
+		//console.log("left to parse: "+chord);
+	}
+	//triad now contains note numbers
+	let names = [];
+	for (el of triad) if (el != null) {
+		let n = note_names[(el+root_num)%12];
+		if (!names.includes(n)) names.push(n);
+	}
+	return names; //btw bass note is always first
+}
+
+//clean chords and transposes them. or maybe gets their root!
+function clean_and_transpose(chord, shift = 0, get_root = false) {
+	chord = chord.replaceAll("maj", "M");
+	chord = chord.replaceAll("min", "m");
+	chord = chord.replaceAll("-", "m");
+	chord = chord.replaceAll("aug", "+");
+	chord = chord.replaceAll("dim", "*");
+	chord = chord.replaceAll("dom", "7");
+	for (let i = 0; i < chord.length; i++) {
+		let character = chord.charAt(i);
+		if (note_names.includes(character)) {
+			let before = chord.substring(0, i);
+			let after = chord.substring(i+1);
+			let note_value = note_names.indexOf(character) + 12;
+			while (after.startsWith("#")) {
+				note_value++;
+				after = after.substring(1);
+			}
+			while (after.startsWith("b")) {
+				note_value--;
+				after = after.substring(1);
+			}
+			note_value += shift;
+			if (get_root) return note_value%12;
+			chord = before + note_names[note_value%12] + after;
+			//check for plain major chords
+			if (before == "") {
+				let voicing_to_come = after.length > 0 && !after.startsWith("/");
+				if (!voicing_to_come) {
+					chord = before + note_names[note_value%12] + "M" + after;
+				}
+			}
+		}
+	}
+	return chord;
+}
+
+
+    </script>
+</body>
+</html>

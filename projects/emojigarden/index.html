@@ -25,6 +25,20 @@
       top: 0;
     }
     
+    @keyframes h1_exit {to {opacity: 0; transform: scale(1.5);}}
+    h1 {
+      font-size: 4rem;
+      text-align: center;
+      margin: 0;
+      line-height: 100vh;
+      width: 100vw;
+      z-index: 1003;
+      position: fixed;
+      background-color: black;
+      color: white;
+      cursor: pointer;
+    }
+    
     /* TABLE - yknow the plots */
     table {
       position: fixed;
@@ -123,7 +137,7 @@
       border-left-width: 0;
       padding: 1rem;
       padding-left: 2rem;
-      width: 18rem;
+      width: 18.125rem;
       position: fixed;
       left: -20.125rem;
       transition: 0.5s left, 0.5s height;
@@ -144,7 +158,7 @@
       height: 1rem;
       font-size: 1rem;
       padding: 0.5rem;
-      width: 14.5rem;
+      width: 14rem;
       vertical-align: middle;
       background-color: white;
       border: none;
@@ -284,8 +298,9 @@
       font-size: 1rem;
       position: absolute;
       bottom: 1rem;
-      right: 1rem;
     }
+    footer b[align="right"] {right: 1rem;}
+    footer b[align="left"] {left: 1rem;}
   </style>
 </head>
 <body onbeforeunload="save_garden();">
@@ -301,6 +316,7 @@
   <footer></footer> <!-- market -->
   <!--<div style="font-size: 3rem; width: 24rem;" id="avatars">👩‍🌾👩🏿‍🌾👩🏾‍🌾👩🏽‍🌾👩🏼‍🌾👩🏻‍🌾<br>🧑‍🌾🧑🏿‍🌾🧑🏾‍🌾🧑🏽‍🌾🧑🏼‍🌾🧑🏻‍🌾<br>👨‍🌾👨🏿‍🌾👨🏾‍🌾👨🏽‍🌾👨🏼‍🌾👨🏻‍🌾</div>-->
   <!-- 🥝🥥🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🍆🌶🍄🥑🥒🥬🥦🥔🧄🧅🥕🥜🌲🍁🍃 -->
+  <h1 onclick="game_start();">🏵<span style="position: fixed; top: 1rem; left: 1rem; font-size: 1rem; line-height: 1rem; color: gray;"></span></h1> <!-- the loading text -->
   <script>
     /*
     todo list
@@ -323,7 +339,7 @@
       }
       localStorage.setItem("garden_data", JSON.stringify(file_save));
     }
-    setInterval(save_garden, 1000*15);
+    //setInterval(save_garden, 1000*15);
     
     function delete_garden_permanently() {
       file = {};
@@ -508,6 +524,17 @@
       gain:{"🪵":3},
       special: "delete"
     }];
+    actions["🌲"] = [{
+      display: "🧺",
+      cooldown: 0,
+      gain:{"🌲":1},
+      special: "delete"
+    },{
+      display: "🪓",
+      cooldown: 0,
+      gain:{"🪵":3},
+      special: "delete"
+    }];
     actions["🌰"] = [{
       display: "🧺",
       cooldown: 0,
@@ -573,24 +600,16 @@
       return cells;
     }
     
-    
     let dropdown_open = null;
     
-    //apply cellular automata for however long we've been gone
-    for (let plot_number = 0; plot_number < file.field.length; plot_number++)
-      do_simulation_on_plot(plot_number, Math.floor(Date.now() - file.last_saved)/500);
-    file.experience += Math.floor(Date.now() - file.last_saved);
-    file.last_saved = Date.now();
-    
     //construct html for all the fields. when fields added / removed, this is re called
-    construct_html();
     function construct_html() {
       while (document.getElementById("field").firstChild) document.getElementById("field").firstChild.remove();
       for (let plot_number = 0; plot_number < file.field.length; plot_number++) {
         construct_plot_html(plot_number);
       }
       for (element of document.getElementById("field").querySelectorAll("table"))
-        element.style.animation = "0.5s table_enter";
+        element.style.animation = "1s table_enter";
     }
     
     let z_counter = 0; //ever increasing, highest z count
@@ -656,6 +675,7 @@
           cell.td_element = td;
           td.innerText = cell.display;
           update_action_indicator(cell);
+          td.onmouseenter = function(){if (this.getAttribute("can_action")=="true") sfx("tick");}
           td.onmousedown = function(event) {
             let plot_number = parseInt(this.getAttribute("plot_number")); //this is so silly. i hate that js callbacks cant remember their variable values
             let row_number = parseInt(this.getAttribute("row_number"));
@@ -723,29 +743,11 @@
       }
     }
     
-    //visually update cells that are ready to have actions done
-    setInterval(function(){
-      for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) {
-        update_action_indicator(cell);
-      }
-    }, 200);
     function update_action_indicator(cell) {
       cell.td_element.setAttribute("can_action", (Date.now() - cell.next_ready > 0) && actions[cell.display].length > 0);
-      if (["🌾","🌽","🎃","🍅"].includes(cell.display)) cell.td_element.innerText = (Date.now() - cell.next_ready > 0) ? cell.display : "🌱";
+      if (["🌾","🍅","🥕","🥬","🫑","🍓","🥦","🥔","🧅","🍈","🍆","🍍","🍠","🌽","🎃","🥒"].includes(cell.display))
+        cell.td_element.innerText = (Date.now() - cell.next_ready > 0) ? cell.display : "🌱";
     }
-    
-    //for every hour, do 7200 iterations of sim. max 172800 iterations (= 48 hours)
-    setInterval(function(){
-      file.experience += 500;
-      for (let plot_number = 0; plot_number < file.field.length; plot_number++)
-        do_simulation_on_plot(plot_number, 1);
-    }, 500); //2 steps per second
-    
-    //settings stuff on load
-    document.querySelector("#input_bg").value = file.bg;
-    document.body.style.backgroundColor = file.bg;
-    document.querySelector("#input_title").value = file.title;
-    document.querySelector("title").innerText = file.title ? file.title : '-';
     
     //determine market on load
     let conversion_factor = 60000; //number of milliseconds in one coin
@@ -754,38 +756,67 @@
     for (let m = 0; m < 7; m++) market[m].push({object: ["🌺","🌹","🌻","🌼","🪻","🌸","🌷"][m], cost: 10});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🌷","🌺","🌹","🌻","🌼","🪻","🌸"][m], cost: 15});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🌸","🌷","🌺","🌹","🌻","🌼","🪻"][m], cost: 20});
-    for (m of market) m.push({object:"🌳",cost:60});
-    for (let m = 0; m < 7; m++) market[m].push({object: ["🌵","🍄","🌴","🪨","🌵","🍄","🌴"][m], cost: 60});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌴","🌳","🌲","🌴","🌳","🌲","🌴"][m], cost: 60});
+    for (let m = 0; m < 7; m++) market[m].push({object: ["🌵","🍄","🪨","🌵","🍄","🪨","🌵"][m], cost: 60});
     for (m of market) m.push({object:"🍅",cost:10});
     for (m of market) m.push({object:"🌾",cost:10});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🥬","🫑","🍓","🥦","🥔","🧅","🥕"][m], cost: 15});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🥕","🥬","🫑","🍓","🥦","🥔","🧅"][m], cost: 20});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🍈","🍆","🍍","🍠","🌽","🎃","🥒"][m], cost: 30});
     for (let m = 0; m < 7; m++) market[m].push({object: ["🐏","🐑","🐕","🐏","🐑","🐕","🐏"][m], cost: 100});
-    document.querySelector("footer").onmouseenter = visually_update_market;
-    function visually_update_market() {
+    document.querySelector("footer").onmouseenter = function() {
+      visually_update_market();
+      sfx("open");
+    }
+    let currency_symbol = "🪙";
+    let sale_active = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31].includes(new Date().getDate());
+    if (sale_active)
+      for (m of market) for (offer of m)
+        offer.cost = Math.ceil(offer.cost * 0.9);
+    function visually_make_market() {
       while (document.querySelector("footer").firstChild) document.querySelector("footer").firstChild.remove();
       let b = document.createElement("b");
-      b.innerText = Math.floor(file.experience/conversion_factor) + "🪙";
+      b.setAttribute("align","left");
+      b.innerText = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."][new Date().getDay()];
+      if (sale_active) b.innerText += " (10% sale)";
+      document.querySelector("footer").appendChild(b);
+      b.remove();
+      b = document.createElement("b");
+      b.setAttribute("align","right");
       document.querySelector("footer").appendChild(b);
       for (trade of market[new Date().getDay()]/*.sort((a,b)=>(a.cost>b.cost?1:-1))*/) {
         let div = document.createElement("div");
         div.setAttribute("cost", trade.cost);
-        if (file.experience/conversion_factor<trade.cost) div.setAttribute("disabled", "true");
+        //if (file.experience/conversion_factor<trade.cost) div.setAttribute("disabled", "true");
         let a = document.createElement("a");
         div.appendChild(a);
         a.innerText = trade.object;
         let span = document.createElement("span");
         div.appendChild(span);
-        span.innerText = trade.cost + "🪙";
+        span.innerText = trade.cost.toLocaleString() + currency_symbol;
         document.querySelector("footer").appendChild(div);
+        div.onmouseenter = function() {sfx("tick");}
         div.onclick = function() {
           if (this.getAttribute("disabled")) return;
           let cost = parseInt(this.getAttribute("cost"));
+          sfx("open");
           file.experience -= cost*conversion_factor;
           add_to_inventory(a.innerText, 1);
-          make_action_particle("🪙", a);
+          make_action_particle(currency_symbol, a);
           visually_update_market();
+        }
+      }
+      visually_update_market();
+    }
+    function visually_update_market() {
+      let my_coins = Math.floor(file.experience/conversion_factor);
+      document.querySelector("footer").querySelector("b[align=\"right\"]").innerText = my_coins.toLocaleString() + currency_symbol;
+      for (trade of document.querySelector("footer").querySelectorAll("div")) {
+        let cost = parseInt(trade.getAttribute("cost"));
+        if (cost > my_coins) {
+          trade.setAttribute("disabled", "true");
+        } else {
+          trade.removeAttribute("disabled");
         }
       }
     }
@@ -910,6 +941,7 @@
         if (amt > 0) add_to_inventory(resource, amt);
       }
       make_action_particle(this_action.display, cell.td_element);
+      sfx('dropdown_click');
       construct_plot_html(plot_number);
     }
     function make_action_particle(emoji, td_element) {
@@ -941,6 +973,7 @@
       for (let i = 0; i < actions[cell.display].length; i++) {
         let a = document.createElement("a");
         a.innerText = actions[cell.display][i].display;
+        a.onmouseenter = function() {sfx('dropdown_tick');}
         a.onclick = function() {
           preffered_actions[cell.display] = i;
           act_on_cell(plot_number, row_number, column_number);
@@ -949,6 +982,7 @@
         aside.appendChild(a);
       }
       document.body.appendChild(aside);
+      sfx('dropdown_open');
     }
     
     function close_dropdown() {
@@ -983,8 +1017,10 @@
       file.holding = cell;
       if (immediately_destroy) {
         ungrab_cell(-1, -1, -1, false);
+        sfx("dropdown_click");
         return;
       }
+      sfx("open");
       let header = document.createElement("header");
       header.innerText = file.holding.display;
       document.body.appendChild(header);
@@ -1007,6 +1043,7 @@
       if (actually_put) {
         file.field[plot_number].cells[row_number][column_number] = file.holding; //put it there
         construct_plot_html(plot_number);
+        sfx('close');
       } else {
         //this is being thrown away... if it has delete action, add to inventory <3
         if (Date.now() >= file.holding.next_ready) for (action of actions[file.holding.display]) if (action.special == "delete") {
@@ -1024,7 +1061,6 @@
       } catch(e) {}
     }
     //on start, if grabbing something, place it and pick it up lol
-    load_grab_check();
     function load_grab_check() {
       if (!file.holding) return;
       for (let plot_number = 0; plot_number < file.field.length; plot_number++) {
@@ -1057,21 +1093,20 @@
       if (file.inventory[emoji] == undefined) return false;
       return file.inventory[emoji] >= count;
     }
-    visually_update_inventory();
     function visually_update_inventory() {
       while (document.querySelector("nav").firstChild) document.querySelector("nav").firstChild.remove();
       let how_many = 0;
-      for (entry of Object.keys(file.inventory).sort()) {
-        if (file.inventory[entry] == 0) continue;
+      for (entry of Object.keys(actions)) if (file.inventory[entry]) {
         how_many++;
         //for (let i = 0; i < file.inventory[entry]; i++) {
         let a = document.createElement("a");
         a.innerText = entry;
-        if (actions[entry]) a.setAttribute("onclick", "grab_from_inventory('"+entry+"')"); //using this instead of events because i cant take it anymore
+        a.setAttribute("onclick", "if (!file.holding) sfx('open'); grab_from_inventory('"+entry+"');"); //using this instead of events because i cant take it anymore
+        a.setAttribute("onmouseenter", "sfx('tick');"); //using this instead of events because i cant take it anymore
         document.querySelector("nav").appendChild(a);
         //}
         let span = document.createElement("span");
-        span.innerText = file.inventory[entry]>1000000000?"":file.inventory[entry];
+        span.innerText = file.inventory[entry]>1000000000?"":file.inventory[entry].toLocaleString();
         document.querySelector("nav").appendChild(span);
       }
       if (how_many == 0) {
@@ -1083,13 +1118,61 @@
     
     function chance(percent) {return Math.random() < percent*0.01;}
     function shuffle(t){let f=t.length,n;for(;0!=f;)n=Math.floor(Math.random()*f),f--,[t[f],t[n]]=[t[n],t[f]];return t}
-    
     function human_readable_time(ms) {
       if (ms < 60*1000) return Math.floor(ms/1000)+"s";
       if (ms < 60*60*1000) return Math.floor(ms/1000/60)+"m";
       if (ms < 24*60*60*1000) return Math.floor(ms/1000/60/60)+"h";
       if (ms < Number.POSITIVE_INFINITY) return Math.floor(ms/1000/60/60/24)+"d";
       return "∞";
+    }
+    function sfx(noise) {
+      let a = new Audio("sfx/"+noise+".mp3"); //tick, click, open, close
+      a.volume = 0.5;
+      a.play();
+    }
+    
+    //open/close sfx for side panels
+    for (element_name of ["article", "nav", "footer"]) {
+      if (element_name != "footer") document.querySelector(element_name).onmouseenter = function() {
+        sfx('open');
+      }
+      document.querySelector(element_name).onmouseleave = function() {
+        sfx('close');
+      }
+    }
+    
+    //setTimeout(game_start, 100);
+    function game_start() {
+      //apply cellular automata for however long we've been gone
+      for (let plot_number = 0; plot_number < file.field.length; plot_number++)
+        do_simulation_on_plot(plot_number, Math.floor(Date.now() - file.last_saved)/500);
+      file.experience += Math.floor(Date.now() - file.last_saved);
+      file.last_saved = Date.now();
+      construct_html();
+      load_grab_check();
+      visually_update_inventory();
+      visually_make_market();
+      setInterval(save_garden, 1000*15);
+      //visually update cells that are ready to have actions done
+      setInterval(function(){
+        for (plot of file.field) for (row of plot.cells) for (cell of row) if (cell) {
+          update_action_indicator(cell);
+        }
+      }, 200);
+      //for every hour, do 7200 iterations of sim. max 172800 iterations (= 48 hours)
+      setInterval(function(){
+        file.experience += 500;
+        for (let plot_number = 0; plot_number < file.field.length; plot_number++)
+          do_simulation_on_plot(plot_number, 1);
+      }, 500); //2 steps per second
+      //settings stuff on load
+      document.querySelector("#input_bg").value = file.bg;
+      document.body.style.backgroundColor = file.bg;
+      document.querySelector("#input_title").value = file.title;
+      document.querySelector("title").innerText = file.title ? file.title : '-';
+      document.querySelector("h1").style.animation = "1s h1_exit";
+      document.querySelector("h1").querySelector("span").remove()
+      setTimeout(function() {document.querySelector("h1").remove();}, 990);
     }
   </script>
 </body>
