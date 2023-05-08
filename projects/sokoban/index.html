@@ -1,196 +1,650 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sokoban</title>
-  <link rel="icon" href="icon.png">
   <style>
-    body {background-color: black; user-select: none;}
-    canvas#boardgame {position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background-color: black;}
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
     
-    #progressbar {height: 20px; width: 300px; position: absolute; left: 50%; transform: translate(-50%); bottom: 48px; border-collapse: collapse; border: solid 2px white;}
-    #progressbar #progressfull {transition: 0.1s; background-color: white;}
+    body {
+      background-color: #472D3C;
+      color: #CFC6B8;
+      margin: 0;
+      user-select: none;
+      font-family: 'Atkinson Hyperlegible';
+      overflow: hidden;
+    }
+    
+    #display {
+      border-collapse: collapse;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(4);
+    }
+    
+    @keyframes td_enter {from {
+      opacity: 0;
+      transform: translateY(0.25rem);
+    }}
+    @keyframes td_exit {to {
+      opacity: 0;
+      transform: translateY(0.25rem);
+    }}
+    #display td {
+      width: 1rem;
+      height: 1rem;
+      background-size: cover;
+      image-rendering: pixelated;
+      animation: 1s td_enter;
+      z-index: 1;
+    }
+    
+    #display td:hover cancel {
+      background-color: #4F3242;
+    }
+    
+    @keyframes td_img_enter {from {
+      transform: translateY(0.125rem);
+    }}
+    #display td img {
+      width: 1rem;
+      height: 1rem;
+      display: block;
+      animation: 1s td_img_enter;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    #color_cover {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background-color: #88888800;
+      transition: 1s background-color;
+      z-index: 3;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+    
+    p#sign_text {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      margin: 0;
+      height: 2rem;
+      background-color: blue;
+      padding: 2rem 4rem;
+      background-color: #472D3C;
+      width: 48rem;
+      text-align: center;
+      transition: 0.2s opacity;
+      opacity: 0;
+    }
+    
+    button.shortcut {
+      display: block;
+      background-color: inherit;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    button.shortcut:hover {
+      opacity: 1;
+    }
+    
+    @keyframes title_enter {from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 3rem));
+    }}
+    @keyframes title_exit {to {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 3rem));
+    }}
+    #title {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, calc(-50% + 2rem));
+      font-weight: normal;
+      font-size: 2rem;
+      margin: 0;
+      cursor: pointer;
+      padding: 100rem;
+      animation: 1s title_enter;
+    }
+    #title img {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, calc(-50% - 4rem)) scale(4);
+      image-rendering: pixelated;
+    }
+    #title span {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, calc(-50% + 2rem));
+      image-rendering: pixelated;
+      font-size: 1.25rem;
+    }
   </style>
 </head>
-<body id="body">
-  <table id="progressbar">
-    <caption id="progresscaption"></caption>
-    <td id="progressfull"></td>
-    <td id="progressempty"></td>
-  </table>
-  <div id="library" style="display: none;"> <!--this is a little library of all the sprites-->
-    <img id="sp-e" src="sp/ground.png">
-    <img id="sp-w" src="https://cdn.discordapp.com/attachments/777944491969085450/798747282970378271/unknown.png">
-    <img id="sp-b" src="sp/goal.png">
-    <img id="sp-p" src="sp/player.png">
-  </div>
-  <canvas id="boardgame">
-  </canvas>
-  <script>
-    //ALL BOARD PIECES
-    //these can be capitalized to indicate a goal beneath them (although it doesn't make sense for some tiles like walls)
-    
-    //e empty     E empty goal
-    //w wall      
-    //b box       B box goal
-    //p player    P player goal
-    
-    let board = [
-      ["w","w","e","e","e","w","w"],
-      ["E","p","b","e","e","w","w"],
-      ["w","w","e","b","E","w","w"],
-      ["E","w","w","b","e","w","w"],
-      ["e","w","e","E","e","w","w"],
-      ["b","e","B","b","b","E","w"],
-      ["e","e","e","E","e","e","w"]
-    ];
+<body>
+  <table id="display"></table>
+  <p id="sign_text"></p>
+  <h1 id="title" onclick="start_game();"><img src="art/duckie.png">ban&nbsp;soko<span></span></h1>
+  <div id="color_cover"></div>
+  <pre id="all_level_info" style="display: none;">
 
-    //board size
-    let boardsize = board.length;
-    
-    //find goals (and make them lowercase in array)
-    let goal = [];
-    for (let xIndex = 0; xIndex < boardsize; xIndex++) {
-      for (let yIndex = 0; yIndex < boardsize; yIndex++) {
-        if (board[xIndex][yIndex] == board[xIndex][yIndex].toUpperCase()) {
-          board[xIndex][yIndex] = board[xIndex][yIndex].toLowerCase();
-          goal.push([xIndex,yIndex]);
+@conwaytest
+region:start
+data_bottom: ..................|........ss........|......ssssss......|....ssssssssss....|..ssswwwwwwwwsss..|.sssswswwwwswssss.|..ssswwwwwwwwsss..|....ssssssssss....|......ssssss......|........ss........|..................
+data_top: ..................|..................|..................|..................|..................|..................|..................|..................|..................|..................|..................
+
+@origin
+region:start
+exit_bottom: intro1
+data_bottom:....,,.|.,.,.,.|,,....,|.,,..,,|.,.....|......,|.,..,,.|,,.....|...,...|,....,,|...*...
+data_top:..{{[..|[{...[[|{....][|{.....]|].....{|{.....]|].....[|.{....{|[{...{.|.][.{]]|.[{.[{]
+
+@intro1
+region: start
+exit_top: origin
+exit_right: intro2
+data_bottom:..,*,....,,.,.|,.,,,.....,...|,............,|...,,....,..,.|.,.......,,..,|.....,.....,..|,............*|.,.......,....|{{{{{{{{{{{{{{|}}}}}}}}}}}}}}
+data_top:   [{].[{[.[[.[..|{]...{]].{[].{|.[[.]{.....]{.|.{....[.....[{|.[].......[.{]|]{.........].{|].............|{..........{.[|..............|..............
+sign: This was really just an excuse to make another Sokoban engine.
+
+@intro2
+region:start
+exit_left: intro1
+exit_right: puzzle0
+data_bottom:..................|......,.,,..,.....|..,..,.+{{-,.,.,,*|...,..+===].,,,...|.,,,,.[====-......|...,.+======-.,...|..,.._}=====].....|*,....._====;.,...|......,.[=};.,,...|.,.,,,,,[]....,,,.
+data_top:   ..]{][][[]{{[[]{..|.]{...........{][]|.{...........[....|{]...............{|.]...............{|[........`.......]|{.............[{.[|......].......]..]|.]{.]..{........[[|..[[.{{[....{[{{..
+sign: what a silly game!
+
+@puzzle0
+region:start
+exit_left: intro2
+exit_right: puzzle1
+data_bottom:.,...,..[|,...,.,.[|..1,...,_|*,..,.!.*|{{{{{{{{{|}}}}}}}}}
+data_top:   .[{{]]{[.|][....{..|{...1..[.|.........|.........|.........
+
+@puzzle1
+region: start
+exit_left: puzzle0
+exit_top: puzzle2
+data_bottom:=]*....,.[]|=],..,.,.[]|=;!.,....[]|],...1,..[]|;..,.,.,.[]|*..,1...+=]|{{{{{{{{==]|}}}}}}}}}};
+data_top:   ...{..][...|...{]]..[..|...[...1{..|...{.......|..1[.].....|......[....|...........|...........
+
+@puzzle2
+region: start
+exit_top: puzzle3
+exit_bottom: puzzle1
+data_bottom:[=],*[===]|[=].,[===]|[=]!._}==]|[=;,..,_=]|[]1.,...[]|[].,....[]|[]1..,..[=|[].,,..,_}|[]..+-.,..|[={{==-*..
+data_top:   ...{......|..........|....[.....|..........|...][.1...|.....1....|...[{.....|..........|........{.|........[]
+
+@puzzle3
+region: dungeon
+exit_bottom: puzzle2
+data_bottom:..ScXXXXXXXzcXXX|...D.......ZC..*|..SD..........QW|.cXC..........A.|SD.....QWWE...A.|.D.....A.SD...A.|.D.....A..eWWWqS|.eE*QWWqS.......
+data_top:................|................|................|................|...1............|................|................|................
+
+  </pre>
+  <script>
+  /*
+  BOTTOM LAYER
+  untraversable
+  - wall
+  - rivers
+  - conversational
+  - map edges
+  - trees
+  traversable
+  - plain old floor (+ decorated plain old floor)
+  - river + bridge
+
+  TOP LAYER
+  - player
+  - enemy
+  - box
+  
+  
+  
+  every tile object has
+  - img       image url
+  - btm       bottom behavior {type (none/stop/goal/boxdoor/ice), data}
+  - top       dynamic behavior {type (none/box/player/stop)}
+  
+  special behaviors to be encoded
+  - signs / npcs that can initiate dialogue
+  - doors that initiate scene transition (how can these correspond to initial player locations?)
+  
+  
+  */
+  
+  let room_bottom = null; //2d array for currently loaded room. each cell is {bool traversible, int goal(0=nogoal)}
+  let room_top = null; //2d array for entities that can move. each cell is {string type, var data}
+  let room_bottom_elements = null;
+  let room_top_elements = null;
+  let width = null;
+  let height = null;
+  let active_exits = [];
+  let input_disabled = false;
+  let loaded_room_label = null;
+  
+  let display = document.querySelector("table#display");
+  let sign_text = document.querySelector("p#sign_text");
+  
+  let all_rooms = {}; //dictionary for rooms. each room is {data_top (using chars), data_bottom (using chars)}
+  let region_info = {
+    // #2B6AC5 blue sombercore
+    start: {color: "#9B7E57"},
+    dungeon: {color: "#2B6AC5"},
+  };
+  function open_room(label, coming_from = "left") {
+    let room_data = all_rooms[label];
+    if (!room_data) return;
+    //read data
+    document.querySelector("#color_cover").style.backgroundColor = region_info[room_data.region].color;
+    if (room_data.room_bottom && room_data.room_top) { //if this room has already been saved
+      console.log("loading room back from room_bottom room_top");
+      room_bottom = room_data.room_bottom;
+      room_top = room_data.room_top;
+      console.log(room_data);
+    } else { //room has no .room_bottom/top attributes, so this is first time loading. use data
+      console.log("creating room from og data data");
+      let data_bottom = room_data.data_bottom;
+      let data_top = room_data.data_top;
+      room_bottom = [];
+      room_top = [];
+      for (data_row of data_bottom.split("|")) {
+        let row = [];
+        for (character of data_row.split(""))
+          row.push(arch_bottom[character]);
+        room_bottom.push(row);
+      }
+      for (data_row of data_top.split("|")) {
+        let row = [];
+        for (character of data_row.split(""))
+          row.push(arch_top[character]);
+        room_top.push(row);
+      }
+      room_data.room_bottom = room_bottom;
+      room_data.room_top = room_top;
+      console.log(room_data);
+    }
+    height = room_bottom.length;
+    width = room_bottom[0].length;
+    //TODO: insert 1 character in the appropriate from direction
+    //other level data
+    loaded_room_label = {label: label, coming_from: coming_from};
+    active_exits = {
+      right: room_data.exit_left,
+      left: room_data.exit_right,
+      top: room_data.exit_bottom,
+      bottom: room_data.exit_top,
+    }
+    sign_text.innerText = room_data.sign ? "« "+room_data.sign+" »" : ""; sign_text.style.opacity = 0;
+    while (display.firstChild) display.firstChild.remove();
+    //make table with images, bottom and top layers
+    room_bottom_elements = [];
+    room_top_elements = [];
+    for (let y = 0; y < height; y++) {
+      let tr = document.createElement("tr");
+      room_bottom_elements[y] = [];
+      room_top_elements[y] = [];
+      for (let x = 0; x < width; x++) {
+        let td = document.createElement("td");
+        tr.appendChild(td);
+        room_bottom_elements[y][x] = td;
+        visual_update_bottom(y, x);
+        let img = document.createElement("img");
+        td.appendChild(img);
+        room_top_elements[y][x] = img;
+        visual_update_top(y, x);
+      }
+      display.appendChild(tr);
+    }
+    player_input(0, 0, true);
+    sfx("room_up");
+    setTimeout(function(){
+      input_disabled = false;
+    }, 1000);
+  }
+  
+  function visual_update_bottom(y, x) {
+    room_bottom_elements[y][x].setAttribute("background", room_bottom[y][x].img);
+  }
+  function visual_update_top(y, x) {
+    let old_src = room_top_elements[y][x].getAttribute("src");
+    if (old_src != room_top[y][x].img) {
+      room_top_elements[y][x].setAttribute("src", room_top[y][x].img);
+      let y_off = Math.random()*0;
+      let x_off = Math.random()*0;
+      room_top_elements[y][x].style.transform = "translate("+x_off+"px, "+y_off+"px)";
+    }
+  }
+  
+  function room_transition(label, coming_from = "left") { //actually call this to change room. open_room is called here
+    sfx("room_down");
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (room)
+    for (td of display.querySelectorAll("td")) {
+      td.style.animation = "1s td_exit";
+    }
+    setTimeout(function(){
+      for (td of display.querySelectorAll("td")) {
+        td.style.opacity = "0";
+      }
+    }, 900);
+    setTimeout(function(){
+      open_room(label, coming_from);
+    }, 1000);
+  }
+  
+  document.onkeydown = function(event) {
+    let [y, x] = [-1, -1];
+    if (input_disabled) return;
+    switch (event.keyCode) {
+      case 65: case 37:
+        [y, x] = [0, -1];
+        break;
+      case 68: case 39:
+        [y, x] = [0, 1];
+        break;
+      case 40: case 83:
+        [y, x] = [1, 0];
+        break;
+      case 87: case 38:
+        [y, x] = [-1, 0];
+        break;
+      case 32:
+        [y, x] = [0, 0];
+        break;
+      case 82:
+        input_disabled = true;
+        room_transition(loaded_room_label.label, loaded_room_label.coming_from);
+        return;
+    }
+    if (x == -1 && y == -1) return;
+    if (event.shiftKey) [y, x] = [y*2, x*2];
+    player_input(y, x);
+  }
+  
+  function arch_bottom_empty() {return {
+    img: "art/empty.png",
+    type: "none"
+  };}
+  
+  let arch_bottom = {
+    //nothing's there
+    ".": {img: "art/empty.png", type: "none"},
+    ",": {img: "art/ground0.png", type: "none"},
+    "i": {img: "art/ice.png", type: "ice"},
+    "w": {img: "art/conwayflooralive.png", type: "none"},
+    "s": {img: "art/conwayfloordead.png", type: "none"},
+    //goals
+    "1": {img: "art/goal0.png", type: "goal", data: 0},
+    "2": {img: "art/goal1.png", type: "goal", data: 1},
+    //goals
+    "!": {img: "art/boxdoor0closed.png", type: "boxdoor", data: 0},
+    "@": {img: "art/boxdoor1closed.png", type: "boxdoor", data: 1},
+    //exit
+    "*": {img: "art/exit.png", type: "exit", data: 0},
+    //stops!
+    "[": {img: "art/riveredgeleft.png", type: "stop"},
+    "]": {img: "art/riveredgeright.png", type: "stop"},
+    "{": {img: "art/riveredgetop.png", type: "stop"},
+    "}": {img: "art/riveredgebottom.png", type: "stop"},
+    "=": {img: "art/riverfull.png", type: "stop"},
+    "+": {img: "art/rivercornertopleft.png", type: "stop"},
+    "-": {img: "art/rivercornertopright.png", type: "stop"},
+    "_": {img: "art/rivercornerbottomleft.png", type: "stop"},
+    ";": {img: "art/rivercornerbottomright.png", type: "stop"},
+    "Q": {img: "art/walltopleft.png", type: "stop"},
+    "W": {img: "art/walltop.png", type: "stop"},
+    "E": {img: "art/walltopright.png", type: "stop"},
+    "A": {img: "art/wallleft.png", type: "stop"},
+    "S": {img: "art/wallinner.png", type: "stop"},
+    "D": {img: "art/wallright.png", type: "stop"},
+    "Z": {img: "art/wallbottomleft.png", type: "stop"},
+    "X": {img: "art/wallbottom.png", type: "stop"},
+    "C": {img: "art/wallbottomright.png", type: "stop"},
+    "q": {img: "art/wallinnertopleft.png", type: "stop"},
+    "e": {img: "art/wallinnertopright.png", type: "stop"},
+    "z": {img: "art/wallinnerbottomleft.png", type: "stop"},
+    "c": {img: "art/wallinnerbottomright.png", type: "stop"},
+  };
+  
+  let arch_top = {
+    //nothing's there
+    ".": {img: "art/empty.png", type: "none"},
+    //something immovable is there
+    "[": {img: "art/tree0.png", type: "stop"},
+    "]": {img: "art/tree1.png", type: "stop"},
+    "{": {img: "art/tree2.png", type: "stop"},
+    "`": {img: "art/duckie.png", type: "stop"},
+    "?": {img: "art/sign.png", type: "stop", sign: true},
+    //boxen
+    "1": {img: "art/box0.png", type: "box", data: 0},
+    "2": {img: "art/box1.png", type: "box", data: 1},
+    //people
+    "~": {img: "art/player.png", type: "player"},
+  };
+  let box_data_to_weight = {"0":1,"1":0.001};
+  let box_satisfied = [false, false];
+  
+  function player_input(dy, dx, only_do_static_checks = false) {
+    if (input_disabled && !only_do_static_checks) return;
+    //conway
+    if (!only_do_static_checks) {
+      //get before state
+      let conway_before = [];
+      for (let y = 0; y < height; y++) {
+        conway_before[y] = [];
+        for (let x = 0; x < width; x++) {
+          conway_before[y][x] = room_bottom[y][x] == arch_bottom["w"];
         }
       }
-    }
-    
-    //find player
-    let playX;
-    let playY;
-    let moves = 0;
-    lookForPlayer:
-    for (let xIndex = 0; xIndex < boardsize; xIndex++) {
-      for (let yIndex = 0; yIndex < boardsize; yIndex++) {
-        if (board[xIndex][yIndex] == "p") {
-          playX = xIndex;
-          playY = yIndex;
-          break lookForPlayer;
-        }
-      }
-    }
-    board[playX][playY] = "p";
-    
-    //canvas setup
-    let canvas = document.getElementById("boardgame");
-    let context = canvas.getContext("2d");
-    let res = 16*6; //res is the resolution of one tile
-    canvas.setAttribute("height",res*(boardsize+0.5));
-    canvas.setAttribute("width",res*boardsize);
-    context.imageSmoothingEnabled= false
-    updateScreen();
-    updateScreen();
-    
-    //drawing the screen
-    function updateScreen() {
-      context.clearRect(0,0,canvas.width,canvas.height);
-      //display board state
-      for (let xIndex = 0; xIndex < boardsize; xIndex++) {
-        for (let yIndex = 0; yIndex < boardsize; yIndex++) {
-          switch (board[xIndex][yIndex]) {
-            case "e":
-              context.drawImage(document.getElementById("sp-e"),yIndex*res,xIndex*res,res,res*1.5);
-              break;
-            case "w":
-              break;
-            case "b":
-              context.drawImage(document.getElementById("sp-e"),yIndex*res,xIndex*res,res,res*1.5);
-              context.drawImage(document.getElementById("sp-b"),yIndex*res,xIndex*res,res,res);
-              break;
-            case "p":
-              context.drawImage(document.getElementById("sp-e"),yIndex*res,xIndex*res,res,res*1.5);
-              context.drawImage(document.getElementById("sp-p"),yIndex*res,xIndex*res,res,res);
-              break;
+      //do process
+      let conway_after = [];
+      for (let y = 0; y < height; y++) {
+        conway_after[y] = [];
+        for (let x = 0; x < width; x++) {
+          if (room_bottom[y][x] != arch_bottom["w"] && room_bottom[y][x] != arch_bottom["s"]) continue; //skip if this spot cant be conwayed
+          let alive_neighbors = 0;
+          let last_alive_neighbor = null
+          for (let neighbor_y = Math.max(0, y-1); neighbor_y <= Math.min(height-1, y+1); neighbor_y++) {
+            for (let neighbor_x = Math.max(0, x-1); neighbor_x <= Math.min(width-1, x+1); neighbor_x++) {
+              if (neighbor_x == x && neighbor_y == y) continue;
+              if (conway_before[neighbor_y][neighbor_x]) {
+                alive_neighbors++;
+                last_alive_neighbor = room_bottom[neighbor_y][neighbor_x];
+              }
+            }
+          }
+          if (conway_before[y][x] ? (alive_neighbors==3 || alive_neighbors==2) : (alive_neighbors==3)) {
+            //y,x should be alive
+            room_bottom[y][x] = arch_bottom["w"];
+            visual_update_bottom(y, x);
+          } else {
+            //y,x should be dead
+            room_bottom[y][x] = arch_bottom["s"];
+            visual_update_bottom(y, x);
           }
         }
       }
-      
-      //goals
-      let completed = 0;
-      for (let arrayIndex = 0; arrayIndex < goal.length; arrayIndex++) {
-        //visual goals
-        
-        //check for win
-        if (board[goal[arrayIndex][0]][goal[arrayIndex][1]] == "b") {
-          completed++;
+    }
+    //move the players
+    //configure search so that we start with ahead players. inclusive bounds
+    let [y_start, y_end, y_step] = dy < 0 ? [0, height - 1, 1] : [height - 1, 0, -1];
+    let [x_start, x_end, x_step] = dx < 0 ? [0, width - 1, 1] : [width - 1, 0, -1];
+    if (!only_do_static_checks) for (let y = y_start; y != y_end + y_step; y += y_step) {
+      for (let x = x_start; x != x_end + x_step; x += x_step) {
+        if (room_top[y][x].type != "player") continue;
+        let new_y = y + dy;
+        let new_x = x + dx;
+        if (space_blocked_but_allowing_boxes(new_y, new_x)) continue;
+        //do player motion
+        if (room_top[new_y][new_x].type == "none") { //walking into empty. easy
+          room_top[new_y][new_x] = room_top[y][x];
+          room_top[y][x] = arch_top["."];
+          visual_update_top(new_y, new_x);
+          visual_update_top(y, x);
+        } else if (room_top[new_y][new_x].type == "box" /*&& Math.abs(dx) + Math.abs(dy) == 1*/) { //walking into box
+          //at present, x,y=player, new=first box, super=final box
+          let total_box_weight = box_data_to_weight[room_top[new_y][new_x].data]; //the weights from boxes bein moved
+          if (dy < -1) dy = -1; if (dy > 1) dy = 1; if (dx < -1) dx = -1; if (dx > 1) dx = 1;
+          let super_y = new_y + dy;
+          let super_x = new_x + dx;
+          if (space_blocked_but_allowing_boxes(super_y, super_x)) continue;
+          while (room_top[super_y][super_x].type == "box" && !space_blocked_but_allowing_boxes(super_y+dy, super_x+dx)) {
+            total_box_weight += box_data_to_weight[room_top[super_y][super_x].data];
+            super_y += dy;
+            super_x += dx;
+          }
+          if (total_box_weight > 1) continue;
+          if (room_top[super_y][super_x].type == "box") continue; //try to push 2 boxes but super space blocked
+          room_top[super_y][super_x] = room_top[new_y][new_x];
+          room_top[new_y][new_x] = room_top[y][x];
+          room_top[y][x] = arch_top["."];
+          visual_update_top(super_y, super_x);
+          visual_update_top(new_y, new_x);
+          visual_update_top(y, x);
+          sfx("pushbox");
+        } //end check for walking into empty vs box
+        //slidey slide on ice
+        if (room_bottom[new_y][new_x].type == "ice" && Math.abs(dx) + Math.abs(dy)) {
+          input_disabled = true;
+          setTimeout(function() {
+            input_disabled = false;
+            player_input(dy, dx, only_do_static_checks);
+          }, 50);
         }
-      }
-      document.getElementById("progressfull").setAttribute("style","width: "+Math.round(100*completed/goal.length)+"%;");
-      if (completed == goal.length) {
-        setTimeout(function() {
-        document.getElementById("progressempty").setAttribute("style","display: none;");
-        }, 100)
-      } else {
-        document.getElementById("progressempty").setAttribute("style","transition: 0s;");
       }
     }
-    
-    //inputs
-    inputs:
-    document.onkeydown = function(e) {
-      //set target coords
-      let targetX = playX
-      let targetY = playY 
-      switch (e.keyCode) {
-        case 37: case 65:
-          targetY--;
-          break; 
-        case 38: case 87:
-          targetX--;
-          break;
-        case 39: case 68:
-          targetY++;
-          break;
-        case 40: case 83:
-          targetX++;
-          break;
-        //break inputs;
-      }
-      
-      tryToMove:
-      if ((0 <= targetX && targetX <= boardsize-1 && 0 <= targetY && targetY <= boardsize-1) && board[targetX][targetY] != "w") {
-        //target is not wall
-        
-        //is target a box?
-        if (board[targetX][targetY] == "b") {
-          //pushing a box
-          
-          //pushing box out of boundary? if so stop
-          if (!(0 <= targetX*2-playX && targetX*2-playX <= boardsize-1 && 0 <= targetY*2-playY && targetY*2-playY <= boardsize-1)) {
-            break tryToMove;
-          }
-          
-          let boxInto = board[targetX*2-playX][targetY*2-playY]; //what the box is pushing into
-          if (boxInto == "e") { //pushing into empty space
-            board[targetX*2-playX][targetY*2-playY] = "b";
-          } else if (boxInto == "w") { //pushing into wall
-            break tryToMove;
-          } else if (boxInto == "b") { //pushing into another box
-            break tryToMove;
-          }
+    //do sign check
+    sign_text.style.opacity = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (room_top[y][x].type == "player" && y > 0 && room_top[y-1][x].sign) {
+          sign_text.style.opacity = 1;
         }
-        
-        if (playX != targetX || playY != targetY) {
-          moves++;
-          board[playX][playY] = "e";
-          playX = targetX;
-          playY = targetY;
-          board[playX][playY] = "p";
-        }
-        
-        updateScreen();
       }
     }
-    
-    //random num gen with seed made by Antti Sykäri, just a little mod by me
-    function seed(s,n) {
-      s = Math.sin(s) * 10000;
-      s = s - Math.floor(s);
-      s = Math.round(n*s);
-    };
+    //do box checks
+    box_satisfied = [true, true];
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (room_bottom[y][x].type == "goal" && room_bottom[y][x].data != room_top[y][x].data) box_satisfied[room_bottom[y][x].data] = false;
+      }
+    }
+    //custom textures that are dynamic (boxdoor)
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (room_bottom[y][x].type == "boxdoor") {
+          room_bottom_elements[y][x].setAttribute("background", "art/boxdoor"+room_bottom[y][x].data+(box_satisfied[room_bottom[y][x].data]?"open":"closed")+".png")
+        }
+      }
+    }
+    let coming_from = {
+      "0": "left",
+      "-2": "bottom",
+      "3": "right",
+      "2": "top"
+    }[Math.round(Math.atan2(dy, dx))];
+    if (Math.abs(dx)+Math.abs(dy)==0) coming_from = "static";
+    if (!only_do_static_checks) sfx(coming_from);
+    //check if on exit
+    exit_check:
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (room_bottom[y][x].type != "exit") continue;
+        if (room_top[y][x].type != "player") continue;
+        input_disabled = true;
+        let destination = active_exits[coming_from];
+        room_transition(destination, coming_from);
+        break exit_check;
+      }
+    }
+  }
+  
+  //if bottom is stop, or if top is stop, or oob
+  function space_blocked(y, x) {
+    if (oob(y, x)) return true;
+    if (room_bottom[y][x].type == "stop" || (room_bottom[y][x].type == "boxdoor" && !box_satisfied[room_bottom[y][x].data]) || room_top[y][x].type != "none") return true;
+    return false;
+  }
+  function space_blocked_but_allowing_boxes(y, x) {
+    if (oob(y, x)) return true;
+    if (room_bottom[y][x].type == "stop" || (room_bottom[y][x].type == "boxdoor" && !box_satisfied[room_bottom[y][x].data]) || (room_top[y][x].type != "none" && room_top[y][x].type != "box")) return true;
+    return false;
+  }
+  function oob(y, x) {
+    if (y < 0 || y >= height || x < 0 || x >= width) return true;
+    return false;
+  }
+  
+  //read pre into all_rooms
+  let currently_making_room = null;
+  for (line of document.querySelector("#all_level_info").innerText.trim().split("\n")) {
+    line = line.trim();
+    if (!line) continue;
+    if (line.startsWith("@")) {
+      currently_making_room = line.substring(1).trim();
+      all_rooms[currently_making_room] = {};
+    } else {
+      all_rooms[currently_making_room][line.substring(0, line.indexOf(":")).trim()] = line.substring(line.indexOf(":")+1).trim();
+    }
+  }
+  
+  function start_game() {
+    sfx("room_down");
+    document.querySelector("h1").style.animation = "1s title_exit";
+    document.querySelector("h1").style.cursor = "default";
+    setTimeout(function() {
+      document.querySelector("h1").remove();
+      open_room('origin', 'top');
+      //debug: make all room shortcuts
+      for (label of Object.keys(all_rooms)) {
+        let button = document.createElement("button");
+        button.setAttribute("class", "shortcut")
+        button.innerText = label;
+        button.setAttribute("onclick", "room_transition('"+label+"')");
+        document.body.appendChild(button);
+      }
+    }, 1000);
+    start_game = function() {}
+  }
+  
+  function sfx(type) {
+    //coming from direction: left top bottom right static
+    //load unload: room_up room_down
+    let a = new Audio("sound/"+{
+      "left": "goright",
+      "top": "godown",
+      "bottom": "goup",
+      "right": "goleft",
+      "static": "staystill",
+      "room_up": "magic",
+      "room_down": "rumble",
+      "pushbox": "rumble",
+      "left": "goup",
+      "top": "goup",
+      "bottom": "goup",
+      "right": "goup",
+      "static": "staystill",
+      "room_up": "magic",
+      "room_down": "rumble",
+      "pushbox": "godown"
+    }[type]+".mp3");
+    a.volume = 0.5;
+    a.play();
+  }
   </script>
 </body>
 </html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-color: #472D3C;
+      margin: 0;
+      user-select: none;
+    }
+    
+    table {
+      border-collapse: collapse;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(4);
+      table-layout: fixed;
+    }
+    
+    table td {
+      width: 1rem;
+      height: 1rem;
+      background-size: cover;
+      image-rendering: pixelated;
+    }
+    
+    tr:nth-child(2n) td:nth-child(2n), tr:nth-child(2n+1) td:nth-child(2n+1) {background-color: #ffffff08;}
+    
+    table td img {
+      width: 1rem;
+      height: 1rem;
+      display: block;
+    }
+    
+    button {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+      background-size: cover;
+      image-rendering: pixelated;
+      border: none;
+      background-color: inherit;
+      border: solid 2px #7A444A;
+      margin: 2px;
+    }
+  </style>
+</head>
+<body>
+  <textarea style="position: fixed; bottom: 0; left: 0; height: 50vh; width: 12rem;"></textarea>
+  <table></table>
+  <script>
+    let height = 8;
+    let width = 16;
+    let bottom_elements = [];
+    let top_elements = [];
+    let selected_top_img = "art/empty.png";
+    let selected_top_value = ".";
+    let selected_bottom_img = "art/empty.png";
+    let selected_bottom_value = ".";
+    let last_used_top = false;
+    for (let y = 0; y < height; y++) {
+      let tr = document.createElement("tr");
+      bottom_elements[y] = [];
+      top_elements[y] = [];
+      for (let x = 0; x < width; x++) {
+        let td = document.createElement("td");
+        tr.appendChild(td);
+        bottom_elements[y][x] = td;
+        td.setAttribute("y_coord", y);
+        td.setAttribute("x_coord", x);
+        td.setAttribute("background", "art/empty.png");
+        td.setAttribute("value", ".");
+        let img = document.createElement("img");
+        td.appendChild(img);
+        top_elements[y][x] = img;
+        img.setAttribute("src", "art/empty.png");
+        img.setAttribute("value", ".");
+        td.onclick = function() {
+          print();
+          if (!last_used_top) {
+            td.setAttribute("background", selected_bottom_img);
+            td.setAttribute("value", selected_bottom_value);
+          } else {
+            img.setAttribute("src", selected_top_img);
+            img.setAttribute("value", selected_top_value);
+          }
+        };
+      }
+      document.querySelector("table").appendChild(tr);
+    }
+ 
+ 
+ 
+ 
+ 
+  let arch_bottom = {
+    //nothing's there
+    ".": {img: "art/empty.png", type: "none"},
+    ",": {img: "art/ground0.png", type: "none"},
+    "i": {img: "art/ice.png", type: "ice"},
+    //goals
+    "1": {img: "art/goal0.png", type: "goal", data: 0},
+    "2": {img: "art/goal1.png", type: "goal", data: 1},
+    //goals
+    "!": {img: "art/boxdoor0closed.png", type: "boxdoor", data: 0},
+    "@": {img: "art/boxdoor1closed.png", type: "boxdoor", data: 1},
+    //exit
+    "*": {img: "art/exit.png", type: "exit", data: 0},
+    //stops!
+    "[": {img: "art/riveredgeleft.png", type: "stop"},
+    "]": {img: "art/riveredgeright.png", type: "stop"},
+    "{": {img: "art/riveredgetop.png", type: "stop"},
+    "}": {img: "art/riveredgebottom.png", type: "stop"},
+    "=": {img: "art/riverfull.png", type: "stop"},
+    "+": {img: "art/rivercornertopleft.png", type: "stop"},
+    "-": {img: "art/rivercornertopright.png", type: "stop"},
+    "_": {img: "art/rivercornerbottomleft.png", type: "stop"},
+    ";": {img: "art/rivercornerbottomright.png", type: "stop"},
+    "Q": {img: "art/walltopleft.png", type: "stop"},
+    "W": {img: "art/walltop.png", type: "stop"},
+    "E": {img: "art/walltopright.png", type: "stop"},
+    "A": {img: "art/wallleft.png", type: "stop"},
+    "S": {img: "art/wallinner.png", type: "stop"},
+    "D": {img: "art/wallright.png", type: "stop"},
+    "Z": {img: "art/wallbottomleft.png", type: "stop"},
+    "X": {img: "art/wallbottom.png", type: "stop"},
+    "C": {img: "art/wallbottomright.png", type: "stop"},
+    "q": {img: "art/wallinnertopleft.png", type: "stop"},
+    "e": {img: "art/wallinnertopright.png", type: "stop"},
+    "z": {img: "art/wallinnerbottomleft.png", type: "stop"},
+    "c": {img: "art/wallinnerbottomright.png", type: "stop"},
+  };
+  
+  let arch_top = {
+    //nothing's there
+    ".": {img: "art/empty.png", type: "none"},
+    //something immovable is there
+    "[": {img: "art/tree0.png", type: "stop"},
+    "]": {img: "art/tree1.png", type: "stop"},
+    "{": {img: "art/tree2.png", type: "stop"},
+    "`": {img: "art/duckie.png", type: "stop"},
+    "?": {img: "art/sign.png", type: "stop", sign: true},
+    //boxen
+    "1": {img: "art/box0.png", type: "box", data: 0},
+    "2": {img: "art/box1.png", type: "box", data: 1},
+    //people
+    "~": {img: "art/player.png", type: "player"},
+  };
+ 
+ 
+    
+    for (arch of Object.keys(arch_bottom)) {
+      let button = document.createElement("button");
+      button.setAttribute("url", arch_bottom[arch].img);
+      button.setAttribute("value", arch);
+      button.style.backgroundImage = 'url("'+arch_bottom[arch].img+'")';
+      button.style.float = "left";
+      button.onclick = function() {
+        selected_bottom_img = this.getAttribute("url");
+        selected_bottom_value = this.getAttribute("value");
+        last_used_top = false;
+      }
+      document.body.appendChild(button);
+    }
+    
+    for (arch of Object.keys(arch_top)) {
+      let button = document.createElement("button");
+      button.setAttribute("url", arch_top[arch].img);
+      button.setAttribute("value", arch);
+      button.style.backgroundImage = 'url("'+arch_top[arch].img+'")';
+      button.style.float = "right";
+      button.onclick = function() {
+        selected_top_img = this.getAttribute("url");
+        selected_top_value = this.getAttribute("value");
+        last_used_top = true;
+      }
+      document.body.appendChild(button);
+    }
+    
+    function print() {
+      let txt = "";
+      txt += "\ndata_bottom:";
+      for (row of document.querySelectorAll("table tr")) {
+        for (cell of row.querySelectorAll("td")) txt += cell.getAttribute("value");
+        txt += "|";
+      }
+      txt = txt.substring(0, txt.length-1);
+      txt += "\ndata_top:";
+      for (row of document.querySelectorAll("table tr")) {
+        for (cell of row.querySelectorAll("img")) txt += cell.getAttribute("value");
+        txt += "|";
+      }
+      txt = txt.substring(0, txt.length-1);
+      console.log(txt);
+      document.querySelector("textarea").value = txt;
+    }
+  </script>
+</body>
+</html>
