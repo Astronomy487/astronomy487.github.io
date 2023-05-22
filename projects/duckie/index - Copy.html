@@ -72,6 +72,21 @@
       pointer-events: none;
     }
     
+    button.shortcut {
+      display: block;
+      background-color: inherit;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      cursor: pointer;
+      opacity: 0.1;
+      display: none;
+    }
+    button.shortcut:hover {
+      opacity: 1;
+    }
+    
     @keyframes title_enter {from {
       opacity: 0;
       transform: translate(-50%, calc(-50% + 3rem));
@@ -110,7 +125,13 @@
       font-size: 1.25rem;
     }
     
+    @keyframes crystal_shards_notice {
+      from {opacity: 0;}
+      20% {opacity: 1;}
+      to {opacity: 0;}
+    }
     #crystal_shards {
+      opacity: 0;
       position: fixed;
       bottom: 1rem;
       left: 50%;
@@ -136,26 +157,35 @@ region:start
 data_bottom: ..................|........ss........|......ssssss......|....ssssssssss....|..ssswwwwwwwwsss..|.sssswswwwwswssss.|..ssswwwwwwwwsss..|....ssssssssss....|......ssssss......|........ss........|..................
 data_top: ..................|..................|..................|..................|..................|..................|..................|..................|..................|..................|..................
 
-@playground
-region: sepia
-data_bottom:wwss..)(&!@#...|wsss...........|sssw...........|ssww.112233....|............+{-|............[=]|.,.........._};|.,...i......QWE|.,...ii.....ASD|.....iii....ZXC
-data_top:...............|.............$.|...............|.....1.2.3.....|...............|......1.2.3....|..{`...........|..]?......~....|..[............|...............
-
 @origin
 region:start
-exit_right: puzzle0
-data_bottom:..,...,..,.,...|.+{-,...,,.....|+==={-..,..,,,.|[====].,....,..|_====]...,,...,|.[===;...,....,|._==],,.....,.*|,.[=],.....,...|.._=={{{{{{{{{{|.,._}}}}}}}}}}}
-data_top:......][..{{...|.....{..[]..]..|.............[.|...`.........].|.........{....{|.........[]...[|.......~..{....|.........[...{[|{..............|...............
+exit_bottom: intro1
+data_bottom:....,,.|.,.,.,.|,,....,|.,,..,,|.,.....|......,|.,..,,.|,,.....|...,...|,....,,|...*...
+data_top:   ..{{[..|[{...[[|{....][|{..~..]|].....{|{.....]|].....[|.{....{|[{...{.|.][.{]]|.[{.[{]
 
 @origin backtrack
 region:start
+exit_bottom: intro1
+data_bottom:....,,.|.,.,.,.|,,....,|.,,1.,,|.,.....|......,|.,..,,.|,,.....|...,...|,....,,|...*...
+data_top:   ..{{[..|[{...[[|{....][|{..$..]|].....{|{.....]|].....[|.{....{|[{...{.|.][.{]]|.[{.[{]
+
+@intro1
+region: start
+exit_top: origin backtrack
+exit_right: intro2
+data_bottom:..,*,....,,.,.|,.,,,.....,...|,............,|...,,....,..,.|.,.......,,..,|.....,.....,..|,............*|.,.......,....|{{{{{{{{{{{{{{|}}}}}}}}}}}}}}
+data_top:   [{].[{[.[[.[..|{]...{]].{[].{|.[[.]{.....]{.|.{....[.....[{|.[].......[.{]|]{.........].{|].............|{..........{.[|..............|..............
+
+@intro2
+region:start
+exit_left: intro1
 exit_right: puzzle0
-data_bottom:..,...,..,.,...|.+{-,...,,.....|+==={-..,..,,,.|[====].,....,..|_====]...,,...,|.[===;...,....,|._==],,1....,.*|,.[=],.....,...|.._=={{{{{{{{{{|.,._}}}}}}}}}}}
-data_top:......][..{{...|.....{..[]..]..|.............[.|...`.........].|.........{....{|.........[]...[|.......$..{....|.........[...{[|{..............|...............
+data_bottom:..................|......,.,,..,.....|..,..,.+{{-,.,.,,*|...,..+===].,,,...|.,,,,.[====-......|...,.+======-.,...|..,.._}=====].....|*,....._====;.,...|......,.[=};.,,...|.,.,,,,,[]....,,,.
+data_top:   ..]{][][[]{{[[]{..|.]{...........{][]|.{...........[....|{]...............{|.]...............{|[........`.......]|{.............[{.[|......].......]..]|.]{.]..{........[[|..[[.{{[....{[{{..
 
 @puzzle0
 region:start
-exit_left: origin backtrack
+exit_left: intro2
 exit_right: puzzle1
 data_bottom:.,...,..[|,...,.,.[|..1,...,_|*,..,.!.*|{{{{{{{{{|}}}}}}}}}
 data_top:   .[{{]]{[.|][....{..|{...1..[.|.........|.........|.........
@@ -177,23 +207,8 @@ data_top:   ...{......|..........|....[.....|..........|...][.1...|.....1....|..
 @puzzle3
 region: start
 exit_bottom: puzzle2
-exit_left: puzzle4
 data_bottom: ..,,....,|,,..,...,|..,,..1.,|*,!...1,.|{-,..,1,.|=].,.+{{{|==-.*[===
 data_top:    ]..][{...|..[...].[|{]{..1.{.|....11.].|..]{...{[|..[].....|...{.....
-
-@puzzle4
-region: start
-exit_right: puzzle3
-exit_top: puzzle5
-data_bottom:....,*.|,,.1..,|....,!.|.,,1.,.|{{-,...|==]1,.*|==].+{{
-data_top:.[{]{.{|]...[.]|{...].]|].111.{|......[|.`.....|...[...
-
-@puzzle5
-region: dungeon
-exit_bottom: puzzle4
-exit_right: playground
-data_bottom:cXXXXXXz|D......A|D...3..A|D......A|D......Z|D..&.#.*|D*QWWWWW
-data_top:........|........|...3....|....?...|..[{][{.|........|........
 
   </pre>
   <script>
@@ -216,6 +231,10 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
   
   
   
+  every tile object has
+  - img       image url
+  - btm       bottom behavior {type (none/stop/goal/boxdoor/ice), data}
+  - top       dynamic behavior {type (none/box/player/stop)}
   
   special behaviors to be encoded
   - signs / npcs that can initiate dialogue
@@ -225,7 +244,7 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
   */
   
   let room_bottom = null; //2d array for currently loaded room. each cell is {bool traversible, int goal(0=nogoal)}
-  let room_top = null; //2d array for entities that can move
+  let room_top = null; //2d array for entities that can move. each cell is {string type, var data}
   let room_bottom_elements = null;
   let room_top_elements = null;
   let width = null;
@@ -242,14 +261,13 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     // #2B6AC5 blue sombercore
     start: {color: "#9B7E57"}, //introductory sokoban. simple puzzles that use normal elements
     dungeon: {color: "#2B6AC5"},
-    sepia: {color: "#6F9986"}
+    sepia: {color: "6F9986"}
   };
   function open_room(label, coming_from = "left") {
     let room_data = all_rooms[label];
     if (!room_data) return;
     //read data
     document.querySelector("#color_cover").style.backgroundColor = region_info[room_data.region].color;
-    //document.querySelector("title").innerText = "duckie : " + label;
     //document.querySelector("#color_cover").style.backgroundColor = "#"+Math.floor(Math.random()*16777215).toString(16); console.log(document.querySelector("#color_cover").style.backgroundColor);
     if (room_data.room_bottom && room_data.room_top) { //if this room has already been saved
       room_bottom = room_data.room_bottom;
@@ -276,10 +294,11 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     }
     height = room_bottom.length;
     width = room_bottom[0].length;
-    if (coming_from == "bottom") for (let x = 0; x < width; x++) if (room_bottom[height-1][x].exit) room_top[height-2][x] = arch_top["~"];
-    if (coming_from == "top") for (let x = 0; x < width; x++) if (room_bottom[0][x].exit) room_top[1][x] = arch_top["~"];
-    if (coming_from == "left") for (let y = 0; y < height; y++) if (room_bottom[y][0].exit) room_top[y][1] = arch_top["~"];
-    if (coming_from == "right") for (let y = 0; y < height; y++) if (room_bottom[y][width-1].exit) room_top[y][width-2] = arch_top["~"];
+    //TODO: insert 1 player in the appropriate from direction
+    if (coming_from == "bottom") for (let x = 0; x < width; x++) if (room_bottom[height-1][x].type == "exit") room_top[height-2][x] = arch_top["~"];
+    if (coming_from == "top") for (let x = 0; x < width; x++) if (room_bottom[0][x].type == "exit") room_top[1][x] = arch_top["~"];
+    if (coming_from == "left") for (let y = 0; y < height; y++) if (room_bottom[y][0].type == "exit") room_top[y][1] = arch_top["~"];
+    if (coming_from == "right") for (let y = 0; y < height; y++) if (room_bottom[y][width-1].type == "exit") room_top[y][width-2] = arch_top["~"];
     //other level data
     loaded_room_label = {label: label, coming_from: coming_from};
     active_exits = {
@@ -330,7 +349,7 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
   
   function room_transition(label, coming_from = "left") { //actually call this to change room. open_room is called here
     sfx("room_down");
-    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (room_top[y][x].player) room_top[y][x] = arch_top["."]; //delete all players before saving
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (room_top[y][x].type == "player") room_top[y][x] = arch_top["."]; //delete all players before saving
     for (td of display.querySelectorAll("td")) {
       td.style.animation = "1s td_exit";
     }
@@ -342,13 +361,6 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     setTimeout(function(){
       open_room(label, coming_from);
     }, 1000);
-  }
-  
-  function reset_room() {
-    if (crystal_shard_collected[loaded_room_label.label]) setTimeout(crystal_shard_unfanfare, 1000);
-    delete all_rooms[loaded_room_label.label].room_bottom;
-    delete all_rooms[loaded_room_label.label].room_top;
-    room_transition(loaded_room_label.label, loaded_room_label.coming_from);
   }
   
   document.onkeydown = function(event) {
@@ -371,7 +383,10 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
         [y, x] = [0, 0];
         break;
       case 82:
-        reset_room();
+        if (crystal_shard_collected[loaded_room_label.label]) setTimeout(crystal_shard_unfanfare, 1000);
+        delete all_rooms[loaded_room_label.label].room_bottom;
+        delete all_rooms[loaded_room_label.label].room_top;
+        room_transition(loaded_room_label.label, loaded_room_label.coming_from);
         return;
     }
     if (x == -1 && y == -1) return;
@@ -380,76 +395,74 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
   }
   
   function arch_bottom_empty() {return {
-    img: "art/empty.png"
+    img: "art/empty.png",
+    type: "none"
   };}
   
   let arch_bottom = {
     //nothing's there
-    ".": {img: "art/empty.png"},
-    ",": {img: "art/ground0.png"},
-    "i": {img: "art/ice.png", slippery: true},
-    "w": {img: "art/conwayflooralive.png"},
-    "s": {img: "art/conwayfloordead.png"},
+    ".": {img: "art/empty.png", type: "none"},
+    ",": {img: "art/ground0.png", type: "none"},
+    "i": {img: "art/ice.png", type: "ice"},
+    "w": {img: "art/conwayflooralive.png", type: "none"},
+    "s": {img: "art/conwayfloordead.png", type: "none"},
     //goals
-    "1": {img: "art/goal0.png", goal: 1},
-    "2": {img: "art/goal1.png", goal: 2},
-    "3": {img: "art/goal2.png", goal: 3},
-    //boxdoor
-    "!": {img: "art/boxdoor0closed.png", boxdoor: 1},
-    "@": {img: "art/boxdoor1closed.png", boxdoor: 2},
-    "#": {img: "art/boxdoor2closed.png", boxdoor: 3},
-    ")": {img: "art/boxdoor0open.png", boxdoor: 1, invert: true},
-    "(": {img: "art/boxdoor1open.png", boxdoor: 2, invert: true},
-    "&": {img: "art/boxdoor2open.png", boxdoor: 3, invert: true},
+    "1": {img: "art/goal0.png", type: "goal", data: 0},
+    "2": {img: "art/goal1.png", type: "goal", data: 1},
+    "3": {img: "art/goal2.png", type: "goal", data: 2},
+    //goals
+    "!": {img: "art/boxdoor0closed.png", type: "boxdoor", data: 0},
+    "@": {img: "art/boxdoor1closed.png", type: "boxdoor", data: 1},
+    "#": {img: "art/boxdoor2closed.png", type: "boxdoor", data: 2},
     //exit
-    "*": {img: "art/exit.png", exit: true},
+    "*": {img: "art/exit.png", type: "exit", data: 0},
     //stops!
-    "[": {img: "art/riveredgeleft.png", stop: true},
-    "]": {img: "art/riveredgeright.png", stop: true},
-    "{": {img: "art/riveredgetop.png", stop: true},
-    "}": {img: "art/riveredgebottom.png", stop: true},
-    "=": {img: "art/riverfull.png", stop: true},
-    "+": {img: "art/rivercornertopleft.png", stop: true},
-    "-": {img: "art/rivercornertopright.png", stop: true},
-    "_": {img: "art/rivercornerbottomleft.png", stop: true},
-    ";": {img: "art/rivercornerbottomright.png", stop: true},
-    "Q": {img: "art/walltopleft.png", stop: true},
-    "W": {img: "art/walltop.png", stop: true},
-    "E": {img: "art/walltopright.png", stop: true},
-    "A": {img: "art/wallleft.png", stop: true},
-    "S": {img: "art/wallinner.png", stop: true},
-    "D": {img: "art/wallright.png", stop: true},
-    "Z": {img: "art/wallbottomleft.png", stop: true},
-    "X": {img: "art/wallbottom.png", stop: true},
-    "C": {img: "art/wallbottomright.png", stop: true},
-    "q": {img: "art/wallinnertopleft.png", stop: true},
-    "e": {img: "art/wallinnertopright.png", stop: true},
-    "z": {img: "art/wallinnerbottomleft.png", stop: true},
-    "c": {img: "art/wallinnerbottomright.png", stop: true},
+    "[": {img: "art/riveredgeleft.png", type: "stop"},
+    "]": {img: "art/riveredgeright.png", type: "stop"},
+    "{": {img: "art/riveredgetop.png", type: "stop"},
+    "}": {img: "art/riveredgebottom.png", type: "stop"},
+    "=": {img: "art/riverfull.png", type: "stop"},
+    "+": {img: "art/rivercornertopleft.png", type: "stop"},
+    "-": {img: "art/rivercornertopright.png", type: "stop"},
+    "_": {img: "art/rivercornerbottomleft.png", type: "stop"},
+    ";": {img: "art/rivercornerbottomright.png", type: "stop"},
+    "Q": {img: "art/walltopleft.png", type: "stop"},
+    "W": {img: "art/walltop.png", type: "stop"},
+    "E": {img: "art/walltopright.png", type: "stop"},
+    "A": {img: "art/wallleft.png", type: "stop"},
+    "S": {img: "art/wallinner.png", type: "stop"},
+    "D": {img: "art/wallright.png", type: "stop"},
+    "Z": {img: "art/wallbottomleft.png", type: "stop"},
+    "X": {img: "art/wallbottom.png", type: "stop"},
+    "C": {img: "art/wallbottomright.png", type: "stop"},
+    "q": {img: "art/wallinnertopleft.png", type: "stop"},
+    "e": {img: "art/wallinnertopright.png", type: "stop"},
+    "z": {img: "art/wallinnerbottomleft.png", type: "stop"},
+    "c": {img: "art/wallinnerbottomright.png", type: "stop"},
   };
   
   let arch_top = {
     //nothing's there
-    ".": {img: "art/empty.png"},
+    ".": {img: "art/empty.png", type: "none"},
     //something immovable is there
-    "[": {img: "art/tree0.png", stop: true},
-    "]": {img: "art/tree1.png", stop: true},
-    "{": {img: "art/tree2.png", stop: true},
-    "`": {img: "art/duckie.png", stop: true},
+    "[": {img: "art/tree0.png", type: "stop"},
+    "]": {img: "art/tree1.png", type: "stop"},
+    "{": {img: "art/tree2.png", type: "stop"},
+    "`": {img: "art/duckie.png", type: "stop"},
     //boxen
-    "1": {img: "art/box0.png", box: 1},
-    "2": {img: "art/box1.png", box: 2},
-    "3": {img: "art/box2.png", box: 3, stop: true},
+    "1": {img: "art/box0.png", type: "box", data: 0},
+    "2": {img: "art/box1.png", type: "box", data: 1},
+    "3": {img: "art/box2.png", type: "box", data: 2},
     //people
-    "~": {img: "art/player.png", player: true, stop: true},
-    "?": {img: "art/duckie.png", wanderer: true, stop: true},
+    "~": {img: "art/player.png", type: "player"},
+    "?": {img: "art/duckie.png", type: "wanderer"},
     //uhhh other
-    "$": {img: "art/crystalshard.png", collectable: true},
+    "$": {img: "art/crystalshard.png", type: "collectable"},
   };
-  let box_data_to_weight = {"1":1,"2":0.000000001,"3":1};
-  let box_data_pushing = [1, 2, 3];
-  let box_data_pulling = [3];
-  let box_satisfied = {"1":true,"2":true,"3":true};
+  let box_data_to_weight = {"0":1,"1":0.000001};
+  let box_data_pushing = [0, 1];
+  let box_data_pulling = [2];
+  let box_satisfied = [false, false, false];
   
   function player_input(input_dy, input_dx, only_do_static_checks = false) {
     if (input_disabled && !only_do_static_checks) return;
@@ -493,31 +506,37 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
       }
     }
     //move the players and wanderers
-    if (!only_do_static_checks) for ([creature, [dy, dx]] of [["player", [input_dy, input_dx]], ["wanderer", [[1,0],[-1,0],[0,1],[0,-1]][Math.floor(Math.random()*4)]]]) { //for each pass of this movement code
+    if (!only_do_static_checks) for ([expected_type, [dy, dx]] of [["player", [input_dy, input_dx]], ["wanderer", [[1,0],[-1,0],[0,1],[0,-1]][Math.floor(Math.random()*4)]]]) { //for each pass of this movement code
       let [y_start, y_end, y_step] = dy < 0 ? [0, height - 1, 1] : [height - 1, 0, -1];
       let [x_start, x_end, x_step] = dx < 0 ? [0, width - 1, 1] : [width - 1, 0, -1];
       for (let y = y_start; y != y_end + y_step; y += y_step) {
         for (let x = x_start; x != x_end + x_step; x += x_step) {
-          if (!room_top[y][x][creature]) continue;
+          if (room_top[y][x].type != expected_type) continue;
           let new_y = y + dy;
           let new_x = x + dx;
           if (space_blocked_but_allowing_boxes(new_y, new_x)) continue;
           //we are walking into walkable, box, or collectable
           //do player motion
-          if (box_data_pushing.includes(room_top[new_y][new_x].box)) { //if walking into box
+          if (room_top[new_y][new_x].type == "none" || room_top[new_y][new_x].type == "collectable") { //walking into empty. easy
+            if (room_top[new_y][new_x].type == "collectable") crystal_shard_fanfare();
+            room_top[new_y][new_x] = room_top[y][x];
+            room_top[y][x] = arch_top["."];
+            visual_update_top(new_y, new_x);
+            visual_update_top(y, x);
+          } else if (room_top[new_y][new_x].type == "box" && box_data_pushing.includes(room_top[new_y][new_x].data)) { //walking into box
             //at present, x,y=player, new=first box, super=final box
-            let total_box_weight = box_data_to_weight[room_top[new_y][new_x].box]; //the weights from boxes bein moved
+            let total_box_weight = box_data_to_weight[room_top[new_y][new_x].data]; //the weights from boxes bein moved
             if (dy < -1) dy = -1; if (dy > 1) dy = 1; if (dx < -1) dx = -1; if (dx > 1) dx = 1;
             let super_y = new_y + dy;
             let super_x = new_x + dx;
             if (space_blocked_but_allowing_boxes(super_y, super_x)) continue;
-            while (room_top[super_y][super_x].box && !space_blocked_but_allowing_boxes(super_y+dy, super_x+dx)) {
-              total_box_weight += box_data_to_weight[room_top[super_y][super_x].box];
+            while (room_top[super_y][super_x].type == "box" && !space_blocked_but_allowing_boxes(super_y+dy, super_x+dx)) {
+              total_box_weight += box_data_to_weight[room_top[super_y][super_x].data];
               super_y += dy;
               super_x += dx;
             }
             if (total_box_weight > 1) continue;
-            if (room_top[super_y][super_x].box) continue; //try to push 2+ boxes but super space blocked
+            if (room_top[super_y][super_x].type == "box") continue; //try to push 2 boxes but super space blocked
             room_top[super_y][super_x] = room_top[new_y][new_x];
             room_top[new_y][new_x] = room_top[y][x];
             room_top[y][x] = arch_top["."];
@@ -525,50 +544,40 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
             visual_update_top(new_y, new_x);
             visual_update_top(y, x);
             sfx("pushbox");
-          } else { //validly walking into something else. in theory a nothing top or a collectable
-            //while slipping on ice (or the beyond is too much) lets slip and slide
-            while (room_bottom[new_y][new_x].slippery && !space_blocked(new_y+dy, new_x+dx)) [new_y, new_x] = [new_y + dy, new_x + dx];
-            if (room_top[new_y][new_x].collectable) crystal_shard_fanfare();
-            room_top[new_y][new_x] = room_top[y][x];
-            room_top[y][x] = arch_top["."];
-            visual_update_top(new_y, new_x);
-            visual_update_top(y, x);
-          }
+          } //end check for walking into empty vs box
           //check if we're pulling
-          if (!oob(y-dy,x-dx) && box_data_pulling.includes(room_top[y-dy][x-dx].box)) {
+          if (!oob(y-dy,x-dx) && room_top[y-dy][x-dx].type == "box" && box_data_pulling.includes(room_top[y-dy][x-dx].data)) {
             room_top[y][x] = room_top[y-dy][x-dx];
             room_top[y-dy][x-dx] = arch_top["."];
             visual_update_top(y-dy, x-dx);
             visual_update_top(y, x);
             sfx("pushbox");
           }
+          /*if (room_bottom[new_y][new_x].type == "ice" && Math.abs(dx) + Math.abs(dy)) { //slide on ice. TODO: just force walk beyond ice. dont take control of player inputs bc several players
+            input_disabled = true;
+            setTimeout(function() {
+              input_disabled = false;
+              player_input(dy, dx, only_do_static_checks);
+            }, 50);
+          }*/
         }
       }
     }
     //do box checks
-    box_satisfied = {"1":true,"2":true,"3":true};
+    box_satisfied = [true, true, true];
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (room_bottom[y][x].goal && room_bottom[y][x].goal != room_top[y][x].box) {
-          box_satisfied[room_bottom[y][x].goal] = false;
+        if (room_bottom[y][x].type == "goal" && room_bottom[y][x].data != room_top[y][x].data) box_satisfied[room_bottom[y][x].data] = false;
+      }
+    }
+    //custom textures that are dynamic (boxdoor)
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (room_bottom[y][x].type == "boxdoor") {
+          room_bottom_elements[y][x].setAttribute("background", "art/boxdoor"+room_bottom[y][x].data+(box_satisfied[room_bottom[y][x].data]?"open":"closed")+".png")
         }
       }
     }
-    //non inverted box doors
-    arch_bottom["!"].stop = !box_satisfied["1"];
-    arch_bottom["@"].stop = !box_satisfied["2"];
-    arch_bottom["#"].stop = !box_satisfied["3"];
-    arch_bottom["!"].img = !box_satisfied["1"] ? "art/boxdoor0closed.png" : "art/boxdoor0open.png";
-    arch_bottom["@"].img = !box_satisfied["2"] ? "art/boxdoor1closed.png" : "art/boxdoor1open.png";
-    arch_bottom["#"].img = !box_satisfied["3"] ? "art/boxdoor2closed.png" : "art/boxdoor2open.png";
-    //inverted box doors
-    arch_bottom[")"].stop = box_satisfied["1"];
-    arch_bottom["("].stop = box_satisfied["2"];
-    arch_bottom["&"].stop = box_satisfied["3"];
-    arch_bottom[")"].img = box_satisfied["1"] ? "art/boxdoor0closed.png" : "art/boxdoor0open.png";
-    arch_bottom["("].img = box_satisfied["2"] ? "art/boxdoor1closed.png" : "art/boxdoor1open.png";
-    arch_bottom["&"].img = box_satisfied["3"] ? "art/boxdoor2closed.png" : "art/boxdoor2open.png";
-    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (room_bottom[y][x].boxdoor) visual_update_bottom(y, x);
     let coming_from = {
       "0": "left",
       "-2": "bottom",
@@ -581,8 +590,8 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     exit_check:
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (!room_bottom[y][x].exit) continue;
-        if (!room_top[y][x].player) continue;
+        if (room_bottom[y][x].type != "exit") continue;
+        if (room_top[y][x].type != "player") continue;
         input_disabled = true;
         let destination = active_exits[coming_from];
         room_transition(destination, coming_from);
@@ -591,19 +600,17 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     }
   }
   
-  function xor(a, b) {if (a && b) return false; if (!a && !b) return false; return true;}
-  
   //if bottom is stop, or if top is stop, or oob
   function space_blocked(y, x) {
     if (oob(y, x)) return true;
-    if (room_top[y][x].collectable) return false;
-    if (room_bottom[y][x].stop || room_top[y][x].stop || room_top[y][x].box) return true;
+    if (room_top[y][x].type == "collectable") return false;
+    if (room_bottom[y][x].type == "stop" || (room_bottom[y][x].type == "boxdoor" && !box_satisfied[room_bottom[y][x].data]) || room_top[y][x].type != "none") return true;
     return false;
   }
   function space_blocked_but_allowing_boxes(y, x) {
     if (oob(y, x)) return true;
-    if (room_top[y][x].collectable) return false;
-    if (room_bottom[y][x].stop || room_top[y][x].stop) return true;
+    if (room_top[y][x].type == "collectable") return false;
+    if (room_bottom[y][x].type == "stop" || (room_bottom[y][x].type == "boxdoor" && !box_satisfied[room_bottom[y][x].data]) || (room_top[y][x].type != "none" && room_top[y][x].type != "box")) return true;
     return false;
   }
   function oob(y, x) {
@@ -637,12 +644,16 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     let img = document.querySelector("#crystal_shards img[label=\""+loaded_room_label.label+"\"]");
     img.setAttribute("collected", "true");
     img.setAttribute("src", "art/crystalshard.png");
+    document.querySelector("#crystal_shards").style.animation = "";
+    setTimeout(function(){document.querySelector("#crystal_shards").style.animation = "5s crystal_shards_notice";}, 0);
   }
   function crystal_shard_unfanfare() {
     delete crystal_shard_collected[loaded_room_label.label];
     let img = document.querySelector("#crystal_shards img[label=\""+loaded_room_label.label+"\"]");
     img.setAttribute("collected", "false");
     img.setAttribute("src", "art/crystalshardoutline.png");
+    document.querySelector("#crystal_shards").style.animation = "";
+    setTimeout(function(){document.querySelector("#crystal_shards").style.animation = "5s crystal_shards_notice";}, 0);
   }
   
   function start_game() {
@@ -654,9 +665,9 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     },900);
     setTimeout(function() {
       document.querySelector("h1").remove();
-      open_room('origin', 'left');
+      open_room('origin', 'top');
       //debug: make all room shortcuts
-      if (false) for (label of Object.keys(all_rooms)) {
+      for (label of Object.keys(all_rooms)) {
         let button = document.createElement("button");
         button.setAttribute("class", "shortcut")
         button.innerText = label;
@@ -667,7 +678,7 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     start_game = function() {}
   }
   
-  function sfx(aud) {
+  function sfx(type) {
     //coming from direction: left top bottom right static
     //load unload: room_up room_down
     let a = new Audio("sound/"+{
@@ -687,7 +698,7 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
       "room_up": "magic",
       "room_down": "rumble",
       "pushbox": "godown"
-    }[aud]+".mp3");
+    }[type]+".mp3");
     a.volume = 0.5;
     a.play();
   }

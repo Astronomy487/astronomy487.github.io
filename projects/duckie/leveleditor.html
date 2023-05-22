@@ -49,8 +49,8 @@
   <textarea style="position: fixed; bottom: 0; left: 0; height: 50vh; width: 12rem;"></textarea>
   <table></table>
   <script>
-    let height = 8;
-    let width = 16;
+    let height = 7;
+    let width = 8;
     let bottom_elements = [];
     let top_elements = [];
     let selected_top_img = "art/empty.png";
@@ -92,60 +92,72 @@
  
  
  
- 
   let arch_bottom = {
     //nothing's there
-    ".": {img: "art/empty.png", type: "none"},
-    ",": {img: "art/ground0.png", type: "none"},
-    "i": {img: "art/ice.png", type: "ice"},
+    ".": {img: "art/empty.png"},
+    ",": {img: "art/ground0.png"},
+    "i": {img: "art/ice.png", slippery: true},
+    "w": {img: "art/conwayflooralive.png"},
+    "s": {img: "art/conwayfloordead.png"},
     //goals
-    "1": {img: "art/goal0.png", type: "goal", data: 0},
-    "2": {img: "art/goal1.png", type: "goal", data: 1},
-    //goals
-    "!": {img: "art/boxdoor0closed.png", type: "boxdoor", data: 0},
-    "@": {img: "art/boxdoor1closed.png", type: "boxdoor", data: 1},
+    "1": {img: "art/goal0.png", goal: 1},
+    "2": {img: "art/goal1.png", goal: 2},
+    "3": {img: "art/goal2.png", goal: 3},
+    //boxdoor
+    "!": {img: "art/boxdoor0closed.png", boxdoor: 1},
+    "@": {img: "art/boxdoor1closed.png", boxdoor: 2},
+    "#": {img: "art/boxdoor2closed.png", boxdoor: 3},
+    ")": {img: "art/boxdoor0open.png", boxdoor: 1, invert: true},
+    "(": {img: "art/boxdoor1open.png", boxdoor: 2, invert: true},
+    "&": {img: "art/boxdoor2open.png", boxdoor: 3, invert: true},
     //exit
-    "*": {img: "art/exit.png", type: "exit", data: 0},
+    "*": {img: "art/exit.png", exit: true},
     //stops!
-    "[": {img: "art/riveredgeleft.png", type: "stop"},
-    "]": {img: "art/riveredgeright.png", type: "stop"},
-    "{": {img: "art/riveredgetop.png", type: "stop"},
-    "}": {img: "art/riveredgebottom.png", type: "stop"},
-    "=": {img: "art/riverfull.png", type: "stop"},
-    "+": {img: "art/rivercornertopleft.png", type: "stop"},
-    "-": {img: "art/rivercornertopright.png", type: "stop"},
-    "_": {img: "art/rivercornerbottomleft.png", type: "stop"},
-    ";": {img: "art/rivercornerbottomright.png", type: "stop"},
-    "Q": {img: "art/walltopleft.png", type: "stop"},
-    "W": {img: "art/walltop.png", type: "stop"},
-    "E": {img: "art/walltopright.png", type: "stop"},
-    "A": {img: "art/wallleft.png", type: "stop"},
-    "S": {img: "art/wallinner.png", type: "stop"},
-    "D": {img: "art/wallright.png", type: "stop"},
-    "Z": {img: "art/wallbottomleft.png", type: "stop"},
-    "X": {img: "art/wallbottom.png", type: "stop"},
-    "C": {img: "art/wallbottomright.png", type: "stop"},
-    "q": {img: "art/wallinnertopleft.png", type: "stop"},
-    "e": {img: "art/wallinnertopright.png", type: "stop"},
-    "z": {img: "art/wallinnerbottomleft.png", type: "stop"},
-    "c": {img: "art/wallinnerbottomright.png", type: "stop"},
+    "[": {img: "art/riveredgeleft.png", stop: true},
+    "]": {img: "art/riveredgeright.png", stop: true},
+    "{": {img: "art/riveredgetop.png", stop: true},
+    "}": {img: "art/riveredgebottom.png", stop: true},
+    "=": {img: "art/riverfull.png", stop: true},
+    "+": {img: "art/rivercornertopleft.png", stop: true},
+    "-": {img: "art/rivercornertopright.png", stop: true},
+    "_": {img: "art/rivercornerbottomleft.png", stop: true},
+    ";": {img: "art/rivercornerbottomright.png", stop: true},
+    "Q": {img: "art/walltopleft.png", stop: true},
+    "W": {img: "art/walltop.png", stop: true},
+    "E": {img: "art/walltopright.png", stop: true},
+    "A": {img: "art/wallleft.png", stop: true},
+    "S": {img: "art/wallinner.png", stop: true},
+    "D": {img: "art/wallright.png", stop: true},
+    "Z": {img: "art/wallbottomleft.png", stop: true},
+    "X": {img: "art/wallbottom.png", stop: true},
+    "C": {img: "art/wallbottomright.png", stop: true},
+    "q": {img: "art/wallinnertopleft.png", stop: true},
+    "e": {img: "art/wallinnertopright.png", stop: true},
+    "z": {img: "art/wallinnerbottomleft.png", stop: true},
+    "c": {img: "art/wallinnerbottomright.png", stop: true},
   };
   
   let arch_top = {
     //nothing's there
-    ".": {img: "art/empty.png", type: "none"},
+    ".": {img: "art/empty.png"},
     //something immovable is there
-    "[": {img: "art/tree0.png", type: "stop"},
-    "]": {img: "art/tree1.png", type: "stop"},
-    "{": {img: "art/tree2.png", type: "stop"},
-    "`": {img: "art/duckie.png", type: "stop"},
-    "?": {img: "art/sign.png", type: "stop", sign: true},
+    "[": {img: "art/tree0.png", stop: true},
+    "]": {img: "art/tree1.png", stop: true},
+    "{": {img: "art/tree2.png", stop: true},
+    "`": {img: "art/duckie.png", stop: true},
     //boxen
-    "1": {img: "art/box0.png", type: "box", data: 0},
-    "2": {img: "art/box1.png", type: "box", data: 1},
+    "1": {img: "art/box0.png", box: 1},
+    "2": {img: "art/box1.png", box: 2},
+    "3": {img: "art/box2.png", box: 3, stop: true},
     //people
-    "~": {img: "art/player.png", type: "player"},
+    "~": {img: "art/player.png", player: true, stop: true},
+    "?": {img: "art/duckie.png", wanderer: true, stop: true},
+    //uhhh other
+    "$": {img: "art/crystalshard.png", collectable: true},
   };
+  
+  
+  
  
  
     
