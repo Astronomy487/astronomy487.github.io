@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Geologica&display=swap');
+    
+    body {
+      margin: 0;
+      background-color: #222;
+      color: white;
+      font-family: Geologica, sans-serif;
+      user-select: none;
+    }
+    
+    table {
+      background-color: #222;
+      border-spacing: 0.25rem;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      table-layout: fixed;
+      z-index: 1;
+    }
+    
+    @keyframes td_enter {
+      from {opacity: 0; transform: translateY(1rem);}
+    }
+    
+    td {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.25rem;
+      border: solid 0.125rem #444;
+      transition: 0.05s;
+      animation: 1s td_enter;
+    }
+    
+    td[alive="true"] {
+      background-color: #fff;
+      border-color: #aaa;
+      box-shadow: 0 0 2rem white;
+    }
+    
+    td[alive="false"] {
+    }
+    
+    footer {
+      position: fixed;
+      z-index: 2;
+      bottom: 2rem;
+      text-align: center;
+      width: 100vw;
+    }
+    
+    @keyframes footer_thing_enter {
+      from {opacity: 0; transform: translateY(2rem);}
+    }
+    
+    footer span {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      text-align: center;
+      border: solid 0.125rem #444;
+      background-color: #fff;
+      border-color: #aaa;
+      box-shadow: 0 0 2rem white;
+      color: black;
+      font-size: 1.5rem;
+      transition: 0.2s;
+      border-radius: 0.25rem;
+      animation: 1s footer_thing_enter;
+    }
+    
+    footer span[used] {
+      opacity: 0.2;
+    }
+    
+    footer b {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: normal;
+      background-color: inherit;
+      opacity: 0.2;
+      animation: 1s footer_thing_enter;
+    }
+    
+    header {
+      position: fixed;
+      z-index: 2;
+      top: 2rem;
+      text-align: center;
+      width: 100vw;
+      color: white;
+      font-size: 1.5rem;
+      animation: 1s footer_thing_enter;
+    }
+  </style>
+</head>
+<body>
+  <header></header>
+  <table></table>
+  <footer></footer>
+  <script src="script.js"></script>
+</body>
+</html>
