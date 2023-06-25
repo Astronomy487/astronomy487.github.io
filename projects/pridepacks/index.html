@@ -31,18 +31,20 @@
     }
     
     header h1 {
-      margin: 0;
       font-weight: bold;
       font-size: 2rem;
-      background-color: #00000044;
+      background-color: #00000064;
       backdrop-filter: blur(1rem);
       color: white;
-      border-radius: 8rem;
+      border-radius: 0 0 3rem 3rem;
       border: solid 0.125rem white;
+      border-top-width: 0;
       width: 24rem;
-      margin: 0 auto;
-      transform: translateY(4rem);
-      padding: 2rem 4rem;
+      margin: 0;
+      padding: 2rem 6rem;
+      position: fixed;
+      z-index: 2;
+      left: calc(50vw - 18rem);
     }
     
     main {
@@ -129,7 +131,7 @@
     <p><span id="pride_month_toast">Happy pride month! 🏳️‍🌈🏳️‍⚧️ </span>This is a collection of Minecraft (Java Edition) resource packs I've made that replace the XP bar and elytra with pride flags.</p>
     <script>if (new Date().getMonth() != 5) document.querySelector("#pride_month_toast").remove();</script>
     <p>They are designed to work with vanilla texture packs. If used with other texture packs, expect problems with the XP bar and other GUI elements!</p>
-    <p>If you want me to add a missing flag or fix something, just <a target="_blank" href="https://www.twitter.com/astronomy487">contact me on Twitter</a>!</p>
+    <p>Resource packs affect the look of the game on your client. Other users will not see the pride flags unless they have the pack installed too, and all elytra will bear the pride flag from the pack.</p>
     <!--<h2>Gender Flags</h2>
     <section>
       <div class="card">
@@ -141,6 +143,10 @@
       </div>
     </section>-->
   </main>
+  <main>
+    <p>If you want me to add a missing flag or fix something, just <a target="_blank" href="https://www.twitter.com/astronomy487">contact me on Twitter</a>!</p>
+  </main>
+  <img src="cover2.png" style="width: 100vw; display: block;">
   <iframe style="display: none;"></iframe>
   <script>
     let the_content = [
