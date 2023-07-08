@@ -96,18 +96,10 @@
       position: fixed;
       left: 50%;
       top: 50%;
-      transform: translate(-50%, calc(-50% - 4rem));
+      transform: translate(-50%, calc(-50% - 2rem));
       height: 4rem;
       width: 4rem;
       image-rendering: pixelated;
-    }
-    #title span {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, calc(-50% + 2rem));
-      image-rendering: pixelated;
-      font-size: 1.25rem;
     }
     
     #crystal_shards {
@@ -122,11 +114,35 @@
       height: 4rem;
       margin: 0;
     }
+    
+    /* fanfare */
+    h2 {
+      font-size: 2rem;
+      font-weight: normal;
+      margin: 0;
+      position: fixed;
+      left: 50%;
+      top: 1rem;
+      transform: translateX(-50%);
+      background-color: black;
+      border: solid 0.25rem #7A444A;
+      background-color: inherit;
+      width: 24rem;
+      padding: 1rem;
+    }
+    h2 img {
+      image-rendering: pixelated;
+      width: 4rem;
+      height: 4rem;
+      margin: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
   <table id="display"></table>
-  <h1 id="title" onclick="start_game();"><img src="art/duckie.png">duckie<span></span></h1>
+  <h1 id="title" onclick="start_game();"><img src="art/duckie.png"></h1>
   <div id="color_cover"></div>
   <div id="crystal_shards"></div>
   <pre id="all_level_info" style="display: none;">
@@ -390,6 +406,8 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
     "i": {img: "art/ice.png", slippery: true},
     "w": {img: "art/conwayflooralive.png"},
     "s": {img: "art/conwayfloordead.png"},
+    "M": {img: "art/dangerousfloor.png", deadly: true},
+    "m": {img: "art/becomedangerousfloor.png", becomes: "M"},
     //goals
     "1": {img: "art/goal0.png", goal: 1},
     "2": {img: "art/goal1.png", goal: 2},
@@ -541,6 +559,15 @@ data_top:........|........|...3....|....?...|..[{][{.|........|........
             visual_update_top(y-dy, x-dx);
             visual_update_top(y, x);
             sfx("pushbox");
+          }
+          //affect floor behind us
+          if (room_bottom[y][x].becomes) {
+            room_bottom[y][x] = arch_bottom[room_bottom[y][x].becomes];
+            visual_update_bottom(y, x);
+          }
+          //check for death
+          if (room_bottom[new_y][new_x].deadly) {
+            reset_room();
           }
         }
       }
