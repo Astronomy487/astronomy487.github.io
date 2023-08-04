@@ -1,95 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="icon" href="icon.png">
+  <title>Astro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,0">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" id="mobilecss">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-    :root {
-      --support: #888888; /* for support */
-      --accent: #24cc46; /* for links */
-      --background: #ffffff; /*  for bg */
-      --text: #000000; /* for text */
-      --muted: #888888; /* for faded stuff */
-    }
-    
-    iframe {
-      width: 100%;
-      height: 48rem;
-      border: 0;
-      overflow: hidden;
-    }
-    
-    body {
-      margin: 0;
-      background-color: var(--background);
-      user-select: none;
-      font-family: "Inter", sans-serif;
-    }
-    
-    ::-webkit-scrollbar {
-      width: 0.5rem;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--muted);
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text);
-    }
-    
-    #other-albums {
-      text-align: center;
-      margin: 16rem auto;
-      max-width: 64rem;
-      font-size: 0;
-      display: none;
-    }
-    
-    #other-albums a {
-    }
-    
-    #other-albums img {
-      width: 16rem;
-      height: 16rem;
-      margin: 2rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    #other-albums a:hover img {
-      transform: scale(1.025);
-      box-shadow: -0.5rem 0.5rem var(--accent);
-    }
-    
-    #other-albums h1 {
-      font-size: 1.25rem;
-      font-family: "Inter", sans-serif;
-    }
   </style>
-  <style id="mobilecss"></style>
-  <title>ASTRO</title>
-  <link rel="icon" type="image/x-icon" href="icon.png">
 </head>
 <body>
-  <iframe style="height: 100vh;" src="i.html" id="about-page"></iframe>
-  <iframe src="somewhereinthemilkyway/index.html"></iframe>
-  <iframe src="toomuch/index.html"></iframe>
-  <iframe src="fofx/index.html"></iframe>
-  <iframe src="mindsets/index.html"></iframe>
-  <iframe src="10kdegrees/index.html"></iframe>
-  <iframe src="nexuscondition/index.html"></iframe>
-  <div id="other-albums">
-    <h1>PRE SERIES IV ALBUMS</h1>
-    <a href="exosphere"><img src="exosphere/exosphere.jpg"></a>
-    <a href="pulsewidth"><img src="pulsewidth/pulsewidth.jpg"></a>
-    <a href="emerge"><img src="emerge/emerge.jpg"></a>
-    <a href="asymmetricsilhouette"><img src="asymmetricsilhouette/asymmetricsilhouette.jpg"></a>
-    <a href="utopian"><img src="utopian/utopian.jpg"></a>
-    <a href="chaseanidea"><img src="chaseanidea/chaseanidea.jpg"></a>
-  </div>
-  <div style="background-color: var(--text);"><iframe src="projects/index.html" style="height: 80rem;"></iframe></div>
-  <script>
-    if (screen.width < 1280) document.getElementById("mobilecss").innerHTML = "iframe {height: 124rem;}";
-  </script>
   <script src="dynamicaccentcolor.js"></script>
+  <script src="mobileuserdetected.js"></script>
+  <script src="discographyinitial.js"></script>
+  <div id="bio">
+    <div class="box">
+      <h1>
+        <img src="https://f4.bcbits.com/img/0018244792_20.jpg">Astro<span>nomy487</span>
+      </h1>
+      <p>hello! i am an electronica music producer creating whichever sounds i find most interesting. i'm also an occasional <a href="projects">programmer</a></p>
+      <p style="height: 0; margin-bottom: -2rem; margin-top: 2rem;">he him 18</p>
+      <nav style="text-align: right; height: 0; margin-bottom: 4rem;">
+        <a href="https://twitter.com/astronomy487"><img src="https://astronomy487.github.io/socialicons/black/twitter.png"></a>
+        <a href="https://discord.gg/ZnMsetP"><img src="https://astronomy487.github.io/socialicons/black/discord.png"></a>
+        <a href="https://www.youtube.com/astronomy487"><img src="https://astronomy487.github.io/socialicons/black/youtube.png"></a>
+        <a href="https://astronomy487.bandcamp.com/"><img src="https://astronomy487.github.io/socialicons/black/bandcamp.png"></a>
+        <a href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5"><img src="https://astronomy487.github.io/socialicons/black/spotify.png"></a>
+        <a href="https://music.apple.com/gb/artist/astro/1468743818"><img src="https://astronomy487.github.io/socialicons/black/applemusic.png"></a>
+      </nav>
+      <p style="text-align: center; font-weight: bold;">scroll to browse my discography!</p>
+      <div style="text-align: center; user-select: none;">
+        <span style="font-size: 1.25rem; background-color: var(--accent); color: white; display: inline-block; width: 2rem; height: 2rem; line-height: 2rem; border-radius: 2rem; font-weight: bold;">↓</span>
+      </div>
+    </div>
+  </div>
+  <script src="somewhereinthemilkyway/discographydata.js"></script>
+  <script src="toomuch/discographydata.js"></script>
+  <script src="fofx/discographydata.js"></script>
+  <script src="remixes/discographydata.js"></script>
+  <script src="mindsets/discographydata.js"></script>
+  <script src="10kdegrees/discographydata.js"></script>
+  <script src="nexuscondition/discographydata.js"></script>
+  <script src="discographygenerate.js"></script>
 </body>
 </html>
