@@ -14,7 +14,7 @@ albums.push({
 	description: "sometimes stylized f(x) // my tenth album! a 46-minute continuous mix of bright electronic music",
 	release_year: 2021,
 	main_tracklist: ["Hi", "Already Here", "Nitrogen (feat. bandanabloom)", "Are You Ready to Go to Space? (feat. REY GWEN)", "I Hope So, Because We're Leaving Soon", "Morning", "Songs of Yesterday", "Endless IV", "Blooming", "Insincere", "Let Yourself Forget (feat. bandanabloom)", "Warp Speed"],
-	bonus_tracklist: ["Insert Disc", "Forever Forever (Demo)", "Never Know (Demo)", "Never Know (Demo)", "Charm (Demo)", "Friday the Fifth (Demo)", "Friday the Sixth (Demo)"],
+	bonus_tracklist: ["Insert Disc", "Forever Forever (Demo)", "Never Know (Demo)", "Charm (Demo)", "Friday the Fifth (Demo)", "Friday the Sixth (Demo)"],
 	main_length: "46'37\"",
 	bonus_length: "26'06\"",
 	credits: ["All tracks written and produced by Astro.", "Vocals by bandanabloom and REY GWEN."],
