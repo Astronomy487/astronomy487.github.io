@@ -6,11 +6,6 @@ albums.push({
 	background: [113, 79, 26],
 	dark_background: [93, 59, 6],
 	icon_color: "white",
-	title_font: "Tektur",
-	title_font_weight: 900,
-	title_font_css: {
-		fontWeight: "900"
-	},
 	description: "A one-hour mix of percussion-driven tracks",
 	release_year: 2019,
 	main_tracklist: ["Infinity", "Intensity", "Clarity", "Activity", "Credibility", "Mortality", "Trinity", "Purity", "Opportunity", "Possibility", "Utility", "Oddity", "Serenity", "Fatality", "Objectivity"],

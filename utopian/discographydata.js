@@ -6,12 +6,6 @@ albums.push({
 	edge: [150, 12, 17],
 	text: [255, 255, 255],
 	icon_color: "white",
-	title_font: "DM Sans",
-	title_font_weight: 300,
-	title_font_css: {
-		fontWeight: "300",
-		fontSize: "5rem"
-	},
 	description: "12 stories surrounding the people from Molyge",
 	release_year: 2019,
 	main_tracklist: ["A Hundred Years", "Fly Away", "Further from Free", "Air", "Final Breath", "Infancy of Home", "Forgotten Age", "Thank You in Advance", "We're Taking Everything Back", "After Centuries", "Coming Home", "If Only I Were Here"],

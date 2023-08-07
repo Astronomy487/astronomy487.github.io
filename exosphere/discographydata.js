@@ -6,12 +6,6 @@ albums.push({
 	dark_background: [75, 69, 107],
 	background: [40, 30, 67],
 	icon_color: "white",
-	title_font: "Libre Franklin",
-	title_font_weight: 500,
-	title_font_css: {
-		transform: "scaleX(0.8)",
-		transformOrigin: "left"
-	},
 	description: "WE TRANSCEND INTO AN ERA OF CREATION. WE BECOME UNIFIED WITH LIGHT. 18 AMBIENT TRACKS WITH A 1H07 RUNTIME",
 	release_year: 2019,
 	main_tracklist: ["Callisto", "Dione", "Europa", "Titan", "Oberon", "Charon", "Ganymede", "Iapetus", "Umbriel", "Tethys", "Ariel", "Miranda", "Mimas", "Enceladus", "Rhea", "Triton", "Io", "Titania"],

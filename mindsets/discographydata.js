@@ -6,12 +6,6 @@ albums.push({
 	accent: [31, 241, 189],
 	text: [255, 248, 233],
 	icon_color: "white",
-	title_font: "Work Sans",
-	title_font_weight: 600,
-	title_font_css: {
-		fontWeight: "600",
-		letterSpacing: "-0.0625em"
-	},
 	description: "Mindsets is the set of songs I've been working on since March of 2020, even through 10k Degrees. This is the longest I've spent working on a single project, and I'm so excited for you all to hear this!",
 	release_year: 2021,
 	main_tracklist: ["Wanderers", "Looking Forward", "Good Person", "One Day", "Better", "Identity", "Hour Twenty-Four", "Stargazing", "Mandatory Good Vibes", "Holocene" , "Out in the Open (feat. bandanabloom)", "Together Again", "Thank You", "Best Part (feat. bandanabloom)"],

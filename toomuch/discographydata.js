@@ -6,12 +6,6 @@ albums.push({
 	accent: [250, 166, 236],
 	text: [255, 255, 255],
 	icon_color: "white",
-	title_font: "Shippori Mincho",
-	title_font_weight: 400,
-	title_font_css: {
-		letterSpacing: "-0.125em",
-		wordSpacing: "0.5rem"
-	},
 	description: "this is my 11th album. it is an hour long mix of explosive, experimental, electronic tracks. enjoy the fireworks!!",
 	release_year: 2022,
 	main_tracklist: ["Oxygen", "Midnight Star", "Do you feel hope anymore?", "Neptune", "ANGEL_CORE", "The sky is falling", "HEARTBEAT", "The city was still there", "Firework Show"],

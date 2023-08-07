@@ -6,13 +6,6 @@ albums.push({
 	background: [111, 32, 45],
 	dark_background: [85, 30, 33],
 	icon_color: "white",
-	title_font: "Noto Serif SC",
-	title_font_weight: 900,
-	title_font_css: {
-		fontWeight: "900",
-		textTransform: "uppercase",
-		fontSize: "2.5rem"
-	},
 	description: "somewhere in the milky way // an album inspired by the soundtracks of some of my favorite games. split into 4 discs: the morning disc, the afternoon disc, the evening disc, and the night disc. 2 hours of chill vibes",
 	release_year: 2022,
 	main_tracklist: ["daybreak","morning star","crossing guard","windmills","rings","overcast","pink lemonade","golden","clear sky","rainfall","forget everything","current","in twilight","glisten","hidden beneath the covers","right here","it is so nice out","campfires","wide awake, dreaming of some place far away","graveyard","wonder","shimmering","meteor shower","secrets"],

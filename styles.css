@@ -167,18 +167,21 @@ main[lonely="true"] .information, main[lonely="true"] canvas {top: 50vh;}
 main h1 {
 	color: var(--accent);
 	margin: 0;
-	font-size: 4rem;
-	font-weight: normal;
+	font-size: 3.5rem;
+	font-weight: bold;
+	letter-spacing: -0.0625em;
 }
 
 @keyframes bump {
 	0% {transform: none;}
-	3% {transform: translateY(-0.125em);}
-	6% {transform: none;}
+	50% {transform: translateY(-0.125em);}
+	100% {transform: none;}
 }
 
 .bump {
+	animation: 0.5s bump ease-in-out;
 	white-space: pre;
+	display: inline-block;
 }
 
 .tracklist {
@@ -349,6 +352,7 @@ main .big_background {
 	border: solid 1rem var(--accent);
 	box-shadow: 0 0.5rem 1rem #00000088;
 	z-index: 2;
+	border-radius: 2rem;
 }
 
 #bio, main {
@@ -363,6 +367,8 @@ main .big_background {
 #bio h1 {
 	margin: 0;
 	color: var(--accent);
+	letter-spacing: -0.0625em;
+	font-size: 2.5rem;
 }
 
 #bio h1 img {

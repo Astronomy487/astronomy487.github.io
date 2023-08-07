@@ -6,12 +6,6 @@ albums.push({
 	accent: [255, 155, 255],
 	text: [238, 232, 255],
 	icon_color: "white",
-	title_font_css: {
-		letterSpacing: "0.125em",
-		textTransform: "lowercase",
-		fontFamily: "Times New Roman, serif",
-		fontStyle: "italic"
-	},
 	description: " In a heartbeat, you can set the sky on fire. ",
 	release_year: 2020,
 	main_tracklist: ["Legacy", "My Collapse", "Myth", "Sustain", "In a Heartbeat", "Tragedy Immortal", "Unstable Dream", "The Fear", "Echo", "Promise", "Fractured Bliss", "Moral Complex", "Miracle Tears", "Villains"],

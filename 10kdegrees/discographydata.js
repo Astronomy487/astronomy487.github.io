@@ -6,13 +6,6 @@ albums.push({
 	accent: [255, 156, 222],
 	text: [255, 255, 255],
 	icon_color: "white",
-	title_font: "Rammetto One",
-	title_font_weight: 400,
-	title_font_css: {
-		letterSpacing: "0.25em",
-		textTransform: "uppercase",
-		fontSize: "3rem"
-	},
 	description: "A continuous half-hour mix of experimental, bass-focused music",
 	release_year: 2020,
 	main_tracklist: ["Throne", "Endless I", "Hailstorm", "Incredibly Hot", "Death System", "Endless II", "Blood Everywhere", "Evil Thoughts", "When Everything Was Okay", "Fast", "Endless III", "Nausea", "Go Go Go Go", "Furious", "Late Night", "Run Away Really Fast", "Sincere"],

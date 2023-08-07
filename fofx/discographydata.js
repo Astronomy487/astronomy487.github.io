@@ -6,11 +6,6 @@ albums.push({
 	accent: [255, 100, 176],
 	text: [255, 255, 255],
 	icon_color: "white",
-	title_font: "Gothic A1",
-	title_font_weight: 900,
-	title_font_css: {
-		fontWeight: "900"
-	},
 	description: "sometimes stylized f(x) // my tenth album! a 46-minute continuous mix of bright electronic music",
 	release_year: 2021,
 	main_tracklist: ["Hi", "Already Here", "Nitrogen (feat. bandanabloom)", "Are You Ready to Go to Space? (feat. REY GWEN)", "I Hope So, Because We're Leaving Soon", "Morning", "Songs of Yesterday", "Endless IV", "Blooming", "Insincere", "Let Yourself Forget (feat. bandanabloom)", "Warp Speed"],

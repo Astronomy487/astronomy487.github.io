@@ -23,12 +23,12 @@ for (let album of albums) {
 	div.setAttribute("class", "information");
 	let h1 = text_element(div, "h1", album.title);
 	bumpify_text(h1, 10);
-	if (album.title_font) {
+	/*if (album.title_font) {
 		html_link_font(album.title_font, album.title_font_weight);
 		h1.style.fontFamily = album.title_font;
 	}
 	for (property of Object.keys(album.title_font_css))
-		h1.style[property] = album.title_font_css[property];
+		h1.style[property] = album.title_font_css[property];*/
 	let metadata = text_element(div, "p", album.release_year, "album_metadata");
 	if (album.compilation) metadata.innerText += " Compilation";
 	if (album.main_length) metadata.innerText += " · " + album.main_length;
@@ -43,7 +43,7 @@ for (let album of albums) {
 					album.disc_lengths.shift();
 					if (!album.disc_lengths.length) return;
 					album.disc_lengths[0]--;
-					paragraph.innerHTML += " <span class=\"disc_notice\">"+album.disc_names[0]+":</span> ";
+					if (album.disc_names[0].length) paragraph.innerHTML += " <span class=\"disc_notice\">"+album.disc_names[0]+":</span> ";
 					album.disc_names.shift();
 				}
 			}
@@ -59,7 +59,6 @@ for (let album of albums) {
 		let bonus_p = text_element(div, "p", "", "tracklist bonus_tracklist");
 		let plural = (album.bonus_tracklist && album.bonus_tracklist.length > 1) || album.bonus_tracklist_notice;
 		let bonus_notice = text_element(bonus_p, "span", "Bandcamp-exclusive bonus track"+(plural?"s":"")+" · "+album.bonus_length, "paragraph_head");
-		bumpify_text(bonus_notice, 15);
 		if (album.bonus_tracklist_notice) {
 			bonus_p.innerHTML += album.bonus_tracklist_notice;
 		}
@@ -146,12 +145,32 @@ document.body.style.setProperty("--edge", "rgb("+choice_album.edge+")");
 
 function bumpify_text(element, len) {
 	element.innerHTML = "<span>" + element.innerText.split("").join("</span><span>") + "</span>";
-	let bump_count = -20 * Math.random();
-	for (span of element.querySelectorAll("span")) {
-		span.style.animation = len+"s bump ease-in-out infinite";
-		span.style.animationDelay = bump_count + "s";
-		bump_count += 0.1;
-		span.style.display = "inline-block";
+	for (let span of element.querySelectorAll("span")) {
 		span.setAttribute("class", "bump");
 	}
+	//let bump_count = -20 * Math.random();
+	let first_wait = Math.random() * len;
+	setTimeout(function() {
+		setInterval(function() { //repeat this
+			let span_number = 0;
+			for (let span of element.querySelectorAll("span")) {
+				span_number++;
+				setTimeout(function() {
+					span.classList.remove("bump");
+					void element.offsetWidth;
+					span.classList.add("bump");
+				}, 100 * span_number);
+			}
+		}, len * 1000);
+	}, first_wait);
+	/*for (let span of element.querySelectorAll("span")) {
+		span.setAttribute("class", "bump");
+		setTimeout(function(){
+			setInterval(function(){
+				span.classList.remove("bump");
+				void element.offsetWidth;
+				span.classList.add("bump");
+			}, len * 1000);
+		}, first_wait * 1000 + 100 * span_number);
+		span_number++;*/
 }

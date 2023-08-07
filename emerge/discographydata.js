@@ -6,13 +6,6 @@ albums.push({
 	background: [27, 27, 27],
 	dark_background: [12, 12, 12],
 	icon_color: "white",
-	title_font: "Manrope",
-	title_font_weight: 800,
-	title_font_css: {
-		fontWeight: "800",
-		fontSize: "5rem",
-		textTransform: "uppercase"
-	},
 	description: "A compilation album of my 30 favorite songs of Series I",
 	release_year: 2019,
 	compilation: true,
