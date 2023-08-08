@@ -9,7 +9,7 @@ albums.push({
 	description: "Mindsets is the set of songs I've been working on since March of 2020, even through 10k Degrees. This is the longest I've spent working on a single project, and I'm so excited for you all to hear this!",
 	release_year: 2021,
 	main_tracklist: ["Wanderers", "Looking Forward", "Good Person", "One Day", "Better", "Identity", "Hour Twenty-Four", "Stargazing", "Mandatory Good Vibes", "Holocene" , "Out in the Open (feat. bandanabloom)", "Together Again", "Thank You", "Best Part (feat. bandanabloom)"],
-	bonus_tracklist: ["Wanderers (VIP)", "Hour Twenty-Four (VIP)", "Best Part (feat. bandanabloom) (VIP)", "Radio Silence", "Alright (Version 1) (Demo)", "Alright (Version 2) (Demo)", "Autumn Thoughts (Demo)", "Baby (Demo)", "Groove (Demo)", "LLLLLL (Demo)"],
+	bonus_tracklist: ["Wanderers (VIP)", "Hour Twenty-Four (VIP)", "Best Part (feat. bandanabloom) (VIP)", "Radio Silence", "Alright (Version 1) (Demo)", "Alright (Version 2) (Demo)", "Autumn Thoughts (Demo)", "Baby (Demo)", "Groove (Demo)", "LLLLLL (Demo)", "Bionicles (Demo)"],
 	disc_lengths: [7, 7],
 	disc_names: ["A-Side", "B-Side"],
 	main_length: "41'48\"",

@@ -377,6 +377,7 @@ main .big_background {
 	vertical-align: middle;
 	margin-right: 1.5rem;
 	border-radius: 3rem;
+	border-radius: 1rem;
 	margin-bottom: 1rem;
 	user-select: none;
 	transform: translateY(0.375rem);

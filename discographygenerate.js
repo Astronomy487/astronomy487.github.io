@@ -12,7 +12,7 @@ for (let album of albums) {
 	let decor = text_element(album_main_element, "div", album.material_symbol, "decor");
 	let decor_animation_delay = -10 * Math.random() + "s";
 	decor.style.animationDelay = decor_animation_delay;
-	if (album == albums[0] && bio_element) {
+	if (album == albums[0] && bio_element) { //if first on page with bio, add decor to bio instead
 		decor = text_element(bio_element, "div", album.material_symbol, "decor");
 		decor.style.animationDelay = decor_animation_delay;
 	}
