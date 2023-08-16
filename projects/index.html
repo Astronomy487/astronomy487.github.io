@@ -288,6 +288,15 @@
       uses_local_storage: true
     });
     projects.push({
+      url: "flog",
+      name: "Flog",
+      description: "This is my Flog (flag blog) where I collect photos I've taken of flag displays! Photos include metadata about the flags they contain, which means I can do fun things with that data.",
+      go_button: "Look at the flags",
+      background: "black",
+      text: "yellow",
+      accent: "cyan"
+    });
+    projects.push({
       url: "voiceleader",
       name: "Voice Leader",
       description: "An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!\nIt's pretty inefficient. On every frame, it generates all possible continuations (by filling each voice with chord members). It then runs a function on each possible continuation to determine how good of a transition is (with a little temperature — risky short-term decisions for the possibility of finding a better long-term result. I think this is standard for searching absurdly large possibility trees).\n\nRunning this on 5 voices will take a while. Running this on 6 voices will grind your computer to a halt. Exponential trees are brutal!",

@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" >
+  <title>Flog</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,500,0,0" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+    
+    :root {
+      --bg: black;
+      --txt: yellow;
+      --data: magenta;
+      --action: cyan;
+    }
+    
+    html {
+      font-size: 0.833333333vw;
+    }
+    
+    body {
+      overflow: hidden;
+      margin: 0;
+      user-select: none;
+      font-size: 1.125rem;
+      line-height: 125%;
+      background-color: var(--bg);
+      color: var(--txt);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    main {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    
+    .half {
+      width: 50%;
+      display: block;
+      height: 100%;
+      position: absolute;
+    }
+    
+    .left_half {
+      left: 0;
+    }
+    
+    .right_half {
+      right: 0;
+    }
+    
+    .half section {
+      max-height: 100%;
+    }
+    
+    section.info_container {
+      margin-top: 50vh;
+      translate: 0 -50%;
+      padding: 0 4rem;
+    }
+    
+    section.photo_container {
+      height: 100vh;
+      position: relative;
+    }
+    
+    .photo_container img {
+      max-width: 100%;
+      max-height: 100%;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      position: absolute;
+    }
+    
+    .material {
+      font-family: Material Symbols Outlined;
+      font-size: 1.5rem;
+      vertical-align: middle;
+    }
+    
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+    
+    /* OLD FLAG ENTRY SHENANIGANS.. */
+    .flag_entry td.the_flag {
+      height: 4rem;
+      text-align: center;
+    }
+    .flag_entry td.the_flag_name {
+      height: 1.5rem;
+      font-size: 1.25rem;
+      padding-top: 0.5rem;
+      padding-left: 1rem;
+      padding-bottom: 0;
+    }
+    .flag_entry td.the_flag_tags {
+      height: 1rem;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding-left: 1rem;
+      padding-bottom: 0.5rem;
+    }
+    .flag_entry td.the_flag_tags a, .tag_list a {
+      margin-right: 0.5rem;
+    }
+    .flag_entry td.the_flag img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    div.tiny_flag_entry {
+      display: inline-block;
+      max-width: 50%;
+      min-width: 22rem;
+      height: 4rem;
+      vertical-align: middle;
+      margin: 0.125rem 0;
+    }
+    div.tiny_flag_entry img {
+      max-width: 100%;
+      max-height: 4rem;
+      cursor: pointer;
+    }
+    div.tiny_flag_entry > div {
+      display: inline-block;
+      line-height: 4rem;
+      vertical-align: top;
+      margin: 0 1rem;
+    }
+    div.tiny_flag_entry > div .name {
+      display: block;
+      line-height: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    div.tiny_flag_entry > div .clarification {
+      display: block;
+      line-height: 1.5rem;
+      font-size: 0.875rem;
+    }
+    
+    h1 {
+      font-size: 4rem;
+      line-height: 4rem;
+      margin-bottom: 4rem;
+      font-weight: normal;
+    }
+    
+    h1.super {
+      font-size: 8rem;
+      line-height: 8rem;
+      margin-bottom: 3rem;
+    }
+    
+    p, .attributes_list {
+      width: 90%;
+    }
+    
+    .attributes_list > span {
+      margin-right: 2rem;
+      display: inline-block;
+      color: var(--data);
+    }
+    
+    button, p, .attributes_list, h1 {
+      margin: 1.5rem 0;
+    }
+    
+    .caption {
+    }
+    
+    button {
+      border: solid 0.125rem var(--action);
+      background-color: inherit;
+      color: var(--action);
+      font-family: inherit;
+      font-size: 1.25rem;
+      line-height: 100%;
+      padding: 0.5rem 2rem;
+      min-width: 10rem;
+      display: block;
+      border-radius: 0;
+      cursor: pointer;
+      display: inline-block;
+      margin: 0;
+      margin-right: 1rem;
+    }
+    
+    button:hover {
+      background-color: var(--action);
+      color: var(--bg);
+    }
+    
+    @keyframes exit {
+      to {opacity: 0; scale: 1.01;}
+    }
+    @keyframes enter {
+      from {opacity: 0; scale: 0.99;}
+    }
+    
+    a {
+      color: var(--action);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    img.force_full {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .flash_circle {
+      width: 1rem;
+      height: 1rem;
+      background-color: #ffffff;
+      position: absolute;
+      opacity: 0;
+      animation: 1s flash_circle_out ease-out;
+      border-radius: 100%;
+      translate: -0.5rem -0.5rem;
+      backdrop-filter: blur(1rem);
+    }
+    
+    @keyframes flash_circle_out {
+      from {scale: 0; opacity: 1;}
+      50% {scale: 3; opacity: 0.5;}
+      to {scale: 4; opacity: 0;}
+    }
+    
+    .flag_interactable {
+      position: absolute;
+    }
+    
+    .photo_card {
+      display: block;
+      margin: 1rem 0;
+      width: 75%;
+    }
+    
+    .photo_card img {
+      width: 100%;
+      height: 16rem;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .photo_card div {
+      margin-top: 0.5rem;
+    }
+    
+    .post_square {
+      position: relative;
+    }
+    
+    .post_square img {
+      width: 16rem;
+      height: 16rem;
+      display: inline-block;
+      object-fit: cover;
+      margin: 0.125rem 0.25rem;
+      border: solid 0.125rem var(--action);
+    }
+    
+    .comment {
+      color: var(--data);
+    }
+    
+    .big {
+      font-size: 2rem;
+      line-height: 125%;
+      margin: 1rem 0;
+    }
+    
+    img.big_flag {
+      max-height: 16rem;
+      background-color: blue;
+      margin: 1rem 0;
+      display: block;
+    }
+    
+    nav {
+      background-color: var(--bg);
+      padding: 1rem;
+      position: fixed;
+      z-index: 2;
+    }
+    
+    nav a:hover {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="material" onclick="navigate_backwards();">arrow_back</a>
+    <!--<a class="material" onclick="to_main(other_mains.album_list)">home</a>-->
+  </nav>
+  <script>
+    //stores information about all flags. posts point to these flags!
+    let flags = {};
+    
+    flags.us50 = {
+      image: "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg",
+      name: "United States",
+      clarification: "50-star",
+      start_year: 1960,
+      tags: ["american", "national", "government", "current"]
+    };
+    flags.us32 = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Flag_of_the_United_States_of_America_%281858%E2%80%931859%29.svg",
+      name: "United States",
+      clarification: "32-star",
+      start_year: 1858,
+      end_year: 1859,
+      tags: ["american", "national", "government", "historical"]
+    };
+    flags.us15 = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/19/US_15_Star_Flag.svg",
+      name: "United States",
+      clarification: "15-star",
+      start_year: 1795,
+      end_year: 1818,
+      tags: ["american", "national", "government", "historical"]
+    };
+    flags.michigan = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Flag_of_Michigan.svg",
+      name: "Michigan",
+      start_year: 1911,
+      tags: ["american", "state", "michigan", "government", "current"]
+    };
+    flags.canada = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Canada_%28Pantone%29.svg",
+      name: "Canada",
+      start_year: 1960,
+      tags: ["canadian", "national", "government", "current"]
+    };
+    flags.unitedkingdom = {
+      image: "https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg",
+      name: "United Kingdom",
+      start_year: 1801,
+      tags: ["british", "national", "government", "current"]
+    };
+    flags.greatbritain = { /* with white diagonal stripes */
+      image: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Great_Britain_%281707%E2%80%931800%29.svg",
+      name: "Great Britain",
+      start_year: 1707,
+      end_year: 1800,
+      tags: ["british", "national", "government", "historical"]
+    };
+    flags.greatbritainred = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/56/Red_Ensign_of_Great_Britain_%281707%E2%80%931800%29.svg",
+      name: "Red Ensign",
+      start_year: 1707,
+      end_year: 1800,
+      tags: ["british", "canadian", "civil", "historical"]
+    }
+    flags.royalfrance3blue = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/8/82/Royal_flag_of_France.svg",
+      name: "New France",
+      clarification: "3 fleurs-de-lis on blue",
+      start_year: 1534,
+      end_year: 1763,
+      tags: ["french", "national", "government", "historical"]
+    };
+    flags.royalfrance3white = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/13/Flag_of_Royalist_France.svg",
+      name: "New France",
+      clarification: "3 fleurs-de-lis on white",
+      start_year: 1534,
+      end_year: 1763,
+      tags: ["french", "national", "government", "historical"]
+    };
+    flags.royalfrancemanywhite = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Pavillon_royal_de_France.svg",
+      name: "New France",
+      clarification: "many fleurs-de-lis on white",
+      start_year: 1534,
+      end_year: 1763,
+      tags: ["french", "national", "government", "historical"]
+    };
+    
+    let albums = [];
+    
+    albums.push({
+      title: "Mackinac Island",
+      description: "Mackinac Island is an island in the Straits of Mackinac between Lake Michigan and Lake Huron. The island was inhabited by Anishinaabe groups and eventually came under the control of New France, the United Kingdom, the United States, the United Kingdom again, and the United States again. It's currently part of the state of Michigan.",
+      time: "August 2023",
+      posts: [
+        {
+          image: "https://imgur.com/8bVT7tK.jpg",
+          location: "7216 Main St, Mackinac Island, MI 49757, United States",
+          time: "August 12 2023",
+          caption: "These three flags are displayed together everywhere across Mackinac Island, including on this café on Main Street.\nThe inclusion of Canadian flags is curious because Mackinac Island never fell under Canadian jurisdiction, only colonies of France and Great Britain.",
+          flag_entries: [
+            {flag: flags.us50, x: 512, y: 1435},
+            {flag: flags.michigan, x: 1897, y: 1461},
+            {flag: flags.canada, x: 3479, y: 1359}
+          ]
+        },
+        {
+          image: "https://imgur.com/c0OH1j0.jpg",
+          location: "102 S Huron Ave, Mackinaw City, MI 49701, United States",
+          time: "August 11 2023",
+          caption: "This was by ferry docks on the Lower Peninsula mainland. This display notably includes the flags of the island's former empires.\nThe French fleur-de-lis here appears three on blue, but elsewhere appears on white, and elsewhere appears with many more lilies. The design of the lily is also highly variant.",
+          flag_entries: [
+            {flag: flags.royalfrance3blue, x: 235, y: 1891},
+            {flag: flags.greatbritain, x: 549, y: 1983},
+            {flag: flags.canada, x: 841, y: 2051},
+            {flag: flags.michigan, x: 1097, y: 2123},
+            {flag: flags.us50, x: 1785, y: 1487},
+            {flag: flags.michigan, x: 2093, y: 2354},
+            {flag: flags.canada, x: 2368, y: 2346},
+            {flag: flags.greatbritain, x: 2583, y: 2396},
+            {flag: flags.royalfrance3blue, x: 2769, y: 2458}
+          ]
+        },
+        {
+          image: "https://imgur.com/zKdMIqt.jpg",
+          location: "7342 Market St, Mackinac Island, MI 49757, United States",
+          time: "August 12 2023",
+          visibility: 4,
+          caption: "This red flag with the old Union Jack kept showing up. Turns out it's called the \"Red Ensign\" and it was a former civil flag (i.e. for non-state vessels) for Great Britain. Many colonies-turned countries, including Canada, adopted it as a national flag, sometimes adding coats of arms as is the case with the pre-1960 Canadian flag.",
+          flag_entries: [
+            {flag: flags.us15, x: 973, y: 1579},
+            {flag: flags.greatbritainred, x: 1522, y: 1798},
+            {flag: flags.royalfrance3blue, x: 2034, y: 2029},
+            {flag: flags.us50, x: 2073, y: 2257}
+          ]
+        },
+        {
+          image: "https://imgur.com/Q7m5Noy.jpg",
+          location: "7127 Huron Rd, Mackinac Island, MI 49757",
+          time: "August 12 2023",
+          caption: "This display includes 15-star and 32-star American flags, as well as two white variants of the French fleur-de-lis flags!\n//something about how this is north of the fort on that entrance",
+          flag_entries: [
+            {flag: flags.us50, x: 462, y: 1762},
+            {flag: flags.michigan, x: 511, y: 1656},
+            {flag: flags.royalfrancemanywhite, x: 1091, y: 1814},
+            {flag: flags.royalfrance3white, x: 1177, y: 1733},
+            {flag: flags.greatbritain, x: 1593, y: 1853},
+            {flag: flags.greatbritainred, x: 1794, y: 1855},
+            {flag: flags.us32, x: 2129, y: 1930},
+            {flag: flags.us15, x: 2374, y: 1880}
+          ]
+        },
+        {
+          image: "https://imgur.com/CAHATBX.jpg",
+          location: "7127 Huron Rd, Mackinac Island, MI 49757",
+          time: "August 12 2023",
+          caption: "is this a history?? it's descending this path",
+          flag_entries: [
+            {flag: flags.us50, x: 363, y: 1528},
+            {flag: flags.michigan, x: 757, y: 1582},
+            {flag: flags.royalfrancemanywhite, x: 1811, y: 1526},
+            {flag: flags.greatbritainred, x: 2318, y: 1641},
+            {flag: flags.unitedkingdom, x: 2665, y: 1672},
+            {flag: flags.greatbritain, x: 2890, y: 1696},
+            {flag: flags.us15, x: 3002, y: 1687},
+            {flag: flags.us32, x: 3082, y: 1651}
+          ]
+        },
+        {
+          image: "https://imgur.com/rtjk0R2.jpg",
+          location: "7200 Lake Shore Dr, Mackinac Island, MI 49757",
+          time: "August 13 2023",
+          caption: "a little display by the hotel",
+          flag_entries: [
+            {flag: flags.greatbritain, x: 827, y: 2188},
+            {flag: flags.royalfrance3white, x: 1644, y: 1754},
+            {flag: flags.us50, x: 2956, y: 1011}
+          ]
+        }
+      ]
+    });
+        
+    let tag_mains = {}; //store the mains for each tag
+    let other_mains = {
+      albums_list: null
+    };
+    
+    function flag_similarity(a, b) {
+      let a_tags_in_b = 0;
+      let b_tags_in_a = 0;
+      for (let tag of a.tags) if (b.tags.includes(tag)) a_tags_in_b++;
+      for (let tag of b.tags) if (a.tags.includes(tag)) b_tags_in_a++;
+      return 0.5 * (a_tags_in_b / a.tags.length + b_tags_in_a / b.tags.length);
+    }
+    
+    //post process my objects
+    //make each flag have its own string key
+    for (let key of Object.keys(flags)) flags[key].key = key;
+    //make each album have its own index
+    for (let i = 0; i < albums.length; i++) albums[i].index = i;
+    //make each post have its own index
+    for (let album of albums) for (let i = 0; i < album.posts.length; i++) album.posts[i].index = i;
+    //thumbnails are just first post
+    for (let album of albums) album.thumbnail = album.posts[0].image;
+    //find all tags
+    for (let flag_key of Object.keys(flags)) for (let tag of flags[flag_key].tags) tag_mains[tag] = null;
+    
+    for (let flag_key of Object.keys(flags)) {
+      let flag = flags[flag_key];
+      if (flag.start_year || flag.end_year) {
+        flag.year_string = "";
+        if (flag.start_year) flag.year_string += flag.start_year;
+        flag.year_string += "–";
+        if (flag.end_year) flag.year_string += flag.end_year;
+      }
+    }
+    
+    function make_element(parent, tag, text, classes) {
+      let element = parent.appendChild(document.createElement(tag));
+      if (text) {
+        if (tag == "img") element.src = text;
+        else element.innerHTML = text;
+      }
+      if (classes) element.setAttribute("class", classes);
+      return element;
+    }
+    
+    //make main for every flag
+    for (let flag_key of Object.keys(flags)) {
+      let flag = flags[flag_key];
+      let main = make_element(document.body, "main");
+      flag.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let left_info_container = make_element(left_half, "section", "", "info_container");
+      make_element(left_info_container, "img", flag.image, "big_flag");
+      let title = make_element(left_info_container, "div", flag.name, "big");
+      if (flag.year_string) title.innerHTML += " <span class=\"comment\">"+flag.year_string+"</span>";
+      let tag_container = make_element(left_info_container, "div", "", "tag_list");
+      for (let tag of flag.tags) {
+        let a = make_element(tag_container, "a", "#"+tag);
+        a.setAttribute("redirect_data", "tag:"+tag);
+      }
+      /* //find similar flags
+      let calculated_similarities = []; //each element is {flag, score}
+      for (let key of Object.keys(flags)) if (flags[key] != flag) {
+        calculated_similarities.push({flag: flags[key], score: flag_similarity(flags[key], flag)});
+      }
+      calculated_similarites = calculated_similarities.sort((a, b) => a.score < b.score);
+      if (calculated_similarities[0].score >= 0.75) make_element(left_info_container, "p", "Similar flags:");
+      for (let result of calculated_similarities) if (result.score >= .75) {
+        make_tiny_flag_entry(left_info_container, result.flag, null, null, Math.round(result.score*100)+"%");
+      } */
+      let right_half = make_element(main, "div", "", "half right_half");
+      let right_info_container = make_element(right_half, "section", "", "info_container");
+      let post_count = 0;
+      let flag_count = 0;
+      for (let album of albums) for (let post of album.posts) {
+        let has_flag = false;
+        for (let flag_entry of post.flag_entries) if (flag_entry.flag == flag) {
+          has_flag = true;
+          flag_count++;
+        }
+        if (!has_flag) continue;
+        post_count++;
+        let a = make_element(right_info_container, "a", "", "post_square");
+        a.setAttribute("redirect_data", "post:"+album.index+","+post.index);
+        make_element(a, "img", post.image);
+      }
+      let appearances_notice = make_element(left_info_container, "p", "This flag appears " + format_figure(flag_count, "time", "times") + " across " + format_figure(post_count, "post", "posts") + ".");
+      //find adjacent flags (it appears next to)
+      let appearances_together = []; //each element is {flag, count}
+      for (let key of Object.keys(flags)) if (flags[key] != flag) {
+        let count = 0;
+        for (let album of albums) for (let post of album.posts) {
+          let [has_flag, has_other_flag] = [false, false];
+          for (let flag_entry of post.flag_entries) {
+            if (flag_entry.flag == flag) has_flag = true;
+            if (flag_entry.flag == flags[key]) has_other_flag = true;
+          }
+          if (has_flag && has_other_flag) count++;
+        }
+        if (count) {
+          appearances_together.push({flag: flags[key], count: count});
+        }
+      }
+      appearances_together = appearances_together.sort((a, b) => a.count < b.count);
+      if (appearances_together.length && appearances_together[0].count != 1) {
+        appearances_notice.innerHTML += " It often appears with:";
+        let appearances_threshold = appearances_together[Math.min(appearances_together.length-1), 2].count; //appearances_together.length == 1 ? appearances_together[0].count : appearances_together[1].count;
+        for (let result of appearances_together) if (result.count >= appearances_threshold) {
+          make_tiny_flag_entry(left_info_container, result.flag, null, null, format_figure(result.count, "time", "times"));
+        }
+      }
+    }
+    
+    //make main for every tag
+    for (let tag of Object.keys(tag_mains)) {
+      let main = make_element(document.body, "main");
+      tag_mains[tag] = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let left_info_container = make_element(left_half, "section", "", "info_container");
+      let title = make_element(left_info_container, "div", "#"+tag, "big");
+      let flags_that_apply = 0;
+      for (let flag_key of Object.keys(flags)) if (flags[flag_key].tags.includes(tag)) flags_that_apply++;
+      make_element(left_info_container, "p", format_figure(flags_that_apply, "flag has", "flags have") + " this tag.");
+      for (let flag_key of Object.keys(flags)) if (flags[flag_key].tags.includes(tag)) {
+        make_tiny_flag_entry(left_info_container, flags[flag_key]);
+      }
+      let right_half = make_element(main, "div", "", "half right_half");
+      let right_info_container = make_element(right_half, "section", "", "info_container");
+      let tag_post_display = make_element(right_info_container, "p");
+      let post_count = 0;
+      let flag_count = 0;
+      for (let album of albums) for (let post of album.posts) {
+        let has_tag = false;
+        for (let flag_entry of post.flag_entries) if (flag_entry.flag.tags.includes(tag)) {
+          has_tag = true;
+          flag_count++;
+        }
+        if (!has_tag) continue;
+        post_count++;
+        let a = make_element(right_info_container, "a", "", "post_square");
+        a.setAttribute("redirect_data", "post:"+album.index+","+post.index);
+        make_element(a, "img", post.image);
+      }
+      tag_post_display.innerHTML = "This tag appears in " + format_figure(flag_count, "flag", "flags") + " across " + format_figure(post_count, "post", "posts") + ".";
+    }
+    
+    //make a main for every post
+    for (let album of albums) for (let post of album.posts) {
+      let main = make_element(document.body, "main");
+      post.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let photo_container = make_element(left_half, "section", "", "photo_container");
+      let flag_image = make_element(photo_container, "img", post.image);
+      let right_half = make_element(main, "div", "", "half right_half");
+      let info_container = make_element(right_half, "section", "", "info_container");
+      //info table
+      let attributes_list = make_element(info_container, "div", "", "attributes_list");
+      make_element(attributes_list, "span", html_with_material("location_on", post.location));
+      make_element(attributes_list, "span", html_with_material("event", post.time));
+      //make_element(attributes_list, "span", html_with_material("visibility", ["", "Miserable visibility :(", "Poor visibility :/", "Okay visibility :|", "Good visibility! :)", "Excellent visibility! :D"][post.visibility]));
+      make_element(attributes_list, "span", html_with_material("folder", "Photo #"+(1+post.index)+" in album <a>" + album.title + "</a>"));
+      attributes_list.querySelector("a").setAttribute("redirect_data", "album:"+album.index);
+      //caption
+      for (let paragraph of post.caption.split("\n")) {
+        make_element(info_container, "p", paragraph, "caption");
+      }
+      //flags
+      let flags_done = [];
+      for (let flag_entry of post.flag_entries) {
+        if (flags_done.includes(flag_entry.flag)) continue;
+        flags_done.push(flag_entry.flag);
+        let count = 0;
+        for (let f_e of post.flag_entries) if (f_e.flag == flag_entry.flag) count++;
+        make_tiny_flag_entry(info_container, flag_entry.flag, count > 1 ? count+"x" : null, post);
+      }
+      let links = make_element(info_container, "div", "", "attributes_list");
+      /*if (post.index != 0) {
+        let prev = make_element(links, "button", "Previous in album");
+        prev.setAttribute("redirect_data", "post:"+album.index+","+(post.index-1));
+      }
+      if (post.index != album.posts.length - 1) {
+        let next = make_element(links, "button", "Next in album");
+        next.setAttribute("redirect_data", "post:"+album.index+","+(post.index+1));
+      }*/
+    }
+    
+    function translate_coordinates_on_post(x, y, photo_container) { //turns the (x, y) coords from the original image to the absolute offset to use for an element in ther .photo_container. for non- object-fit:cover;
+      let [pc_width, pc_height] = [photo_container.clientWidth, photo_container.clientHeight];
+      let img = photo_container.querySelector("img");
+      let [og_width, og_height] = [img.naturalWidth, img.naturalHeight];
+      let rescale_ratio = Math.min(pc_width/og_width, pc_height/og_height);
+      let appear_x = pc_width * 0.5 + rescale_ratio * (x - og_width * 0.5);
+      let appear_y = pc_height * 0.5 + rescale_ratio * (y - og_height * 0.5);
+      return [appear_x, appear_y];
+    }
+    
+    function make_flag_entry(parent, flag, comment, post) { //using a flag object, makes a little html element (with table shenanigans) to display it.
+      let entry = make_element(parent, "table", "", "flag_entry");
+      let tr0 = make_element(entry, "tr");
+      let tr1 = make_element(entry, "tr");
+      let the_flag = make_element(tr0, "td", "", "the_flag");
+      the_flag.setAttribute("rowspan", "2");
+      let flag_image = make_element(the_flag, "img", flag.image);
+      if (post) flag_image.onclick = function() {
+        for (let flag_entry of post.flag_entries) if (flag_entry.flag == flag) {
+          //make flash circle
+          let photo_container = post.main.querySelector(".photo_container");
+          let [appear_x, appear_y] = translate_coordinates_on_post(flag_entry.x, flag_entry.y, photo_container);
+          let flash_circle = make_element(photo_container, "div", "&nbsp;", "flash_circle");
+          flash_circle.style.left = appear_x + "px";
+          flash_circle.style.top = appear_y + "px";
+          setTimeout(function() {
+            flash_circle.remove();
+          }, 900);
+        }
+      }
+      let flag_name_string = flag.name;
+      if (flag.year_string) flag_name_string += " " + flag.year_string;
+      let the_flag_name = make_element(tr0, "td", "<a>"+flag_name_string+"</a>", "the_flag_name");
+      the_flag_name.querySelector("a").setAttribute("redirect_data", "flag:"+flag.key);
+      the_flag_name.setAttribute("colspan", "4");
+      if (comment) the_flag_name.innerHTML = comment + " " + the_flag_name.innerHTML;
+      let the_flag_tags = make_element(tr1, "td", "", "the_flag_tags");
+      the_flag_tags.setAttribute("colspan", "4");
+      for (let tag of flag.tags) {
+        let a = make_element(the_flag_tags, "a", tag);
+        a.setAttribute("redirect_data", "tag:"+tag);
+      }
+    }
+    
+    function make_tiny_flag_entry(parent, flag, comment, post, tiny_comment) { //using a flag object, makes a little html element (with table shenanigans) to display it.
+      let entry = make_element(parent, "div", "", "tiny_flag_entry");
+      let flag_image = make_element(entry, "img", flag.image);
+      let right_text = make_element(entry, "div");
+      let name = make_element(right_text, "div", "", "name");
+      make_element(name, "a", flag.name).setAttribute("redirect_data", "flag:"+flag.key);
+      if (comment) name.innerHTML = "<span class=\"comment\">"+comment+"</span> "+name.innerHTML;
+      //make_element(right_text, "div", (flag.year_string?flag.year_string:"") + " " + (flag.clarification?flag.clarification:""), "clarification");
+      let clarification = make_element(right_text, "div", flag.year_string?flag.year_string:"", "clarification");
+      if (tiny_comment) clarification.innerHTML += " <span class=\"comment\">"+tiny_comment+"</span>";
+      if (post) flag_image.onclick = function() {
+        for (let flag_entry of post.flag_entries) if (flag_entry.flag == flag) {
+          //make flash circle
+          let photo_container = post.main.querySelector(".photo_container");
+          let [appear_x, appear_y] = translate_coordinates_on_post(flag_entry.x, flag_entry.y, photo_container);
+          let flash_circle = make_element(photo_container, "div", "&nbsp;", "flash_circle");
+          flash_circle.style.left = appear_x + "px";
+          flash_circle.style.top = appear_y + "px";
+          setTimeout(function() {
+            flash_circle.remove();
+          }, 900);
+        }
+      }
+      /*let tr0 = make_element(entry, "tr");
+      let tr1 = make_element(entry, "tr");
+      let the_flag = make_element(tr0, "td", "", "the_flag");
+      the_flag.setAttribute("rowspan", "2");
+      let flag_image = make_element(the_flag, "img", flag.image);
+      let flag_name_string = flag.name;
+      if (flag.year_string) flag_name_string += " " + flag.year_string;
+      let the_flag_name = make_element(tr0, "td", "<a>"+flag_name_string+"</a>", "the_flag_name");
+      the_flag_name.querySelector("a").setAttribute("redirect_data", "flag:"+flag.key);
+      the_flag_name.setAttribute("colspan", "4");
+      if (comment) the_flag_name.innerHTML = comment + " " + the_flag_name.innerHTML;
+      let the_flag_tags = make_element(tr1, "td", "", "the_flag_tags");
+      the_flag_tags.setAttribute("colspan", "4");
+      for (let tag of flag.tags) {
+        let a = make_element(the_flag_tags, "a", tag);
+        a.setAttribute("redirect_data", "tag:"+tag);
+      }*/
+    }
+    
+    function html_with_material(material_text, text) {
+      return "<span class=\"material\">"+material_text+"</span> "+text;
+    }
+    
+    //make a main for every album
+    for (let album of albums) {
+      let main = make_element(document.body, "main");
+      album.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      make_element(info_container, "h1", album.title);
+      for (let paragraph of album.description.split("\n")) {
+        make_element(info_container, "p", paragraph, "caption");
+      }
+      //flag count stuff
+      let flag_counts = {};
+      let flag_count_total = 0;
+      for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        flag_count_total++;
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let attributes_list = make_element(info_container, "div", "", "attributes_list");
+      make_element(attributes_list, "span", html_with_material("flag", format_figure(flag_count_total, "flag", "flags")));
+      make_element(attributes_list, "span", html_with_material("flag", format_figure(Object.keys(flag_counts).length, "unique flag", "unique flags")));
+      make_element(attributes_list, "span", html_with_material("image", format_figure(album.posts.length, "photo", "photos")));
+      make_element(attributes_list, "span", html_with_material("event", album.time));
+      //let go_button = make_element(info_container, "button", "View album");
+      //go_button.setAttribute("redirect_data", "post:"+album.index+",0");
+      let dist_paragraph = make_element(info_container, "p", "<a>See flag distribution</a>");
+      dist_paragraph.querySelector("a").setAttribute("redirect_data", "album_distribution:"+album.index);
+      dist_paragraph = make_element(info_container, "p", "<a>See all albums</a>");
+      dist_paragraph.querySelector("a").setAttribute("redirect_data", "other:album_list");
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      for (let post of album.posts) {
+        let a = make_element(info_container, "a", "", "post_square");
+        a.setAttribute("redirect_data", "post:"+album.index+","+post.index);
+        make_element(a, "img", post.image);
+      }
+    }
+    
+    //make a main for album flag distribution
+    for (let album of albums) {
+      let main = make_element(document.body, "main");
+      album.distribution_main = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      //flag count stuff
+      let flag_counts = {};
+      for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let flag_key_list = Object.keys(flag_counts);
+      flag_key_list = flag_key_list.sort((a, b) => flag_counts[a] < flag_counts[b]);
+      for (let flag_key of flag_key_list) {
+        make_tiny_flag_entry(info_container, flags[flag_key], flag_counts[flag_key] + "x");
+      }
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "h1", album.title+"<br>Flag distribution");
+      make_element(info_container, "p", "Here is the flag distribution for the album <a>"+album.title+"</a>. This shows the number of each flag present among all the photos in the album.");
+      info_container.querySelector("a").setAttribute("redirect_data", "album:"+album.index);
+      let return_button = make_element(info_container, "button", "Return to album");
+      return_button.setAttribute("redirect_data", "album:"+album.index);
+    }
+    
+    //only one main is open at a time
+    //a main exists for every Post (post.main), every Album (album.main), every Flag (flag.main), and eventually tags
+    let open_main_stack = [];
+    let open_main = null;
+    let in_transition = false;
+    function to_main(main, add_to_stack = true) {
+      if (in_transition) return;
+      if (main == open_main) return;
+      in_transition = true;
+      if (add_to_stack) open_main_stack.push(main);
+      if (open_main) {
+        open_main.style.animation = "0.5s exit";
+        setTimeout(function(){
+          open_main.style.display = "none";
+          open_main = main;
+          open_main.style.display = "block";
+          open_main.style.animation = "0.5s enter";
+          setTimeout(function(){in_transition = false}, 500);
+        }, 400);
+      } else {
+        open_main = main;
+        open_main.style.display = "block";
+        open_main.style.animation = "0.5s enter";
+        setTimeout(function(){in_transition = false}, 500);
+      }
+    }
+    
+    function navigate_backwards() {
+      if (open_main_stack.length <= 1) return;
+      open_main_stack.pop();
+      to_main(open_main_stack[open_main_stack.length-1], false);
+    }
+    
+    //make THE MAIN PAGE where all the albums are listed
+    {
+      let main = make_element(document.body, "main");
+      other_mains.album_list = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      make_element(info_container, "h1", "Flog", "super");
+      make_element(info_container, "p", "This is my Flog (flag blog) where I keep photos of flags spotted in the wild. Anything in <span style=\"color: var(--action)\">cyan</span> can be clicked on!");
+      make_element(info_container, "p", "<span class=\"material\">construction</span> Website is under construction!", "comment");
+      make_element(info_container, "p", "<a>See flag distribution</a>");
+      info_container.querySelector("a").setAttribute("redirect_data", "other:distribution");
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "div", format_figure(albums.length, "album", "albums"));
+      for (let album of albums) {
+        let photo_card = make_element(info_container, "div", "", "photo_card");
+        make_element(photo_card, "img", album.thumbnail);
+        let div = make_element(photo_card, "div");
+        let a = make_element(div, "a", album.title);
+        a.setAttribute("redirect_data", "album:"+album.index);
+      }
+    }
+    
+    //make the mobile page
+    {
+      other_mains.mobile = make_element(document.body, "main", "<div style=\"font-size: 3rem; line-height: 4rem; top: 50%; left: 50%; position: fixed; translate: -50% -50%; width: 48rem;\"><span class=\"material\" style=\"font-size: 5rem; margin-right: 1rem; color: var(--data);\">warning</span>It seems you're using a mobile device to view this site.<br><br>This site is designed only for desktop right now. Maybe one day I will write CSS for mobile.<br><br>Want to see anyway?<br><a redirect_data=\"other:album_list\">Be my guest.</a></div>")
+    }
+    
+    //distribution among all photos
+    {
+      let main = make_element(document.body, "main");
+      other_mains.distribution = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      //flag count stuff
+      let flag_counts = {};
+      for (let album of albums) for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let flag_key_list = Object.keys(flag_counts);
+      flag_key_list = flag_key_list.sort((a, b) => flag_counts[a] < flag_counts[b]);
+      for (let flag_key of flag_key_list) {
+        make_tiny_flag_entry(info_container, flags[flag_key], flag_counts[flag_key] + "x");
+      }
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "h1", "Flag distribution");
+      make_element(info_container, "p", "Here is a list of flags present in any photo.");
+      let return_button = make_element(info_container, "button", "Return to home");
+      return_button.setAttribute("redirect_data", "other:album_list");
+    }
+    
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){ //thanks https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
+      to_main(other_mains.mobile);
+      document.querySelector("nav").remove();
+    } else {
+      to_main(other_mains.album_list);
+    }
+    open_main.style.animationDuration = "1s";
+    
+    //help! links are sometimes trying to open undefined!!! just put it in an element attribute and forget about it
+    for (let link of document.querySelectorAll("[redirect_data]")) {
+      let [redirect_type, redirect_data] = link.getAttribute("redirect_data").split(":");
+      /*if (["tag", "flag", "album", "other"].includes(redirect_type)) {
+        link.innerHTML = "<span class=\"material\">"+{
+          tag: "tag",
+          flag: "flag",
+          album: "folder",
+          other: "open_in_new"
+        }[redirect_type]+"</span> " + link.innerHTML;
+      }*/
+      if (redirect_type == "flag") link.onclick = function() {to_main(flags[redirect_data].main);}
+      if (redirect_type == "tag") link.onclick = function() {to_main(tag_mains[redirect_data]);}
+      if (redirect_type == "album") link.onclick = function() {to_main(albums[redirect_data].main);}
+      if (redirect_type == "album_distribution") link.onclick = function() {to_main(albums[redirect_data].distribution_main);}
+      if (redirect_type == "other") link.onclick = function() {to_main(other_mains[redirect_data]);}
+      if (redirect_type == "post") {
+        redirect_data = redirect_data.split(",");
+        link.onclick = function() {to_main(albums[redirect_data[0]].posts[redirect_data[1]].main);}
+      }
+    }
+    
+    function format_figure(num, singular, plural) {
+      return num + " " + (num == 1 ? singular : plural);
+    }
+  </script>
+</body>
+</html>

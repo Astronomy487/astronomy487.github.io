@@ -1,5 +1,6 @@
 html {
-	font-size: round(nearest, 4px, 1.5vh);
+	font-size: round(0.833333333vw, 1px);
+	font-size: 0.833333333vw;
 }
 
 body {
@@ -25,9 +26,9 @@ main {
 
 main .album_art {
 	top: 48vh;
-	width: 500px;
-	height: 500px;
-	left: calc(5rem + 100px);
+	width: 31.25rem;
+	height: 31.25rem;
+	left: calc(5rem + 6.25rem);
 	position: absolute;
 	z-index: 1;
 	animation-duration: 5s;
@@ -50,13 +51,13 @@ main .album_art.back {
 main .album_art.left {
 	animation-name: rotate_left;
 	width: 1rem;
-	left: calc(calc(5rem + 100px) + calc(250px - 0.5rem));
+	left: calc(calc(5rem + 6.25rem) + calc(15.625rem - 0.5rem));
 }
 
 main .album_art.right {
 	animation-name: rotate_right;
 	width: 1rem;
-	left: calc(calc(5rem + 100px) + calc(250px - 0.5rem));
+	left: calc(calc(5rem + 6.25rem) + calc(15.625rem - 0.5rem));
 }
 
 main .album_art.right {
@@ -107,7 +108,7 @@ main .album_art.right {
 		
 @keyframes rotate_left {
 	from {
-		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(-250px) rotate3d(0, 1, 0, 90deg);
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(-15.625rem) rotate3d(0, 1, 0, 90deg);
 		opacity: 0;
 	}
 	29.99% {
@@ -123,14 +124,14 @@ main .album_art.right {
 		opacity: 0;
 	}
 	to {
-		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(-250px) rotate3d(0, 1, 0, 90deg);
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(-15.625rem) rotate3d(0, 1, 0, 90deg);
 		opacity: 0;
 	}
 }
 		
 @keyframes rotate_right {
 	from {
-		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(250px) rotate3d(0, 1, 0, 90deg);
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(15.625rem) rotate3d(0, 1, 0, 90deg);
 		opacity: 1;
 	}
 	19.99% {
@@ -146,7 +147,7 @@ main .album_art.right {
 		opacity: 1;
 	}
 	to {
-		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(250px) rotate3d(0, 1, 0, 90deg);
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(15.625rem) rotate3d(0, 1, 0, 90deg);
 		opacity: 1;
 	}
 }
@@ -154,8 +155,8 @@ main .album_art.right {
 main .information {
 	top: 52vh;
 	transform: translateY(-50%);
-	left: calc(10rem + 700px);
-	width: calc(100vw - 15rem - 700px);
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
 	position: absolute;
 	z-index: 1;
 	max-width: 50rem;
@@ -251,10 +252,10 @@ nav {
 }
 
 main nav {
-	top: calc(48vh + 325px);
-	width: 500px;
+	top: calc(48vh + 20.3125rem);
+	width: 31.25rem;
 	text-align: center;
-	left: calc(5rem + 100px);
+	left: calc(5rem + 6.25rem);
 	position: absolute;
 	z-index: 5;
 }
@@ -294,8 +295,8 @@ iframe {
 
 main .big_background {
 	top: 52vh;
-	left: calc(10rem + 700px);
-	width: calc(100vw - 15rem - 700px);
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
 	max-width: 50rem;
 	font-family: Material Symbols Outlined;
 	font-size: 48rem;
@@ -323,8 +324,8 @@ main .big_background {
 .decor {
 	position: fixed;
 	top: 52vh;
-	left: calc(10rem + 700px);
-	width: calc(100vw - 15rem - 700px);
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
 	max-width: 50rem;
 	font-family: Material Symbols Outlined;
 	font-size: 48rem;

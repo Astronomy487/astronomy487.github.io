@@ -1,3 +1,12 @@
+if (screen.width < 1280) {
+	//cancel plans. open bandcamp. i cant design for mobile
+	if (albums.length > 1) {
+		open("https://astronomy487.bandcamp.com");
+	} else {
+		open(albums[0].links.bandcamp);
+	}
+}
+
 let bio_element = document.querySelector("#bio");
 for (let album of albums) {
 	//make the info
@@ -80,7 +89,7 @@ for (let album of albums) {
 		},1000);
 	}*/
 	//links
-	let nav = text_element(mobile_layout ? div : album_main_element, "nav");
+	let nav = text_element(album_main_element, "nav");
 	for (name of Object.keys(album.links)) {
 		let a = text_element(nav, "a");
 		a.setAttribute("href", album.links[name]);

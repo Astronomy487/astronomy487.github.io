@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FLOG</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,0" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+    
+    :root {
+      --bg: black;
+      --txt: yellow;
+      --data: magenta;
+      --action: cyan;
+    }
+    
+    /* :root {
+      --txt: #ffffff;
+      --data: #9592E4;
+      --bg: #3C3B6E;
+      --action: #B22234;
+    } */
+    
+    body {
+      overflow: hidden;
+      margin: 0;
+      user-select: none;
+      font-size: 1.125rem;
+      line-height: 125%;
+      background-color: var(--bg);
+      color: var(--txt);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    main {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    
+    .half {
+      width: 50%;
+      display: block;
+      height: 100%;
+      position: absolute;
+    }
+    
+    .left_half {
+      left: 0;
+    }
+    
+    .right_half {
+      right: 0;
+    }
+    
+    section.info_container {
+      margin-top: 50vh;
+      translate: 0 -50%;
+      padding: 0 4rem;
+    }
+    
+    section.photo_container {
+      height: 100vh;
+      position: relative;
+    }
+    
+    .photo_container img {
+      max-width: 100%;
+      max-height: 100%;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      position: absolute;
+    }
+    
+    .material {
+      font-family: Material Symbols Outlined;
+      font-size: 1.5rem;
+      vertical-align: middle;
+    }
+    
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+    
+    .flag_entry td.the_flag {
+      height: 4rem;
+      text-align: center;
+    }
+    .flag_entry td.the_flag_name {
+      height: 1.5rem;
+      font-size: 1.25rem;
+      padding-top: 0.5rem;
+      padding-left: 1rem;
+      padding-bottom: 0;
+    }
+    .flag_entry td.the_flag_tags {
+      height: 1rem;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding-left: 1rem;
+      padding-bottom: 0.5rem;
+    }
+    .flag_entry td.the_flag_tags a, .tag_list a {
+      margin-right: 0.5rem;
+    }
+    .flag_entry td.the_flag img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 4rem;
+      line-height: 4rem;
+      margin-bottom: 4rem;
+      font-weight: normal;
+    }
+    
+    h1.super {
+      font-size: 8rem;
+      line-height: 8rem;
+      margin-bottom: 3rem;
+    }
+    
+    p, .attributes_list {
+      width: 90%;
+    }
+    
+    .attributes_list > span {
+      margin-right: 2rem;
+      display: inline-block;
+      color: var(--data);
+    }
+    
+    button, p, .attributes_list, h1 {
+      margin: 1.5rem 0;
+    }
+    
+    .caption {
+    }
+    
+    button {
+      border: solid 0.125rem var(--action);
+      background-color: inherit;
+      color: var(--action);
+      font-family: inherit;
+      font-size: 1.25rem;
+      line-height: 100%;
+      padding: 0.5rem 2rem;
+      min-width: 10rem;
+      display: block;
+      border-radius: 0;
+      cursor: pointer;
+      display: inline-block;
+      margin: 0;
+      margin-right: 1rem;
+    }
+    
+    button:hover {
+      background-color: var(--action);
+      color: var(--bg);
+    }
+    
+    @keyframes exit {
+      to {opacity: 0; scale: 1.01;}
+    }
+    @keyframes enter {
+      from {opacity: 0; scale: 0.99;}
+    }
+    
+    a {
+      color: var(--action);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    img.force_full {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .flash_circle {
+      width: 1rem;
+      height: 1rem;
+      background-color: white;
+      position: absolute;
+      opacity: 0;
+      animation: 1s flash_circle_out;
+      border-radius: 100%;
+      translate: -0.5rem -0.5rem;
+    }
+    
+    @keyframes flash_circle_out {
+      from {scale: 0; opacity: 1;}
+      to {scale: 4; opacity: 0;}
+    }
+    
+    .flag_interactable {
+      position: absolute;
+    }
+    
+    .photo_card {
+      display: inline-block;
+      margin: 1rem 0;
+      margin-right: 1rem;
+    }
+    
+    .photo_card img {
+      width: 24rem;
+      height: 18rem;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .photo_card a {
+      display: block;
+      margin-top: 0.5rem;
+    }
+    
+    .comment {
+      color: var(--data);
+    }
+    
+    .big {
+      font-size: 2rem;
+      line-height: 125%;
+      margin: 1rem 0;
+    }
+    
+    img.big_flag {
+      max-height: 16rem;
+      background-color: blue;
+      margin: 1rem 0;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    //stores information about all flags. posts point to these flags!
+    let flags = {};
+    
+    flags.us50 = {
+      image: "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg",
+      name: "United States",
+      start_year: 1960,
+      tags: ["american", "national", "official", "current"]
+    };
+    flags.us15 = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/19/US_15_Star_Flag.svg",
+      name: "United States",
+      start_year: 1795,
+      end_year: 1818,
+      tags: ["american", "national", "official", "historical"]
+    };
+    flags.michigan = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Flag_of_Michigan.svg",
+      name: "Michigan",
+      start_year: 1911,
+      tags: ["american", "state", "michigan", "official", "current"]
+    };
+    flags.canada = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Canada_%28Pantone%29.svg",
+      name: "Canada",
+      start_year: 1960,
+      tags: ["canadian", "national", "official", "current"]
+    };
+    flags.greatbritain = { /* with white diagonal stripes */
+      image: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_Great_Britain_%281707%E2%80%931800%29.svg",
+      name: "Great Britain",
+      start_year: 1707,
+      end_year: 1800,
+      tags: ["british", "national", "official", "historical"]
+    };
+    flags.greatbritainred = {
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/56/Red_Ensign_of_Great_Britain_%281707%E2%80%931800%29.svg",
+      name: "Red Ensign",
+      start_year: 1707,
+      end_year: 1800,
+      tags: ["british", "canadian", "official", "historical", "civil"]
+    }
+    flags.royalfrance3blue = { /* with white diagonal stripes */
+      image: "https://upload.wikimedia.org/wikipedia/commons/8/82/Royal_flag_of_France.svg",
+      name: "New France",
+      start_year: 1534,
+      end_year: 1763,
+      tags: ["french", "national", "official", "historical"]
+    };
+    
+    let albums = [];
+    
+    albums.push({
+      time: "August 2023",
+      title: "Mackinac Island",
+      thumbnail: "https://cdn.discordapp.com/attachments/523666597492293634/1140726811169390592/IMG_1831.jpg",
+      description: "Mackinac Island is an island in the Straits of Mackinac between Lake Michigan and Lake Huron. The island was inhabited by Anishinaabe groups and eventually came under the control of New France, the United Kingdom, the United States, the United Kingdom again, and the United States again. It's currently part of the state of Michigan.",
+      posts: [
+        {
+          image: "https://cdn.discordapp.com/attachments/523666597492293634/1140064477019123753/IMG_1889.jpg",
+          location: "7216 Main St, Mackinac Island, MI 49757, United States",
+          time: "August X 2023 X:XX PM",
+          visibility: 5,
+          caption: "These three flags are displayed together everywhere across Mackinac Island, including on this café on Main Street.\nThe inclusion of Canadian flags is curious because Mackinac Island never fell under Canadian jurisdiction, only colonies of France and Great Britain.",
+          flag_entries: [
+            {flag: flags.us50, x: 512, y: 1435},
+            {flag: flags.michigan, x: 1897, y: 1461},
+            {flag: flags.canada, x: 3479, y: 1359}
+          ]
+        },
+        {
+          image: "https://cdn.discordapp.com/attachments/523666597492293634/1140051237929230426/IMG_1716.jpg",
+          location: "Unknown",
+          time: "August 11",
+          visibility: 5,
+          caption: "This was by ferry docks on the Lower Peninsula mainland. This display notably includes the flags of the island's former empires.\nThe French fleur-de-lis here appears three on blue, but elsewhere appears on white, and elsewhere appears with many more lilies. The design of the lily is also highly variant.",
+          flag_entries: [
+            {flag: flags.royalfrance3blue, x: 235, y: 1891},
+            {flag: flags.greatbritain, x: 549, y: 1983},
+            {flag: flags.canada, x: 841, y: 2051},
+            {flag: flags.michigan, x: 1097, y: 2123},
+            {flag: flags.us50, x: 1785, y: 1487},
+            {flag: flags.michigan, x: 2093, y: 2354},
+            {flag: flags.canada, x: 2368, y: 2346},
+            {flag: flags.greatbritain, x: 2583, y: 2396},
+            {flag: flags.royalfrance3blue, x: 2769, y: 2458}
+          ]
+        },
+        {
+          image: "https://cdn.discordapp.com/attachments/523666597492293634/1140050611837091891/IMG_1763.jpg",
+          location: "Unknown",
+          time: "Unknown",
+          visibility: 4,
+          caption: "silly",
+          flag_entries: [
+            {flag: flags.us15, x: 973, y: 1579},
+            {flag: flags.greatbritainred, x: 1522, y: 1798},
+            {flag: flags.royalfrance3blue, x: 2034, y: 2029},
+            {flag: flags.us50, x: 2073, y: 2257}
+          ]
+        }
+      ]
+    });
+    
+    let tag_mains = {}; //store the mains for each tag
+    let other_mains = {
+      albums_list: null
+    };
+    
+    //post process my objects
+    //make each flag have its own string key
+    for (let key of Object.keys(flags)) flags[key].key = key;
+    //make each album have its own index
+    for (let i = 0; i < albums.length; i++) albums[i].index = i;
+    //make each post have its own index
+    for (let album of albums) for (let i = 0; i < album.posts.length; i++) album.posts[i].index = i;
+    
+    for (let flag_key of Object.keys(flags)) {
+      let flag = flags[flag_key];
+      if (flag.start_year || flag.end_year) {
+        flag.year_string = "(";
+        if (flag.start_year) flag.year_string += flag.start_year;
+        flag.year_string += "–";
+        if (flag.end_year) flag.year_string += flag.end_year;
+        flag.year_string += ")";
+      }
+    }
+    
+    function make_element(parent, tag, text, classes) {
+      let element = parent.appendChild(document.createElement(tag));
+      if (text) {
+        if (tag == "img") element.src = text;
+        else element.innerHTML = text;
+      }
+      if (classes) element.setAttribute("class", classes);
+      return element;
+    }
+    
+    //make a main for every post
+    for (let album of albums) for (let post of album.posts) {
+      let main = make_element(document.body, "main");
+      post.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let photo_container = make_element(left_half, "section", "", "photo_container");
+      let flag_image = make_element(photo_container, "img", post.image);
+      let right_half = make_element(main, "div", "", "half right_half");
+      let info_container = make_element(right_half, "section", "", "info_container");
+      //info table
+      let attributes_list = make_element(info_container, "div", "", "attributes_list");
+      make_element(attributes_list, "span", html_with_material("location_on", post.location));
+      make_element(attributes_list, "span", html_with_material("schedule", post.time));
+      make_element(attributes_list, "span", html_with_material("visibility", ["", "Miserable visibility :(", "Poor visibility :/", "Okay visibility :|", "Good visibility! :)", "Excellent visibility! :D"][post.visibility]));
+      make_element(attributes_list, "span", html_with_material("folder", "Photo #"+(1+post.index)+" in album <a>" + album.title + "</a>"));
+      attributes_list.querySelector("a").onclick = function() {
+        to_main(album.main);
+      }
+      //caption
+      for (let paragraph of post.caption.split("\n")) {
+        make_element(info_container, "p", paragraph, "caption");
+      }
+      //flags
+      let flags_done = [];
+      for (let flag_entry of post.flag_entries) {
+        if (flags_done.includes(flag_entry.flag)) continue;
+        flags_done.push(flag_entry.flag);
+        let count = 0;
+        for (let f_e of post.flag_entries) if (f_e.flag == flag_entry.flag) count++;
+        make_flag_entry(info_container, flag_entry.flag, count > 1 ? count+"x" : null, post);
+      }
+      let links = make_element(info_container, "div", "", "attributes_list");
+      if (post.index != 0) {
+        let prev = make_element(make_element(links, "span"), "a", "Previous in album");
+        prev.onclick = function() {
+          to_main(album.posts[post.index-1].main);
+        }
+      }
+      if (post.index != album.posts.length - 1) {
+        let next = make_element(make_element(links, "span"), "a", "Next in album");
+        next.onclick = function() {
+          to_main(album.posts[post.index+1].main);
+        }
+      }
+    }
+    
+    function translate_coordinates_on_post(x, y, photo_container) { //turns the (x, y) coords from the original image to the absolute offset to use for an element in ther .photo_container. for non- object-fit:cover;
+      let [pc_width, pc_height] = [photo_container.clientWidth, photo_container.clientHeight];
+      let img = photo_container.querySelector("img");
+      let [og_width, og_height] = [img.naturalWidth, img.naturalHeight];
+      let rescale_ratio = Math.min(pc_width/og_width, pc_height/og_height);
+      let appear_x = pc_width * 0.5 + rescale_ratio * (x - og_width * 0.5);
+      let appear_y = pc_height * 0.5 + rescale_ratio * (y - og_height * 0.5);
+      return [appear_x, appear_y];
+    }
+    
+    function make_flag_entry(parent, flag, comment, post) { //using a flag object, makes a little html element (with table shenanigans) to display it.
+      let entry = make_element(parent, "table", "", "flag_entry");
+      let tr0 = make_element(entry, "tr");
+      let tr1 = make_element(entry, "tr");
+      let the_flag = make_element(tr0, "td", "", "the_flag");
+      the_flag.setAttribute("rowspan", "2");
+      let flag_image = make_element(the_flag, "img", flag.image);
+      if (post) flag_image.onmouseenter = function() {
+        for (let flag_entry of post.flag_entries) if (flag_entry.flag == flag) {
+          //make flash circle
+          let photo_container = post.main.querySelector(".photo_container");
+          let [appear_x, appear_y] = translate_coordinates_on_post(flag_entry.x, flag_entry.y, photo_container);
+          let flash_circle = make_element(photo_container, "div", "&nbsp;", "flash_circle");
+          flash_circle.style.left = appear_x + "px";
+          flash_circle.style.top = appear_y + "px";
+          setTimeout(function() {
+            flash_circle.remove();
+          }, 900);
+        }
+        //console.log(post, flag.key);
+      }
+      let flag_name_string = flag.name;
+      if (flag.year_string) flag_name_string += " " + flag.year_string;
+      let the_flag_name = make_element(tr0, "td", "<a>"+flag_name_string+"</a>", "the_flag_name");
+      console.log(the_flag_name.querySelector("a"), flag.key, flag.main);
+      the_flag_name.querySelector("a").onclick = function() {
+        to_main(flag.main);
+      }
+      the_flag_name.setAttribute("colspan", "4");
+      if (comment) the_flag_name.innerHTML = comment + " " + the_flag_name.innerHTML;
+      let the_flag_tags = make_element(tr1, "td", "", "the_flag_tags");
+      the_flag_tags.setAttribute("colspan", "4");
+      for (let tag of flag.tags) {
+        let a = make_element(the_flag_tags, "a", tag);
+        a.onclick = function() {
+          to_main(tag_mains[tag]);
+        }
+      }
+    }
+    
+    function html_with_material(material_text, text) {
+      return "<span class=\"material\">"+material_text+"</span> "+text;
+    }
+    
+    //make a main for every album
+    for (let album of albums) {
+      let main = make_element(document.body, "main");
+      album.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      make_element(info_container, "h1", album.title);
+      for (let paragraph of album.description.split("\n")) {
+        make_element(info_container, "p", paragraph, "caption");
+      }
+      //flag count stuff
+      let flag_counts = {};
+      let flag_count_total = 0;
+      for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        flag_count_total++;
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let attributes_list = make_element(info_container, "div", "", "attributes_list");
+      make_element(attributes_list, "span", html_with_material("flag", flag_count_total + " flags"));
+      make_element(attributes_list, "span", html_with_material("flag", Object.keys(flag_counts).length + " unique flags"));
+      make_element(attributes_list, "span", html_with_material("image", album.posts.length + " photos"));
+      make_element(attributes_list, "span", html_with_material("schedule", album.time));
+      let go_button = make_element(info_container, "button", "View album");
+      go_button.onclick = function() {
+        to_main(album.posts[0].main);
+      }
+      let distribution_button = make_element(info_container, "button", "View flag distribution");
+      distribution_button.onclick = function() {
+        to_main(album.distribution_main);
+      }
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      let photo_container = make_element(right_half, "section", "", "photo_container");
+      make_element(photo_container, "img", album.thumbnail, "force_full");
+    }
+    
+    //make a main for album flag distribution
+    for (let album of albums) {
+      let main = make_element(document.body, "main");
+      album.distribution_main = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      //flag count stuff
+      let flag_counts = {};
+      for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let flag_key_list = Object.keys(flag_counts);
+      flag_key_list = flag_key_list.sort((a, b) => flag_counts[a] < flag_counts[b]);
+      for (let flag_key of flag_key_list) {
+        make_flag_entry(info_container, flags[flag_key], flag_counts[flag_key] + "x");
+      }
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "h1", album.title+": Flag Distribution");
+      make_element(info_container, "p", "Here is the flag distribution for the album <a>"+album.title+"</a>. This shows the number of each flag present among all the photos in the album.");
+      info_container.querySelector("a").onclick = function() {
+        to_main(album.main);
+      }
+      let return_button = make_element(info_container, "button", "Return to album");
+      return_button.onclick = function() {
+        to_main(album.main);
+      }
+    }
+    
+    //only one main is open at a time
+    //a main exists for every Post (post.main), every Album (album.main), every Flag (flag.main), and eventually tags 
+    let open_main = null;
+    let in_transition = false;
+    function to_main(main) {
+      if (in_transition) return;
+      in_transition = true;
+      if (open_main) {
+        open_main.style.animation = "0.5s exit";
+        setTimeout(function(){
+          open_main.style.display = "none";
+          open_main = main;
+          open_main.style.display = "block";
+          open_main.style.animation = "0.5s enter";
+          setTimeout(function(){in_transition = false}, 500);
+        }, 400);
+      } else {
+        open_main = main;
+        open_main.style.display = "block";
+        open_main.style.animation = "0.5s enter";
+        setTimeout(function(){in_transition = false}, 500);
+      }
+    }
+    
+    //make THE MAIN PAGE where all the albums are listed
+    {
+      let main = make_element(document.body, "main");
+      other_mains.album_list = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      let big_title = make_element(info_container, "h1", "flog", "super");
+      make_element(info_container, "p", "This is my flog (flag blog) where I keep photos of flags spotted in the wild.");
+      make_element(info_container, "p", "The set of all flags I've captured as well as their frequencies can be found <a>here</a>.");
+      info_container.querySelector("a").onclick = function() {
+        to_main(other_mains.distribution);
+      }
+      //make_element(info_container, "p", "Website hosted on GitHub Pages. Images hosted on Discord (lol). All code written by Astro. All photographs taken by Astro.")
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "div", "Albums");
+      for (let album of albums) {
+        let photo_card = make_element(info_container, "div", "", "photo_card");
+        make_element(photo_card, "img", album.thumbnail);
+        let a = make_element(photo_card, "a", album.title);
+        a.onclick = function() {
+          to_main(album.main);
+        }
+      }
+    }
+    
+    //make main for every flag
+    for (let flag_key of Object.keys(flags)) {
+      let flag = flags[flag_key];
+      let main = make_element(document.body, "main");
+      flag.main = main;
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      make_element(info_container, "img", flag.image, "big_flag");
+      //make_element(info_container, "div", flag.nickname, "big");
+      let title = make_element(info_container, "div", flag.name, "big");
+      if (flag.year_string) title.innerHTML += " <span class=\"comment\">"+flag.year_string+"</span>";
+      let tag_container = make_element(info_container, "div", "", "tag_list");
+      for (let tag of flag.tags) {
+        let a = make_element(tag_container, "a", tag);
+        a.onclick = function() {
+          to_main(tag_mains[tag]);
+        }
+      }
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+    }
+    
+    //distribution among all photos
+    {
+      let main = make_element(document.body, "main");
+      other_mains.distribution = main;
+      //left half
+      let left_half = make_element(main, "div", "", "half left_half");
+      let info_container = make_element(left_half, "section", "", "info_container");
+      //flag count stuff
+      let flag_counts = {};
+      for (let album of albums) for (let post of album.posts) for (let flag_entry of post.flag_entries) {
+        let flag_key = flag_entry.flag.key;
+        if (flag_counts[flag_key]) flag_counts[flag_key]++;
+        else flag_counts[flag_key] = 1;
+      }
+      let flag_key_list = Object.keys(flag_counts);
+      flag_key_list = flag_key_list.sort((a, b) => flag_counts[a] < flag_counts[b]);
+      for (let flag_key of flag_key_list) {
+        make_flag_entry(info_container, flags[flag_key], flag_counts[flag_key] + "x");
+      }
+      //right half
+      let right_half = make_element(main, "div", "", "half right_half");
+      info_container = make_element(right_half, "section", "", "info_container");
+      make_element(info_container, "h1", "Global flag distribution");
+      make_element(info_container, "p", "Here is a list of flags present in any photo.");
+      let return_button = make_element(info_container, "button", "Return to home");
+      return_button.onclick = function() {
+        to_main(other_mains.album_list);
+      }
+    }
+    
+    to_main(other_mains.album_list);
+    //to_main(flags.us50.main);
+    
+    
+    
+    //for (let el of document.querySelectorAll("*")) el.style.backgroundColor = "#"+"0123456789abcdef".charAt(Math.floor(Math.random()*16))+"0123456789abcdef".charAt(Math.floor(Math.random()*16))+"0123456789abcdef".charAt(Math.floor(Math.random()*16))+"0123456789abcdef".charAt(Math.floor(Math.random()*16))+"0123456789abcdef".charAt(Math.floor(Math.random()*16))+"0123456789abcdef".charAt(Math.floor(Math.random()*16));
+  </script>
+</body>
+</html>
