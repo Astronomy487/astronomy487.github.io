@@ -34,7 +34,6 @@ let editor_mode = "edit"; //edit: can place tiles, changes are saved into room d
 /*
 TODO
 - don't use that dumb transition_time hack to make expand_level not wait for the full transition. pick out a function that literally creates the td and img. and call that
-- level editor handling metadata At All
 */
 
 function open_room(index, coming_from = "left") {
