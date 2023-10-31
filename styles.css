@@ -274,7 +274,7 @@ nav a {
 	margin-right: 1rem;
 	transition: opacity 0.1s;
 	display: inline-block;
-	opacity: 0.9;
+	opacity: 0.75;
 }
 
 nav a:hover {
