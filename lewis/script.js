@@ -1,171 +1,37 @@
-/*
-
-given
-- skeletal structure for some compound
-- a number of electrons to assign
-
-we want to assign electrons around outer atoms
-
-
-data structure for the Problem Itself???
-
-molecule
-- atoms: []
-	- {symbol: "C", brings: 4, lone_electrons: 0, bonds: []} //brings is # of electrons it BRINGS, really for formal charge stuff. lone_electrons increments by 2.
-		//# of atoms an atom experiences (for octet purposes): lone_electrons + sum(bonds.order)
-
-
-procedure
-- count # of electrons for whole structure (sum of brings, plus molecular formal charge)
-- make bond orders at least 1
-- going from outside atoms to inside atoms, assign electrons to satisfy octets for as long as we can
-- if inner things are unsatisfied, try bringing in outers' lone pairs
-
-*/
-
-//this is the problem we are GIVEN
-/* let molecule = {
-	atoms: [
-		{symbol: "H", bonds: []},
-		{symbol: "H", bonds: []},
-		{symbol: "C", bonds: [0, 1, 3]},
-		{symbol: "O", bonds: []}
-	],
-	net_formal_charge: 0
-}; */
-
-/* molecule = {
-	atoms: [
-		{symbol: "Cl", bonds: [1,2,3,4]},
-		{symbol: "O", bonds: []},
-		{symbol: "O", bonds: []},
-		{symbol: "O", bonds: []},
-		{symbol: "O", bonds: []},
-	],
-	net_formal_charge: -1
-} */
-
-//we need to PICK how things start off connected
-//there are (n-1)! possibilities for non-cyclical atoms (repeats permutations of identical atoms. divide by some k! please)
-//if we also make cycles there are 2^(n choose 2) (also repeats permutations of identical atoms.)
-//for even tiny molecules, just guessing a structure is TOO INEFFICIENT. idk how im going to generate these
-//i mean there is the idea that carbon 'wants' 4 bonds, so we should tack things onto it and simultaneously satisfy their bonds
-//but figuring out the nature of the bonds is the whole deal with the electron assignment i think
-
-/* molecule = {
-	atoms: [
-		{symbol: "C", bonds: [1, 2]}, //0
-		{symbol: "O", bonds: []}, //1
-		{symbol: "H", bonds: []}, //2
-		
-		{symbol: "C", bonds: [0, 4, 5]}, //3
-		{symbol: "H", bonds: []}, //4
-		{symbol: "O", bonds: [6]}, //5
-		{symbol: "H", bonds: []}, //6
-		
-		{symbol: "C", bonds: [3, 8, 9]}, //7
-		{symbol: "H", bonds: []}, //8
-		{symbol: "O", bonds: [10]}, //9
-		{symbol: "H", bonds: []}, //10
-		
-		{symbol: "C", bonds: [7, 12, 13]}, //11
-		{symbol: "H", bonds: []}, //12
-		{symbol: "O", bonds: [14]}, //13
-		{symbol: "H", bonds: []}, //14
-		
-		{symbol: "C", bonds: [11, 16, 17]}, //15
-		{symbol: "H", bonds: []}, //16
-		{symbol: "O", bonds: [18]}, //17
-		{symbol: "H", bonds: []}, //18
-		
-		{symbol: "C", bonds: [15, 20, 21, 22]}, //19
-		{symbol: "H", bonds: []}, //20
-		{symbol: "H", bonds: []}, //21
-		{symbol: "O", bonds: [23]}, //22
-		{symbol: "H", bonds: []} //23
-	],
-	net_formal_charge: 0
-}; */
-
-/* molecule = {
-	atoms: [
-		{symbol: "S", bonds: [1, 2, 3, 4]},
-		{symbol: "Cl", bonds: []},
-		{symbol: "Cl", bonds: []},
-		{symbol: "Cl", bonds: []},
-		{symbol: "Cl", bonds: []}
-	],
-	net_formal_charge: 0
-}; */
-
-/* molecule = {
-	atoms: [
-		{symbol: "C", bonds: []}, //0
-		{symbol: "H", bonds: [0]}, //1
-		{symbol: "O", bonds: [0]}, //2
-		
-		{symbol: "C", bonds: [0]}, //3
-		{symbol: "Cl", bonds: [3]}, //4
-		{symbol: "H", bonds: [3]}, //5
-		
-		{symbol: "C", bonds: [3]}, //6
-		{symbol: "H", bonds: [6]}, //7
-		{symbol: "Cl", bonds: [6]}, //8
-		
-		{symbol: "C", bonds: [6]}, //9
-		{symbol: "H", bonds: [9]}, //10
-		{symbol: "O", bonds: [9]}, //11
-	],
-	net_formal_charge: 0
-}; */
-
-/* solve({
-	atoms: [
-		{symbol: "C", bonds: []}, //0
-		{symbol: "H", bonds: [0]}, //1
-		{symbol: "O", bonds: [0]}, //2
-		
-		{symbol: "C", bonds: [0]}, //3
-		{symbol: "Cl", bonds: [3]}, //4
-		{symbol: "H", bonds: [3]}, //5
-		
-		{symbol: "C", bonds: [3]}, //6
-		{symbol: "H", bonds: [6]}, //7
-		{symbol: "Cl", bonds: [6]}, //8
-		
-		{symbol: "C", bonds: [6]}, //9
-		{symbol: "H", bonds: [9]}, //10
-		{symbol: "O", bonds: [9]}, //11
-	],
-	net_formal_charge: 0
-}); */
-
-//parse_and_run("CCl4");
 let message_box = document.querySelector("#message_box");
 function parse_and_run(formula, charge) {
-	document.querySelector("main").remove();
+	while (document.querySelector("main")) document.querySelector("main").remove();
 	message_box.innerText = "computing lewis structure...";
 	setTimeout(async function(){
 		if (formula == "") return;
 		//umm maybe sanitize input even more. like what if we are given something that isnt even a formula
 		let results = solve(formula, charge);
-		for (let i = 0; i < 1000; i++) {
+		for (let i = 0; i < 10000; i++) {
 			let new_results = solve(formula, charge);
 			if (new_results.problematic_score < results.problematic_score) results = new_results;
 		}
-		message_box.innerText = "drawing lewis structure...";
-		//do the draw thing
-		setTimeout(async function(){
-			let best = {overlap: Number.MAX_SAFE_INTEGER};
-			//for (let attempts = 0; attempts < 100 || best.overlap > 100000; attempts++) {
-			while (best.overlap > 100000) {
-				let new_attempt = try_draw(results.molecule);
-				if (new_attempt.overlap < best.overlap) best = new_attempt;
-			}
-			message_box.innerText = "";
-			document.body.appendChild(best.main);
-		});
-
+		if (results.problematic_score >= 1000000-1) {
+			message_box.innerText = "couldn't compute a good lewis structure\nproblems:\n"+results.significant_problems.join("\n");
+		} else {
+			message_box.innerText = "drawing lewis structure...";
+			//do the draw thing
+			setTimeout(async function(){
+				let attempts = 0;
+				let best = {overlap: Number.MAX_SAFE_INTEGER};
+				//for (let attempts = 0; attempts < 100 || best.overlap > 100000; attempts++) {
+				while (best.overlap > 100000 && attempts < 10000) {
+					let new_attempt = try_draw(results.molecule);
+					if (new_attempt.overlap < best.overlap) best = new_attempt;
+					attempts++;
+				}
+				if (best.overlap > 100000) {
+					message_box.innerText = "couldn't draw a good lewis structure.";
+				} else {
+					message_box.innerText = "";
+					document.body.appendChild(best.main);
+				}
+			});
+		}
 	});
 }
 
@@ -192,9 +58,9 @@ function solve(formula, charge) {
 	for (let atom of molecule.atoms) atom.lone_electrons = 0;
 	
 	//sort the molecules so that carbon-core things are in the middle
-	molecule.atoms.sort((a, b) => inherent_closeness_to_octet(b) - inherent_closeness_to_octet(a));
+	molecule.atoms.sort((a, b) => heuristic_centrality(b) - heuristic_centrality(a));
 	
-	for (let i = 1; i < molecule.atoms.length; i++) molecule.atoms[i].bonds.push(Math.floor(Math.random()*i/2)); //THIS IS BAD!!! the way we connect this molecule shouldnt just be random you idiot
+	for (let i = 1; i < molecule.atoms.length; i++) molecule.atoms[i].bonds.push(Math.floor(Math.random()*i/2.5)); //THIS IS BAD!!! the way we connect this molecule shouldnt just be random you idiot
 
 	//turn bonds from index arrays into actual {atoms: [a, b], order: 0}
 	//the two sides of the atom most hold the same bond object!!!
@@ -277,37 +143,49 @@ function solve(formula, charge) {
 	}
 	
 	//OK FINAL CHECK: if anything sucks super bad. um sorry, try again i guess
-	let problematic_score = 0
+	let problematic_score = 0;
+	let significant_problems = [];
 	//unassigned electron
-	if (electrons_to_assign != 0) problematic_score += 1000000;
+	if (electrons_to_assign != 0) {
+		problematic_score += 1000000;
+		significant_problems.push("we literally just can't assign the number of electrons");
+	}
 	for (let atom of molecule.atoms) {
 		//literally exceeding octet
-		if (too_many_electrons(atom)) problematic_score += 1000000;
+		if (too_many_electrons(atom)) {
+			problematic_score += 1000000;
+			significant_problems.push(atom.symbol + " exceeds octet");
+		}
 		//undersatisfied octet
-		if (can_take_more_electrons(atom)) problematic_score += 1000000;
+		if (!satisfied_octet(atom)) {
+			problematic_score += 1000000;
+			significant_problems.push(atom.symbol + " has unsatisfied octet");
+		}
 		//formal charges (tiny problem)
-		problematic_score += Math.abs(atom_formal_charge(atom));
+		problematic_score += Math.abs(atom_formal_charge(atom)) * 10;
 		//using expanded octets (even tinier problem)
 		problematic_score += Math.max(atom_electrons_felt(atom)-8, 0);
 	}
 	//TODO else check that negative charges are on the electronegative atoms
 	
-	return {molecule: molecule, problematic_score: problematic_score};
+	return {molecule: molecule, problematic_score: problematic_score, significant_problems: significant_problems};
 }
 
 function try_draw(molecule) {
 	let main = document.createElement("main");
-	let first_choice_atom = molecule.atoms[molecule.atoms.length-1];
+	let first_choice_atom = molecule.atoms[0]; //this makes the first choice an extraneous atom (like a hydrogen or halogen) I did this because it makes the animation look cool
 	first_choice_atom.x = 0;
 	first_choice_atom.y = 0;
 	let draw_queue = [{
 		atom: first_choice_atom,
 		//coming_from_angle: Math.random() * 2 * Math.PI,
-		coming_from_angle: 0,
+		coming_from_angle: Math.random()<0.5 ? 0 : Math.PI,
 		previous_atom: null
 	}];
 	//function draw_atom(atom, coming_from_angle, x, y, previous_atom) {
+	let object_number = 0; //used to make ripply animation :)
 	while (draw_queue.length) {
+		object_number += 2 / molecule.atoms.length;
 		//STUPID QUEUE SYSTEM BECAUSE MY RECURSIVE FUNCTIONS ARENT WORKING
 		let queue_item = draw_queue.shift();
 		let [atom, coming_from_angle, x, y, previous_atom] = [queue_item.atom, queue_item.coming_from_angle, queue_item.atom.x, queue_item.atom.y, queue_item.previous_atom];
@@ -315,13 +193,20 @@ function try_draw(molecule) {
 		atom.element = main.appendChild(document.createElement("div"));
 		atom.element.setAttribute("class", "atom");
 		atom.element.innerText = atom.symbol;
+		//if (atom.atom_object.color) atom.element.style.outline = "solid 0.25rem " + atom.atom_object.color;
+		if (atom.atom_object.color) atom.element.style.backgroundColor = atom.atom_object.color;
 		let formal_charge = atom_formal_charge(atom);
-		//if (formal_charge != 0) atom.element.innerHTML += "<sup>"+(Math.abs(formal_charge)<2?"":Math.abs(formal_charge))+(formal_charge<0?"-":"+")+"</sup>";
+		if (formal_charge != 0) {
+			let charge_symbol = main.appendChild(document.createElement("div"));
+			charge_symbol.setAttribute("class", "charge");
+			charge_symbol.style.left = x+1+"rem";
+			charge_symbol.style.top = y-0.5+"rem";
+			charge_symbol.innerText = (Math.abs(formal_charge)==1 ? "" : Math.abs(formal_charge)) + (formal_charge>0 ? "+" : "–");
+		}
 		atom.element.style.left = x + "rem";
 		atom.element.style.top = y + "rem";
+		atom.element.style.animationDuration = object_number+"s";
 		//atom.element.style.backgroundColor = atom.atom_object.color;
-		atom.x = x;
-		atom.y = y;
 		let steric = steric_number(atom);
 		//compile list of other things to draw
 		things_to_draw = atom.bonds.filter((bond) => !bond.atoms.includes(previous_atom));
@@ -336,12 +221,12 @@ function try_draw(molecule) {
 			let distance_amplitude = typeof(thing_to_draw) == "number" ? 1.5 : 5;
 			//find the best angle to draw this thing at
 			let angle = 0;
-			let largest_min_distance = 0; //largest min distance == furthest away from other stuff
+			let largest_sum_of_distances_to_others = 0;
 			for (let possible_angle of angles_to_do) {
 				let [possible_x, possible_y] = [x + distance_amplitude * Math.cos(possible_angle), y + distance_amplitude * Math.sin(possible_angle)]; //position of this link
-				let min_distance = Number.MAX_SAFE_INTEGER;
-				for (let other_atom of molecule.atoms) if (other_atom.x != undefined) min_distance = Math.min(min_distance, Math.hypot(other_atom.x - possible_x, other_atom.y - possible_y));
-				if (min_distance > largest_min_distance) [angle, largest_min_distance] = [possible_angle, min_distance];
+				let sum_of_distances_to_others = 0;
+				for (let other_atom of molecule.atoms) if (other_atom.x != undefined) sum_of_distances_to_others += Math.pow(Math.hypot(other_atom.x - possible_x, other_atom.y - possible_y), 2); //square distances because it feels right
+				if (sum_of_distances_to_others > largest_sum_of_distances_to_others) [angle, largest_sum_of_distances_to_others] = [possible_angle, sum_of_distances_to_others];
 			}
 			angles_to_do = remove_value(angles_to_do, angle);
 			if (typeof(thing_to_draw) == "number") {
@@ -352,6 +237,7 @@ function try_draw(molecule) {
 				lone.style.left = x + distance_amplitude * Math.cos(angle) + "rem";
 				lone.style.top = y + distance_amplitude * Math.sin(angle) + "rem";
 				lone.style.rotate = angle + "rad";
+				lone.style.animationDuration = object_number+"s";
 			} else {
 				//draw line and the next atom
 				let new_x = x + distance_amplitude * Math.cos(angle);
@@ -386,6 +272,7 @@ function try_draw(molecule) {
 		//hr.style.transform = "translateY("+altitude+"rem) rotate("+(Math.PI/2-Math.atan2(x2-x1, y2-y1))+"rad)";
 		hr.style.rotate = Math.PI/2 - Math.atan2(x2-x1, y2-y1) + "rad";
 		//hr.style.borderWidth = order*order * 0.0625 + "rem";
+		hr.style.animationDuration = object_number+"s";
 	}
 	let overlap = 0;
 	for (let i = 0; i < molecule.atoms.length; i++) for (let j = i+1; j < molecule.atoms.length; j++) {
@@ -405,7 +292,6 @@ function try_draw(molecule) {
 		most_y = Math.max(most_y, atom.y);
 	}
 	main.style.transform = "translate(-50%, -50%) translate("+(-1 - 0.5*most_x - 0.5*least_x)+"rem, "+(-1 - 0.5*most_y - 0.5*least_y)+"rem)";
-	
 	return {main: main, overlap: overlap};
 }
 
@@ -426,9 +312,10 @@ function how_much_can_octet_expand(atom) {
 	return 18 - electrons_felt;
 }
 
-function inherent_closeness_to_octet(atom) { //based off of BRINGS. ranks fluorine(1) = hydrogen(1) < oxygen(2) < nitrogen < carbon. doesn't consider expanded octets
-	if (atom.atom_object.period == 1) return 2 - atom.brings;
-	return 8 - atom.brings;
+function heuristic_centrality(atom) { //based off of BRINGS. ranks fluorine(1) = hydrogen(1) < oxygen(2) < nitrogen < carbon. doesn't consider expanded octets
+	let bigness_component = atom.atom_object.z * atom.atom_object.z * 0.05;
+	if (atom.atom_object.period == 1) return 2 - atom.brings + bigness_component;
+	return 8 - atom.brings + bigness_component;
 	//maybe for super big atoms, up the number?? we want Xe to seem more central in XeI2
 }
 
