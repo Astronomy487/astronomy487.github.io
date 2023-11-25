@@ -108,7 +108,7 @@ for (let album of albums) {
 	if (albums.length == 1) {
 		album_main_element.setAttribute("lonely", "true");
 		document.querySelector("link[rel=\"icon\"]").setAttribute("href", album.image_front);
-		document.querySelector("title").innerText = album.title;
+		document.querySelector("title").innerText = "Astro - " + album.title;
 		document.body.style.overflow = "hidden";
 	}
 	//album art

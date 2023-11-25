@@ -1,7 +1,5 @@
 albums.push({
-	title: "remixes",
-	image_front: "https://f4.bcbits.com/img/a2273359344_10.jpg",
-	image_back: "https://f4.bcbits.com/img/a2273359344_10.jpg",
+	title: "Remixes",
 	text: [0, 0, 0],
 	edge: [0, 0, 0],
 	accent: [0, 0, 0],
@@ -9,6 +7,7 @@ albums.push({
 	dark_background: [240, 240, 240],
 	icon_color: "black",
 	release_year: "2020–"+(new Date().getYear()+1900),
+	main_length: "82 Remixes",
 	compilation: true,
 	exclude_copyright: true,
 	links: {
@@ -16,5 +15,6 @@ albums.push({
 		youtube: "https://www.youtube.com/playlist?list=PL3RK0M75ja5ufO4mBFhuZYhkwJJBt384H"
 	},
 	bandcamp_album_id: "3297357996",
-	material_symbol: "transform"
+	material_symbol: "transform",
+	description: "A collection of remixes I've made over the past " + (new Date().getYear()-120) + " years"
 });
