@@ -18,7 +18,7 @@ albums.push({
 		applemusic: "https://music.apple.com/us/album/f-of-x/1603465758",
 		fullmix: "https://www.youtube.com/watch?v=3SmFRTjVUxY",
 		youtube: "https://www.youtube.com/playlist?list=PL3RK0M75ja5s1QROaTL14MiQw30lIJ1uW",
-		bandcamp: "https://astronomy487.bandcamp.com/album/f-of-x"
+		bandcamp: "https://astronomy487.bandcamp.com/album/f-x"
 	},
 	bandcamp_album_id: "275247403",
 	material_symbol: "clear_day"
