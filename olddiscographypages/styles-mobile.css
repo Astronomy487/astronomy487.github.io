@@ -1,0 +1,69 @@
+html {
+	font-size: 32px;
+}
+
+.album_art {
+	display: none;
+}
+
+main {
+	height: fit-content;
+	padding: 4rem 0;
+}
+
+main .information {
+	left: 2rem;
+	width: calc(100vw - 4rem);
+	position: static;
+	transform: none;
+	margin: 0 2rem;
+}
+
+.tracklist {
+	line-height: 100%;
+}
+
+.tracklist b {
+	border: none;
+	font-weight: bold;
+	line-height: 1.5rem;
+}
+
+.tracklist b::after {
+	content: ".";
+	margin: 0;
+}
+
+main .information nav {
+	text-align: left;
+	position: static;
+}
+
+.copyright {
+	display: none;
+}
+
+main nav {
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.decor0 {
+	display: none;
+}
+
+.album_art.front {
+	animation: none;
+	display: block;
+	position: static;
+	margin-left: 2rem;
+}
+
+#bio .box {
+	border: none;
+	box-shadow: none;
+}
+
+#bio {
+	background-color: white;
+}

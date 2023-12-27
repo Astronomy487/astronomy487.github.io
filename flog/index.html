@@ -6,12 +6,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,500,0,0" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Shippori+Antique+B1&display=swap');
     
     :root {
-      --bg: black;
-      --txt: yellow;
-      --data: magenta;
-      --action: cyan;
+      --bg: #222;
+      --txt: #eee;
+      --data: #aaa;
     }
     
     html {
@@ -27,6 +27,12 @@
       background-color: var(--bg);
       color: var(--txt);
       font-family: 'JetBrains Mono', monospace;
+      font-family: 'Shippori Antique B1', monospace;
+    }
+    
+    :selection {
+      background: var(--accent);
+      color: var(--txt);
     }
     
     main {
@@ -61,6 +67,10 @@
       padding: 0 4rem;
     }
     
+    .info_container p, .info_container div {
+      user-select: text;
+    }
+    
     section.photo_container {
       height: 100vh;
       position: relative;
@@ -79,6 +89,7 @@
       font-family: Material Symbols Outlined;
       font-size: 1.5rem;
       vertical-align: middle;
+      user-select: none;
     }
     
     table {
@@ -151,6 +162,7 @@
       line-height: 4rem;
       margin-bottom: 4rem;
       font-weight: normal;
+      user-select: text;
     }
     
     h1.super {
@@ -163,10 +175,15 @@
       width: 90%;
     }
     
+    .attributes_list > span .material {
+      margin-right: 0.5rem;
+    }
+    
     .attributes_list > span {
       margin-right: 2rem;
       display: inline-block;
       color: var(--data);
+      user-select: text;
     }
     
     button, p, .attributes_list, h1 {
@@ -177,9 +194,9 @@
     }
     
     button {
-      border: solid 0.125rem var(--action);
+      border: solid 0.125rem var(--accent);
       background-color: inherit;
-      color: var(--action);
+      color: var(--accent);
       font-family: inherit;
       font-size: 1.25rem;
       line-height: 100%;
@@ -194,7 +211,7 @@
     }
     
     button:hover {
-      background-color: var(--action);
+      background-color: var(--accent);
       color: var(--bg);
     }
     
@@ -206,7 +223,7 @@
     }
     
     a {
-      color: var(--action);
+      color: var(--accent);
       text-decoration: none;
       cursor: pointer;
     }
@@ -258,6 +275,7 @@
     
     .photo_card div {
       margin-top: 0.5rem;
+      user-select: text;
     }
     
     .post_square {
@@ -270,7 +288,7 @@
       display: inline-block;
       object-fit: cover;
       margin: 0.125rem 0.25rem;
-      border: solid 0.125rem var(--action);
+      border: solid 0.125rem var(--accent);
     }
     
     .comment {
@@ -303,6 +321,7 @@
   </style>
 </head>
 <body>
+  <script src="https://astronomy487.github.io/dynamicaccentcolor.js"></script>
   <nav>
     <a class="material" onclick="navigate_backwards();">arrow_back</a>
     <!--<a class="material" onclick="to_main(other_mains.album_list)">home</a>-->
@@ -643,9 +662,10 @@
       //info table
       let attributes_list = make_element(info_container, "div", "", "attributes_list");
       make_element(attributes_list, "span", html_with_material("location_on", post.location));
+      make_element(attributes_list, "br");
       make_element(attributes_list, "span", html_with_material("event", post.time));
       //make_element(attributes_list, "span", html_with_material("visibility", ["", "Miserable visibility :(", "Poor visibility :/", "Okay visibility :|", "Good visibility! :)", "Excellent visibility! :D"][post.visibility]));
-      make_element(attributes_list, "span", html_with_material("folder", "Photo #"+(1+post.index)+" in album <a>" + album.title + "</a>"));
+      make_element(attributes_list, "span", html_with_material("map", "<a>" + album.title + "</a>"));
       attributes_list.querySelector("a").setAttribute("redirect_data", "album:"+album.index);
       //caption
       for (let paragraph of post.caption.split("\n")) {
@@ -758,7 +778,7 @@
     }
     
     function html_with_material(material_text, text) {
-      return "<span class=\"material\">"+material_text+"</span> "+text;
+      return "<span class=\"material\">"+material_text+"</span>"+text;
     }
     
     //make a main for every album
@@ -789,7 +809,7 @@
       //go_button.setAttribute("redirect_data", "post:"+album.index+",0");
       let dist_paragraph = make_element(info_container, "p", "<a>See flag distribution</a>");
       dist_paragraph.querySelector("a").setAttribute("redirect_data", "album_distribution:"+album.index);
-      dist_paragraph = make_element(info_container, "p", "<a>See all albums</a>");
+      dist_paragraph = make_element(info_container, "p", "<a>See all locations</a>");
       dist_paragraph.querySelector("a").setAttribute("redirect_data", "other:album_list");
       //right half
       let right_half = make_element(main, "div", "", "half right_half");
@@ -824,9 +844,9 @@
       let right_half = make_element(main, "div", "", "half right_half");
       info_container = make_element(right_half, "section", "", "info_container");
       make_element(info_container, "h1", album.title+"<br>Flag distribution");
-      make_element(info_container, "p", "Here is the flag distribution for the album <a>"+album.title+"</a>. This shows the number of each flag present among all the photos in the album.");
+      make_element(info_container, "p", "Here is the flag distribution for <a>"+album.title+"</a>. This shows the number of each flag present among all the photos taken here.");
       info_container.querySelector("a").setAttribute("redirect_data", "album:"+album.index);
-      let return_button = make_element(info_container, "button", "Return to album");
+      let return_button = make_element(info_container, "button", "Return to " + album.title + " home page");
       return_button.setAttribute("redirect_data", "album:"+album.index);
     }
     
@@ -871,14 +891,14 @@
       let left_half = make_element(main, "div", "", "half left_half");
       let info_container = make_element(left_half, "section", "", "info_container");
       make_element(info_container, "h1", "Flog", "super");
-      make_element(info_container, "p", "This is my Flog (flag blog) where I keep photos of flags spotted in the wild. Anything in <span style=\"color: var(--action)\">cyan</span> can be clicked on!");
-      make_element(info_container, "p", "<span class=\"material\">construction</span> Website is under construction!", "comment");
+      make_element(info_container, "p", "This is my Flog (flag blog) where I keep photos of flags spotted in the wild. Anything <span style=\"color: var(--accent)\">highlighted</span> can be clicked on!");
+      make_element(info_container, "div", "<span>"+html_with_material("construction", "Website is under construction!")+"</span>", "attributes_list");
       make_element(info_container, "p", "<a>See flag distribution</a>");
       info_container.querySelector("a").setAttribute("redirect_data", "other:distribution");
       //right half
       let right_half = make_element(main, "div", "", "half right_half");
       info_container = make_element(right_half, "section", "", "info_container");
-      make_element(info_container, "div", format_figure(albums.length, "album", "albums"));
+      make_element(info_container, "div", format_figure(albums.length, "location", "locations"));
       for (let album of albums) {
         let photo_card = make_element(info_container, "div", "", "photo_card");
         make_element(photo_card, "img", album.thumbnail);

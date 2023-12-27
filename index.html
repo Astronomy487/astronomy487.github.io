@@ -1,50 +1,325 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" href="icon.png">
-  <title>Astro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"> 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,600,0,0">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" id="mobilecss">
+  <link rel="icon" href="favicon.png">
+  <title>astro's catalogue ✦</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+    
+    body {
+      background-color: black;
+      margin: 0;
+      color: yellow;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    ::selection {
+      background: white;
+      color: black;
+    }
+    
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    
+    #main-container {
+      position: absolute;
+      width: min(64rem, 100vw);
+      z-index: 1;
+      text-align: right;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    main {
+      width: min(40rem, 100vw);
+      background-color: #00000055;
+      backdrop-filter: blur(8rem);
+      display: inline-block;
+      margin-top: 16rem;
+      text-align: left;
+      padding: 3rem;
+      padding-bottom: 16rem;
+      box-sizing: border-box;
+      box-shadow: -1rem 1rem 2rem #00000044;
+      animation: 1s main-enter;
+      font-size: 1.125rem;
+    }
+    
+    @keyframes main-enter {
+      from {transform: translateY(2rem); opacity: 0;}
+    }
+    
+    .album-art {
+      width: 100%;
+    }
+    
+    main section {
+      width: 15rem;
+      display: inline-block;
+      vertical-align: top;
+      margin: 1rem;
+      margin-left: 0;
+    }
+    
+    h2 {
+      margin: 0;
+      margin-top: 4rem;
+      font-size: 2.5rem;
+      color: magenta;
+      font-weight: bold;
+    }
+    
+    h2:not([style])::before {
+      content: '✦ ';
+    }
+    
+    a {
+      color: cyan;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline;
+      cursor: pointer;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    p {
+      margin: 1.5rem 0;
+    }
+    p[indent] {
+      margin-top: -0.75rem;
+    }
+    
+    a[magenta] {
+      color: yellow;
+      font-weight: normal;
+      text-decoration: underline;
+    }
+    a[magenta]:hover {
+      color: magenta;
+    }
+    
+    section {
+      display: block;
+      margin: 1rem 0;
+      width: 100%;
+    }
+    
+    section img, section div {
+      display: inline-block;
+      vertical-align: top;
+      background-color: black;
+    }
+    
+    section img {
+      width: 6rem;
+    }
   </style>
 </head>
 <body>
-  <script src="dynamicaccentcolor.js"></script>
-  <script src="mobileuserdetected.js"></script>
-  <script src="discographyinitial.js"></script>
-  <div id="bio">
-    <div class="box">
-      <h1>
-        <img src="https://f4.bcbits.com/img/0033708709_20.jpg">Astro<span>nomy487</span>
-      </h1>
-      <p>hello! i am an electronica music producer creating whichever sounds i find most interesting. i'm also an occasional <a href="projects">programmer</a>.</p>
-      <p style="height: 0; margin-bottom: -2rem; margin-top: 1.5rem;">he him 18</p>
-      <nav style="text-align: right; height: 0; margin-bottom: 3rem;">
-        <a href="https://twitter.com/astronomy487"><img src="https://astronomy487.github.io/socialicons/black/twitter.png"></a>
-        <a href="https://discord.gg/ZnMsetP"><img src="https://astronomy487.github.io/socialicons/black/discord.png"></a>
-        <a href="https://www.youtube.com/astronomy487"><img src="https://astronomy487.github.io/socialicons/black/youtube.png"></a>
-        <a href="https://astronomy487.bandcamp.com/"><img src="https://astronomy487.github.io/socialicons/black/bandcamp.png"></a>
-        <a href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5"><img src="https://astronomy487.github.io/socialicons/black/spotify.png"></a>
-        <a href="https://music.apple.com/gb/artist/astro/1468743818"><img src="https://astronomy487.github.io/socialicons/black/applemusic.png"></a>
-      </nav>
-      <p style="text-align: center; font-weight: bold;">scroll to browse my discography!</p>
-      <div style="text-align: center; user-select: none;">
-        <span style="font-size: 1.25rem; background-color: var(--accent); color: white; display: inline-block; width: 2rem; height: 2rem; line-height: 2rem; border-radius: 2rem; font-weight: bold;">↓</span>
-      </div>
+  <script src="https://github.com/processing/p5.js/releases/download/v1.5.0/p5.min.js"></script>
+  <div id="container">
+    <div id="main-container">
+      <main>
+        <div style="user-select: none; text-align: right;">
+          <div style="height: 0.125rem; width: 2rem; background-color: cyan; display: inline-block;">&nbsp;</div>
+          <div style="height: 0.125rem; width: 2rem; background-color: magenta; display: inline-block;">&nbsp;</div>
+          <div style="height: 0.125rem; width: 2rem; background-color: yellow; display: inline-block;">&nbsp;</div>
+        </div>
+        <!-- <p style="font-size: 2rem; font-weight: bold; text-align: center;">hey !</p> -->
+        <h2 style="text-align: center; margin: 2rem 0;">hey !</h2>
+        <p>i'm astro (he him) and this is a catalogue of ALL the things i've made — mostly music and little programming projects.</p>
+        <p>all of my music is available for free on <a href="https://astronomy487.bandcamp.com">bandcamp</a> (including lossless downloads + many bonus tracks). i am also on <a href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">spotify</a>, <a href="https://music.apple.com/gb/artist/astro/1468743818">apple music</a>, <a href="https://www.youtube.com/astronomy487">youtube</a>, and the like. all of my original work is shared under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">creative commons by-nc-sa 4.0 license</a>, so feel free to use and reuse my music!</p>
+        <p>contact me on <a href="https://twitter.com/astronomy487">twitter</a> or <a href="https://discord.com/invite/ZnMsetP">join my discord</a></p>
+        <h2>Albums</h2>
+        <p><a href="somewhereinthemilkyway">somewhere in the milky way [2022]</a> An album inspired by the soundtracks of some of my favorite games (namely Animal Crossing: City Folk and Minecraft). Each song is written around an hour of the day, starting at 6 a.m.</p>
+        <p indent>The album is divided into four discs: the morning disc, the afternoon disc, the evening disc, and the night disc. Altogether two hours of chill vibes. Digital download also includes alternate "snowdrift" versions of each song for wintertime listening.</p>
+        <p><a href="toomuch">Too much!! [2022]</a> An hour-long mix of explosive, experimental, electronic tracks. Enjoy the fireworks!!</p>
+        <p><a href="fx">f(x) [2021]</a> my tenth album! a 46-minute continuous mix of bright electronic music // sometimes called F of X</p>
+        <p><a href="mindsets">Mindsets [2021]</a> Mindsets is the set of songs I've been working on since March of 2020, even through 10k Degrees. This is the longest I've spent working on a single project, and I'm so excited for you all to hear this!</p>
+        <p><a href="10kdegrees">10k Degrees [2020]</a> A continuous half-hour mix of experimental, bass-focused music</p>
+        <p><a href="nexuscondition">Nexus Condition [2020]</a> In a heartbeat, you can set the sky on fire.</p>
+        <p><a href="exosphere">Exosphere [2019]</a> WE TRANSCEND INTO AN ERA OF CREATION. WE BECOME UNIFIED WITH LIGHT. 18 AMBIENT TRACKS WITH A 1H07 RUNTIME</p>
+        <p indent>Digital download includes the unreleased album "Absolute Zero"</p>
+        <p><a href="pulsewidth">Pulse Width [2019]</a> A one-hour mix of percussion-driven tracks</p>
+        <p><a href="emerge">Emerge [2019]</a> A compilation album of my 30 favorite songs of Series I</p>
+        <p><a href="asymmetricsilhouette">Asymmetric Silhouette [2019]</a> Asymmetric Silhouette is a little album full of short songs I've been holding onto for a while. I hope you enjoy!</p>
+        <p indent>Digital download includes the unreleased album "Decoration"</p>
+        <p><a href="utopian">Utopian [2019]</a> 12 stories surrounding the people from Molyge</p>
+        <p><a href="chaseanidea">Chase an Idea [2019]</a> A compilation album of the 39 songs from Series II and a VIP remix of Copper as an extra song</p>
+        <h2>Remixes</h2>
+        <p><a href="https://astronomy487.bandcamp.com/album/remixes">Remixes</a> An ever-growing collection of remixes, edits, and hypermixes of my favorite songs. Maintained in reverse chronological order and updated frequently! It currently sits at around 5½ hours. Songs are originally by other artists (of course)!</p>
+        <h2>Programs</h2>
+        <!-- <p><a>know-it-all</a> An experimental automated theorem prover for problems in first-order-logic, implemented in Java.</p> -->
+        <p><a href="sokopond">the sokopond</a> A <a magenta href="https://en.wikipedia.org/wiki/Sokoban">sokoban</a> engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!</p>
+        <p indent>The engine is highly customizable and versatile to allow for many different tile types with unique behaviors. It can handle several player agents, several box weights, and custom reskins. Levels are strung together in a level pack that you can share with others by sending plaintext, or even putting its base64 into a URL query string.</p>
+        <p><a href="progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
+        <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
+        <p indent>Thanks, graph theory and jazz musicians!</p>
+        <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
+        <p><a href="calculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function" machine" that my Algebra II teacher always liked to talk about.</p>
+        <p indent>The principal idea is that data (numbers, vectors, functions, whatever) is carried through wires between the output of some modules and the input of other modules.</p>
+        <p indent>Any transformation of data you could want to apply (operations, derivatives, linear regressions, list manipulation, random number generation) is handled by a module. Changes to inputs automatically cascade to their outputs. I think this is a very cool way to think about math!</p>
+        <p><a href="chess">Chess Sandbox</a> A generalized and highly customizable chess engine.</p>
+        <p indent>By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a magenta href="https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js">shenanigans</a>. Anyone can create their own ruleset if they are willing to read a little documentation and make a little JavaScript file!</p>
+        <p indent>As a consequence of hard-coding none of the rules, it's very inefficient. The minimax search tree only searches 3 layers because any more takes too much time in most positions. Currently none of the code is asynchronous, which is bad!</p>
+        <p><a href="acnhcurator">ACNH Curator</a> A tool to track museum progress in Animal Crossing: New Horizons.</p>
+        <p indent>Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price.</p>
+        <p><a href="automata">unnamed automata engine</a> A general engine for cellular automata inspired by Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>.</p>
+        <p indent>The rulesets can be defined in the GUI to the left (which is pretty little unfinished). Transition rules are modular, in that they can contain a list of other rules. Neighbor rules count the number of neighbors and execute the rules inside if a number is matched; random chance rules randomly execute the rules inside; the become rules contain no rules, and these specify a cell to change its state.</p>
+        <p indent>Sounds abstract? I think that's the point. I never named it or made it look special. The rule module property inputs are all text input, even when dropdowns or more custom parsing would be more appropriate.</p>
+        <p><a href="emojigarden">EmojiGarden</a> A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>
+        <p indent>It is inspired by <a magenta href="https://hayday.com/">Hay Day</a>, Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>, and <a magenta href="https://twitter.com/emoji_garden?lang=en">@emoji_garden on Twitter</a>.</p>
+        <p indent>My design goals include cuteness, minimalism, and positive vibes. I want the game to eventually be playable without looking at the about page, but currently nothing is explained in the game itself!</p>
+        <p><a href="voiceleader">Voice Leader</a> An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!</p>
+        <p indent>It's pretty inefficient. On every frame, it generates all possible continuations (by filling each voice with chord members). It then runs a function on each possible continuation to determine how good of a transition is (with a little temperature — risky short-term decisions for the possibility of finding a better long-term result. I think this is standard for searching absurdly large possibility trees).</p>
+        <p indent>Running this on 5 voices will take a while. Running this on 6 voices will grind your computer to a halt. Exponential trees are brutal!</p>
+        <p><a href="wordlesolver">Wordle Solver</a> A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess.</p>
+        <p indent>Equipped with two word lists: one for <a magenta href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> and <a magenta href="https://gregcameron.com/infinite-wordle/">Infinite Wordle</a>.</p>
+        <p indent>See also <a magenta href="https://astronomy487.github.io/wordlesolver/perfectle.cpp">the C++ version of this project</a> that is probably worse.</p>
+        <h2>Tinier Programs</h2>
+        <p><a href="abcde">/abcde</a> A microgame based on a TikTok trend from January 2023.</p>
+        <p><a href="balanceequation">/balanceequation</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
+        <p><a href="complex">/complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>
+        <p><a href="conwaysgameofsabotage">/conwaysgameofsabotage</a> A microgame idea where you are given a stable position in Conway's Game of Life and must sabotage it by adding new alive cells.</p>
+        <p><a href="cyoae">/cyoae</a> A little text engine for Choose-Your-Own-Adventure games using markdown.</p>
+        <p><a href="drummachine">/drummachine</a> A very broken page to play sound files simultaneously to make a nice little song. All instrument parts point to the same chord progression, which is why any combination works. I should eventually learn how to synchronize sounds in JavaScript.</p>
+        <p><a href="dynamicaccentcolor.js">/dynamicaccentcolor.js</a> A little bit of JavaScript I use in a lot of my webpages to dynamically set the global CSS variable --accent to a color in the rainbow. It slowly rotates through a full cycle every 24 hours. The variable is updated every 60 seconds.</p>
+        <p><a href="hangman">/hangman</a> A hangman game.</p>
+        <p><a href="lewis">/lewis</a> A (not very reliable) program to draw Lewis structures for simple molecules.</p>
+        <p><a href="tictactoe">/tictactoe</a> A tic-tac-toe game.</p>
+        <p><a href="weather">/weather</a> A weather app using a free weather API, an icon pack, and a list of cities. The interesting part is a function that generates organic-sounding paragraph descriptions for a day's weather (e.g. "It will average a nice 74°F, with rain from 3&nbsp;AM to 11&nbsp;AM.").</p>
+        <p indent>Everybody makes weather apps. :|</p>
+        <h2>Other</h2>
+        <p><a href="flog">Flog</a> This is my Flog (flag blog) where I collect photos I've taken of flag displays! Photos include metadata about the flags they contain, which means I can do fun things with that data.</p>
+        <p><a href="pridepacks">Pride Packs</a> This is a collection of Minecraft resource packs (client-side visual modifications) that replace elytra and XP bars with pride flags. Designed for compatibility with the vanilla resource pack.</p>
+        <p><a href="niachang">Niachāng</a> A minimalist logical language I made for fun. Designed and built around the web experience — code automatically parses and translates text, the dictionary is all powered by JavaScript objects, syntax is inspired by ideas from functional programming, etc. Pronounced /njà tʃʰáŋ/</p>
+      </main>
     </div>
   </div>
-  <script src="somewhereinthemilkyway/discographydata.js"></script>
-  <script src="toomuch/discographydata.js"></script>
-  <script src="fx/discographydata.js"></script>
-  <script src="remixes/discographydata.js"></script>
-  <script src="hypermixes/discographydata.js"></script>
-  <script src="mindsets/discographydata.js"></script>
-  <script src="10kdegrees/discographydata.js"></script>
-  <script src="nexuscondition/discographydata.js"></script>
-  <script src="discographygenerate.js"></script>
+  <script>
+    let faces = [
+      {dx: 0, dy: 1, dz: 0, color: "#ff0", darkColor: ["#880", "#660"]},
+      {dx: 0, dy: -1, dz: 0, color: "#ff0", darkColor: ["#880", "#660"]},
+      {dx: 1, dy: 0, dz: 0, color: "#0ff", darkColor: ["#088", "#066"]},
+      {dx: -1, dy: 0, dz: 0, color: "#0ff", darkColor: ["#088", "#066"]},
+      {dx: 0, dy: 0, dz: 1, color: "#f0f", darkColor: ["#808", "#606"]},
+      {dx: 0, dy: 0, dz: -1, color: "#f0f", darkColor: ["#808", "#606"]}
+    ];
+    
+    let friction = 0;
+    let midX = 0; let midY = 0;
+    let tX = 0; let tY = 0;
+    let scroll = 0;
+    let theScale = 0;
+    let canvas;
+    function setup() {
+      //establish canvas
+      createCanvas(0, 0, WEBGL);
+      canvas = document.body.querySelector("canvas");
+      document.body.querySelector("#container").appendChild(canvas);
+      noStroke();
+      windowResized();
+      smooth();
+    }
+    let holeRatio = 0.4; //radius frmo center to the hole edge
+    function draw() {
+      scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+      background(0);
+      scale(200 * theScale);
+      tX = (mouseX / midX - 1) * (1-friction) + tX * friction;
+      tY = ((mouseY-scroll*2) / midY + 10) * (1-friction) + tY * friction;
+      translate(tX*0.2, 0, 0);
+      rotateX(-tY * 0.1 + Math.PI / 4 - frameCount * 0.0005);
+      rotateY(tX * 0.1 + Math.PI * 2/3 + frameCount * 0.001);
+      if (mouseX || mouseY) friction = friction*0.8 + 0.9 * 0.2; //meta friction whoaa
+      if (!friction) return;
+      theScale = 0.9*theScale + 0.1;
+      /* quad(-1, -1, -1,      -1, -1, 1,      -1, 1, -1,      -1, 1, 1); //x = -1;
+      quad(1, -1, -1,       1, -1, 1,       1, 1, -1,       1, 1, 1); //x = 1;
+      quad(-1, -1, -1,      -1, -1, 1,      1, -1, -1,      1, -1, 1); //y = -1;
+      quad(-1, 1, -1,       -1, 1, 1,       1, 1, -1,       1, 1, 1); //y = 1;
+      quad(-1, -1, -1,      -1, 1, -1,      1, -1, -1,      1, 1, -1); //z = -1;
+      quad(-1, -1, 1,       -1, 1, 1,       1, -1, 1,       1, 1, 1); //z = 1; */
+      for (let face of faces) {
+        push();
+        translate(face.dx, face.dy, face.dz);
+        if (face.dy != 0) rotateX(Math.PI * 0.5);
+        if (face.dx != 0) rotateY(Math.PI * 0.5);
+        fill(face.color);
+        for (let i = 0; i < 4; i++) {
+          push();
+          rotateZ(i * Math.PI / 2);
+          translate(0, 1-(1-holeRatio)/2, 0);
+          plane(2, 1-holeRatio);
+          pop();
+        }
+        pop();
+        //if (Math.random() > 0.2) continue;
+        push();
+        let tubeDistance = 1 - holeRatio;
+        //tubeDistance = 1;
+        for (let i = 0; i < 4; i++) {
+          push();
+          let angle = i * Math.PI / 2;
+          translate(face.dx * (1 - tubeDistance/2), face.dy * (1 - tubeDistance/2), face.dz * (1 - tubeDistance/2));
+          if (face.dx != 0) rotateX(angle);
+          if (face.dy != 0) rotateY(angle);
+          if (face.dz != 0) {rotateX(angle); rotateY(angle);}
+          if (face.dz != 0 && i%2 == 0) {rotateX(Math.PI/2);} //this is soooo messy
+          fill(face.darkColor[i%2]);
+          translate(0, 0, holeRatio);
+          if (face.dx != 0) rotateZ(Math.PI/2);
+          plane(holeRatio * 2, tubeDistance);
+          pop();
+        }
+        pop();
+        
+        /* {
+          push();
+          translate(face.dx, face.dy, face.dz);
+          sphere(0.01);
+          pop();
+        } */
+      }
+      
+      //quad(-distance, -distance, -distance,      -distance, distance, -distance,      distance, -distance, -distance,      distance, distance, -distance); //z = -distance;
+    }
+    
+    function windowResized() {
+      midX = window.innerWidth / 2;
+      midY = window.innerHeight / 2;
+      resizeCanvas(windowWidth * 4/5, windowHeight);
+    }
+    
+    if (window.innerWidth < 1100) {
+      setup = function(){};
+      draw = function(){};
+      document.querySelector("#main-container").style.textAlign = "center";
+      document.querySelector("main").style.marginTop = "4rem";
+      document.body.style.backgroundImage = "url('hexbg.png')";
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundAttachment = "fixed";
+      document.body.style.backgroundPosition = "center";
+      document.querySelector("main").style.backgroundColor = "#00000000;";
+    }
+    
+    for (let a of document.querySelectorAll("a")) a.setAttribute("target", "_blank")
+  </script>
 </body>
 </html>

@@ -1,0 +1,405 @@
+html {
+	font-size: round(0.833333333vw, 1px);
+	font-size: 0.833333333vw;
+}
+
+body {
+	margin: 0;
+	overflow-x: hidden;
+	font-family: Inter;
+	background-color: var(--background);
+}
+
+::selection {
+	background: var(--accent);
+	color: var(--dark-background);
+}
+
+main {
+	height: 104vh;
+	width: 100vw;
+	position: relative;
+	color: var(--text);
+	background: linear-gradient(var(--background), var(--dark-background));
+	clip-path: polygon(0 0, 100vw 0, 100vw 104vh, 0 104vh);
+}
+
+main .album_art {
+	top: 48vh;
+	width: 31.25rem;
+	height: 31.25rem;
+	left: calc(5rem + 6.25rem);
+	position: absolute;
+	z-index: 1;
+	animation-duration: 5s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-play-state: running;
+	background-color: var(--edge);
+	outline: solid 0.125rem var(--edge);
+	user-select: none;
+}
+
+main .album_art.front {
+	animation-name: rotate_front;
+}
+
+main .album_art.back {
+	animation-name: rotate_back;
+}
+
+main .album_art.left {
+	animation-name: rotate_left;
+	width: 1rem;
+	left: calc(calc(5rem + 6.25rem) + calc(15.625rem - 0.5rem));
+}
+
+main .album_art.right {
+	animation-name: rotate_right;
+	width: 1rem;
+	left: calc(calc(5rem + 6.25rem) + calc(15.625rem - 0.5rem));
+}
+
+main .album_art.right {
+	animation: rotate_right 5s linear infinite;
+}
+		
+@keyframes rotate_front {
+	from {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateZ(0.5rem);
+		opacity: 1;
+		z-index: 2;
+	}
+	49.99% {
+		opacity: 1;
+		z-index: 2;
+	}
+	50.01% {
+		opacity: 0;
+		z-index: 1;
+	}
+	to {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateZ(0.5rem);
+		opacity: 0;
+		z-index: 1;
+	}
+}
+		
+@keyframes rotate_back {
+	from {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) scaleX(-1) translateZ(-0.5rem);
+		opacity: 0;
+		z-index: 1;
+	}
+	49.99% {
+		opacity: 0;
+		z-index: 1;
+	}
+	50.01% {
+		opacity: 1;
+		z-index: 2;
+	}
+	to {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) scaleX(-1) translateZ(-0.5rem);
+		opacity: 1;
+		z-index: 2;
+	}
+}
+		
+@keyframes rotate_left {
+	from {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(-15.625rem) rotate3d(0, 1, 0, 90deg);
+		opacity: 0;
+	}
+	29.99% {
+		opacity: 0;
+	}
+	30.01% {
+		opacity: 1;
+	}
+	69.99% {
+		opacity: 1;
+	}
+	70.01% {
+		opacity: 0;
+	}
+	to {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(-15.625rem) rotate3d(0, 1, 0, 90deg);
+		opacity: 0;
+	}
+}
+		
+@keyframes rotate_right {
+	from {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, -90deg) translateX(15.625rem) rotate3d(0, 1, 0, 90deg);
+		opacity: 1;
+	}
+	19.99% {
+		opacity: 1;
+	}
+	20.01% {
+		opacity: 0;
+	}
+	79.99% {
+		opacity: 0;
+	}
+	80.01% {
+		opacity: 1;
+	}
+	to {
+		transform: translateY(-50%) perspective(64rem) rotate3d(0, 1, 0, 270deg) translateX(15.625rem) rotate3d(0, 1, 0, 90deg);
+		opacity: 1;
+	}
+}
+
+main .information {
+	top: 52vh;
+	transform: translateY(-50%);
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
+	position: absolute;
+	z-index: 1;
+	max-width: 50rem;
+}
+
+main[lonely="true"] {height: 100vh;}
+main[lonely="true"] .information, main[lonely="true"] canvas {top: 50vh;}
+
+main h1 {
+	color: var(--accent);
+	margin: 0;
+	font-size: 3.5rem;
+	font-weight: bold;
+	letter-spacing: -0.0625em;
+}
+
+@keyframes bump {
+	0% {transform: none;}
+	50% {transform: translateY(-0.125em);}
+	100% {transform: none;}
+}
+
+.bump {
+	animation: 0.5s bump ease-in-out;
+	white-space: pre;
+	display: inline-block;
+}
+
+.tracklist {
+	line-height: 175%;
+}
+
+.tracklist .paren {
+	color: var(--semitext);
+}
+
+.tracklist .track {
+	display: inline-block;
+}
+
+.tracklist b {
+	border: solid 0.125em var(--text);
+	font-weight: normal;
+	font-size: 1em;
+	line-height: 1.5em;
+	width: 1.5em;
+	vertical-align: middle;
+	display: inline-block;
+	text-align: center;
+	border-radius: 1rem;
+	user-select: none;
+}
+
+.bonus_tracklist b {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.tracklist .disc_notice {
+	font-size: 0.75rem;
+	display: inline-block;
+	vertical-align: middle;
+	font-weight: bold;
+	text-transform: uppercase;
+	border: solid 0 var(--accent);
+	line-height: 1.25rem;
+	color: var(--accent);
+}
+
+main .paragraph_head {
+	font-weight: bold;
+	display: block;
+	margin: 0;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+
+main .album_description {
+	border-left: solid 0.125rem var(--accent);
+	padding: 0.5rem 1rem;
+	font-size: 1.25rem;
+}
+
+main .album_metadata {
+	margin-top: 0rem;
+	font-weight: bold;
+}
+
+nav {
+	margin-top: 2rem;
+	user-select: none;
+	font-size: 0;
+}
+
+main nav {
+	top: calc(48vh + 20.3125rem);
+	width: 31.25rem;
+	text-align: center;
+	left: calc(5rem + 6.25rem);
+	position: absolute;
+	z-index: 5;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: var(--accent);
+}
+
+nav a {
+	margin-right: 1rem;
+	transition: opacity 0.1s;
+	display: inline-block;
+	opacity: 0.75;
+}
+
+nav a:hover {
+	opacity: 1;
+}
+
+nav a img {
+	height: 1.5rem;
+}
+
+.copyright {
+	font-size: 0.75em;
+}
+
+iframe {
+	mix-blend-mode: multiply;
+}
+
+main .big_background {
+	top: 52vh;
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
+	max-width: 50rem;
+	font-family: Material Symbols Outlined;
+	font-size: 48rem;
+	z-index: 0;
+	user-select: none;
+	position: absolute;
+	-webkit-text-stroke: 1rem var(--text);
+	color: var(--background);
+	opacity: 0.2;
+	animation: 5s big_background ease-in-out infinite;
+}
+
+@keyframes big_background {
+	from {
+		transform: translateY(-50%) translateY(1rem);
+	}
+	50% {
+		transform: translateY(-50%) translateY(-1rem);
+	}
+	to {
+		transform: translateY(-50%) translateY(1rem);
+	}
+}
+
+.decor {
+	position: fixed;
+	top: 52vh;
+	left: calc(10rem + 43.75rem);
+	width: calc(100vw - 15rem - 43.75rem);
+	max-width: 50rem;
+	font-family: Material Symbols Outlined;
+	font-size: 48rem;
+	z-index: 0;
+	user-select: none;
+	-webkit-text-stroke: 1rem var(--dark-background);
+	color: var(--background);
+	animation: 5s big_background ease-in-out infinite;
+}
+
+#bio {
+	height: 100vh;
+	width: 100vw;
+	color: black;
+}
+
+#bio .box {
+	padding: 8rem;
+	width: 24rem;
+	left: 50%;
+	top: 50%;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border: solid 1rem var(--accent);
+	box-shadow: 0 0.5rem 1rem #00000088;
+	z-index: 2;
+	border-radius: 2rem;
+}
+
+#bio, main {
+	animation: 1s bio_enter;
+}
+
+@keyframes bio_enter {
+	from {opacity: 0;}
+	50% {transform: translateY(2rem); opacity: 0;}
+}
+
+#bio h1 {
+	margin: 0;
+	color: var(--accent);
+	letter-spacing: -0.0625em;
+	font-size: 2.5rem;
+}
+
+#bio h1 img {
+	height: 5rem;
+	width: 5rem;
+	vertical-align: middle;
+	margin-right: 1.5rem;
+	border-radius: 3rem;
+	border-radius: 1rem;
+	margin-bottom: 1rem;
+	user-select: none;
+	transform: translateY(0.375rem);
+}
+
+#bio h1 span {
+	opacity: 0;
+	transition: 0.2s opacity;
+	color: white;
+	cursor: default;
+}
+
+#bio h1 span:hover {
+	opacity: 1;
+}
+
+#bio a {
+	text-decoration: underline;
+}
+
+#bio ::selection {
+	background: var(--accent);
+	color: white;
+}

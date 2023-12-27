@@ -112,6 +112,14 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
+    #title_box {
+      z-index: 5;
+      position: fixed;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
     
     .charge {
       background-color: var(--bg);
@@ -130,14 +138,14 @@
 <body>
   <main></main>
   <div id="message_box"></div>
+  <div id="title_box"></div>
   <script src="elementslibrary.js"></script>
   <script src="script.js"></script>
   <nav>
-    <p>This is a little tool to generate Lewis structures. It often doesn't work. Sometimes it just freezes. You can try it anyways</p>
     <label>formula</label>
-    <input id="formula_input" placeholder="CH4" onkeypress="clear()">
+    <input id="formula_input" placeholder="CH4" oninput="clear()">
     <label>charge</label>
-    <input type="number" id="charge_input" placeholder="0" onkeypress="clear()">
+    <input type="number" id="charge_input" placeholder="0" oninput="clear()">
     <button onclick="parse_and_run(document.querySelector('#formula_input').value, document.querySelector('#charge_input').value)">Generate lewis</button>
     <script>
       let c = [
@@ -152,9 +160,9 @@
         ["C3H6", 0],
         ["ClO3", -1],
         ["N3", -1],
+        ["SO2", 0],
       ];
       c = c[Math.floor(Math.random()*c.length)];
-      //c = ["N3", -1]; 
       document.querySelector('#formula_input').value = c[0];
       document.querySelector('#formula_input').setAttribute("placeholder", c[0]);
       document.querySelector('#charge_input').value = c[1];
@@ -164,6 +172,8 @@
       function clear() {
         console.log("clear");
         if (document.querySelector("main")) document.querySelector("main").remove();
+        message_box.innerText = "";
+        title_box.innerText = "";
       }
     </script>
   </nav>

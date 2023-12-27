@@ -1,6 +1,8 @@
 let message_box = document.querySelector("#message_box");
+let title_box = document.querySelector("#title_box");
 function parse_and_run(formula, charge) {
 	while (document.querySelector("main")) document.querySelector("main").remove();
+	title_box.innerHTML = "";
 	message_box.innerText = "computing lewis structure...";
 	setTimeout(async function(){
 		if (formula == "") return;
@@ -29,6 +31,7 @@ function parse_and_run(formula, charge) {
 				} else {
 					message_box.innerText = "";
 					document.body.appendChild(best.main);
+					title_box.innerHTML = make_formula_pretty(formula) + (charge==0 ? "" : " <sup>"+make_charge_pretty(charge)+"</sup>") + "<br>" + symbol_to_molar_mass(formula).toFixed(1) + " g/mol";
 				}
 			});
 		}
@@ -58,9 +61,19 @@ function solve(formula, charge) {
 	for (let atom of molecule.atoms) atom.lone_electrons = 0;
 	
 	//sort the molecules so that carbon-core things are in the middle
-	molecule.atoms.sort((a, b) => heuristic_centrality(b) - heuristic_centrality(a));
+	molecule.atoms.sort((a, b) => Math.random()-0.5);
+	//molecule.atoms.sort((a, b) => heuristic_centrality(b) - heuristic_centrality(a));
+	for (let i = 1; i < molecule.atoms.length; i++) molecule.atoms[i].bonds.push(Math.floor(Math.random()*i/1)); //THIS IS BAD!!! the way we connect this molecule shouldnt just be random you idiot
 	
-	for (let i = 1; i < molecule.atoms.length; i++) molecule.atoms[i].bonds.push(Math.floor(Math.random()*i/2.5)); //THIS IS BAD!!! the way we connect this molecule shouldnt just be random you idiot
+	/*
+	idea: instead of flattening a formula as we recieve it,
+	make a LIST of atoms that are present
+	the order roughly comes from the formula
+	you can create a queue of sorts of like The Last Atoms That Were Just Mentioned
+	and in general one of the last ones should be the one this new atom connects to
+	The Order of Formulae tend to mean things!!!
+	maybe this will enable large hydrocarbon things to Work
+	*/
 
 	//turn bonds from index arrays into actual {atoms: [a, b], order: 0}
 	//the two sides of the atom most hold the same bond object!!!
@@ -171,6 +184,11 @@ function solve(formula, charge) {
 	return {molecule: molecule, problematic_score: problematic_score, significant_problems: significant_problems};
 }
 
+function make_charge_pretty(formal_charge) {
+	if (formal_charge == 0) return "";
+	return (Math.abs(formal_charge)==1 ? "" : Math.abs(formal_charge)) + (formal_charge>0 ? "+" : "–")
+}
+
 function try_draw(molecule) {
 	let main = document.createElement("main");
 	let first_choice_atom = molecule.atoms[0]; //this makes the first choice an extraneous atom (like a hydrogen or halogen) I did this because it makes the animation look cool
@@ -201,7 +219,7 @@ function try_draw(molecule) {
 			charge_symbol.setAttribute("class", "charge");
 			charge_symbol.style.left = x+1+"rem";
 			charge_symbol.style.top = y-0.5+"rem";
-			charge_symbol.innerText = (Math.abs(formal_charge)==1 ? "" : Math.abs(formal_charge)) + (formal_charge>0 ? "+" : "–");
+			charge_symbol.innerText = make_charge_pretty(formal_charge);
 		}
 		atom.element.style.left = x + "rem";
 		atom.element.style.top = y + "rem";
@@ -301,6 +319,8 @@ function satisfied_octet(atom) {
 	let electrons_felt = atom.lone_electrons;
 	for (let bond of atom.bonds) electrons_felt += bond.order * 2;
 	if (atom.atom_object.period == 1) return electrons_felt == 2;
+	if (atom.atom_object.group == 13 && electrons_felt == 6) return true;
+	if (atom.atom_object.group == 12 && electrons_felt == 4) return true;
 	if (atom.atom_object.z <= 14) return electrons_felt == 8;
 	return electrons_felt >= 8; //is there any upper limit on the expanded octet rule???
 }
@@ -313,7 +333,7 @@ function how_much_can_octet_expand(atom) {
 }
 
 function heuristic_centrality(atom) { //based off of BRINGS. ranks fluorine(1) = hydrogen(1) < oxygen(2) < nitrogen < carbon. doesn't consider expanded octets
-	let bigness_component = atom.atom_object.z * atom.atom_object.z * 0.05;
+	let bigness_component = atom.atom_object.z * atom.atom_object.z * 0.00005;
 	if (atom.atom_object.period == 1) return 2 - atom.brings + bigness_component;
 	return 8 - atom.brings + bigness_component;
 	//maybe for super big atoms, up the number?? we want Xe to seem more central in XeI2

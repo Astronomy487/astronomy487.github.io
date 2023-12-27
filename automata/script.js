@@ -235,7 +235,16 @@ function html_element_for_instruction(instruction, label, path) {
 		let span = document.createElement("span");
 		span.setAttribute("class", "property_chip");
 		span.innerHTML = "<span>" + key + "</span>";
-		let input = span.appendChild(document.createElement("input"));
+		let input;
+		if (key == "tile" && false) {
+			input = span.appendChild(document.createElement("select"));
+			for (let x of Object.keys(catalogue)) {
+				let option = input.appendChild(document.createElement("option"));
+				option.innerText = x;
+			}
+		} else {
+			input = span.appendChild(document.createElement("input"));
+		}
 		input.setAttribute("key", key);
 		input.setAttribute("value", val);
 		input.setAttribute("label", label);
