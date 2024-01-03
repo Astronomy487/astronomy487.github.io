@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://github.com/processing/p5.js/releases/download/v1.5.0/p5.min.js"></script>
+  <script>
+    let particles = [];
+    while (particles.length < 100) particles.push({
+      x: gaussianRandom() * 400, y: gaussianRandom() * 400, z: gaussianRandom() * 400,
+      vx: 0, vy: 0, vz: 0,
+      m: Math.exp(gaussianRandom()),
+      color: randomColor()
+    });
+    
+    let G = 50;
+    let canvas;
+    let rotations = {x: 0, y: 0, scale: 1};
+    function randomColor() {
+      return {
+        r: 100+Math.floor(Math.random()*155),
+        g: 100+Math.floor(Math.random()*155),
+        b: 100+Math.floor(Math.random()*155)
+      }
+    }
+    function setup() {
+      //establish canvas
+      createCanvas(0, 0, WEBGL);
+      canvas = document.body.querySelector("canvas");
+      windowResized();
+      smooth();
+      noStroke();
+      //move center of mass to center, and make sum of initial momenta = 0
+      let sumOfParticles = {x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0}; //measured in length * mass or velocity * mass
+      for (let particle of particles) {
+        sumOfParticles.x += particle.m * particle.x;
+        sumOfParticles.y += particle.m * particle.y;
+        sumOfParticles.z += particle.m * particle.z;
+        sumOfParticles.vx += particle.m * particle.vx;
+        sumOfParticles.vy += particle.m * particle.vy;
+        sumOfParticles.vz += particle.m * particle.vz;
+      }
+      let totalMass = particles.reduce((a, b) => a + b.m, 0);
+      for (let particle of particles) {
+        particle.x -= sumOfParticles.x / totalMass;
+        particle.y -= sumOfParticles.y / totalMass;
+        particle.z -= sumOfParticles.z / totalMass;
+        particle.vx -= sumOfParticles.vx / totalMass;
+        particle.vy -= sumOfParticles.vy / totalMass;
+        particle.vz -= sumOfParticles.vz / totalMass;
+      }
+    }
+    function draw() {
+      forceCalculations();
+      background(0, 20, 40);
+      rotateX(-rotations.y);
+      rotateY(rotations.x);
+      scale(rotations.scale);
+      for (let particle of particles) {
+        push();
+        translate(particle.x, particle.y, particle.z);
+        fill(particle.color.r, particle.color.g, particle.color.b);
+        sphere(radius(particle), 3, 2);
+        pop();
+      }
+      //mergeIntersectingParticles();
+    }
+    function forceCalculations() {
+      for (let i = 0; i < particles.length; i++) for (let j = i+1; j < particles.length; j++) {
+        let p1 = particles[i];
+        let p2 = particles[j];
+        let difference = {x: p2.x-p1.x, y: p2.y-p1.y, z: p2.z-p1.z};
+        let differenceMagnitude = magnitude(difference);
+        differenceMagnitude = Math.max(radius(p1) + radius(p2), differenceMagnitude);
+        let attractionForce = G * p1.m * p2.m / (differenceMagnitude * differenceMagnitude);
+        let force = normalize(difference, attractionForce); //p1 to p2
+        p1.vx += force.x / p1.m;
+        p1.vy += force.y / p1.m;
+        p1.vz += force.z / p1.m;
+        p2.vx -= force.x / p2.m;
+        p2.vy -= force.y / p2.m;
+        p2.vz -= force.z / p2.m;
+      }
+      for (let particle of particles) {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.z += particle.vz;
+      }
+    }
+    function mergeIntersectingParticles() {
+      for (let i = 0; i < particles.length; i++) for (let j = i+1; j < particles.length; j++) {
+        let p1 = particles[i];
+        let p2 = particles[j];
+        if (magnitude({x: p2.x-p1.x, y: p2.y-p1.y, z: p2.z-p1.z}) < radius(p1) + radius(p2)) {
+          let weight1 = p1.m / (p1.m + p2.m);
+          let weight2 = p2.m / (p1.m + p2.m);
+          particles = particles.filter(a => a != p1 && a != p2);
+          particles.push({
+            x: p1.x*weight1 + p2.x*weight2,
+            y: p1.x*weight1 + p2.y*weight2,
+            z: p1.x*weight1 + p2.z*weight2,
+            vx: p1.vx*weight1 + p2.vx*weight2,
+            vy: p1.vy*weight1 + p2.vy*weight2,
+            vz: p1.vz*weight1 + p2.vz*weight2,
+            m: p1.m + p2.m
+          });
+        }
+      }
+    }
+    function mouseMoved() {
+      rotations.x = mouseX / window.innerWidth;
+      rotations.y = mouseY / window.innerHeight;
+    }
+    function radius(particle) {
+      return Math.pow(particle.m, 1/3)*10;
+    }
+    
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+    function mouseWheel(event) {
+      if (event.delta > 0) rotations.scale /= 1.1;
+      else rotations.scale *= 1.1; 
+    }
+    function normalize(vec, unit = 1) {
+      let multiplier = unit/magnitude(vec);
+      return {x: vec.x*multiplier, y: vec.y*multiplier, z: vec.z*multiplier};
+    }
+    function magnitude(vec) {
+      return Math.sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+    }
+    
+    //taken from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+    function gaussianRandom(mean=0, stdev=1) {
+      let u = 1 - Math.random(); // Converting [0,1) to (0,1]
+      let v = Math.random();
+      let z = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+      return z * stdev + mean;
+    }
+  </script>
+</body>
+</html>
