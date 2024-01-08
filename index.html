@@ -129,6 +129,20 @@
     section img {
       width: 6rem;
     }
+    
+    div[tracklist] {
+      counter-reset: track;
+      margin-left: -0.5rem;
+    }
+    div[tracklist] div {
+      margin-left: 0.5rem;
+      display: inline-block;
+      counter-increment: track;
+    }
+    div[tracklist] div::before {
+      content: counter(track) " ";
+      color: magenta;
+    }
   </style>
 </head>
 <body>
@@ -163,14 +177,16 @@
         <p><a href="utopian">Utopian [2019]</a> 12 stories surrounding the people from Molyge</p>
         <p><a href="chaseanidea">Chase an Idea [2019]</a> A compilation album of the 39 songs from Series II and a VIP remix of Copper as an extra song</p>
         <h2>Remixes</h2>
-        <p><a href="https://astronomy487.bandcamp.com/album/remixes">Remixes</a> An ever-growing collection of remixes, edits, and hypermixes of my favorite songs. Maintained in reverse chronological order and updated frequently! It currently sits at around 5½ hours. Songs are originally by other artists (of course)!</p>
+        <p><a href="https://astronomy487.bandcamp.com/album/remixes">Remixes</a> An ever-growing collection of remixes, edits, and hypermixes of my favorite songs. Maintained in reverse chronological order and updated frequently! It currently sits at around 7 hours. Songs are originally by other artists (of course)!</p>
         <h2>Programs</h2>
+        <p><a href="interpolatedprojections">interpolated projections</a> There are too many map projections, so I made even more of them. This tool linearly interpolates between the outputs of different projections. Inspired by <a magenta href="https://www.jasondavies.com/maps/transition/">Jason Davies' map work</a> and <a magenta href="https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle">soil composition triangles</a>.</p>
         <!-- <p><a>know-it-all</a> An experimental automated theorem prover for problems in first-order-logic, implemented in Java.</p> -->
         <p><a href="sokopond">the sokopond</a> A <a magenta href="https://en.wikipedia.org/wiki/Sokoban">sokoban</a> engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!</p>
         <p indent>The engine is highly customizable and versatile to allow for many different tile types with unique behaviors. It can handle several player agents, several box weights, and custom reskins. Levels are strung together in a level pack that you can share with others by sending plaintext, or even putting its base64 into a URL query string.</p>
         <p><a href="progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
         <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
         <p indent>Thanks, graph theory and jazz musicians!</p>
+        <p><a href="minesweeper">Minesweeper</a> A minesweeper engine that can play with alternative grids.</p>
         <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
         <p><a href="calculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function" machine" that my Algebra II teacher always liked to talk about.</p>
         <p indent>The principal idea is that data (numbers, vectors, functions, whatever) is carried through wires between the output of some modules and the input of other modules.</p>
@@ -225,6 +241,7 @@
     let friction = 0;
     let midX = 0; let midY = 0;
     let tX = 0; let tY = 0;
+    let rotationX = 0; let rotationY = 0;
     let scroll = 0;
     let theScale = 0;
     let canvas;
@@ -237,16 +254,22 @@
       windowResized();
       smooth();
     }
-    let holeRatio = 0.4; //radius frmo center to the hole edge
+    let holeRatio = 0.36; //radius frmo center to the hole edge
     function draw() {
+      let lookingAt = "#ff0";
       scroll = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
       background(0);
       scale(200 * theScale);
       tX = (mouseX / midX - 1) * (1-friction) + tX * friction;
       tY = ((mouseY-scroll*2) / midY + 10) * (1-friction) + tY * friction;
       translate(tX*0.2, 0, 0);
-      rotateX(-tY * 0.1 + Math.PI / 4 - frameCount * 0.0005);
-      rotateY(tX * 0.1 + Math.PI * 2/3 + frameCount * 0.001);
+      rotationX = -tY * 0.1 + Math.PI / 4 - frameCount * 0.001;
+      rotationY = tX * 0.1 + Math.PI * 2/3 + frameCount * 0.001;
+      if (Math.cos(2*rotationX) > 0) {
+        lookingAt = (Math.cos(2*rotationY) > 0) ? "#f0f" : "#0ff";
+      }
+      rotateX(rotationX);
+      rotateY(rotationY);
       if (mouseX || mouseY) friction = friction*0.8 + 0.9 * 0.2; //meta friction whoaa
       if (!friction) return;
       theScale = 0.9*theScale + 0.1;
@@ -273,6 +296,7 @@
         //if (Math.random() > 0.2) continue;
         push();
         let tubeDistance = 1 - holeRatio;
+        if (lookingAt == face.color) tubeDistance = 1;
         //tubeDistance = 1;
         for (let i = 0; i < 4; i++) {
           push();
@@ -312,11 +336,6 @@
       draw = function(){};
       document.querySelector("#main-container").style.textAlign = "center";
       document.querySelector("main").style.marginTop = "4rem";
-      document.body.style.backgroundImage = "url('hexbg.png')";
-      document.body.style.backgroundRepeat = "no-repeat";
-      document.body.style.backgroundAttachment = "fixed";
-      document.body.style.backgroundPosition = "center";
-      document.querySelector("main").style.backgroundColor = "#00000000;";
     }
     
     for (let a of document.querySelectorAll("a")) a.setAttribute("target", "_blank")
