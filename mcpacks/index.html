@@ -4,12 +4,11 @@
   <title>my resource packs</title>
   <link rel="icon" href="squares/autumn.png">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/helvetica-neue-lt-pro');
     @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
     
     :root {
-      font-family: 'Minecraft', sans-serif;
-      font-family: 'Arimo', 'Noto Color Emoji', sans-serif;
+      font-family: 'Helvetica Neue LT Pro', 'Noto Color Emoji', sans-serif;
     }
     main {
       width: 32rem;
@@ -44,12 +43,14 @@
     td a {
       color: blue;
       text-decoration: none;
+      display: block;
+      line-height: 125%;
     }
     td a:hover {
       text-decoration: underline;
     }
-    p {
-      line-height: 150%;
+    p, td {
+      line-height: 125%;
     }
   </style>
 </head>
@@ -135,7 +136,7 @@
         let td2 = tr.appendChild(document.createElement("td"));
         let already = false;
         for (let version of pack.versions) {
-          if (already) td2.appendChild(document.createElement("br"));
+          //if (already) td2.appendChild(document.createElement("br"));
           already = true;
           let a = td2.appendChild(document.createElement("a"));
           a.innerText = packFormatVersions[version];

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap');
+    
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Fragment Mono', monospace;
+    }
+    
+    ::selection {
+      background: inherit;
+      color: inherit;
+    }
+    
+    main {
+      width: min(48rem, calc(100vw - 4rem));
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    #bar {
+      padding: 0.125rem;
+      border: solid 2px white;
+      user-select: none;
+    }
+    
+    #progress {
+      display: inline-block;
+      background-color: white;
+      height: 3rem;
+    }
+    
+    #count {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.5rem;
+    }
+    
+    #count span {
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="bar">
+      <div id="progress">&nbsp;</div>
+    </div>
+    <div id="count">
+      <span></span>
+    </div>
+  </main>
+  <script>
+    let year, temp, start, end;
+    let count = document.querySelector("#count span");
+    let progress = document.querySelector("#progress");
+    f();
+    setInterval(f, 10);
+    function f() {
+      temp = new Date().getYear() + 1900;
+      if (year != temp) {
+        start = new Date("Jan 1 " + temp).valueOf();
+        end = new Date("Jan 1 " + (1+temp)).valueOf();
+      }
+      year = temp;
+      temp = (Date.now() - start) / (end - start);
+      temp = (temp * 100).toFixed(7) + "%";
+      count.innerText = temp;
+      progress.style.setProperty("width", temp);
+    }
+  </script>
+</body>
+</html>

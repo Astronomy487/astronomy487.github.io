@@ -4,13 +4,14 @@
   <link rel="icon" href="favicon.png">
   <title>astro's catalogue ✦</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
     
     body {
       background-color: black;
       margin: 0;
-      color: yellow;
-      font-family: 'Ubuntu', sans-serif;
+      color: #ffffffdd;
+      font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+      font-weight: 500;
     }
     
     #canvas-container {
@@ -45,7 +46,7 @@
     
     main {
       width: min(40rem, 100vw);
-      background-color: #00000055;
+      background-color: #00000066;
       backdrop-filter: blur(8rem);
       display: inline-block;
       margin-top: 16rem;
@@ -55,7 +56,7 @@
       box-sizing: border-box;
       box-shadow: -1rem 1rem 2rem #00000044;
       animation: 1s main-enter;
-      font-size: 1.125rem;
+      font-size: 1.25rem;
     }
     
     @keyframes main-enter {
@@ -74,18 +75,6 @@
       margin-left: 0;
     }
     
-    h2 {
-      margin: 0;
-      margin-top: 4rem;
-      font-size: 2.5rem;
-      color: magenta;
-      font-weight: bold;
-    }
-    
-    h2:not([style])::before {
-      content: '✦ ';
-    }
-    
     a {
       color: cyan;
       text-decoration: none;
@@ -93,54 +82,28 @@
       display: inline;
       cursor: pointer;
     }
-    
     a:hover {
       text-decoration: underline;
     }
     
     p {
       margin: 1.5rem 0;
+      line-height: 125%;
     }
     p[indent] {
       margin-top: -0.75rem;
     }
     
-    a[magenta] {
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
       color: yellow;
-      font-weight: normal;
-      text-decoration: underline;
+      margin: 0;
+      margin-top: 2rem;
+      margin-bottom: -0.5rem;
     }
-    a[magenta]:hover {
-      color: magenta;
-    }
-    
-    section {
-      display: block;
-      margin: 1rem 0;
-      width: 100%;
-    }
-    
-    section img, section div {
-      display: inline-block;
-      vertical-align: top;
-      background-color: black;
-    }
-    
-    section img {
-      width: 6rem;
-    }
-    
-    div[tracklist] {
-      counter-reset: track;
-      margin-left: -0.5rem;
-    }
-    div[tracklist] div {
-      margin-left: 0.5rem;
-      display: inline-block;
-      counter-increment: track;
-    }
-    div[tracklist] div::before {
-      content: counter(track) " ";
+    a[magenta] {
+      font-weight: inherit;
       color: magenta;
     }
   </style>
@@ -155,76 +118,63 @@
           <div style="height: 0.125rem; width: 2rem; background-color: magenta; display: inline-block;">&nbsp;</div>
           <div style="height: 0.125rem; width: 2rem; background-color: yellow; display: inline-block;">&nbsp;</div>
         </div>
-        <!-- <p style="font-size: 2rem; font-weight: bold; text-align: center;">hey !</p> -->
-        <h2 style="text-align: center; margin: 2rem 0;">hey !</h2>
-        <p>i'm astro (he him) and this is a catalogue of ALL the things i've made — mostly music and little programming projects.</p>
-        <p>all of my music is available for free on <a href="https://astronomy487.bandcamp.com">bandcamp</a> (including lossless downloads + many bonus tracks). i am also on <a href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">spotify</a>, <a href="https://music.apple.com/gb/artist/astro/1468743818">apple music</a>, <a href="https://www.youtube.com/astronomy487">youtube</a>, and the like. all of my original work is shared under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">creative commons by-nc-sa 4.0 license</a>, so feel free to use and reuse my music!</p>
-        <p>contact me on <a href="https://twitter.com/astronomy487">twitter</a> or <a href="https://discord.com/invite/ZnMsetP">join my discord</a></p>
-        <h2>Albums</h2>
-        <p><a href="somewhereinthemilkyway">somewhere in the milky way [2022]</a> An album inspired by the soundtracks of some of my favorite games (namely Animal Crossing: City Folk and Minecraft). Each song is written around an hour of the day, starting at 6 a.m.</p>
-        <p indent>The album is divided into four discs: the morning disc, the afternoon disc, the evening disc, and the night disc. Altogether two hours of chill vibes. Digital download also includes alternate "snowdrift" versions of each song for wintertime listening.</p>
-        <p><a href="toomuch">Too much!! [2022]</a> An hour-long mix of explosive, experimental, electronic tracks. Enjoy the fireworks!!</p>
-        <p><a href="fx">f(x) [2021]</a> my tenth album! a 46-minute continuous mix of bright electronic music // sometimes called F of X</p>
-        <p><a href="mindsets">Mindsets [2021]</a> Mindsets is the set of songs I've been working on since March of 2020, even through 10k Degrees. This is the longest I've spent working on a single project, and I'm so excited for you all to hear this!</p>
-        <p><a href="10kdegrees">10k Degrees [2020]</a> A continuous half-hour mix of experimental, bass-focused music</p>
-        <p><a href="nexuscondition">Nexus Condition [2020]</a> In a heartbeat, you can set the sky on fire.</p>
-        <p><a href="exosphere">Exosphere [2019]</a> WE TRANSCEND INTO AN ERA OF CREATION. WE BECOME UNIFIED WITH LIGHT. 18 AMBIENT TRACKS WITH A 1H07 RUNTIME</p>
-        <p indent>Digital download includes the unreleased album "Absolute Zero"</p>
-        <p><a href="pulsewidth">Pulse Width [2019]</a> A one-hour mix of percussion-driven tracks</p>
-        <p><a href="emerge">Emerge [2019]</a> A compilation album of my 30 favorite songs of Series I</p>
-        <p><a href="asymmetricsilhouette">Asymmetric Silhouette [2019]</a> Asymmetric Silhouette is a little album full of short songs I've been holding onto for a while. I hope you enjoy!</p>
-        <p indent>Digital download includes the unreleased album "Decoration"</p>
-        <p><a href="utopian">Utopian [2019]</a> 12 stories surrounding the people from Molyge</p>
-        <p><a href="chaseanidea">Chase an Idea [2019]</a> A compilation album of the 39 songs from Series II and a VIP remix of Copper as an extra song</p>
-        <h2>Remixes</h2>
-        <p><a href="https://astronomy487.bandcamp.com/album/remixes">Remixes</a> An ever-growing collection of remixes, edits, and hypermixes of my favorite songs. Maintained in reverse chronological order and updated frequently! It currently sits at around 7 hours. Songs are originally by other artists (of course)!</p>
-        <h2>Programs</h2>
-        <p><a href="interpolatedprojections">interpolated projections</a> There are too many map projections, so I made even more of them. This tool linearly interpolates between the outputs of different projections. Inspired by <a magenta href="https://www.jasondavies.com/maps/transition/">Jason Davies' map work</a> and <a magenta href="https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle">soil composition triangles</a>.</p>
+        <h2 style="text-align: center; margin-bottom: 2rem;">hey !</h2>
+        <p>i'm astro. that's a pseudonym. if you're here for my music, you can catch it all for free on <a magenta href="https://astronomy487.bandcamp.com">bandcamp</a> with lossless downloads and many bonus tracks. i am also on <a magenta href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">spotify</a>, <a magenta href="https://music.apple.com/gb/artist/astro/1468743818">apple music</a>, <a magenta href="https://www.youtube.com/astronomy487">youtube</a>, and the like. all of my original work is shared under the <a magenta href="https://creativecommons.org/licenses/by-nc-sa/4.0/">creative commons by-nc-sa 4.0 license</a></p>
+        <p>contact me on <a magenta href="https://twitter.com/astronomy487">twitter</a> or <a magenta href="https://discord.com/invite/ZnMsetP">join my discord</a> to get in touch</p>
+        <p>here's a list of everything i do that isn't music. it's mostly programs relating to anything that sparks joy (math, music, games). everything uses javascript because it is beloved</p>
+        <h2>math thoughts</h2>
         <!-- <p><a>know-it-all</a> An experimental automated theorem prover for problems in first-order-logic, implemented in Java.</p> -->
-        <p><a href="sokopond">the sokopond</a> A <a magenta href="https://en.wikipedia.org/wiki/Sokoban">sokoban</a> engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!</p>
-        <p indent>The engine is highly customizable and versatile to allow for many different tile types with unique behaviors. It can handle several player agents, several box weights, and custom reskins. Levels are strung together in a level pack that you can share with others by sending plaintext, or even putting its base64 into a URL query string.</p>
-        <p><a href="progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
-        <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
-        <p indent>Thanks, graph theory and jazz musicians!</p>
-        <p><a href="minesweeper">Minesweeper</a> A minesweeper engine that can play with alternative grids.</p>
-        <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
-        <p><a href="calculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function" machine" that my Algebra II teacher always liked to talk about.</p>
+        <p><a href="calculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function machine" that my incredible Algebra 2 teacher always liked to talk about.</p>
         <p indent>The principal idea is that data (numbers, vectors, functions, whatever) is carried through wires between the output of some modules and the input of other modules.</p>
         <p indent>Any transformation of data you could want to apply (operations, derivatives, linear regressions, list manipulation, random number generation) is handled by a module. Changes to inputs automatically cascade to their outputs. I think this is a very cool way to think about math!</p>
-        <p><a href="chess">Chess Sandbox</a> A generalized and highly customizable chess engine.</p>
-        <p indent>By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a magenta href="https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js">shenanigans</a>. Anyone can create their own ruleset if they are willing to read a little documentation and make a little JavaScript file!</p>
-        <p indent>As a consequence of hard-coding none of the rules, it's very inefficient. The minimax search tree only searches 3 layers because any more takes too much time in most positions. Currently none of the code is asynchronous, which is bad!</p>
-        <p><a href="acnhcurator">ACNH Curator</a> A tool to track museum progress in Animal Crossing: New Horizons.</p>
-        <p indent>Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price.</p>
+        <p><a href="interpolatedprojections">interpolated projections</a> There are too many map projections, so I made even more of them. This tool linearly interpolates between the outputs of different projections. Inspired by <a magenta href="https://www.jasondavies.com/maps/transition/">Jason Davies' map work</a> (heavily referenced his code) and <a magenta href="https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle">soil composition triangles</a>.</p>
         <p><a href="automata">unnamed automata engine</a> A general engine for cellular automata inspired by Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>.</p>
         <p indent>The rulesets can be defined in the GUI to the left (which is pretty little unfinished). Transition rules are modular, in that they can contain a list of other rules. Neighbor rules count the number of neighbors and execute the rules inside if a number is matched; random chance rules randomly execute the rules inside; the become rules contain no rules, and these specify a cell to change its state.</p>
         <p indent>Sounds abstract? I think that's the point. I never named it or made it look special. The rule module property inputs are all text input, even when dropdowns or more custom parsing would be more appropriate.</p>
-        <p><a href="emojigarden">EmojiGarden</a> A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>
-        <p indent>It is inspired by <a magenta href="https://hayday.com/">Hay Day</a>, Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>, and <a magenta href="https://twitter.com/emoji_garden?lang=en">@emoji_garden on Twitter</a>.</p>
-        <p indent>My design goals include cuteness, minimalism, and positive vibes. I want the game to eventually be playable without looking at the about page, but currently nothing is explained in the game itself!</p>
+        <h2>mathy tools</h2>
+        <p><a href="balanceequation">balancing act</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
+        <p><a href="lewis">Now who's lewis?</a> A (not very reliable) program to draw Lewis structures for simple molecules.</p>
+        <p><a href="complex">complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>
+        <p><a href="dynamicaccentcolor.js">/dynamicaccentcolor.js</a> A little bit of JavaScript I use in a lot of my webpages to dynamically set the global CSS variable --accent to a color in the rainbow. It slowly rotates through a full cycle every 24 hours. The variable is updated every 60 seconds.</p>
+        <h2>music tools</h2>
+        <p><a href="progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
+        <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
+        <p indent>Thanks, graph theory and jazz musicians!</p>
         <p><a href="voiceleader">Voice Leader</a> An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!</p>
         <p indent>It's pretty inefficient. On every frame, it generates all possible continuations (by filling each voice with chord members). It then runs a function on each possible continuation to determine how good of a transition is (with a little temperature — risky short-term decisions for the possibility of finding a better long-term result. I think this is standard for searching absurdly large possibility trees).</p>
+        <p><a href="drummachine">/drummachine</a> A very broken page to play sound files simultaneously to make a nice little song. All instrument parts point to the same chord progression, which is why any combination works. I should eventually learn how to synchronize sounds in JavaScript.</p>
+        <p indent>If I were to revisit this idea, I'd want to make a more generalized mashup tool, that employs some of the ideas mentioned by Sophie here in <a magenta href="https://agcook.com/msmsmsm/">A. G. Cook's eulogy</a> about an "infinitely generous" platform.</p>
         <p indent>Running this on 5 voices will take a while. Running this on 6 voices will grind your computer to a halt. Exponential trees are brutal!</p>
+        <h2>game engines/'sandboxes'</h2>
+        <p><a href="chess">Chess Sandbox</a> A generalized and highly customizable chess engine.</p>
+        <p indent>By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a magenta href="https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js">shenanigans</a>. Anyone can create their own ruleset if they are willing to read a little documentation and make a little JavaScript file!</p>
+        <p indent>As a consequence of hard-coding none of the rules, it's very inefficient. The minimax search tree only searches 3 layers because any more takes too much time in most positions. Currently none of the code is asynchronous, which is bad!</p>
+        <p><a href="sokopond">the sokopond</a> A <a magenta href="https://en.wikipedia.org/wiki/Sokoban">sokoban</a> engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!</p>
+        <p indent>The engine is highly customizable and versatile to allow for many different tile types with unique behaviors. It can handle several player agents, several box weights, and custom reskins. Levels are strung together in a level pack that you can share with others by sending plaintext, or even putting its base64 into a URL query string.</p>
+        <p><a href="minesweeper">Minesweeper</a> A minesweeper engine that can play with alternative grids.</p>
+        <h2>game tools</h2>
+        <p><a href="acnhcurator">ACNH Curator</a> A tool to track museum progress in Animal Crossing: New Horizons.</p>
+        <p indent>Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price.</p>
         <p><a href="wordlesolver">Wordle Solver</a> A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess.</p>
         <p indent>Equipped with two word lists: one for <a magenta href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> and <a magenta href="https://gregcameron.com/infinite-wordle/">Infinite Wordle</a>.</p>
         <p indent>See also <a magenta href="https://astronomy487.github.io/wordlesolver/perfectle.cpp">the C++ version of this project</a> that is probably worse.</p>
-        <h2>Tinier Programs</h2>
-        <p><a href="abcde">/abcde</a> A microgame based on a TikTok trend from January 2023.</p>
-        <p><a href="balanceequation">/balanceequation</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
-        <p><a href="complex">/complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>
-        <p><a href="conwaysgameofsabotage">/conwaysgameofsabotage</a> A microgame idea where you are given a stable position in Conway's Game of Life and must sabotage it by adding new alive cells.</p>
+        <p><a href="mcpacks">my resource packs</a> This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too.</p>
+        <h2>microgames</h2>
+        <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
+        <p><a href="emojigarden">EmojiGarden</a> A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>
+        <p indent>It is inspired by <a magenta href="https://hayday.com/">Hay Day</a>, Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>, and <a magenta href="https://twitter.com/emoji_garden?lang=en">@emoji_garden on Twitter</a>.</p>
+        <p indent>My design goals include cuteness, minimalism, and positive vibes. I want the game to eventually be playable without looking at the about page, but currently nothing is explained in the game itself!</p>
+        <p><a href="abcde">abcde</a> A microgame based on a TikTok trend from January 2023.</p>
+        <p><a href="conwaysgameofsabotage">Conway's Game of Sabotage</a> A microgame idea where you are given a stable position in Conway's Game of Life and must sabotage it by adding new alive cells.</p>
+        <h2>other projects</h2>
+        <p><a href="flog">Flog</a> This is my Flog (flag blog) where I collect photos I've taken of flag displays! Photos include metadata about the flags they contain, which means I can do fun things with that data.</p>
+        <p><a href="niachang">Niachāng</a> A minimalist logical language I made for fun. Designed and built around the web experience — code automatically parses and translates text, the dictionary is all powered by JavaScript objects, syntax is inspired by ideas from functional programming, etc. Pronounced /njà tʃʰáŋ/</p>
+        <h2>unremarkable</h2>
         <p><a href="cyoae">/cyoae</a> A little text engine for Choose-Your-Own-Adventure games using markdown.</p>
-        <p><a href="drummachine">/drummachine</a> A very broken page to play sound files simultaneously to make a nice little song. All instrument parts point to the same chord progression, which is why any combination works. I should eventually learn how to synchronize sounds in JavaScript.</p>
-        <p><a href="dynamicaccentcolor.js">/dynamicaccentcolor.js</a> A little bit of JavaScript I use in a lot of my webpages to dynamically set the global CSS variable --accent to a color in the rainbow. It slowly rotates through a full cycle every 24 hours. The variable is updated every 60 seconds.</p>
         <p><a href="hangman">/hangman</a> A hangman game.</p>
-        <p><a href="lewis">/lewis</a> A (not very reliable) program to draw Lewis structures for simple molecules.</p>
         <p><a href="tictactoe">/tictactoe</a> A tic-tac-toe game.</p>
         <p><a href="weather">/weather</a> A weather app using a free weather API, an icon pack, and a list of cities. The interesting part is a function that generates organic-sounding paragraph descriptions for a day's weather (e.g. "It will average a nice 74°F, with rain from 3&nbsp;AM to 11&nbsp;AM.").</p>
-        <p indent>Everybody makes weather apps. :|</p>
-        <h2>Other</h2>
-        <p><a href="flog">Flog</a> This is my Flog (flag blog) where I collect photos I've taken of flag displays! Photos include metadata about the flags they contain, which means I can do fun things with that data.</p>
-        <p><a href="mcpacks">my resource packs</a> This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too.</p>
-        <p><a href="niachang">Niachāng</a> A minimalist logical language I made for fun. Designed and built around the web experience — code automatically parses and translates text, the dictionary is all powered by JavaScript objects, syntax is inspired by ideas from functional programming, etc. Pronounced /njà tʃʰáŋ/</p>
+        <p indent>Everybody makes weather apps. :/</p>
       </main>
     </div>
   </div>
@@ -250,6 +200,7 @@
       createCanvas(0, 0, WEBGL);
       canvas = document.body.querySelector("canvas");
       document.body.querySelector("#container").appendChild(canvas);
+      frameRate(60);
       noStroke();
       windowResized();
       smooth();
@@ -338,7 +289,9 @@
       document.querySelector("main").style.marginTop = "4rem";
     }
     
-    for (let a of document.querySelectorAll("a")) a.setAttribute("target", "_blank")
+    for (let a of document.querySelectorAll("a")) {
+      a.setAttribute("target", "_blank");
+    }
   </script>
 </body>
 </html>

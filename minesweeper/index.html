@@ -284,6 +284,29 @@
       }
     });
     gamemodes.push({
+      name: "Square Tiling + knights path",
+      expectedParameters: [
+        {key: "width", name: "Width", type: "number", min: 5, max: 30, step: 1, suggest: 18},
+        {key: "height", name: "Height", type: "number", min: 5, max: 30, step: 1, suggest: 12}
+      ],
+      establish: function(parameters) {
+        let a = [];
+        for (let y = 0; y < parameters.height; y++) {
+          a[y] = [];
+          for (let x = 0; x < parameters.width; x++) {
+            a[y][x] = new Spot([x, x+1, x+1, x], [y, y, y+1, y+1]);
+          }
+        }
+        for (let y = 0; y < parameters.height; y++) for (let x = 0; x < parameters.width; x++) {
+          for (let [dy,dx] of [[1,2],[2,1],[1,-2],[2,-1]]) {
+            let [yy, xx] = [y+dy, x+dx];
+            if (yy < 0 || xx < 0 || xx >= parameters.width || yy >= parameters.height) continue;
+            a[y][x].link(a[yy][xx]);
+          }
+        }
+      }
+    });
+    gamemodes.push({
       name: "Hexagonal Tiling",
       expectedParameters: [
         {key: "width", name: "Width", type: "number", min: 5, max: 50, step: 2, suggest: 15},
