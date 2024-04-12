@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    html {
+      font-size: 32px;
+    }
+    
+    article {
+      width: 24rem;
+      margin: 4rem auto;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <h1 averagefont txtcolor="blue">This is a pretty average sans-serif font.</h1>
+    <p averagefont>Nothing really stands out about it, right? WRONG!</p>
+    <p averagefont>1. it looks kinda weird and fuzzy</p>
+    <p averagefont>2. it isn't anti-aliased</p>
+    <p averagefont>3. it can only appear in black and white (and selecting text isn't the normal blue color); each rgb component is clamped to 100% or 0%</p>
+    <p averagefont>4. this whole webpage runs slow</p>
+    <p averagefont>5. You actually cannot copy paste this text (try it)</p>
+    <p averagefont>6. it's actually a bunch of fonts imposed on each other. in this sense it is 'the average' of its constituent fonts. here i'm using Arial, Verdana, Tahoma, and Trebuchet MS</p>
+    <p averagefont="Times New Roman, Georgia" style="font-weight: bold;">Here's Times New Roman Bold and Georgia Bold.</p>
+    <p averagefont="Inter/100, Inter/200, Inter/300, Inter/400, Inter/500, Inter/600, Inter/700, Inter/800, Inter/900">Here's every weight of Inter put on top of each other. kinda just looks like the default weight</p>
+    <h1 averagefont txtcolor="blue">Why did you do this?</h1>
+    <p averagefont>idk it just popped into my head this morning (feb 10 2024)</p>
+    <h1 averagefont txtcolor="blue">how can i engage in this same tomfoolery?</h1>
+    <p averagefont>use the following little script</p>
+    <pre averagefont="monospace, monospace/bold" style="font-size: 0.75em;">&lt;script src="https://astronomy487.github.io/averagefont/averagefont.js"&gt;&lt;/script&gt;</pre>
+    <p averagefont>any element marked with the attribute 'averagefont' font will be converted. the content of that attribute is a comma-separated list of font-families (defaults to Arial, Verdana, Tahoma, Trebuchet MS). a font can also include a font-weight after a slash (i.e. averagefont="Inter/bold")</p>
+    <p averagefont>elements with the 'averagefont' attribute can also include bgcolor and txtcolor to specify background a text color, but NOTE that things get CLAMPED in funky ways!!! this is because the essence of the trick is applying filter: contrast(500); !</p>
+    <p averagefont>nested html elements don't work. of course they don't</p>
+    <h1 averagefont txtcolor="blue">let's just admire</h1>
+    <p averagefont style="font-size: 4rem; margin-top: -0.5em; text-align: center;">a e i o u</p>
+    <p averagefont="Times New Roman/bold, Georgia/bold" style="font-size: 4rem; margin-top: -0.5em; text-align: center;">N a ï v e t é</p>
+    <p averagefont>wow kerning is messed up all over the place</p>
+    <h1 averagefont txtcolor="blue">possible useful applications</h1>
+    <p averagefont>1. rendering images to use as the basis for a funky illegible display font</p>
+    <p averagefont>2.</p>
+  </article>
+  <script src="averagefont.js"></script>
+</body>
+</html>

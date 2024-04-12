@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>There are so many real numbers, but I care about like 0% of them</h1>
+  <h2>There are several infinities</h2>
+  <p>I was infatuated with <a href="https://www.youtube.com/watch?v=lA6hE7NFIK0">ViHart's video on Cantor's diagonal proof</a> as a child. Anyone with half a brain and half a heart would be, too. It's a surprising, beautiful proof by contradiction that $|\mathbb{N}|&lt;|\mathbb{R}|$, that some infinities are literally bigger than others. It's unintuitive that infinite quantities can be compared like this, but also it totally <em>is</em> intuitive. I feel like I've gotten a sense of how $\mathbb{N}$-like infinites and $\mathbb{R}$-like infinites <em>feel</em>. Does that make any sense?</p>
+  <p>These infinities can come in lots of names, which I find hilariously idiosyncratic. Really? Lowercase fraktur c ($\mathfrak{c}$)? Which stands for continuum? Here, let me write $\mathfrak{c}$ in my notebook because I can write medieval fraktur letters with my Pilot G2 pen. Get real. Whatever, here's a table.</p>
+  <table>
+    <tr>
+      <th>tiny infinity</th>
+      <th>big infinity</th>
+    </tr>
+    <tr>
+      <td>$|\mathbb{N}|$</td>
+      <td>$|\mathbb{R}|$</td>
+    </tr>
+    <tr>
+      <td>$\beth_0$</td>
+      <td>$\beth_1$</td>
+    </tr>
+    <tr>
+      <td>$\aleph_0$</td>
+      <td>Maybe $\aleph_1$ <a href="https://en.wikipedia.org/wiki/Continuum_hypothesis">but we will never be sure</a></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>$\mathfrak{c}$</td>
+    </tr>
+  </table>
+  <p>A moment of silence for the symbol $\infty$.</p>
+  <p>I'm going to call them $\aleph_0$ and $\mathfrak{c}$ here, just because those are the most common names. I'd love to use $\beth_0$ and $\beth_1$ because they look cute next to each other, but that's just hard to read.</p>
+  <p>Actually, no. What do <em>you</em> want me to call these numbers?</p>
+  <select name="tiny-infinity-name" oninput="runReplaceNames()">
+    <option value="|\mathbb{N}|">$|\mathbb{N}|$</option>
+    <option value="\beth_0">$\beth_0$</option>
+    <option value="\aleph_0">$\aleph_0$</option>
+  </select>
+  <select name="big-infinity-name" oninput="runReplaceNames()">
+    <option value="|\mathbb{R}|">$|\mathbb{R}|$</option>
+    <option value="\beth_1">$\beth_1$</option>
+    <option value="\mathfrak{c}">$\mathfrak{c}$</option>
+  </select>
+  <div id="replace-names-in">
+    <h2>Density... not quite</h2>
+    <p>When you first hear about there being more reals than integers, you get this sense that the real numbers are more numerous because they are more <em>dense</em> in the number line. Any interval $[a,b]$ (open or closed, really) (where $a&lt;b$) will have a finite number of integers but an infinite (namely $\mathfrak{c}$) number of reals. This is a very cool property that you could call <em>density</em>, but density does not at all mean a set has cardinality $\mathfrak{c}$! The set of rationals, $\mathbb{Q}$, is definitely dense on the number line but only has cardinality $\aleph_0$.</p>
+    <p>Then what "makes" $\mathfrak{c}$ so incomprehensibly larger than $\aleph_0$ if not density?</p>
+    <p>That's a very subjective question, but I like to think about the indescribability of the reals (or of any set size $\mathfrak{c}$).</p>
+    <h2>Oh you're a fan of real numbers? Describe all of them</h2>
+    <p>A great place to start is the fact that the number of possible strings, i.e. the number of possible files, is $\aleph_0$. In my mind, "describable" is logically equivalent to "could be described in a file", so there are $\aleph_0$ number of things you could "describe" while still allowing for all the freedom that the world's many file types grant you. There are more real numbers than that.</p>
+    <p>What's a <a href="https://en.wikipedia.org/wiki/Computable_number">computable number</a>? I'm comfortable enough saying "a number computable by an algorithm", albeit within some precision. (Computers only store multiples of powers of two because we live in a messed up world.) Assuming you delegate algorithms to finite description lengths, there are more real numbers than that.</p>
+    <p>You can't talk about, like, any of the real numbers. Too many of them.</p>
+    <h2>I cannot possibly care about most numbers</h2>
+    <p>The next instinct would be to point out that, in this cardinality $\aleph_0$ set of all files I could imagine, I could only practically store a few of them. I can only store files that fit in my 256 GB drive. For files of length 256 GB, I could store $256^{10^9}$ possible files. For files one byte smaller, I could store $256^{10^9-1}$. I guess, to count all possible file sizes, the number of possible files that will fit on my drive should be $\sum_{L=1}^{10^9}256^L$. Even if I counted wrong, I think you'll appreciate that this number is disgustingly finite. Even for the biggest hard drive imaginable, there are only finite files you could keep.</p>
+    <p>The set of numbers I could be bothered to talk about is vastly smaller than that. Let's say you have 500 words to impress me, which is, like, 3 KB. There are $256^{3000}$ numbers I care about. I shall call this set $\mathbb{Care}$ because it only has numbers I care about. Wolfram Alpha tells me this cardinality sits at around $2.2\times10^{7654}$.</p>
+    <p>This is much smaller than $\aleph_0$, and even $\mathfrak{c}$, even though every single irrational number I've ever discussed can be found in $\mathbb{Care}$. We usually think of irrational numbers as belonging to the indescribably huge realm of $\mathfrak{c}$. But for those describable reals, I shall host them in $\mathbb{Care}$.</p>
+    <p>Is it bad to say I only care about numbers that can fit in 500 words? Maybe one day I'll come across a piece of breathtaking math that just demands a long-winded explanation. I guess some describable things actually just take up that much space, like a big $1000\times1000$ matrix that does something important. It has interesting properties, but no 500-word explanation will actually convey its precise value the way a description can precisely define $\tau$ or whatever. If you're uncomfortable with my bound of 3 kilobytes, just bump that up to something more your style.</p>
+    <h2>Everything you care about is in $\mathbb{Care}$</h2>
+    <p>But look: all of your favorite irrationals, $e$, $\tau$, and your favorite goofy numbers like $i$ and even $\aleph_0$ and $\mathfrak{c}$, and even sets themselves like $\mathbb{Z}$ and $\mathbb{R}$, and all your favorite vectors and matrices, or even functions—for anything you could imagine making a set out of, $\mathbb{Care}$ already contains all of those objects which you'll ever reasonably describe. And through it all, $\mathbb{Care}$ is finite.</p>
+    <p>(Perhaps this is where <a href="https://en.wikipedia.org/wiki/Russell%27s_paradox">Russel's paradox</a> strikes. If I'm accepting any kind of mathematical construct in $\mathbb{Care}$, including sets, then $\mathbb{Care}$ must contain itself. We can't have that. I hereby add the condition that your 500-word essay must not be describing $\mathbb{Care}$ itself. Let's be even safer and prohibit sets altogether.)</p>
+    <p>The <a href="https://libraryofbabel.info/">Library of Babel</a> is finite. People talk about it like it's infinite, but it isn't. Doesn't that blow your mind?</p>
+    <h2>$|\mathbb{Care}|$ is tiny</h2>
+    <p>Don't get me wrong, $|\mathbb{Care}|=256^{3000}$ feels pretty big. But objectively, it's a tiny number. I can think of way more natural numbers bigger than $256^{3000}$ than natural numbers smaller than $256^{3000}$. I conclude that no real number is big.</p>
+    <p>Actually, $|\mathbb{Care}|$ must be less than $256^{3000}$. $256^{3000}$ is the number of 3 KB files I could write, but I imagine many of those files will repeatedly refer to the same element in $\mathbb{Care}$. There must be thousands of 500-word love letters to those cool numbers like $1$ or $0$, about which there is so much to say, but also about which only so little needs to be said.</p>
+    <p>How would you describe your favorite number, given the freedom of 3 kilobytes?</p>
+  </div>
+  <script src="../script.js"></script>
+  <script>
+    let text = document.querySelector("#replace-names-in").innerHTML;
+    function replaceNames(a, b) {
+      document.querySelector("#replace-names-in").innerHTML = text.replaceAll("\\aleph_0", a).replaceAll("\\mathfrak{c}", b);
+      MathJax.startup.document.state(0);
+      MathJax.texReset();
+      MathJax.typeset();
+    }
+    document.querySelector("[name=\"tiny-infinity-name\"]").value = "\\aleph_0";
+    document.querySelector("[name=\"big-infinity-name\"]").value = "\\mathfrak{c}";
+    function runReplaceNames() {
+      let a = document.querySelector("[name=\"tiny-infinity-name\"]").value;
+      let b = document.querySelector("[name=\"big-infinity-name\"]").value;
+      console.log(a, b);
+      replaceNames(a, b);
+    }
+  </script>
+</body>
+</html>

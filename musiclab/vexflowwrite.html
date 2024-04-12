@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+  <script src="chordanalysis.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.3/build/cjs/vexflow.js"></script>
+  <script src="vexflowwrite.js"></script>
+  <div id="output"></div>
+  <script>
+    let text = "Cmaj7 B+7#9".split(" ")
+    renderChords(
+      text.map(chordStackAnalysis).map(simpleVoicingFromChordStack),
+      document.querySelector("#output"),
+      {
+        texts: text,
+        extraHeight: 30,
+        availableWidth: 400
+      }
+    ); 
+  </script>
+</body>
+</html>

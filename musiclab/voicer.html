@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    svg {font-family: inherit; font-size: 1rem;}
+    
+    main {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <input id="input">
+    <div id="output"></div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.3/build/cjs/vexflow.js"></script>
+  <script>
+    let noteNames = "C C# D D# E F F# G G# A A# B".split(" ");
+    let noteNamesDiatonic = "C D E F G A B".split(" ");
+    
+    function chordAnalysis(text) {
+      let ogText = text;
+      text = text.trim();
+      //find root
+      let bassName = text.charAt(0).toUpperCase();
+      let root = noteNames.indexOf(bassName);
+      if (root == -1) return;
+      text = text.substring(1);
+      let rootPrefersSharps = true;
+      while (text.startsWith("#")) {
+        root = (root+1)%12;
+        text = text.substring(1);
+        bassName += "#";
+      }
+      while (text.startsWith("b")) {
+        root = (root+11)%12;
+        text = text.substring(1);
+        rootPrefersSharps = false;
+        bassName += "b";
+      }
+      //find quality (i.e. scale from which notes are pulled)
+      let qualityName = "dominant"; //dominant is default quality (1 2 3 4 5 6 7b). mixolydian
+      for (let [indicators, indicatedQuality] of [
+        [["major", "maj", "M"], "major"],
+        [["minor", "min", "m", "-"], "minor"],
+        [["dom"], "dominant"],
+        [["+", "aug"], "augmented"],
+        [["dim", "°", "*"], "diminished"]
+      ]) {
+        for (let indicator of indicators) if (text.startsWith(indicator)) {
+          qualityName = indicatedQuality;
+          text = text.substring(indicator.length);
+        }
+      }
+      let scaleOfChoice = {
+        major: [0, 2, 4, 5, 7, 9, 11],
+        dominant: [0, 2, 4, 5, 7, 9, 10],
+        minor: [0, 2, 3, 5, 7, 9, 10],
+        augmented: [0, 2, 4, 5, 8, 9, 10],
+        diminished: [0, 2, 3, 5, 6, 8, 9],
+      }[qualityName];
+      //read chord for member indeces (ie 7ths 9ths 11ths 13ths) and add the Pitch numbers
+      let qualitySet = {};
+      qualitySet[1] = scaleOfChoice[0];
+      qualitySet[3] = scaleOfChoice[2];
+      qualitySet[5] = scaleOfChoice[4];
+      let bassOffset = 0; //track if theres a non-root bass situation
+      let anyUpperYet = false; //turns true once any extension (including 7th). odd fills 7-9-11-13 to meet a high odd extension only runs if this is still false
+      for (let it = 0; it < 10; it++) {
+        while (text.startsWith("/") || text.startsWith("(")) text = text.substring(1);
+        //identify comments (no5, sus4) before the number itself
+        let comment = "";
+        for (let possibleComment of ["add", "no", "sus"]) if (text.startsWith(possibleComment)) {
+          comment = possibleComment;
+          text = text.substring(possibleComment.length);
+        }
+        //find accidentals on the extension
+        let alteration = 0;
+        while (text.startsWith("b")) {
+          alteration--;
+          text = text.substring(1);
+        }
+        while (text.startsWith("#")) {
+          alteration++;
+          text = text.substring(1);
+        }
+        //find the number for the extension
+        let num = parseInt(text);
+        if (!(num >= 0)) {
+          //seek a bass note thing
+          let noteValue = noteNames.indexOf(text.charAt(0));
+          text = text.substring(1);
+          if (noteValue == -1) break; //give up
+          while (text.startsWith("#")) {alteration++; text = text.substring(1);}
+          while (text.startsWith("b")) {alteration--; text = text.substring(1);}
+          bassOffset = (noteValue+alteration-root+12)%12;
+          bassName = noteNames[noteValue] + "#".repeat(Math.max(0, alteration)) + "b".repeat(Math.max(0, -alteration));
+          break;
+        }
+        if (num > 13) num = parseInt(text.charAt(0));
+        text = text.substring(num.toString().length);
+        //fill 7-9-11-13
+        if (!anyUpperYet && comment != "add" && num%2 && num > 7 && num <= 13) for (let fill = 7; fill < num; fill += 2)
+          if (!qualitySet[fill]) qualitySet[fill] = scaleOfChoice[(fill-1)%7];
+        //remove 3rd for X5 chord
+        if (num == 5 && alteration == 0 && comment != "no") delete qualitySet[3];
+        qualitySet[num] = (scaleOfChoice[(num-1)%7]+alteration)%12;
+        if (comment == "sus") delete qualitySet[3];
+        if (comment == "no") delete qualitySet[num];
+        while (text.startsWith(")")) text = text.substring(1);
+        anyUpperYet = true;
+      }
+      if (text.length) return;
+      return {
+        root: root,
+        bassOffset: bassOffset,
+        qualitySet: qualitySet,
+        memberNames: rootAndQualitySetToMembers(root, qualitySet, rootPrefersSharps),
+        bassName: bassName,
+        voicingInteger: qualitySetToVoicingInteger(qualitySet),
+        ogText: ogText
+      };
+    }
+    
+    function qualitySetToVoicingInteger(qualitySet) { //{1:0, 3:4, 5:7, 7:10} -> 010010010001 (high pitch to low)
+      let pitchOffsets = Object.keys(qualitySet).map(x => qualitySet[x]);
+      pitchOffsets = pitchOffsets.filter((x,i,a) => a.indexOf(x) == i);
+      return pitchOffsets.map(pitch => Math.pow(2, pitch)).reduce((a,b)=>a+b,0);
+    }
+    
+    function rootAndQualitySetToMembers(root, qualitySet, preferSharps = true) {
+      let rootPitch = noteNames[root];
+      if (rootPitch.includes("#") && !preferSharps) rootPitch = noteNames[(root+1)%12] + "b";
+      let memberNames = [rootPitch];
+      let rootDiatonicIndex = noteNamesDiatonic.indexOf(rootPitch.charAt(0));
+      for (let stackNumber of Object.keys(qualitySet).map(x => parseInt(x)).sort((a,b)=>a-b)) if (stackNumber != 1) {
+        let diatonicIndex = (rootDiatonicIndex+stackNumber-1)%7;
+        let noteName = noteNamesDiatonic[diatonicIndex]; //the note's letter name, no accidentals yet
+        let neededAccidental = qualitySet[stackNumber]+root - noteNames.indexOf(noteNamesDiatonic[diatonicIndex]);
+        neededAccidental = (neededAccidental+12)%12;
+        if (neededAccidental > 6) neededAccidental -= 12;
+        while (neededAccidental > 0) {noteName += "#"; neededAccidental--;}
+        while (neededAccidental < 0) {noteName += "b"; neededAccidental++;}
+        memberNames.push(noteName);
+      }
+      return memberNames;
+    }
+    
+    function compactChordAnalysis(text) {
+      let x = chordAnalysis(text);
+      return [x.root, x.voicingInteger, x.bassOffset];
+    }
+    
+    let lastGo = "";
+    input.oninput = function() {
+      try {
+        if (this.value.trim() != lastGo) {
+          displayChords(this.value);
+          lastGo = this.value.trim();
+        }
+      } catch(e) {}
+    }
+    
+    let contextSize = 2;
+    let knowledge = {};
+    function analyzeBank(text) {
+      text = text.split("/").map(song => song.split(" ").map(x => x.trim()).filter(x => x.length).map(x => compactChordAnalysis(x)));
+      for (let song of text) {
+        let memory = [];
+        for (let i = 0; i < song.length-contextSize; i++) {
+          let chords = [];
+          for (let w = 0; w <= contextSize; w++) chords.push(song[i+w]);
+          //find CONTEXT (quality, *[change, quality]) and RESULT (change, quality)
+          let context = [chords[0][1]];
+          for (let c = 1; c < chords.length-1; c++) {
+            context.push((12+chords[c][0]-chords[c-1][0])%12);
+            context.push(chords[c][1]);
+            context.push(chords[c][2]);
+          }
+          let result = [
+            (12+chords[chords.length-1][0]-chords[chords.length-2][0])%12,
+            chords[chords.length-1][1],
+            chords[chords.length-1][2]
+          ];
+          submitKnowledge(context.join(","), result.join(","));
+        }
+      }
+    }
+    
+    function submitKnowledge(context, result) {
+      if (knowledge[context] == undefined) knowledge[context] = {};
+      if (knowledge[context][result] == undefined) knowledge[context][result] = 0;
+      knowledge[context][result]++;
+    }
+    
+    function retrieveKnowledge(context) {
+      if (knowledge[context] == undefined) knowledge[context] = {};
+      return knowledge[context];
+    }
+    
+    //analyzeBank("Dm7 G7 CM7 Dm7");
+    
+    function voicingIntegerToPitches(voicingInteger) {
+      let pitches = [];
+      let pitch = 0;
+      while (voicingInteger) {
+        if (voicingInteger%2) {
+          voicingInteger--;
+          pitches.push(pitch);
+        }
+        voicingInteger /= 2;
+        pitch++;
+      }
+      return pitches;
+    }
+    
+    function requestContinuation(text) {
+      let chords = text.split(" ").map(x => x.trim()).filter(x => x.length);
+      while (chords.length > contextSize) chords.shift();
+      chords = chords.map(x => compactChordAnalysis(x));
+      let context = [chords[0][1]];
+      for (let c = 1; c < chords.length; c++) {
+        context.push((12+chords[c][0]-chords[c-1][0])%12);
+        context.push(chords[c][1]);
+        context.push(chords[c][2]);
+      }
+      let rec = retrieveKnowledge(context.join(","));
+      let possibles = [];
+      for (let transition of Object.keys(rec)) {
+        let [pitchChange, newQuality] = transition.split(",").map(x => parseInt(x));
+        let newPitch = (pitchChange+chords[chords.length-1][0])%12;
+        possibles.push([newPitch, newQuality]);
+      }
+      return possibles;
+    }
+    
+    let weights = {
+      equalSpacing: 20,
+      spacing: -100,
+      travelPunishment: -500,
+      tooLowOrHighPunishment: -20000,
+      perfectMotionPunishment: -500
+    };
+    const { Renderer, Stave, Voice, StaveNote, Formatter, Accidental, Annotation } = Vex.Flow;
+
+    let myInterval = null;
+    // Create an SVG renderer and attach it to the DIV element named "boo".
+    let currentAccidentals = {}; //stores state of "C/4" "D/4" every note: 0, 1, 2, -1, -2
+    function displayChords(chordAnalyses) {
+      if (typeof chordAnalyses == "string") chordAnalyses = chordAnalyses.split(" ").filter(x => x.length).map(x => chordAnalysis(x));
+      
+      let [bestScore, bestNotes] = [Number.NEGATIVE_INFINITY, null];
+      if (myInterval) clearInterval(myInterval);
+      let startTime = Date.now();
+      let attempts = 0;
+      if (chordAnalyses.length) myInterval = setInterval(makeAttempt, 1);
+      else renderChords([], []);
+      function makeAttempt() {
+        let staveNotes = [];
+        let previousVoicingChoice = null;
+        let totalScore = 0;
+        currentAccidentals = {};
+        [previousVoicingChoice, staveNotes[0]] = chordToStaveNote(chordAnalyses[0], previousVoicingChoice);
+        for (let i = 1; i < chordAnalyses.length; i++) {
+          [previousVoicingChoice, staveNotes[i]] = chordToStaveNote(chordAnalyses[i], previousVoicingChoice);
+          totalScore += previousVoicingChoice.score;
+        }
+        attempts++;
+        if (totalScore > bestScore) {
+          bestScore = totalScore;
+          bestNotes = staveNotes;
+          renderChords(bestNotes, chordAnalyses);
+          console.log("new best", bestScore, Date.now()-startTime, attempts);
+        }
+      }
+    }
+    
+    
+    
+    function renderChords(notes, chordAnalyses) {
+      while (output.firstChild) output.firstChild.remove();
+      const renderer = new Renderer(output, Renderer.Backends.SVG);
+      
+      let availableWidth = Math.max(40 + 80 * notes.length, 200);
+
+      // Configure the rendering context.
+      renderer.resize(availableWidth+2, 250);
+      const context = renderer.getContext();
+      
+      const stave = new Stave(1, 40, availableWidth).addClef("treble");
+      const stave2 = new Stave(1, 110, availableWidth).addClef("bass");
+      stave.setContext(context).draw();
+      stave2.setContext(context).draw();
+      
+      let trebleNotes = notes;
+      let bassNotes = chordAnalyses.map(function(chord){
+        let keyDiatonic = chord.bassName.replaceAll("b","").replaceAll("#", "")+"/3";
+        let staveNote = new StaveNote({keys: [keyDiatonic], duration: "q", clef: "bass", stem_direction: -1});
+        let neededAccidental = "n";
+        for (let a of acc) if (chord.bassName.includes(a)) {
+          neededAccidental = a;
+          break;
+        }
+        if (!currentAccidentals[keyDiatonic]) currentAccidentals[keyDiatonic] = "n";
+        if (currentAccidentals[keyDiatonic] != neededAccidental) {
+          staveNote.addModifier(new Accidental(neededAccidental));
+          currentAccidentals[keyDiatonic] = neededAccidental;
+        }
+        return staveNote;
+      });
+      let textNotes = chordAnalyses.map(chord => chord.ogText);
+      
+      let trebleVoice = new Vex.Flow.Voice({
+        num_beats: notes.length, beat_value: 4, resolution: Vex.Flow.RESOLUTION
+      });
+      let bassVoice = new Vex.Flow.Voice({
+        num_beats: notes.length, beat_value: 4, resolution: Vex.Flow.RESOLUTION
+      });
+      for (let trebleNote of trebleNotes) trebleVoice.addTickable(trebleNote);
+      for (let bassNote of bassNotes) bassVoice.addTickable(bassNote);
+      //trebleVoice.addTickable(trebleNotes[0]);
+      //trebleVoice.addTickables([trebleNotes]);
+      //bassVoice.addTickables([bassNotes]);
+      
+      let formatter = new Formatter();
+      formatter.joinVoices([trebleVoice, bassVoice]);
+      
+      formatter.formatToStave([trebleVoice, bassVoice], stave, {align_rests: true});
+      
+      trebleVoice.draw(context, stave);
+      bassVoice.draw(context, stave2);
+      
+      //Formatter.FormatAndDraw(context, stave, notes);
+      //Formatter.FormatAndDraw(context, stave2, bassNotes);
+      
+    }
+    
+
+    let acc = ["bb", "b", "##", '#'];
+    function chordToStaveNote(analysis, previousVoicingChoice) { //given chord analysis, we return our favorite voicing. as {noteNames, noteNumbers, score} and also as StaveNote
+      let allVoicingChoices = allPossibleVoicings(analysis);
+      evaluateVoicingChoices(allVoicingChoices, previousVoicingChoice);
+      let voicingChoice = allVoicingChoices[Math.floor(Math.random()*4)];
+      let keysDiatonic = voicingChoice.noteNames.map(x => x.replaceAll("b", "").replaceAll("#", ""));
+      let staveNote = new StaveNote({keys: keysDiatonic, duration: "q", stem_direction: 1});
+      for (let i = 0; i < voicingChoice.noteNames.length; i++) {
+        let neededAccidental = "n";
+        for (let a of acc) if (voicingChoice.noteNames[i].includes(a)) {
+          neededAccidental = a;
+          break;
+        }
+        if (!currentAccidentals[keysDiatonic[i]]) currentAccidentals[keysDiatonic[i]] = "n";
+        if (currentAccidentals[keysDiatonic[i]] != neededAccidental) {
+          staveNote.addModifier(new Accidental(neededAccidental), i);
+          currentAccidentals[keysDiatonic[i]] = neededAccidental;
+        }
+      }
+      staveNote.addModifier(new Annotation(analysis.ogText));
+      return [voicingChoice, staveNote];
+    }
+    
+    function evaluateVoicingChoices(allVoicingChoices, previousVoicingChoice) {
+      //allVoicingChoices looks like list of {noteNames, noteNumbers, score}s. previousVoicingChoice is one from the previous, which was successful
+      shuffle(allVoicingChoices);
+      for (let voicingChoice of allVoicingChoices) {
+        let nums = voicingChoice.noteNumbers; //set voicingChoice.score depending on how good this is
+        voicingChoice.score = inherentGoodness(nums);
+        if (previousVoicingChoice) voicingChoice.score += transitionGoodness(previousVoicingChoice.noteNumbers, nums);
+      }
+      allVoicingChoices.sort((a, b) => b.score - a.score);
+      function transitionGoodness(prev, nums) {
+        let travelPunishment = 0;
+        if (prev.length != nums.length) for (let item of prev) travelPunishment += weights.travelPunishment * nums.map(x => Math.abs(x-item)).reduce((a,b)=>Math.min(a,b),1000);
+        else travelPunishment += weights.travelPunishment * nums.map((v,i,a) => Math.abs(nums[i] - prev[i])).reduce((a,b)=>a+b,0);
+        
+        let perfectMotionPunishment = 0;
+        for (let i = 0; i < prev.length; i++) for (let j = 0; j < prev.length; j++) if ([0,5,7].includes((prev[j]-prev[i])%12)) {
+          //weve got a fifth/fourth/octave. lets hope it does not move paralelly
+          if (nums[j] - nums[i] == prev[j] - prev[i] && nums[i] != prev[i]) { //omg we MOVED. and maintained same 0,5,7 interval
+            perfectMotionPunishment += weights.perfectMotionPunishment;
+          }
+        }
+        
+        return travelPunishment + perfectMotionPunishment;
+      }
+      function inherentGoodness(nums) {
+        let equalSpacing           = weights.equalSpacing           * -range(nums.map((v,i,a) => i ? a[i]-a[i-1] : 0));
+        let spacing                = weights.spacing                * nums[nums.length-1]-nums[0];
+        let tooLowOrHighPunishment = weights.tooLowOrHighPunishment * nums.map(x => x<9?9-x:(x>15?x-15:0)).reduce((a,b)=>a+b,0);
+        return equalSpacing + spacing + tooLowOrHighPunishment;
+      }
+    }
+    
+    function allPossibleVoicings(chordAnalysis, previousChordVoicingChoice) {
+      //turns {C7} into [['C/4', 'E/4', 'G/5', 'Bb/4'], ]... every chord member gets put in either octave 4 or 5
+      let possibles = [[]];
+      for (let name of chordAnalysis.memberNames) {
+        let chooseLower = possibles.map(x => [...x, name+"/4"]);
+        let chooseUpper = possibles.map(x => [...x, name+"/5"]);
+        possibles = chooseLower.concat(chooseUpper);
+      }
+      possibles = possibles.map(noteSet => ({
+        noteNames: noteSet, //C/4, E/4, G/5, B/4
+        score: 0,
+        noteNumbers: noteSet.map(name => {
+          let pitch = noteNames.indexOf(name.charAt(0));
+          name = name.substring(1);
+          while (name.startsWith("#")) {name = name.substring(1); pitch++;}
+          while (name.startsWith("b")) {name = name.substring(1); pitch--;}
+          pitch = (12+pitch)%12;
+          pitch += (parseInt(name.substring(1))-4)*12;
+          return pitch;
+        }).sort((a,b)=>a-b)
+      }));
+      return possibles;
+    }
+    
+    function transitionQuality(noteNumbers1, noteNumbers2) {
+      //evaluate the quality of this transition, + the general Goodness of that second voicing
+    }
+    
+    function stdev(t){let e=t.length,a=t.reduce((t,e)=>t+e)/e;return Math.sqrt(t.map(t=>Math.pow(t-a,2)).reduce((t,e)=>t+e)/e)}
+    function range(t){return t.reduce((a,b)=>Math.max(a,b),t[0]) - t.reduce((a,b)=>Math.min(a,b),t[0])}
+    function shuffle(f){let o=f.length;for(;0!=o;){var t=Math.floor(Math.random()*o);o--,[f[o],f[t]]=[f[t],f[o]]}}
+    
+    input.value = "DM7 G7 CM7";
+    displayChords("Dm7 G7 CM7");
+  </script>
+</body>
+</html>

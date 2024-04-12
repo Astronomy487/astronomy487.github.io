@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @font-face {
+      font-family: "Edwin";
+      src: url("Edwin-Roman.otf") format("opentype");
+      font-weight: normal;
+    }
+    @font-face {
+      font-family: "Edwin";
+      src: url("Edwin-Bold.otf") format("opentype");
+      font-weight: bold;
+    }
+    body {
+      font-family: Edwin;
+      background-color: black;
+      color: white;
+    }
+    
+    input {
+      background-color: inherit;
+      color: inherit;
+      font-size: inherit;
+      font-family: inherit;
+      border: solid 1px white;
+    }
+    input:focus {
+      outline: none;
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div id="outputs">
+    <table style="table-layout: fixed; width: 48rem; border: solid 1px black; padding: 3rem;"><tr><td>
+      <input id="chord-input">
+      <h2 id="output-chord-name" style="text-align: center; margin: 0; font-size: 2rem;"></h2>
+      <div id="output-sheet-music"></div>
+      <div id="output-members" style="text-align: center;"></div>
+      <div id="output-warning" style="text-align: center; color: red;"></div>
+    </td><td>
+      <div id="output-tables"></div>
+      <pre id="output-json" style="line-height: 95%; display: none;"></pre>
+    </td></tr></table>
+  </div>
+  <footer id="cutie" style=""></footer>
+  <script src="chordanalysis.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.3/build/cjs/vexflow.js"></script>
+  <script src="vexflowwrite.js"></script>
+  <script>
+    let output = document.querySelector("#output");
+    document.querySelector("#chord-input").value = "C9b7";
+    runChordAnalysis("C9b7");
+    
+    document.querySelector("#chord-input").oninput = function() {
+      runChordAnalysis(this.value);
+    }
+    
+    cutieBlink();
+    function cutieBlink() {
+      let symbol = "✧♥";
+      symbol = symbol.charAt(Math.floor(Math.random()*symbol.length));
+      document.querySelector("#cutie").innerText = "(˵ – ᴗ – ˵ ) "+symbol;
+      setTimeout(function(){
+        document.querySelector("#cutie").innerText = "(˵ • ᴗ • ˵ ) "+symbol;
+      }, 100);
+      setTimeout(cutieBlink, 20*1000+20*1000*Math.random());
+    }
+    
+    function runChordAnalysis(text) {
+      try {
+        let analysis = chordStackAnalysis(text.trim().split(" ")[0]);
+        let chordName = analysis.map(x => x.text).join("/");
+        document.querySelector("#output-chord-name").innerText = chordName;
+        renderChords(
+          [analysis].map(simpleVoicingFromChordStack),
+          document.querySelector("#output-sheet-music"),
+          {availableWidth: 260, color: "white"}
+        );
+        document.querySelector("#output-members").innerText = analysis.concat().reverse().map(x => x.memberNames.join(" ")).join(" / ");
+        try {
+          let reAnalysis = chordStackAnalysis(chordName);
+          let reAnalysisText = reAnalysis.map(x => x.text).join("/");
+          if (chordName != reAnalysisText) throw new Error("This chord gets respelled to " + reAnalysis.text);
+          if (analysis.map(x => x.memberNames.join(" ")).join("/") != reAnalysis.map(x => x.memberNames.join(" ")).join("/"))
+            throw new Error("This 'corrected spelling' is almost certainly wrong! " + reAnalysisText + " would have chord members " + reAnalysis.map(x => x.memberNames.join(" ")).join("/"));
+          document.querySelector("#output-warning").innerText = "";
+        } catch(e) {
+          document.querySelector("#output-warning").innerText = e.toString();
+        }
+        document.querySelector("#output-json").innerText = function(analysis) {
+          let text = [];
+          for (let i = 0; i < analysis.length; i++) {
+            let component = analysis[i];
+            text.push(i ? "}, {" : "[ {");
+            text.push("  text: \"" + component.text + "\",");
+            text.push("  root: " + component.root + ",");
+            text.push("  rootName: \"" + component.rootName + "\",");
+            //text.push("  root: " + component.root + ",   rootName: \"" + component.rootName + "\",");
+            text.push("  qualitySet: " + JSON.stringify(component.qualitySet).replace(/"([^"]+)":/g, '$1:').replaceAll(",", ", ").replaceAll(":", ": ") + ",");
+            text.push("  qualityName: \"" + component.qualityName + "\",");
+            text.push("  lowerChord: " + component.lowerChord + ",");
+            text.push("  memberNames: [\"" + component.memberNames.join("\", \"") + "\"]");
+          }
+          text.push("} ]");
+          return text.join("\n");
+        }(analysis);
+        while (document.querySelector("#output-tables").firstChild) document.querySelector("#output-tables").firstChild.remove();
+        for (let component of analysis) {
+          document.querySelector("#output-tables").appendChild(makeEqualSpaceRow(
+            Object.keys(component.qualitySet).map(x => parseInt(x)).sort((a,b)=>a-b).map(ordinal)
+          ));
+          document.querySelector("#output-tables").appendChild(makeEqualSpaceRow(component.memberNames));
+          document.querySelector("#output-tables").appendChild(makeEqualSpaceRow(
+            qualitySetToIntervalNames(component.qualitySet)//.map(x => x.split(" ")).map(x => x.length>1 ? x[0].substring(0,3) + " " + x[1] : x[0])
+          ));
+        }
+      } catch(e) {
+      }
+    }
+    
+    function makeEqualSpaceRow(textList) {
+      let table = document.createElement("table");
+      table.style.width = "100%";
+      table.style.tableLayout = "fixed";
+      for (let text of textList) {
+        let td = table.appendChild(document.createElement("td"));
+        td.innerText = text;
+      }
+      return table;
+    }
+  </script>
+</body>
+</html>

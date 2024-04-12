@@ -1,0 +1,111 @@
+:root {
+	--1: #FEFEEA;
+	--2: #6EB0A1;
+	--4: #000B21;
+	
+	--1: #eee;
+	--2: #f60;
+	--4: #111;
+}
+
+body {
+	font-family: Tahoma, sans-serif;
+	font-weight: 400;
+	background-color: var(--4);
+	color: var(--1);
+	font-size: 1.25rem;
+	overflow-x: hidden;
+	width: min(48rem, calc(100vw - 4rem));
+	margin: 8rem auto;
+	margin-bottom: 16rem;
+}
+
+::selection {
+	background: var(--2);
+	color: var(--4);
+}
+
+h1 {
+	font-weight: bold;
+	color: var(--2);
+	font-size: 3.5rem;
+	line-height: 100%;
+}
+
+h2 {
+	font-weight: bold;
+	font-size: 2rem;
+	text-align: left;
+	margin-top: 3rem;
+}
+
+h2::before {
+	content: '# ';
+	color: var(--2);
+}
+
+p {
+	line-height: 150%;
+}
+
+a {
+	color: var(--2);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+code {
+	font-size: 1.125rem;
+}
+
+table {
+	width: 67%;
+	margin: 2rem auto;
+	border: solid 2px var(--1);
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+td, th {
+	padding: 0.5rem;
+	border: solid 1px var(--1);
+}
+
+th {
+	background-color: var(--2);
+	color: var(--4);
+}
+
+th::selection {
+	background: var(--4);
+	color: var(--1);
+}
+
+table {
+	table-layout: fixed;
+}
+
+select {
+	background-color: inherit;
+	border: solid 1px var(--1);
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	padding: 0.25rem;
+	width: 8rem;
+	text-align: center;
+}
+
+em {
+	font-style: italic;
+	font-weight: bold;
+}
+
+.website-icon {
+	height: 1rem;
+	margin: 0 0.125rem;
+}

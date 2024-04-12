@@ -2,10 +2,55 @@
 <html>
 <head>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/helvetica-neue-55');
+    
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    
+    p {
+      font-size: 2rem;
+      display: inline-block;
+      left: 50%;
+      top: 50%;
+      position: fixed;
+      margin: 0;
+      transform: translate(-50%, -50%);
+    }
+    
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+    
+    a:hover {
+      color: black;
+      background-color: white;
+    }
+    
+    b {
+      font-weight: inherit;
+    }
+    
+    ::selection {
+      color: black;
+      background: white;
+    }
   </style>
-  <title>404</title>
+  <title></title>
 </head>
-<body style="background-color: var(--accent); color: white; font-family: Inter, sans-serif; font-size: 16rem; text-align: center; line-height: 100vh; overflow: hidden; user-select: none; cursor: pointer;" onclick="location.href = 'https://astronomy487.github.io/';">404</body>
-<script src="https://astronomy487.github.io/dynamicaccentcolor.js"></script>
+<body>
+  <p>The page <b></b><br>doesn't exist yet. <a>Want to create it?</a></p>
+  <script>
+    let url = location.toString();
+    url = url.substring(url.indexOf("astronomy487.github.io"));
+    console.log(url);
+    
+    document.querySelector("b").innerText = url;
+    document.querySelector("title").innerText = url.substring("astronomy487.github.io/".length);
+    document.querySelector("a").href = "https://twitter.com/intent/tweet?text=@astronomy487%20could%20you%20please%20add%20the%20page%20'"+url+"'%20to%20your%20website%20i%20think%20it%20would%20be%20cool";
+  </script>
+</body>
 </html>

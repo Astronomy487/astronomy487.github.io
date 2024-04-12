@@ -1,0 +1,67 @@
+@import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
+
+body {
+	font-size: 1.25rem;
+	font-family: Inter;
+	background-color: black;
+	color: #ddd;
+}
+
+article {
+	width: 48rem;
+	margin: 4rem auto;
+}
+
+article div {
+	margin: 1rem 0;
+}
+
+input {
+	font-family: inherit;
+	font-size: 1.25rem;
+	width: 100%;
+	display: block;
+	border: none;
+	background: inherit;
+	color: inherit;
+}
+
+input:focus {
+	outline: none;
+	background: linear-gradient(90deg, #333, black);
+}
+
+[heading="1"] {
+	font-weight: bold;
+	font-size: 1.75rem;
+	color: white;
+}
+[heading="2"] {
+	font-weight: bold;
+	font-size: 1.25rem;
+	color: white;
+}
+[heading="3"] {
+	font-size: 1.25rem;
+	color: white;
+}
+
+[mode="evaluation"] input {
+	border-bottom: solid 0.125rem #555;
+}
+
+article div span {
+	margin-left: 4rem;
+}
+
+math {
+	math-style: normal;
+	font-size: inherit;
+}
+
+[mode="evaluation"] span {color: #08f;}
+[mode="substitution"] span {color: gray;}
+
+[mode="error"] span {
+	display: none;
+}
