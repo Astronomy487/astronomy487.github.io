@@ -136,11 +136,17 @@
           }
         }
       }
+      genURL();
     }
     
     function genURL() {
       let txt = width + "," + height + ",";
-      let justBits = [].concat(...states).map(x => parseInt(x));
+      let copyStates = states.map(x => x);
+      copyStates.length = height;
+      for (let i = 0; i < height; i++) copyStates[i] = copyStates[i].join("").split("");
+      for (let i = 0; i < height; i++) copyStates[i].length = width;
+      console.log(copyStates);
+      let justBits = [].concat(...copyStates).map(x => parseInt(x));
       while (justBits.length%6) justBits.push(0);
       for (let i = 0; i < justBits.length; i += 6) {
         let v = 32*justBits[i] + 16*justBits[i+1] + 8*justBits[i+2] + 4*justBits[i+3] + 2*justBits[i+4] + 1*justBits[i+5];
