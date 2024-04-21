@@ -1,10 +1,7 @@
 :root {
-	--1: #FEFEEA;
-	--2: #6EB0A1;
-	--4: #000B21;
-	
-	--1: #eee;
+	--1: #ddd;
 	--2: #f60;
+	--3: #fff;
 	--4: #111;
 }
 
@@ -108,4 +105,10 @@ em {
 .website-icon {
 	height: 1rem;
 	margin: 0 0.125rem;
+}
+
+mjx-container {
+	color: var(--3);
+	user-select: none;
+	pointer-events: none;
 }

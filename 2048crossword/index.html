@@ -21,6 +21,19 @@
       --1024: #eec744;
       --2048: #ecc22e;
       --immense-power: #ff2021;
+      
+      
+      --3: #e4daee;
+      --6: #e0c8ed;
+      --12: #b179f2;
+      --24: #9760f7;
+      --48: #7d62f6;
+      --96: #5e39f6;
+      --192: #ce73ed;
+      --384: #ca64ed;
+      --768: #c651ed;
+      --1536: #c744ee;
+      --3072: #c22eec;
     }
     
     body {
@@ -50,32 +63,18 @@
       line-height: 1rem;
       text-align: center;
       font-weight: bold;
+      border-radius: 12.5%;
     }
     
-    #display .cell[worth="2"] {background-color: var(--2); color: var(--black);}
-    #display .cell[worth="4"] {background-color: var(--4); color: var(--black);}
-    #display .cell[worth="8"] {background-color: var(--8);}
-    #display .cell[worth="16"] {background-color: var(--16);}
-    #display .cell[worth="32"] {background-color: var(--32);}
-    #display .cell[worth="64"] {background-color: var(--64);}
-    #display .cell[worth="128"] {background-color: var(--128);}
-    #display .cell[worth="256"] {background-color: var(--256);}
-    #display .cell[worth="512"] {background-color: var(--512);}
-    #display .cell[worth="1024"] {background-color: var(--1024);}
-    #display .cell[worth="2048"] {background-color: var(--2048);}
-    
-    #display .cell.wall {
-      background-color: var(--black);
-      scale: 1;
-    }
+    #display .cell[worth="2"] {color: var(--black);}
+    #display .cell[worth="4"] {color: var(--black);}
+    #display .cell[worth="3"] {color: var(--black);}
+    #display .cell[worth="6"] {color: var(--black);}
     
     #display .cell.void {
       background-color: var(--mid);
       scale: 0.9375;
-    }
-    
-    #display .cell:not(.wall) {
-      border-radius: 12.5%;
+      z-index: -2;
     }
     
     #display .cell[hugeworth] {
@@ -154,9 +153,6 @@
       for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
           if (board[y][x] == wallSpace) {
-            let wall = display.appendChild(document.createElement("div"));
-            wall.setAttribute("class", "cell wall"); //lol
-            updateCellDisplay(wall, y, x);
           } else {
             let voidspace = display.appendChild(document.createElement("div"));
             voidspace.setAttribute("class", "cell void"); //lol
@@ -182,6 +178,7 @@
     }
     function obliterateCell(cell) {
       cell.style.scale = "0";
+      setTimeout(function(){cell.remove();}, 1000);
     }
     
     function insertTile() {
@@ -200,14 +197,17 @@
       };
       board[pickY][pickX].element.setAttribute("class", "cell");
       board[pickY][pickX].element.setAttribute("worth", worth);
+      board[pickY][pickX].element.style.backgroundColor = "var(--"+worth+")";
       if (worth > 999) board[pickY][pickX].element.setAttribute("hugeworth", "true");
       board[pickY][pickX].element.innerText = worth;
       setTimeout(function(){board[pickY][pickX].element.style.scale = 15/16;});
       updateCellDisplay(board[pickY][pickX].element, pickY, pickX);
     }
     
-    
+    let canGo = true;
     function doPush(dy, dx) {
+      if (!canGo) return;
+      canGo = false;
       let [minY, maxY, stepY, minX, maxX, stepX] = [0, board.length, 1, 0, board[0].length, 1];
       //if we're pushing to the right or down, we have to do it in opposite order
       if (dx > 0 || dy > 0) 
@@ -219,6 +219,7 @@
         if (board[y][x] != null && board[y][x] != wallSpace)
           updateCellDisplay(board[y][x].element, y, x);
       insertTile();
+      canGo = true;
       function pushThings() {
         let anyChanges = false;
         for (let y = minY; y != maxY; y += stepY) for (let x = minX; x != maxX; x += stepX) {
@@ -241,6 +242,7 @@
           if (board[newY][newX].value != board[y][x].value) continue;
           board[newY][newX].value += board[y][x].value;
           board[newY][newX].element.setAttribute("worth", board[newY][newX].value);
+          board[newY][newX].element.style.backgroundColor = "var(--" + board[newY][newX].value + ")";
           if (board[newY][newX].value > 999) board[newY][newX].element.setAttribute("hugeworth", "true");
           board[newY][newX].element.innerText = board[newY][newX].value;
           let elementToObliterate = board[y][x].element; // i <3 naming things
@@ -252,7 +254,6 @@
       }
     }
     
-    let canGo = true;
     window.onkeydown = function(key){
       switch (key.code) {
         case "KeyA": case "ArrowLeft":
