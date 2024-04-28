@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GRADES</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/helvetica-neue-55');
+    
+    body {
+      font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+      font-weight: 500;
+      font-size: 1.125rem;
+      background-color: black;
+      color: white;
+    }
+    
+    [bad="true"] {
+      border-color: red;
+    }
+    
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    
+    table.grading-scale {
+      border-collapse: collapse;
+      margin: auto;
+    }
+    table.grading-scale td {
+      width: 2.5rem;
+    }
+    table.grading-scale td:nth-child(1) {text-align: left;}
+    table.grading-scale td:nth-child(2) {text-align: right;}
+    .grading-scale-meta {
+      width: 100%;
+      text-align: center;
+    }
+    .grading-scale-meta-td {
+      cursor: pointer;
+      padding: 1rem 0;
+    }
+    .grading-scale-meta-td:hover {
+      color: yellow;
+      outline: solid 1px yellow;
+    }
+    
+    .modal, main {
+      position: absolute;
+      top:0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+      background-color: black;
+    }
+    
+    th {
+      font-weight: inherit;
+      padding: 1rem 0;
+    }
+    
+    #table {
+      border-collapse: collapse;
+      text-align: center;
+    }
+    
+    #table td {
+      padding: 0.125rem 0;
+    }
+    
+    #table td:nth-child(2n), #table th:nth-child(2n) {
+      background-color: #444;
+    }
+    
+    ::selection {
+      background: yellow;
+      color: black;
+    }
+    
+    input, select {
+      font-family: inherit;
+      font-size: inherit;
+      color: white;
+      background-color: inherit;
+      border: solid 1px #ffffff00;
+      text-align: center;
+    }
+    
+    input:hover, select:hover {
+      border-color: white;
+    }
+    select option {
+      background-color: black;
+    }
+    
+    #table th {
+      border-bottom: solid 1px white;
+    }
+    
+    button {
+      font-family: inherit;
+      font-size: inherit;
+      color: black;
+      background-color: white;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.75rem;
+    }
+    button:hover {
+      background-color: yellow;
+    }
+    
+    input:focus {
+      outline: none;
+      background-color: yellow;
+      color: black;
+    }
+  </style>
+</head>
+<body onbeforeunload="saveData()">
+  <main id="main" style="display: none;">
+    <table id="table"></table>
+    <div id="gpa-comment" style="margin-top: 1rem;"><button onclick="addClass()" style="margin-right: 1rem;">Add class</button>You are shooting for a <span id="gpa-all"></span> GPA<span id="optional-gpa">, and a <span id="gpa-selected"></span> GPA in the selected courses</span>.</div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
