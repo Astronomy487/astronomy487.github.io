@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div style="display: none;">$\newcommand{\norm}[1]{\left\lVert#1\right\rVert}$</div>
+  <div style="display: none;">$\newcommand{\em}[1]{{\color[rgb]{1,0.4,0}{#1}}}$</div>
+  <div style="display: none;">$\newcommand{\cc}[1]{{\color{cyan}{#1}}}$</div>
+  <div style="display: none;">$\newcommand{\cy}[1]{{\color{yellow}{#1}}}$</div>
+  <div style="display: none;">$\newcommand{\cm}[1]{{\color{magenta}{#1}}}$</div>
+  <h1>What are the basis functions?</h1>
+  <p summary>I've been thinking about making bases for funny vector spaces: all functions, or all smooth functions, or all continuous functions. I mess around with the idea of creating a non-analytic function out of linearly combining infinitely many analytic functions; this doesn't violate the vector space axioms, it's just strange that you can sometimes-but-not-always perform infinite linear combinations and stay in the vector space.</p>
+  <h2>Vector spaces</h2>
+  <p>I'm currently taking a linear algebra class and learning a lot about vector spaces. I find them really eye-opening and beautiful and awesome, mostly because so many things can be considered a vector space (boring vector spaces like $\mathbb{R}^n$, funky things like sets of functions) as long as they satisfy <a href="https://en.wikipedia.org/wiki/Vector_space#Definition_and_basic_properties">the vector space axioms</a>.</p>
+  <p>Originally I had a few paragraphs here gushing about how fun the vector space axioms are, and how they apply to so many different things, and how they naturally give life to the ideas of linearly combining vectors in a space. But I edited that out.</p>
+  <p>I will, however, introduce what I mean by "linearly combine" (or sometimes "construct"). If I have some vectors $\vec{x}$, $\vec{y}$, and $\vec{z}$ in my vector space, I can multiply each by some constant and add them together: $a\vec{x}+b\vec{y}+c\vec{z}$. This linear combination over $\{\vec x, \vec y, \vec z\}$ is identified by coordinates $a,b,c$ (which are just real numbers $\mathbb{R}$).</p>
+  <p>Any linear combination must belong to the vector space from which it was constructed (or else the vector space axioms were violated). In this article, every space I talk about will in fact satisfy all the axioms, so I'm not trying to deceive you or anything.</p>
+  <h2>Basis vectors</h2>
+  <p>One thing you might want to do for a vector space is to find a set of basis vectors. This is a set of vectors that can be used to construct any other vector in the space. Here, construction means linear combination.</p>
+  <p>A linear combination of $\{\vec{v}, \vec{u}\}$ is any vector that can be written as $a_1\vec{v}+a_2\vec{u}$, combining the existing vectors to form a new one. $(a_1,a_2)$ are the coordinates of our new vector over the basis $\{\vec{v}, \vec{u}\}$. (in fact, $(a_1,a_2)$ is a vector in its own right).</p>
+  <p>A set of basis vectors $\{\vec{b}_1,\vec{b}_2,\vec{b}_3,\cdots\}$ can be considered a basis if it:</p>
+  <ul>
+    <li>It spans the entire vector space we're talking about through linear combination. Every vector can be written as $a_1\vec{b}_1+a_2\vec{b}_2+\cdots=\sum_na_n\vec{b}_n$ for some values of $a_1,a_2,\cdots$</li>
+    <li>Each basis vector is "independent" from each other. The space spanned by a proper subset of your basis vectors must be smaller than the space spanned by all of your basis vectors. They are all necessary to span your vector space; none of them are redundant.
+      <ul>
+        <li>You can prove a basis meets this by showing that $a_1\vec{b}_1+a_2\vec{b}_2+\cdots=\sum_na_n\vec{b}_n=\vec{0}$ implies $a_n=0$ for all $n$</li>
+      </ul>
+    </li>
+  </ul>
+  <p>The number of vectors in the basis is the dimension of the vector space. Every basis that correctly spans a vector space must have the same number of basis vectors. (You can't simply cover the same space in fewer basis vectors by choosing better vectors.)</p>
+  <p>In a boring vector space like $\mathbb{R}^3$, a possible set of basis vectors is obvious:</p>
+  <p>$$\{\vec{b}_1,\vec{b}_2,\vec{b}_3\} = \{\langle 1,0,0\rangle, \langle 0,1,0\rangle, \langle0,0,1\rangle\}$$</p>
+  <p>To make this, I let every $\vec{b}_k$ consist of entries of $0$, except in the $k$<sup>th</sup> dimension, where I inserted a $1$. I could just treat each of the 3 dimensions of $\mathbb{R}^3$ separately. Vector spaces encourage this type of thinking.</p>
+  <p>What if your vector space doesn't have obvious entries, so you can't just set an entry to $1$ and all the other entries to $0$?</p>
+  <p>Does the vector space of all everywhere-defined functions have entries?</p>
+  <h2>Functions have entries, I guess</h2>
+  <p>I think it is possible to think of functions as having entries, even though we don't write them in $\langle$angled brackets$\rangle$, like where you might expect entries to be.</p>
+  <p>A normal vector in $\mathbb{R}^3$ looks like $\vec{x}=\langle x_1,x_2,x_3\rangle$, where $x_k$ is a defined real number for every $k\in\{1,2,3\}$. These real-number entries are independent, and multiplication and addition act on these entries as you'd expect.</p>
+  <p>I would say an everywhere-defined function $\vec{f}$ has a entries $f(1)$, $f(2)$, $f(3)$, and so on: $f(k)$ for every real number $k$. Things to note:</p>
+  <ul>
+    <li>I've simply switched my notation for "entries": $x_1$ has become $f(1)$. That's fine.</li>
+    <li>There are infinitely many entries!</li>
+    <li>It's not even a tiny infinity, there's an entry for every real number. <a href="../somanyreals">There are so many reals</a>.</li>
+    <li>This feels like satisfactory reasoning for why the dot product for functions should be $\langle f,g\rangle =\int f(x)g(x)dx$; it's entry-wise multilication, and then addition!</li>
+  </ul>
+  <p>If we can see each of these inputs as entries, then I think it's obvious what the basis set of everywhere-defined functions should be.</p>
+  <p>Basis function number $k$, for every $k\in\mathbb{R}$, should be defined as $0$ for all inputs, except returning $1$ at input $k$.</p>
+  <p>$$\vec{b}_k(x)=\begin{cases}1& x=k\\0 & x\neq k\end{cases}$$</p>
+  <p>These can in fact be combined to make any function you like. For example, the function $x^2$ outputs $4$ at input $2$, and thus it was constructed with $4$ multiples of $\vec{b}_2$. It was also made with $9$ multiples of $\vec{b}_3$, and so on for every real number.</p>
+  <p>This satisfies the criteria for a basis vector:</p>
+  <ul>
+    <li>Any arbitrary function $\vec{f}$ is a combination of inputs, namely, $$f(1)\vec{b}_1+f(2)\vec{b}_2+\cdots=\sum_{k\in\mathbb{R}}f(k)\vec{b}_k$$</li>
+    <ul>
+      <li>I know it's tempting to see a summation done with a continuously iterating variable ($k\in\mathbb{R}$) and want to turn it into an integral. Don't. Integrals are different from summations, and we need a summation right now.</li>
+    </ul>
+    <li>Each of these basis vectors are independent from one another. None of them can be constructed by linearly combining the other bases. They each operate independently.</li>
+  </ul>
+  <p>We did it, we spanned an entire uncountably-infinite-dimensional vector space with a rule-friendly set of basis vectors.</p>
+  <p>I feel pretty confident in that set of basis functions, for the set of all functions. It feels like the obvious way to define a basis.</p>
+  <p>Now, for the rest of this article, I want to consider the vector space of all everywhere-analytic functions, because it pokes holes in the idea of linearly combining over infinite bases (specifically the case where you have to use infinite coordinates). I'm probably wrong about some things—this is an expression of my curiosity and my thought process!</p>
+  <h2>Power functions</h2>
+  <p>Everywhere-analytic functions are functions that can be represented by a convergent power series, i.e. functions that look like this:</p>
+  <p>$$f(x)=a_0+a_1x+a_2x^2+\cdots=\sum_{n=0}^\infty a_nx^n$$</p>
+  <p>It's clear what the choice of basis functions should be: $\{1,x,x^2,\cdots\}$. <a href="https://en.wikipedia.org/wiki/Basis_function#Monomial_basis_for_C%CF%89">Wikipedia</a> agrees. Power series are polynomials that can be as large as they want.</p>
+  <p>There are a few functions I really like that have power series. For example:</p>
+  <table noformat><tr>
+    <!-- <td>$\sin x$</td> <td>$=0$</td> <td>$+1x$</td> <td>$+0x^2$</td> <td>$-\frac16x^3$</td> <td>$+0x^4$</td> <td>$+\frac1{120}x^5$</td> <td>$+0x^6$</td> <td>$-\frac1{5040}x^7$</td> <td>$\cdots$</td> -->
+    <td>$\sin x$</td> <td>$=0$</td> <td>$+1x$</td> <td>$+0x^2$</td> <td>$-\frac16x^3$</td> <td>$+0x^4$</td> <td>$+\frac1{120}x^5$</td> <td>$+0x^6$</td> <td>$-\frac1{5040}x^7$</td> <td>$\cdots$</td>
+  </tr></table>
+  <p>In general, the $a_\cc n$ coefficient for $\sin x$ is $\frac{\sin\left(\frac\tau4\cc n\right)}{\cc n!}$.</p>
+  <p>Here's another function I like:</p>
+  <table noformat><tr>
+    <td>$\frac1{\cm 2}\sin\cm2x$</td> <td>$=0$</td> <td>$+1x$</td> <td>$+0x^2$</td> <td>$-\frac23x^3$</td> <td>$+0x^4$</td> <td>$+\frac4{30}x^5$</td> <td>$+0x^6$</td> <td>$-\frac4{315}x^7$</td> <td>$\cdots$</td>
+  </tr></table>
+  <p>I have increased the frequency of the sine wave by $\cm k=2$, and multiplied its amplitude by $\frac1{\cm k}=\frac12$. Our first sine function was $\cm k=1$, this one is $\cm k=2$. Each sine function has coefficients for $\cc n=0$, $\cc n=1$, and so on, each of which are being tacked onto a $x^\cc n$.</p>
+  <p>The $\cm k$<sup>th</sup> sine function, $\frac1{\cm k}\sin \cm kx$, has an $\cc n$<sup>th</sup> coefficient of:</p>
+  <p>$$\frac{\cm k^\cc n\sin\left(\frac\tau4\cc n\right)}{\cc n!\cm k}$$</p>
+  <p>Prove this if you feel like it. Or just trust me.</p>
+  <p>Here's a cute little grid, where each row is the $\cm{k}$<sup>th</sup> sine function, and each column the $\cc{n}$<sup>th</sup> term in its power series.</p>
+  <table noformat style="">
+<tr> <td></td><td></td><td>$\cc n=1:$</td> <td>$\cc n=2:$</td><td>$\cc n=3:$</td><td>$\cc n=4:$</td></tr>
+<tr><td>$\cm k=1:$</td><td>$\frac1{1}\sin(1x)$</td>	<td>$=\frac{\cm{1}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{1}}x$</td>	<td>$+\frac{\cm{1}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{1}}x^2$</td>	<td>$+\frac{\cm{1}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{1}}x^3$</td>	<td>$+\frac{\cm{1}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{1}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=2:$</td>	<td>$\frac1{2}\sin(2x)$</td>	<td>$=\frac{\cm{2}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{2}}x$</td>	<td>$+\frac{\cm{2}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{2}}x^2$</td>	<td>$+\frac{\cm{2}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{2}}x^3$</td>	<td>$+\frac{\cm{2}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{2}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=3:$</td>	<td>$\frac1{3}\sin(3x)$</td>	<td>$=\frac{\cm{3}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{3}}x$</td>	<td>$+\frac{\cm{3}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{3}}x^2$</td>	<td>$+\frac{\cm{3}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{3}}x^3$</td>	<td>$+\frac{\cm{3}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{3}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=4:$</td>	<td>$\frac1{4}\sin(4x)$</td>	<td>$=\frac{\cm{4}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{4}}x$</td>	<td>$+\frac{\cm{4}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{4}}x^2$</td>	<td>$+\frac{\cm{4}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{4}}x^3$</td>	<td>$+\frac{\cm{4}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{4}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=5:$</td>	<td>$\frac1{5}\sin(5x)$</td>	<td>$=\frac{\cm{5}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{5}}x$</td>	<td>$+\frac{\cm{5}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{5}}x^2$</td>	<td>$+\frac{\cm{5}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{5}}x^3$</td>	<td>$+\frac{\cm{5}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{5}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=6:$</td>	<td>$\frac1{6}\sin(6x)$</td>	<td>$=\frac{\cm{6}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{6}}x$</td>	<td>$+\frac{\cm{6}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{6}}x^2$</td>	<td>$+\frac{\cm{6}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{6}}x^3$</td>	<td>$+\frac{\cm{6}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{6}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=7:$</td>	<td>$\frac1{7}\sin(7x)$</td>	<td>$=\frac{\cm{7}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{7}}x$</td>	<td>$+\frac{\cm{7}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{7}}x^2$</td>	<td>$+\frac{\cm{7}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{7}}x^3$</td>	<td>$+\frac{\cm{7}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{7}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=8:$</td>	<td>$\frac1{8}\sin(8x)$</td>	<td>$=\frac{\cm{8}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{8}}x$</td>	<td>$+\frac{\cm{8}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{8}}x^2$</td>	<td>$+\frac{\cm{8}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{8}}x^3$</td>	<td>$+\frac{\cm{8}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{8}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=9:$</td>	<td>$\frac1{9}\sin(9x)$</td>	<td>$=\frac{\cm{9}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{9}}x$</td>	<td>$+\frac{\cm{9}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{9}}x^2$</td>	<td>$+\frac{\cm{9}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{9}}x^3$</td>	<td>$+\frac{\cm{9}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{9}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr><td>$\cm k=10:$</td>	<td>$\frac1{10}\sin(10x)$</td>	<td>$=\frac{\cm{10}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{10}}x$</td>	<td>$+\frac{\cm{10}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{10}}x^2$</td>	<td>$+\frac{\cm{10}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{10}}x^3$</td>	<td>$+\frac{\cm{10}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{10}}x^4$</td>	<td>$\cdots$</td>	</tr>
+  </table>
+  <p>Wow! Big table! I left out the $\cc{n}=0$ column because the coefficients are always $0$.</p>
+  <p>Each of these 10 sine functions are totally in our vector space of everywhere-analytic functions. So summing them together also yields a function in the vector space:</p>
+  <graph1 xmin="-10" xmax="10" ymin="-2" ymax="2" width="620" height="120" lambda="x => {let sum = 0; for (let i = 1; i <= 10; i++) sum += Math.sin(i*x)/i; return sum;}"></graph1>
+  <p>This function's coordinates relative to our basis of $\{1,x,x^2,\cdots\}$ just comes from adding up the coefficients in a column.</p>
+  <p>You probably see where this is going: just as we have allowed $\cc{n}$ to go up to infinity (which is why these are sines and not polynomials), let's let $\cm{k}$ go to infinity! Let's add up all the sines that fit this pattern! Shouldn't it still be an everywhere-analytic function?</p>
+  <graph1 xmin="-10" xmax="10" ymin="-2" ymax="2" width="620" height="120" lambda="x => ((Math.PI-0.5*x) % Math.PI + Math.PI) % Math.PI - Math.PI/2"></graph1>
+  <p>It's <em>not</em>! Look at this, it's discontinuous! What happened? <a href="https://en.wikipedia.org/wiki/Fourier_series">Joseph Fourier</a> happened.</p>
+  <p>The axioms of vector spaces never guaranteed that adding <em>infinite</em> element vectors would stay within the space. But it seemed to work so well for my proposed basis for the set of all everywhere-defined functions.</p>
+  <h2>What are the sawtooth function's coordinates over $\{1,x,x^2,\cdots\}$?</h2>
+  <p>If this function could be represented over our basis $\{1,x,x^2,\cdots\}$, the $1$ term would come from summing all coefficients in the $\cc n=0$ column, over all values $\cm k$. The $x$ term would be the sum of all coefficients in the $\cc n=1$ column, and so on.</p>
+  <p>I'm not sure what's going on, but I have some ideas:</p>
+  <table noformat style="">
+
+<tr>	<td>$\frac1{1}\sin(1x)$</td>	<td>$=\frac{\cm{1}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{1}}x$</td>	<td>$+\frac{\cm{1}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{1}}x^2$</td>	<td>$+\frac{\cm{1}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{1}}x^3$</td>	<td>$+\frac{\cm{1}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{1}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr>	<td>$\frac1{2}\sin(2x)$</td>	<td>$=\frac{\cm{2}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{2}}x$</td>	<td>$+\frac{\cm{2}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{2}}x^2$</td>	<td>$+\frac{\cm{2}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{2}}x^3$</td>	<td>$+\frac{\cm{2}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{2}}x^4$</td>	<td>$\cdots$</td>	</tr>
+<tr>	<td>$\frac1{3}\sin(3x)$</td>	<td>$=\frac{\cm{3}^\cc{1}\sin\left(\frac\tau4\cc{1}\right)}{\cc{1}!\cm{3}}x$</td>	<td>$+\frac{\cm{3}^\cc{2}\sin\left(\frac\tau4\cc{2}\right)}{\cc{2}!\cm{3}}x^2$</td>	<td>$+\frac{\cm{3}^\cc{3}\sin\left(\frac\tau4\cc{3}\right)}{\cc{3}!\cm{3}}x^3$</td>	<td>$+\frac{\cm{3}^\cc{4}\sin\left(\frac\tau4\cc{4}\right)}{\cc{4}!\cm{3}}x^4$</td>	<td>$\cdots$</td>	</tr>
+  </table>
+  <p>The coefficients in front of $1,x,x^2,\cdots$, the "coordinates" of our function, form infinite summations both horizontally and vertically.</p>
+  <p>We organized horizontally when we were making our sine functions. I'll just tell you that each horizontal sum of coefficients is absolutely convergent: when $\cm k$ is constant and summing over different $\cc n$, the $\cc n!\cm k$ in the denominator is stronger than the $\cm k^\cc n$ in the numerator.</p>
+  <p>When trying to find the coordinates of our sawtooth, we summed vertically, over different values of $\cm k$ as $\cc n$ remains constant. Now the $\cm k^\cc n$ in the numerator is stronger than the $\cc n!\cm k$ in the denominator; the coordinates are divergent.</p>
+  <p>Maybe these vertical sums being divergent is why organizing vertically makes something outside our vector space (even though the sawtooth function itself is convergent out of the summed sines).</p>
+  <p>Making a linear combination over $\{1,x,x^2,\cdots\}$ worked fine. Making a linear combination over $\{\sin x, \frac12 \sin 2x, \cdots\}$ messed things up. This runs counter to the expectation that a linear combination over linear-combinations-over-your-basis will result in a linear-combination-over-your-basis, i.e. something still in the vector space.</p>
+  <p>(p.s. The coordinates over which we linearly combined $\{\sin x, \frac12 \sin 2x, \cdots\}$ was $\{1,1,1,\cdots\}$. This is divergent. But I'm not convinced this is the problem; I could have scaled each sine function by $2^k$, and then combined to make a sawtooth 'using a convergent amount of coefficients', but still had this problem. I choose to scale my sines so that I wouldn't have to modify coefficients before summing vertically.)</p>
+  <h2>My takeaways</h2>
+  <ul>
+    <li>$\{1,x,x^2,\cdots\}$ is a fine basis for analytic functions. A canonical basis, even</li>
+    <li>Using infinite coordinates over such a basis is fine</li>
+    <ul>
+      <li>$a_0+a_1x+a_2x^2\cdots$ is okay when $\sum a$ is convergent (like in our sines): our power series is very happy.</li>
+      <li>Wait, but sometimes $\sum a$ is convergent but the created power function isn't (consider $a_n=2^{-n}$): I guess you have to find a radius of convergence, something like $\lim_{n\to\infty}\left|\frac{a_{n+1}}{a_n}\right|$ to figure out if it converges. Whatever</li>
+      <li>When individual coefficients $a_n$ are defined as a divergent sum, such as when I tried to make a sawtooth, it's definitely bad: we totally land outside our vector space, we can't even define our function in terms of coordinates over the basis</li>
+    </ul>
+  </ul>
+  <p>Feel like I'm missing something? Please enlighten me, I desparately want to learn more about this!</p>
+  <script src="../script.js"></script>
+</body>
+</html>
