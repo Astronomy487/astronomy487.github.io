@@ -45,8 +45,6 @@ h2 {
 h2::before, nav a:not([nobefore])::before {
 	content: '# ';
 	color: var(--2);
-	font-family: Tahoma, Verdana, sans-serif;
-	font-weight: bold;
 }
 
 p, li {

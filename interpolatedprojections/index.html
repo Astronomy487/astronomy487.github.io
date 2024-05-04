@@ -313,6 +313,11 @@ function projectionTween() {
 
 </script>
   <script>
+    let urlParams = {};
+    try {for (let field of window.location.search.substring(1).split("&").map(x => x.split("="))) urlParams[field[0]] = field[1]; } catch(e) {}
+    
+    
+    
     let dragging = null;
     let nav = document.querySelector("nav");
     let circleElement = document.querySelector("#circle");
@@ -358,12 +363,12 @@ function projectionTween() {
     function updateCirclePosition() {
         circlePosition.x = event.clientX - dragging.x;
         circlePosition.y = event.clientY - dragging.y;
-        if (circlePosition.y < 0) circlePosition.y = 0;
-        if (circlePosition.y > triangleHeight) circlePosition.y = triangleHeight;
+        if (!urlParams.beyond && circlePosition.y < 0) circlePosition.y = 0;
+        if (!urlParams.beyond && circlePosition.y > triangleHeight) circlePosition.y = triangleHeight;
         let minX = triangleWidth * 0.5 * (1 - circlePosition.y / triangleHeight);
         let maxX = triangleWidth * 0.5 * (1 + circlePosition.y / triangleHeight);
-        if (circlePosition.x < minX) circlePosition.x = minX;
-        if (circlePosition.x > maxX) circlePosition.x = maxX;
+        if (!urlParams.beyond && circlePosition.x < minX) circlePosition.x = minX;
+        if (!urlParams.beyond && circlePosition.x > maxX) circlePosition.x = maxX;
         circleElement.style.left = circlePosition.x + "px";
         circleElement.style.top = circlePosition.y + "px";
         doComponentAnalysisThing();
