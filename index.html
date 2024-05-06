@@ -10,7 +10,7 @@
       background-color: black;
       margin: 0;
       color: #ffffffdd;
-      font-family: Inter Display;
+      font-family: Inter;
       font-weight: 400;
     }
     
@@ -120,7 +120,7 @@
         <p>here's a list of everything i do that isn't music. it's mostly programs relating to anything that sparks joy (math, music, games). everything uses javascript because it is beloved</p>
         <h2>math thoughts</h2>
         <!-- <p><a>know-it-all</a> An experimental automated theorem prover for problems in first-order-logic, implemented in Java.</p> -->
-        <p><a href="calculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function machine" that my incredible Algebra 2 teacher always liked to talk about.</p>
+        <p><a href="modularcalculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function machine" that my incredible Algebra 2 teacher always liked to talk about.</p>
         <p indent>The principal idea is that data (numbers, vectors, functions, whatever) is carried through wires between the output of some modules and the input of other modules.</p>
         <p indent>Any transformation of data you could want to apply (operations, derivatives, linear regressions, list manipulation, random number generation) is handled by a module. Changes to inputs automatically cascade to their outputs. I think this is a very cool way to think about math!</p>
         <p><a href="interpolatedprojections">interpolated projections</a> There are too many map projections, so I made even more of them. This tool linearly interpolates between the outputs of different projections. Inspired by <a magenta href="https://www.jasondavies.com/maps/transition/">Jason Davies' map work</a> (heavily referenced his code) and <a magenta href="https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle">soil composition triangles</a>.</p>
@@ -128,17 +128,17 @@
         <p indent>The rulesets can be defined in the GUI to the left (which is pretty little unfinished). Transition rules are modular, in that they can contain a list of other rules. Neighbor rules count the number of neighbors and execute the rules inside if a number is matched; random chance rules randomly execute the rules inside; the become rules contain no rules, and these specify a cell to change its state.</p>
         <p indent>Sounds abstract? I think that's the point. I never named it or made it look special. The rule module property inputs are all text input, even when dropdowns or more custom parsing would be more appropriate.</p>
         <h2>mathy tools</h2>
-        <p><a href="balanceequation">balancing act</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
+        <p><a href="balancingact">balancing act</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
         <p><a href="lewis">Now who's lewis?</a> A (not very reliable) program to draw Lewis structures for simple molecules.</p>
-        <p><a href="complex">complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>
+        <!--<p><a href="complex">complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>-->
         <p><a href="mathtypesetter">Math typesetter</a> A scrappy tool using math.js to convert between text and TeX-ed up notation. At some point I'll stop being lazy and dress it up in nice CSS, and also make it output MathML. If you don't want to typeset TeX yourself, it's here for you.</p>
         <p><a href="mathbook">Math notebook</a> A workspace for working through math problems with a powerful calculator right in your notebook. Essentially a clone of <a magenta href="https://mathnotepad.com/">Math Notepad by Jos de Jong</a>, using math.js. I want to use localStorage to let users manage files without creating an account, like in de Jong's tool, because an account feels totally unecessary, right? Unfortunately, I'm really lazy and haven't done that yet, and my editor itself is "minimal" in a really bad way.</p>
         <h2>music tools</h2>
-        <p><a href="musiclab">Music lab</a> The beginnings of a little JavaScript library for handling musical notation, particularly surrounding chords and scales. I'm building it to be diatonically cognisant (e.g. E# is made of E#-G##-B#, not F-A-C). It can intelligently manage chord qualities and convert between text chord notation and different numerical representations. I eventually want to rebuild the functionality of the next two music projects in this list, <a magenta href="progression-o-tron">PROGRESSION-O-TRON</a> and <a magenta href="voiceleader">Voice Leader</a>, using this library.</p>
-        <p><a href="progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
+        <p><a href="musiclab">Music lab</a> The beginnings of a little JavaScript library for handling musical notation, particularly surrounding chords and scales. I'm building it to be diatonically cognisant (e.g. E# is made of E#-G##-B#, not F-A-C). It can intelligently manage chord qualities and convert between text chord notation and different numerical representations. I eventually want to rebuild the functionality of the next two music projects in this list, <a magenta href="musiclab/progression-o-tron">PROGRESSION-O-TRON</a> and <a magenta href="musiclab/voiceleader">Voice Leader</a>, using this library.</p>
+        <p><a href="musiclab/progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
         <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
         <p indent>Thanks, graph theory and jazz musicians!</p>
-        <p><a href="voiceleader">Voice Leader</a> An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!</p>
+        <p><a href="musiclab/voiceleader">Voice Leader</a> An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!</p>
         <p indent>It's pretty inefficient. On every frame, it generates all possible continuations (by filling each voice with chord members). It then runs a function on each possible continuation to determine how good of a transition is (with a little temperature — risky short-term decisions for the possibility of finding a better long-term result. I think this is standard for searching absurdly large possibility trees).</p>
         <p indent>Running this on 5 voices will take a while. Running this on 6 voices will grind your computer to a halt. Exponential trees are brutal!</p>
         <h2>game engines/'sandboxes'</h2>
@@ -155,7 +155,6 @@
         <p indent>Equipped with two word lists: one for <a magenta href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> and <a magenta href="https://gregcameron.com/infinite-wordle/">Infinite Wordle</a>.</p>
         <p indent>See also <a magenta href="https://astronomy487.github.io/wordlesolver/perfectle.cpp">the C++ version of this project</a> that is probably worse.</p>
         <p><a href="mcpacks">my resource packs</a> This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too.</p>
-        <p><a href="mccurves">mccurves</a> [incredibly unfinished!] The beginnings of a tool for making schematics for curvy shapes in voxels, specifically with Minecraft in mind. There's a lot of tools out there to generate circles, or particular shapes, but I want to make a general system for building all sorts of curves in a single place. Right now, you can admire a smooth stone prolate spheroid.</p>
         <h2>microgames</h2>
         <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
         <p><a href="emojigarden">EmojiGarden</a> A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>

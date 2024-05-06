@@ -9,9 +9,10 @@
     @import url('https://fonts.googleapis.com/css2?family=Shippori+Antique+B1&display=swap');
     
     :root {
-      --bg: #222;
-      --txt: #eee;
-      --data: #aaa;
+      --bg: black;
+      --txt: white;
+      --data: yellow;
+      --accent: cyan;
     }
     
     html {
@@ -892,7 +893,7 @@
       let info_container = make_element(left_half, "section", "", "info_container");
       make_element(info_container, "h1", "Flog", "super");
       make_element(info_container, "p", "This is my Flog (flag blog) where I keep photos of flags spotted in the wild. Anything <span style=\"color: var(--accent)\">highlighted</span> can be clicked on!");
-      make_element(info_container, "div", "<span>"+html_with_material("construction", "Website is under construction!")+"</span>", "attributes_list");
+      make_element(info_container, "div", "<span>"+html_with_material("construction", "[note May 6 2024] There are significant changes I planned to implement to my flog but have not yet! These changes concern navigation")+"</span>", "attributes_list");
       make_element(info_container, "p", "<a>See flag distribution</a>");
       info_container.querySelector("a").setAttribute("redirect_data", "other:distribution");
       //right half
