@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    main {
+      position: fixed;
+      z-index: 0;
+      left: 50%;
+      top: 50%;
+      user-select: none;
+    }
+    .conway {
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      transform-origin: bottom;
+    }
+    @keyframes enter {
+      from {opacity: 0; transform: scale(1.6180339, 0);}
+    }
+    @keyframes exit {
+      from {opacity: 1;}
+      to {opacity: 0; transform: scale(0.6180339, 0);}
+    }
+    
+    .conway img.flower {
+      position: absolute;
+      transform-origin: bottom;
+      animation: 5s imgsway infinite;
+    }
+    @keyframes imgsway {
+      from {rotate: -10deg;}
+      50% {rotate: 10deg;}
+      to {rotate: -10deg;}
+    }
+    
+    .conway img.shadow {
+      position: absolute;
+      transform-origin: bottom;
+      top: 0;
+      left: 0;
+      filter: brightness(0);
+      opacity: 0.5;
+      animation: 5s shadowimgsway infinite;
+    }
+    @keyframes shadowimgsway {
+      from {transform: scale(1.618, 0.618) skew(var(--angle)) rotate(-10deg);}
+      50% {transform: scale(1.618, 0.618) skew(var(--angle)) rotate(10deg);}
+      to {transform: scale(1.618, 0.618) skew(var(--angle)) rotate(-10deg);}
+    }
+    
+    body {
+      background-color: #004F31;
+      margin: 0;
+      font-family: Inter;
+      --angle: 0deg;
+      font-size: 4rem;
+    }
+  </style>
+  <title></title>
+</head>
+<body>
+  <main></main>
+  <script>
+    let maxDistance = 50;
+    let transitionTime = 1000;
+    let currentGeneration = 0;
+    let main = document.querySelector("main");
+    let existing = {};
+    let flowerTypes = 5;
+    let grassTypes = 5;
+    
+    repopulate(200);
+    function repopulate(n) {
+      for (let i = 0; i < n; i++) {
+        let [x,y] = [Math.round(gaussianRandom(0,10)), Math.round(gaussianRandom(0,10))];
+        let coord = x+","+y;
+        if (!existing[coord] && Math.abs(x)<maxDistance && Math.abs(y)<maxDistance) existing[coord] = {
+          x: x,
+          y: y
+        };
+        else i--;
+      }
+      makeElementsWhereNeeded();
+    }
+    
+    //make grass
+    let grassTaken = {};
+    for (let i = 0; i < 200; i++) {
+      let [x,y] = [gaussianRandom(0,10), gaussianRandom(0,10)];
+      let coord = Math.round(x)+","+Math.round(y);
+      if (grassTaken[coord]) i--;
+      else makeASwayingImage("grass"+Math.floor(Math.random()*grassTypes+1)+".png", x, y, 0.5, 0.5);
+      grassTaken[coord] = true;
+    }
+    
+    /* let screenX; let screenY;
+    let worldOffX = 0; let worldOffY = 0;
+    let worldOffXFrictioned = 0; let worldOffYFrictioned = 0;
+    window.onresize = function() {
+      screenX = window.innerWidth;
+      screenY = window.innerHeight;
+    };
+    window.onresize();
+    window.onmousemove = function(event) {
+      worldOffX = event.clientX - screenX*0.5;
+      worldOffY = event.clientY - screenY*0.5;
+    };
+    setInterval(function() {
+      worldOffXFrictioned = worldOffXFrictioned*0.98 + worldOffX * 0.1;
+      worldOffYFrictioned = worldOffYFrictioned*0.985 + worldOffY * 0.1;
+      main.style.left = screenX*0.5 - worldOffXFrictioned*0.1 + "px";
+      main.style.top = screenY*0.5 - worldOffYFrictioned*0.1 + "px";
+    }, 10); */
+    
+    
+    function gaussianRandom(a=0,t=1){var n=1-Math.random(),h=Math.random();return Math.sqrt(-2*Math.log(n))*Math.cos(2*Math.PI*h)*t+a}
+    function uniformRandom(a=0,b=1) {return Math.random()*(b-a)+a;}
+    
+    function makeElementsWhereNeeded() {
+      for (let coord of Object.keys(existing)) {
+        let [x,y] = coord.split(",").map(v => parseInt(v));
+        if (!existing[coord].element) {
+          existing[coord].element = makeASwayingImage("flower"+(currentGeneration%flowerTypes+1)+".png", x, y, 1, 1);
+        }
+      }
+    }
+    
+    function makeASwayingImage(texture, worldX, worldY, sizeX, sizeY) {
+      let div = main.appendChild(document.createElement("div"));
+      let animationDelay = uniformRandom(-5, 0) + "s";
+      
+      worldX += uniformRandom(-0.15, 0.15);
+      worldY += uniformRandom(-0.15, 0.15);
+      
+      let flower = div.appendChild(document.createElement("img"));
+      flower.src = texture;
+      flower.setAttribute("class", "flower");
+      flower.style.zIndex = Math.round(100*(maxDistance+worldY+sizeY));
+      flower.style.animationDelay = animationDelay;
+      flower.style.width = sizeX + "em";
+      flower.style.height = sizeY + "em";
+      
+      let shadow = div.appendChild(document.createElement("img"));
+      shadow.src = texture;
+      shadow.setAttribute("class", "shadow");
+      shadow.style.zIndex = Math.round(100*(maxDistance+worldY-1+sizeY));
+      shadow.style.animationDelay = animationDelay;
+      shadow.style.width = sizeX + "em";
+      shadow.style.height = sizeY + "em";
+      
+      div.setAttribute("class", "conway");
+      div.style.animation = transitionTime + "ms enter";
+      div.style.left = worldX + "em";
+      div.style.top = worldY + "em";
+      return div;
+    }
+    
+    function findAngle() {
+      let date = new Date();
+      let timeOfDay = date.getHours()/24 + date.getMinutes()/24/60;
+      document.body.style.setProperty("--angle", 50-timeOfDay*100+"deg");
+    }
+    findAngle();
+    setTimeout(findAngle, 1000*60);
+    
+    function generation() {
+      currentGeneration++;
+      let forConsideration = {};
+      let newExisting = {};
+      let elementsToKill = [];
+      for (let coord of Object.keys(existing)) {
+        let [x,y] = coord.split(",").map(v => parseInt(v));
+        for (let xx = x-1; xx <= x+1; xx++)
+          for (let yy = y-1; yy <= y+1; yy++)
+            forConsideration[xx+","+yy] = true;
+      }
+      for (let consideration of Object.keys(forConsideration)) {
+        let [x,y] = consideration.split(",").map(v => parseInt(v));
+        let neighbors = 0;
+        for (let xx = x-1; xx <= x+1; xx++)
+          for (let yy = y-1; yy <= y+1; yy++)
+            if (xx != x || yy != y)
+              if (existing[xx+","+yy])
+                neighbors++;
+        if (existing[x+","+y]) {
+          if (neighbors != 2 && neighbors != 3 && neighbors != 6) { //death
+            elementsToKill.push(existing[x+","+y].element);
+          } else {
+            newExisting[x+","+y] = existing[x+","+y];
+          } //continue existing
+        } else {
+          if (neighbors == 3 && Math.abs(x)<maxDistance && Math.abs(y)<maxDistance) { //birth
+            newExisting[x+","+y] = {
+              x: x,
+              y: y
+            }; //makeElementsWhereNeeded will handle this
+          } else {} //continue not-existing
+        }
+      }
+      for (let elementToKill of elementsToKill) {
+        if (!elementToKill) return;
+        elementToKill.style.opacity = "0";
+        elementToKill.style.animation = transitionTime + "ms exit";
+        setTimeout(function() {
+          elementToKill.remove();
+        }, transitionTime);
+      }
+      existing = newExisting;
+      makeElementsWhereNeeded();
+    }
+    
+    setInterval(generation, transitionTime*4);
+  </script>
+</body>
+</html>
