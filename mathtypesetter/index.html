@@ -22,6 +22,8 @@
         outputs[0].innerText = parsed.toTex();
         while (outputs[1].firstChild) outputs[1].firstChild.remove();
         outputs[1].appendChild(makeMath(parsed.toTex()));
+        while (outputs[2].firstChild) outputs[2].firstChild.remove();
+        outputs[2].appendChild(makeMath(parsed.toTex()));
       } catch(e) {}
     }
     

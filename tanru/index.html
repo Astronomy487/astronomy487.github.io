@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../bloglike.css">
+  <title>Lojban tanru are terrifyingly logically ambiguous</title>
+  <style>
+    body {
+      --accent-pink: #ef508a;
+      --accent-blue: #508aef;
+      --accent-green: #8aef50;
+      --accent: var(--accent-pink);
+    }
+    span[pink] {color: var(--accent-pink);}
+    span[blue] {color: var(--accent-blue);}
+    span[green] {color: var(--accent-green);}
+  </style>
+</head>
+<body>
+  <div style="display: none;">$\newcommand{\blue}[1]{{\color[rgb]{0.3137254901960784,0.5411764705882353,0.9372549019607843}\text{#1}}}$</div>
+  <div style="display: none;">$\newcommand{\green}[1]{{\color[rgb]{0.5411764705882353,0.9372549019607843,0.3137254901960784}\text{#1}}}$</div>
+  <div style="display: none;">$\newcommand{\pink}[1]{{\color[rgb]{0.9372549019607843,0.3137254901960784,0.5411764705882353}\text{#1}}}$</div>
+  <h1>Lojban tanru are terrifyingly logically ambiguous</h1>
+  <p summary>Lojban is a language engineered to communicate logically unambiguous statements in predicate logic. All meaning is expressed through predicates. Predicates can be combined in a few ways; the simplest combination is a tanru, made by simple juxtaposition. tanru have no consistent method for translation into predicate logic, unlike other forms of combined predicates. This is contrary to Lojban's philosophy, and it could have been avoided.</p>
+  <h2>How do predicates work</h2>
+  <p><a href="https://www.lojban.org">Lojban</a> is a <a href="https://en.wikipedia.org/wiki/Constructed_language">conlang</a> that is designed to express unambiguous statements in language. It follows the definition of <a href="https://en.wikipedia.org/wiki/Predicate_(mathematical_logic)">predicates/predications</a>, used in math to express statements.</p>
+  <p>In predicate logic (and thus in Lojban), semantic meaning is carried by <em>predicates</em> (an abstract word class that includes the semantic roles of nouns, verbs, and adjectives all together). For example, the predicate "mlatu" (gloss "cat") describes a state, action, or relationship among a set of arguments.</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ mlatu</td></tr>
+    <tr><td>English</td><td>$x_1$ is a cat</td></tr>
+    <tr><td>Logic</td><td>$\text{mlatu}(x_1)$<br>$x_1\in\text{mlatu}$</td></tr>
+  </table>
+  <p>Unary predicates are interchangable with the idea of sets.</p>
+  <p>You can use this predicate as a characteristic to describe a new argument. To use cat 'as a noun' instead of 'as a verb', you use the particle "lo" and then a predicate.</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>lo mlatu</td></tr>
+    <tr><td>English</td><td>something $x_1$ where $x_1$ is a cat<br>something that is a cat<br>a cat</td></tr>
+    <tr><td>Logic</td><td>$x_1$ such that $\text{mlatu}(x_1)$<br>$x_1$ such that $x_1\in\text{mlatu}$</td></tr>
+  </table>
+  <p>"lo [predicate]" translates to "something which is described by this predicate".</p>
+  <p>This consistent correspondence between predicates in Lojban and predicates in the logical sense makes Lojban really fun to use.</p>
+  <p>Predicates can also have more than one argmuent. The word for "social" has room for two arguments:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ jikca $x_2$</td></tr>
+    <tr><td>English</td><td>$x_1$ is social with $x_2$</td></tr>
+    <tr><td>Logic</td><td>$\text{jikca}(x_1, x_2)$</td></tr>
+  </table>
+  <p>The word for "someone social" would thus be "lo jikca"; something that satisfies the first argument of "jikca".</p>
+  <h2>Combining predicates logically</h2>
+  <p>When you use an adjective before a noun, like "<span blue>beautiful</span> <span green>cat</span>", you are asserting that something <span green>is a cat</span>, and also <span blue>is beautiful</span>. These corresponds to the Lojban predicates "<span blue>melbi</span>" and "<span green>mlatu</span>".</p>
+  <p>To turn a predicate 'into a noun', you throw "lo" before it. But how can you turn these two predicates into a noun together? It would be awfully convenient if there were a predicate that meant "$x_1$ is both <span blue>beautiful</span> and a <span green>cat</span>".</p>
+  <p>You could use a relative clause structure:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>lo <span green>mlatu</span> poi <span blue>melbi</span></td></tr>
+    <tr><td>English</td><td>a <span green>cat</span> that is <span blue>beautiful</span></td></tr>
+  </table>
+  <p>You could use "je" to create a composite predicate that literally means "$x_1$ is <span blue>beautiful</span> <em>and</em> $x_1$ is a cat":</p>
+  <!-- <aside>This "je" technique can have troubles with defining the later arguments of higher-order predicates, but it works totally fine when only considering the first argument.</aside> -->
+  <table langexample>
+    <tr><td>Lojban</td><td>lo <span blue>melbi</span> je <span green>mlatu</span></td></tr>
+    <tr><td>English</td><td>something that <span blue>is-beautiful</span> and <span green>is-a-cat</span></td></tr>
+    <tr><td>Logic</td><td>$x_1$ such that $\blue{melbi}(x_1)\land\green{mlatu}(x_1)$</td></tr>
+  </table>
+  <p>Both of these techniques correctly relay the information in a way that is unambiguously translatable into predicate logic. <em>That is why I find the implementation of tanru comically bad.</em></p>
+  <h2>tanru [Combining predicates illogically]</h2>
+  <p>tanru are a third technique for combining predicates. It involves literally juxtaposing the two predicates.</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span blue>melbi</span> <span green>mlatu</span></td></tr>
+    <tr><td>English</td><td>$x_1$ is a "melbi" type-of "mlatu"</td></tr>
+    <tr><td>Logic</td><td>$(\blue{melbi}\odot\green{mlatu})(x_1)$</td></tr>
+  </table>
+  <p>There is no good way to express this in predicate logic in terms of the components $\blue{melbi}$ and $\green{mlatu}$, like we could with the "poi" and "je" techniques. I use $\odot$ to represent this tanru composition, but this is logically meaningless. <em>There is not a consistent way to infer the meaning of a tanru.</em> .i lo jbobau cu na logji</p>
+  <p>In general, the meaning of a tanru comes primarily from its second component (for the place structure). "<span green>mlatu</span>" secretly has a second argument (gotcha!), so "<span blue>melbi</span> <span green>mlatu</span>" matches that:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span green>mlatu</span> $x_2$</td><td>$x_1$ <span blue>melbi</span> <span green>mlatu</span> $x_2$</td></tr>
+    <tr><td>English</td><td>$x_1$ is a <span green>cat</span> of breed $x_2$</td><td>$x_1$ is a <span blue>beautiful</span> <span green>cat</span> of breed $x_2$</td></tr>
+    <tr><td>Logic</td><td>$\green{mlatu}(x_1,x_2)$</td><td>$(\blue{melbi}\odot\green{mlatu})(x_1,x_2)$</td></tr>
+  </table>
+  <p>In this case, the interpretation for $\blue{P}\odot\green{Q}$ is:</p>
+  <p>$$(\blue{P}\odot\green{Q})(x_1,x_2)\qquad \equiv \qquad \green{Q}(x_1,x_2)\land \blue{P}(x_1)$$</p>
+  <p>The structure comes from $\green{Q}$, and the role of $\blue{P}$ is to also mention that $\blue{P}(x_1)$.</p>
+  <p>The tanru for "computer user" comes from "skami" (computer) and "pilno" (user). The structure of the tanru comes from "pilno":</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span green>pilno</span> $x_2$ $x_3$</td><td>$x_1$ <span blue>skami</span> <span green>pilno</span> $x_2$ $x_3$</td></tr>
+    <tr><td>English</td><td>$x_1$ <span green>uses</span> $x_2$ for $x_3$</td><td>$x_1$ <span green>uses</span> <span blue>computer</span> $x_2$ for $x_3$</td></tr>
+    <tr><td>Logic</td><td>$\green{pilno}(x_1,x_2)$</td><td>$(\blue{skami}\odot\green{pilno})(x_1,x_2,x_3)$</td></tr>
+  </table>
+  <p>Now, the meaning of $\blue{P}\odot\green{Q}$ is different!</p>
+  <p>$$(\blue{P}\odot\green{Q})(x_1,x_2,x_3)\qquad \equiv \qquad \green{Q}(x_1,x_2,x_3)\land \blue{P}(x_2)$$</p>
+  <p>Now $\blue{P}$ is adding qualifying information about $x_2$, not $x_1$!</p>
+  <p>The "je" and "poi" techniques allow you to consistently describe what you mean by composing $\blue{P}$ and $\green{Q}$. The tanru $\odot$ composition is inconsistent. The reference grammar itself addresses this:</p>
+  <blockquote cite="https://lojban.org/publications/cll/cll_v1.1_xhtml-section-chunks/section-lujvo.html" citename="The Complete Lojban Language, Section 4.5">
+    <q>The meaning of a tanru is usually at least partly ambiguous: skami pilno could refer to a computer that is a user, or to a user of computers. There are a variety of ways that the modifier component can be related to the modified component. &hellip; Making tanru is essentially a poetic or creative act, not a science.</q>
+  </blockquote>
+  <p>This ambiguity is hilariously incompatible with the goals of Lojban. This implementation of tanru is nonsensical and annoying and silly. But because this meaning comes from juxtaposition (no "poi" or "je" needed), this is the most common kind of composite selbri! It is all over the place!</p>
+  <h2>On lujvo</h2>
+  <p>Of the three techniques ("poi", "je", and tanru) for making composite predicates, the latter two enable the use of lujvo. lujvo are phonoaesthetically very cool.</p>
+  <p>Root predicates have shortened forms, and when a predicate composition is being made, the components can use their shortened forms instead of longer forms. <em>They are semantically identical.</em></p>
+  <p>For the "je" technique, this looks like:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span blue>barda</span> je <span green>bloti</span></td><td>$x_1$ <span blue>bar</span>jev<span green>lo'i</span></td></tr>
+    <tr><td>English</td><td>$x_1$ <span blue>is-big</span> and <span green>is-a-boat</span></td><td>$x_1$ is a <span blue>big</span> <span green>boat</span></td></tr>
+    <tr><td>Logic</td><td>$\blue{barda}(x_1)\land\green{bloti}(x_1)$</td><td>$\blue{barda}(x_1)\land\green{bloti}(x_1)$</td></tr>
+  </table>
+  <p>For tanru, this looks like:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span blue>barda</span> <span green>bloti</span></td><td>$x_1$ <span blue>bar</span><span green>lo'i</span></td></tr>
+    <tr><td>English</td><td>$x_1$ is a <span blue>big</span> kind-of <span green>boat</span></td><td>$x_1$ is a <span blue>big</span> kind-of <span green>boat</span></td></tr>
+    <tr><td>Logic</td><td>$(\blue{barda}\odot\green{bloti})(x_1)$</td><td>$(\blue{barda}\odot\green{bloti})(x_1)$</td></tr>
+  </table>
+  <h2>tanru interpretations</h2>
+  <p>Previously, I showed off how the tanru of <span blue>P</span> and <span green>Q</span> (symbolically $\blue{P}\odot\green{Q}$) has inconsistent interpretations. The essence of the tanru lies in <span green>Q</span>, which takes all the arguments, whereas <span blue>P</span> adds some extra information about one of the arguments.</p>
+  <ol>
+    <li><span blue>P</span> elaborates on $x_1$; $(\blue{P}\odot\green{Q})(x_1,\cdots)\equiv\green{Q}(x_1,\cdots)\land \blue{P}(x_1)$<ul>
+      <li><span blue>barda</span> <span green>bloti</span>; "<span blue>big</span> <span green>boat</span>"</li>
+      <li><span blue>melbi</span> <span green>mlatu</span>; "<span blue>beautiful</span> <span green>cat</span>"</li>
+    </ul></li>
+    <li><span blue>P</span> elaborates on $x_2$; $(\blue{P}\odot\green{Q})(x_1,\cdots)\equiv\green{Q}(x_1,\cdots)\land \blue{P}(x_2)$<ul>
+      <li><span blue>skami</span> <span green>pilno</span>; "<span blue>computer</span> <span green>user</span>"</li>
+    </ul></li>
+  </ol>
+  <p>In the first kind, it's easy enough to turn this into an expression using "je"; "$x_1$ <span blue>P</span> <span green>Q</span>" is the same as "$x_1$ <span blue>P</span> je <span green>Q</span>".</p>
+  <p>In the second kind, it's more difficult to get <span blue>P</span> to elaborate on $x_2$ in a "je" expresion. But I guess it's possible: "$x_1$ <span blue>skami</span> <span green>pilno</span> $x_2$" would be the same as "$x_1$ se ke <span blue>skami</span> je se <span green>pilno</span> ke'e $x_1$". What a mess. It uses the passive voice twice, nested within itself.</p>
+  <p>If anything, this points to the fact that arguments should've been better ordered. <span green>pilno</span> could have been defined as either of these:</p>
+  <table langexample>
+    <tr><td>order 1</td><td>$x_1$ <span green>pilno</span> $x_2$</td><td>user $x_1$ uses tool $x_2$</td></tr>
+    <tr><td>order 2</td><td>$x_1$ <span green>pilno<sub>2</sub></span> $x_2$</td><td>tool $x_1$ is used by user $x_2$</td></tr>
+  </table>
+  <p>But Lojban chose the first one because it matches the user-is-subject tool-is-object order we expect from English. But those are just semantic differences! Lojban didn't have to do it!</p>
+  <p>If Lojban used that second order, <span green>pilno<sub>2</sub></span>, then "$x_1$ <span blue>skami</span> <span green>pilno<sub>2</sub></span> $x_2$" ($x_1$ is a computer used by $x_2$) could simply be "$x_1$ <span blue>skami</span> je <span green>pilno</span>". The fact is that tanru more often want to qualify the tool in the <span green>pilno</span> relation ($x_2$ for <span green>pilno</span>, but conveniently $x_1$ for <span green>pilno<sub>2</sub></span>).</p>
+  <p>If we're dreaming here, if every predicate had more carefully ordered its arguments, tanru could have been made logically consistent by always having <span blue>P</span> elaborate on $x_1$.</p>
+  <p>I don't even want to get into the mess of tanru-of-tanru, which are non-associative and even less consistently interpreted.</p>
+  <p>$$\blue{P}\odot\green{Q}\odot\pink{R}=(\blue{P}\odot\green{Q})\odot\pink{R}\neq\blue{P}\odot(\green{Q}\odot\pink{R})$$</p>
+  <h2>tanru don't allow metaphor</h2>
+  <p>This is tangentially related.</p>
+  <p>The combination of "<span blue>jikca</span>" (social) and "<span green>toldi</span>" (butterfly), using the unambiguous "je", would be:</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>$x_1$ <span blue>jikca</span> <span green>toldi</span></td></tr>
+    <tr><td>English</td><td>$x_1$ <span blue>is-social</span> and <span green>is-a-butterfly</span><br>$x_1$ is a <span blue>social</span> <span green>butterfly</span></td></tr>
+    <tr><td>Logic</td><td>$\blue{jikca}(x_1)\land\green{toldi}(x_1)$</td></tr>
+  </table>
+  <p>The English phrase "social butterfly", however, is an idiom! If a Lojban user said in a real sentence "lo mi pendo cu <span blue>jikca</span> <span green>toldi</span>", "my friend is a <span blue>social</span> <span green>butterfly</span>", they would probably be using a metaphor to describe the personality of their friend.</p>
+  <p>According to the reference grammar, this is literally wrong.</p>
+  <p>You aren't supposed to use metaphors in Lojban. This is tantamount to lying: your friend is not a butterfly.</p>
+  <blockquote cite="https://lojban.org/publications/cll/cll_v1.1_xhtml-section-chunks/section-basic-tanru.html" citename="The Complete Lojban Language, Section 2.9">
+    <q>In general, however, the meaning of a tanru is determined by the literal meaning of its components, and not by any connotations or figurative meanings. Thus "sutra tavla" ("fast talker") would not necessarily imply any trickery or deception, unlike the English idiom, and a "jikca toldi" ("social butterfly") must always be an insect with large brightly-colored wings, of the family Lepidoptera.</q>
+  </blockquote>
+  <p>Had they said "lo mi pendo cu <span blue>jikca</span> je <span green>toldi</span>", this imposition would make sense. The interpretation in predicate logic is strict.</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>lo mi pendo cu <span blue>jikca</span> je <span green>toldi</span></td></tr>
+    <tr><td>English</td><td>my friend <span blue>is social</span> and <span green>is a butterfly</span></td></tr>
+    <tr><td>Logic</td><td>$\blue{jikca}(x)\land\green{toldi}(x)$ where $x$ is my friend</td></tr>
+  </table>
+  <p>But in a tanru, where $\blue{P}\odot\green{Q}$ is so ambiguously defined, what's so wrong about using $\blue{P}\odot\green{Q}$ to communicate a reasonable metaphor using the concept of a <span green>butterfly</span>?</p>
+  <table langexample>
+    <tr><td>Lojban</td><td>lo mi pendo cu <span blue>jikca</span> <span green>toldi</span></td></tr>
+    <tr><td>English</td><td>my friend is a <span blue>social</span> <span green>butterfly</span><br>*absolutely <em>cannot</em> be metaphorical<br>*friend is literally a butterfly</td></tr>
+    <tr><td>Logic</td><td>$(\blue{jikca}\odot\green{toldi})(x)$ where $x$ is my friend</td></tr>
+  </table>
+  <p>What would happen if I used the tanru "<span blue>jikca</span> <span green>toldi</span>" to communicate the English-originating metaphor of a <span blue>social</span> <span green>butterfly</span>? What will happen?</p>
+  <p>Will it be grammatically incorrect? No, the syntax is all sound.</p>
+  <p>Would the listener not understand what I'm saying?</p>
+  <p>Would I be lying?</p>
+  <script src="../makemath.js"></script>
+</body>
+</html>

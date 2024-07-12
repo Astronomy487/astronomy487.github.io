@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    body {
+      font-family: Inter Display, sans-serif;
+      font-weight: 600;
+      
+      background-color: #262730;
+      color: #c4c4c4;
+    }
+    
+    #human-show {
+      transform: translate(-50%, -80%);
+      color: #37C45D;
+    }
+    #computer-show {
+      transform: translate(-50%, 30%);
+      color: #376DE4;
+    }
+    
+    .show {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      font-size: 5rem;
+      letter-spacing: -2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">loading...</div>
+  <div id="game" style="display: none;">
+    <input id="human-input"> <button onclick="submit()">submit</button>
+    <div id="human-show" class="show"></div>
+    <div id="computer-show" class="show"></div>
+  </div>
+  <script>
+    let lastHumanGuess = null;
+    let lastComputerGuess = null;
+    
+    let wordBank;
+    let alreadyUsed;
+    let dims;
+    
+    function loaded() {
+      wordBank = Object.keys(wordVecs);
+      alreadyUsed = {};
+      dims = wordVecs["in"].length;
+      document.querySelector("#game").style.display = "block";
+      document.querySelector("#loading").style.display = "none";
+    }
+    
+    function findWordNearVector(v) {
+      let bestDistance = Infinity;
+      let bestWord = null;
+      for (let word of wordBank) if (!alreadyUsed[word]) {
+        let w = wordVecs[word];
+        let sqDist = 0;
+        for (let i = 0; i < dims; i++)
+          sqDist += (v[i] - w[i])**2;
+        if (sqDist < bestDistance)
+          [bestDistance, bestWord] = [sqDist, word];
+      }
+      return bestWord;
+    }
+    
+    function submit() {
+      let human = document.querySelector("#human-input").value.toLowerCase();
+      try {
+        if (wordVecs[human] == undefined) throw "Can't recognize that word";
+        if (alreadyUsed[human]) throw "";
+        
+        let computer;
+        if (lastHumanGuess) { //not first round
+          let idealVector = [];
+          let lastHumanVector = wordVecs[lastHumanGuess];
+          let lastComputerVector = wordVecs[lastComputerGuess];
+          for (let i = 0; i < dims; i++)
+            idealVector[i] = (lastHumanVector[i] + lastComputerVector[i]) * 0.5;
+          computer = findWordNearVector(idealVector);
+        } else { //first round
+          computer = wordBank[Math.floor(Math.random()*wordBank.length)];
+        }
+        console.log(human, computer);
+        lastHumanGuess = human;
+        lastComputerGuess = computer;
+        document.querySelector("#human-show").innerText = lastHumanGuess;
+        document.querySelector("#computer-show").innerText = lastComputerGuess;
+        document.querySelector("#human-input").value = "";
+        alreadyUsed[lastHumanGuess] = true;
+        alreadyUsed[lastComputerGuess] = true;
+        //also mark off anything that contains lastHumanGuess or lastComputerGuess
+        for (let string of [lastHumanGuess, lastComputerGuess]) {
+          for (let word of wordBank) if (word.includes(string)) alreadyUsed[word] = true;
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    }
+  </script>
+  <script src="wordvecs25000.js" async onload="loaded();"></script>
+</body>
+</html>

@@ -1,196 +1,353 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" href="favicon.png">
-  <link rel="preconnect" href="https://rsms.me/">
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-  <title>astro's catalogue ✦</title>
   <style>
-    body {
-      background-color: black;
-      margin: 0;
-      color: #ffffffdd;
-      font-family: Inter;
-      font-weight: 400;
-    }
+    @import url('https://fonts.cdnfonts.com/css/lucida-sans');
     
-    #canvas-container {
-      width: 100vw;
-      height: 100vh;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    body {
+      font-size: 1.125rem;
+      background-color: black;
+      font-family: 'Lucida Sans', sans-serif;
+      text-transform: lowercase;
+      color: white;
+      --accent: white;
+      overflow-x: hidden;
     }
     
     ::selection {
-      background: white;
+      background: var(--accent);
       color: black;
     }
     
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
-    
-    #main-container {
-      position: absolute;
-      width: min(64rem, 100vw);
-      z-index: 1;
-      text-align: right;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    
     main {
-      width: min(40rem, 100vw);
-      background-color: #00000066;
-      backdrop-filter: blur(8rem);
-      display: inline-block;
-      margin-top: 16rem;
-      text-align: left;
-      padding: 3rem;
-      padding-bottom: 16rem;
-      box-sizing: border-box;
-      box-shadow: -1rem 1rem 2rem #00000044;
-      font-size: 1.25rem;
-    }
-    
-    .album-art {
-      width: 100%;
-    }
-    
-    main section {
-      width: 15rem;
-      display: inline-block;
-      vertical-align: top;
-      margin: 1rem;
-      margin-left: 0;
-    }
-    
-    a {
-      color: cyan;
-      text-decoration: none;
-      font-weight: bold;
-      display: inline;
-      cursor: pointer;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    
-    p {
-      margin: 1.5rem 0;
-      line-height: 125%;
-    }
-    p[indent] {
-      margin-top: -0.75rem;
+      margin: 8rem auto;
+      width: 48rem;
     }
     
     h2 {
-      font-size: 2rem;
-      font-weight: bold;
-      color: yellow;
       margin: 0;
-      margin-top: 2rem;
-      margin-bottom: -0.5rem;
+      margin-top: 6rem;
+      font-size: 2rem;
     }
-    a[magenta] {
-      font-weight: inherit;
-      color: magenta;
+    h2 span {
+      background-color: var(--accent);
+      color: black;
+    }
+    h2 span::selection {
+      color: var(--accent);
+      background: white;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      line-height: 95%;
+      margin-top: 12rem;
+    }
+    
+    section {
+      display: inline-block;
+      width: calc(50% - 1.5rem);
+      vertical-align: top;
+      margin: 1rem 0;
+      margin-right: 1.5rem;
+    }
+    
+    p {
+      margin: 0;
+    }
+    
+    a {
+      color: var(--accent);
+    }
+    a.project {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    a:hover {
+      background-color: var(--accent);
+      color: black;
+    }
+    
+    .repo-link {
+      float: right;
+      --accent: gray;
+    }
+    
+    .album {
+      display: inline-block;
+      margin-right: 1.5rem;
     }
   </style>
-  <meta name="author" content="Astro @astronomy487">
-  <meta name="description" content="A catalogue of everything I have ever made">
+  <link rel="icon" href="favicon.png">
+  <title>astro's catalogue</title>
 </head>
 <body>
-  <div id="container">
-    <div id="main-container">
-      <main>
-        <div style="user-select: none; text-align: right;">
-          <div style="height: 0.125rem; width: 2rem; background-color: cyan; display: inline-block;">&nbsp;</div>
-          <div style="height: 0.125rem; width: 2rem; background-color: magenta; display: inline-block;">&nbsp;</div>
-          <div style="height: 0.125rem; width: 2rem; background-color: yellow; display: inline-block;">&nbsp;</div>
-        </div>
-        <h2 style="text-align: center; margin-bottom: 2rem;">hey !</h2>
-        <p>i'm astro. that's a pseudonym. if you're here for my music, you can catch it all for free on <a magenta href="https://astronomy487.bandcamp.com">bandcamp</a> with lossless downloads and many bonus tracks. i am also on <a magenta href="https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5">spotify</a>, <a magenta href="https://music.apple.com/gb/artist/astro/1468743818">apple music</a>, <a magenta href="https://www.youtube.com/astronomy487">youtube</a>, and the like. all of my original work is shared under the <a magenta href="https://creativecommons.org/licenses/by-nc-sa/4.0/">creative commons by-nc-sa 4.0 license</a></p>
-        <p>contact me on <a magenta href="https://twitter.com/astronomy487">twitter</a> or <a magenta href="https://discord.com/invite/ZnMsetP">join my discord</a> to get in touch</p>
-        <p>here's a list of everything i do that isn't music. it's mostly programs relating to anything that sparks joy (math, music, games). everything uses javascript because it is beloved</p>
-        <h2>math thoughts</h2>
-        <!-- <p><a>know-it-all</a> An experimental automated theorem prover for problems in first-order-logic, implemented in Java.</p> -->
-        <p><a href="modularcalculator">Modular Calculator</a> A visual calculator paradigm inspired by <a magenta href="https://vcvrack.com/">VCV Rack</a>, Blender shader nodes, my statistics class, and the idea of a "function machine" that my incredible Algebra 2 teacher always liked to talk about.</p>
-        <p indent>The principal idea is that data (numbers, vectors, functions, whatever) is carried through wires between the output of some modules and the input of other modules.</p>
-        <p indent>Any transformation of data you could want to apply (operations, derivatives, linear regressions, list manipulation, random number generation) is handled by a module. Changes to inputs automatically cascade to their outputs. I think this is a very cool way to think about math!</p>
-        <p><a href="interpolatedprojections">interpolated projections</a> There are too many map projections, so I made even more of them. This tool linearly interpolates between the outputs of different projections. Inspired by <a magenta href="https://www.jasondavies.com/maps/transition/">Jason Davies' map work</a> (heavily referenced his code) and <a magenta href="https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle">soil composition triangles</a>.</p>
-        <p><a href="automata">unnamed automata engine</a> A general engine for cellular automata inspired by Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>.</p>
-        <p indent>The rulesets can be defined in the GUI to the left (which is pretty little unfinished). Transition rules are modular, in that they can contain a list of other rules. Neighbor rules count the number of neighbors and execute the rules inside if a number is matched; random chance rules randomly execute the rules inside; the become rules contain no rules, and these specify a cell to change its state.</p>
-        <p indent>Sounds abstract? I think that's the point. I never named it or made it look special. The rule module property inputs are all text input, even when dropdowns or more custom parsing would be more appropriate.</p>
-        <h2>mathy tools</h2>
-        <p><a href="balancingact">balancing act</a> A little program to balance chemical equations and solve simple stoichiometry questions using some simple matrix operations. Sometimes it doesn't work!</p>
-        <p><a href="lewis">Now who's lewis?</a> A (not very reliable) program to draw Lewis structures for simple molecules.</p>
-        <!--<p><a href="complex">complex</a> An old (inefficient) library for complex numbers and a small Mandelbrot & Julia fractal viewer.</p>-->
-        <p><a href="mathtypesetter">Math typesetter</a> A scrappy tool using math.js to convert between text and TeX-ed up notation. At some point I'll stop being lazy and dress it up in nice CSS, and also make it output MathML. If you don't want to typeset TeX yourself, it's here for you.</p>
-        <p><a href="mathbook">Math notebook</a> A workspace for working through math problems with a powerful calculator right in your notebook. Essentially a clone of <a magenta href="https://mathnotepad.com/">Math Notepad by Jos de Jong</a>, using math.js. I want to use localStorage to let users manage files without creating an account, like in de Jong's tool, because an account feels totally unecessary, right? Unfortunately, I'm really lazy and haven't done that yet, and my editor itself is "minimal" in a really bad way.</p>
-        <h2>music tools</h2>
-        <p><a href="musiclab">Music lab</a> The beginnings of a little JavaScript library for handling musical notation, particularly surrounding chords and scales. I'm building it to be diatonically cognisant (e.g. E# is made of E#-G##-B#, not F-A-C). It can intelligently manage chord qualities and convert between text chord notation and different numerical representations. I eventually want to rebuild the functionality of the next two music projects in this list, <a magenta href="musiclab/progression-o-tron">PROGRESSION-O-TRON</a> and <a magenta href="musiclab/voiceleader">Voice Leader</a>, using this library.</p>
-        <p><a href="musiclab/progression-o-tron">PROGRESSION-O-TRON</a> A tool to continue chord progressions inspired by graph theory and fun jazz music.</p>
-        <p indent>In short, it reads a body of chord progression and records the distribution of chord transitions (measured in chord qualities and interval change in root note). It does this process for different window sizes (2 chords at a time, 3 chords at a time, etc.). It then uses that lookup table to probabilistically generate a next chord for your progression.</p>
-        <p indent>Thanks, graph theory and jazz musicians!</p>
-        <p><a href="musiclab/voiceleader">Voice Leader</a> An experimental tool to voice chords in accordance with all the funky rules they teach in AP Music Theory (no parallel fourths/fifths/octaves, don't cross voices, no fun allowed, etc.). Unpolished CSS!</p>
-        <p indent>It's pretty inefficient. On every frame, it generates all possible continuations (by filling each voice with chord members). It then runs a function on each possible continuation to determine how good of a transition is (with a little temperature — risky short-term decisions for the possibility of finding a better long-term result. I think this is standard for searching absurdly large possibility trees).</p>
-        <p indent>Running this on 5 voices will take a while. Running this on 6 voices will grind your computer to a halt. Exponential trees are brutal!</p>
-        <h2>game engines/'sandboxes'</h2>
-        <p><a href="chess">Chess Sandbox</a> A generalized and highly customizable chess engine.</p>
-        <p indent>By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a magenta href="https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js">shenanigans</a>. Anyone can create their own ruleset if they are willing to read a little documentation and make a little JavaScript file!</p>
-        <p indent>As a consequence of hard-coding none of the rules, it's very inefficient. The minimax search tree only searches 3 layers because any more takes too much time in most positions. Currently none of the code is asynchronous, which is bad!</p>
-        <p><a href="sokopond">the sokopond</a> A <a magenta href="https://en.wikipedia.org/wiki/Sokoban">sokoban</a> engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!</p>
-        <p indent>The engine is highly customizable and versatile to allow for many different tile types with unique behaviors. It can handle several player agents, several box weights, and custom reskins. Levels are strung together in a level pack that you can share with others by sending plaintext, or even putting its base64 into a URL query string.</p>
-        <p><a href="minesweeper">Minesweeper</a> A minesweeper engine that can play with alternative grids.</p>
-        <h2>game tools</h2>
-        <p><a href="acnhcurator">ACNH Curator</a> A tool to track museum progress in Animal Crossing: New Horizons.</p>
-        <p indent>Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price.</p>
-        <p><a href="wordlesolver">Wordle Solver</a> A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess.</p>
-        <p indent>Equipped with two word lists: one for <a magenta href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> and <a magenta href="https://gregcameron.com/infinite-wordle/">Infinite Wordle</a>.</p>
-        <p indent>See also <a magenta href="https://astronomy487.github.io/wordlesolver/perfectle.cpp">the C++ version of this project</a> that is probably worse.</p>
-        <p><a href="mcpacks">my resource packs</a> This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too.</p>
-        <h2>microgames</h2>
-        <p><a href="scrabble">Infinite Scrabble</a> A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures.</p>
-        <p><a href="emojigarden">EmojiGarden</a> A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass.</p>
-        <p indent>It is inspired by <a magenta href="https://hayday.com/">Hay Day</a>, Nicky Case's <a magenta href="https://ncase.me/sim">Emoji Simulator</a>, and <a magenta href="https://twitter.com/emoji_garden?lang=en">@emoji_garden on Twitter</a>.</p>
-        <p indent>My design goals include cuteness, minimalism, and positive vibes. I want the game to eventually be playable without looking at the about page, but currently nothing is explained in the game itself!</p>
-        <p><a href="abcde">abcde</a> A microgame based on a TikTok trend from January 2023.</p>
-        <p><a href="conwaysgameofsabotage">Conway's Game of Sabotage</a> A microgame idea where you are given a stable position in Conway's Game of Life and must sabotage it by adding new alive cells.</p>
-        <h2>other projects</h2>
-        <p><a href="flog">Flog</a> This is my Flog (flag blog) where I collect photos I've taken of flag displays! Photos include metadata about the flags they contain, which means I can do fun things with that data.</p>
-        <p><a href="niachang">Niachāng</a> A minimalist logical language I made for fun. Designed and built around the web experience — code automatically parses and translates text, the dictionary is all powered by JavaScript objects, syntax is inspired by ideas from functional programming, etc. Pronounced /njà tʃʰáŋ/</p>
-        <p><a href="coloranalysis">coloranalysis</a> An unfinished tool for investigating user-provided images under different color spaces. Currently, it counts your pixels into buckets in RGB color space and rotates them around. I think I've swapped my red and blue channels somewhere (lol).</p>
-        <p><a href="prettyaveragefont">A pretty average font</a> Imagine the quantum superposition of all your favorite fonts at once to produce a truly average font. This isn't really what superposition means. It runs slowly and looks really ugly: what's not to love?</p>
-        <h2>unremarkable</h2>
-        <p><a href="cyoae">/cyoae</a> A little text engine for Choose-Your-Own-Adventure games using markdown.</p>
-        <p><a href="hangman">/hangman</a> A hangman game.</p>
-        <p><a href="tictactoe">/tictactoe</a> A tic-tac-toe game.</p>
-        <p><a href="weather">/weather</a> A weather app using a free weather API, an icon pack, and a list of cities. The interesting part is a function that generates organic-sounding paragraph descriptions for a day's weather (e.g. "It will average a nice 74°F, with rain from 3&nbsp;AM to 11&nbsp;AM.").</p>
-        <p indent>Everybody makes weather apps. :/</p>
-      </main>
-    </div>
-  </div>
+  <main id="main">
+    <h1>My name is Astro<br>That is a pseudonym</h1>
+  </main>
   <script>
-    let params = {};
-    try {
-      for (let pair of window.location.search.substring(1).split("&").map(x => x.split("="))) params[pair[0]] = pair[1]
-    } catch(e) {}
-    if (Object.keys(params).includes("cube")) {
-      let script = document.body.appendChild(document.createElement("script"));
-      script.setAttribute("src", "cubescript.js");
-      script = document.body.appendChild(document.createElement("script"));
-      script.setAttribute("src", "https://github.com/processing/p5.js/releases/download/v1.5.0/p5.min.js");
-    } else {
-      document.querySelector("main").style.width = "48rem";
-      document.querySelector("main").style.marginTop = "12rem";
-      document.querySelector("#main-container").style.textAlign = "center";
+    //document.querySelector("h1").innerHTML = document.querySelector("h1").innerHTML.split("").map(x => "<span>"+x+"</span>").join("");
+    if (false) for (let c of document.querySelectorAll("h1 span")) {
+      c.style.transition = "0.1s";
+      c.onmouseenter = function() {
+        //this.style.color = "#" + [0,0,0,0,0,0].map(x => "0123456789abcdef".charAt(Math.floor(Math.random()*16))).join("");
+        this.style.color = ["cyan", "magenta", "yellow"][Math.floor(Math.random()*3)];
+      }
     }
+    
+    let i = 0;
+    for (let category of [
+      {
+        header: "I am a musician",
+        entries: [
+          {
+            url: "bandcamp",
+            name: "my Bandcamp",
+            text: "All of my music is available losslessly on Bandcamp for free under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\">Creative Commons BY-NC-SA 4.0 license</a>. I put a ton of bonus tracks up there. I'm also on <a href=\"https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5\">Spotify</a>, <a href=\"https://music.apple.com/gb/artist/astro/1468743818\">Apple Music</a>, <a href=\"https://www.youtube.com/astronomy487\">YouTube</a>, and the like, if you prefer that."
+          },
+          {
+            url: "musiclab",
+            name: "music lab",
+            isRepo: true,
+            text: "I wrote some JavaScript to analyze chords (including polychords, inversions) into JavaScript objects. I want to use this library to revamp older musical code projects of mine, the <a href=\"musiclab/progression-o-tron\">PROGRESSION-O-TRON</a> and the <a href=\"musiclab/voiceleader\">Voice Leader</a>."
+          }
+        ]
+      },
+      {
+        header: "I am a mathematician",
+        entries: [
+          {
+            url: "ccdsc",
+            name: "ccdsc.js",
+            isRepo: true,
+            text: "A library for handling commutative complex dual split-complex numbers, numbers with extra non-real components where <var>i</var><sup>2</sup>&nbsp;=&nbsp;-1, <var>j</var><sup>2</sup>&nbsp;=&nbsp;1, and <var>ϵ</var><sup>2</sup>&nbsp;=&nbsp;0."
+          },
+          {
+            url: "ringalgebras",
+            name: "Ring algebras",
+            text: "An exploration for creating matrix representations for any ring algebra that maintains ring structure, and then evaluating analytic functions on those matrices."
+          },
+          {
+            url: "modularcalculator",
+            name: "Modular Calculator",
+            isRepo: true,
+            text: "A visual calculator paradigm inspired by modular synthesizer software <a href=\"https://vcvrack.com/\">VCV Rack</a>, where calculations are performed by modules and passed along to subsequent modules."
+          },
+          {
+            url: "interpolatedprojections",
+            name: "Interpolated Projections",
+            text: "An adaptation of <a href=\"https://www.jasondavies.com/maps/transition/\">code by Jason Davies</a> to linearly interpolate between three map projections, using a custom input element inspired by <a href=\"https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle\">soil composition triangles</a>."
+          },
+          {
+            url: "automata",
+            isRepo: true,
+            name: "automata engine",
+            text: "An unnamed engine for cellular automata on a square grid. Cell instructions are customizable and modular."
+          }
+        ]
+      },
+      {
+        header: "I am a game creator",
+        entries: [
+          {
+            url: "chess",
+            name: "Chess Sandbox",
+            isRepo: true,
+            text: "A generalized and highly customizable chess engine. By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a href=\"https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js\">shenanigans</a>."
+          },
+          {
+            url: "sokopond",
+            name: "the sokopond",
+            isRepo: true,
+            text: "A sokoban engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!"
+          },
+          {
+            url: "minesweeper",
+            isRepo: true,
+            text: "A minesweeper engine that can play with alternative grids."
+          }
+        ]
+      },
+      {
+        header: "I am a microgamer",
+        entries: [
+          {
+            url: "infinitescrabble",
+            name: "Infinite Scrabble",
+            isRepo: true,
+            text: "A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures."
+          },
+          {
+            url: "emojigarden",
+            name: "EmojiGarden",
+            isRepo: true,
+            text: "A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass."
+          },
+          {
+            url: "2048crossword",
+            isRepo: true,
+            text: "2048 if it took place on a crossword puzzle."
+          },
+          {
+            url: "abcde",
+            name: "ABCDE",
+            isRepo: true,
+            text: "A microgame based on a TikTok trend from January 2023."
+          },
+          {
+            url: "flowers",
+            name: "flower field",
+            text: "A cute Conway's Game of Life (Highlife variant) engine in your browser, depicted as a field of flowers."
+          }
+        ]
+      },
+      /* {
+        header: "I am a conlanger",
+        entries: [
+          {
+            url: "niachang",
+            name: "Niachāng",
+            text: "An old language with Mandarin phonaesthetics based around the concept of language expressions as abstract syntax trees. The 'part of speech' (arity) a word takes on is demonstrated by its tone."
+          },
+          {
+            url: "tokiponido",
+            name: "Unnamed lojbo-tokiponido",
+            text: "A loglang inspired by the principles of Lojban and toki pona. It aims to formalize the ideas behind Niachāng into the language of first-order logic. The grammar is complete but undocumented. Currently it's literally just a parser, and the parser is a little broken."
+          }
+        ]
+      }, */
+      {
+        header: "I am a gamer",
+        entries: [
+          {
+            url: "acnhcurator",
+            name: "ACNH Curator",
+            isRepo: true,
+            text: "A tool to track museum progress in Animal Crossing: New Horizons. Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price."
+          },
+          {
+            url: "wordlesolver",
+            name: "Wordle Solver",
+            isRepo: true,
+            text: "A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess. Equipped with two word lists: one for <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a> and <a href=\"https://gregcameron.com/infinite-wordle/\">Infinite Wordle</a>."
+          },
+          {
+            url: "mcpacks",
+            name: "Minecraft packs",
+            isRepo: true,
+            text: "This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too."
+          },
+          {
+            url: "https://gamebanana.com/mods/516617",
+            name: "Electric Universe (Celeste Mod)",
+            text: "This is my first time making a Celeste mod. This is a set of four little maps I made in the spring/summer of 2023."
+          }
+        ]
+      },
+      /* {
+        header: "I'm a vexillologist",
+        entries: [
+          {
+            url: "flog",
+            name: "Flog",
+            text: "My Flog is where I keep photos of flags. I really need to redo its code to make navigation easier, and I really need to include more photos."
+          }
+        ]
+      }, */
+      {
+        header: "I am a scientist",
+        entries: [
+          {
+            url: "lewis",
+            name: "Now who's Lewis?",
+            isRepo: true,
+            text: "An experimental (read: not very reliable) program to draw Lewis structures for simple molecules."
+          },
+          {
+            url: "balancingact",
+            name: "Balancing act",
+            isRepo: true,
+            text: "A program to balance chemical equations and solve simple stoichiometry questions using some basic matrix operations."
+          }
+        ]
+      }
+    ]) {
+      i++;
+      let h2 = main.appendChild(document.createElement("h2")).appendChild(document.createElement("span"));
+      h2.innerText = category.header;
+      h2.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+      /* if (category.albums) for (let album of category.albums) {
+        let div = main.appendChild(document.createElement("div"));
+        div.setAttribute("class", "album");
+        div.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+        let a = div.appendChild(document.createElement("a"));
+        a.innerText = album.name;
+        a.href = "https://astronomy487.bandcamp.com/album/" + album.bc;
+        div.appendChild(document.createTextNode(" [" + album.year + "]"));
+        //div.appendChild(document.createElement("sup")).innerText = album.year;
+      }
+      if (category.albums) main.appendChild(document.createElement("br")); */
+      for (let entry of category.entries) {
+        let section = main.appendChild(document.createElement("section"));
+        let a = section.appendChild(document.createElement("a"));
+        a.href = entry.url;
+        a.setAttribute("class", "project");
+        a.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+        a.innerText = entry.name || ("/"+entry.url);
+        if (entry.isRepo) {
+          let a2 = section.appendChild(document.createElement("a"));
+          a2.setAttribute("class", "repo-link");
+          a2.href = "https://github.com/Astronomy487/" + entry.url;
+          a2.innerText = "see github repo";
+        }
+        section.appendChild(document.createElement("p")).innerHTML = entry.text;
+      }
+    }
+    
+    let p = main.appendChild(document.createElement("p"));
+    p.innerHTML = "I also have a few other random projects sitting around.<br>Expect less than nothing of them:";
+    p.style.marginTop = "6rem";
+    let table = main.appendChild(document.createElement("table"));
+    table.style.tableLayout = "fixed";
+    table.style.width = "80%";
+    let tr = table.appendChild(document.createElement("tr"));
+    let ul = [0,0].map(b => tr.appendChild(document.createElement("td")).appendChild(document.createElement("ul")));
+    [
+      "coloranalysis",
+      "conwaysgameofsabotage",
+      "cyoae",
+      "flog",
+      "grades",
+      "gravity",
+      "hangman",
+      "mathtypesetter",
+      "mccurves",
+      "prettyaveragefont",
+      "progression",
+      "tictactoe",
+      "weather",
+      "autoconlang",
+      "irrationalscales",
+      
+      
+      "autoconlang",
+      "bagelmorph",
+      "dissonancetheory",
+      "planckunits",
+      "somanyreals",
+      "tanru",
+      "tokimamemoriam",
+      "niachang",
+      "tokiponido",
+    ].sort().forEach(function(extraUrl, index) {
+      let a = ul[index%ul.length].appendChild(document.createElement("li")).appendChild(document.createElement("a"));
+      a.href = extraUrl;
+      a.innerText = "/" + extraUrl;
+    });
+    
+    for (let a of document.querySelectorAll("a"))
+      a.setAttribute("target", "_blank");
   </script>
+  <script src="https://smartquotes.js.org/src/smartquotes.js" onload="smartquotes();"></script>
 </body>
 </html>

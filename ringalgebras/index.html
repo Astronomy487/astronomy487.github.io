@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../bloglike.css">
+    <title>You can represent weird numbers with matrices</title>
+  </head>
+  <body style="--accent: #ed234d;">
+    <p style="display: none;">$\newcommand{\vv}[1]{\left[\begin{matrix}#1\end{matrix}\right]}$</p>
+    <h1>You can represent weird numbers with matrices</h1>
+    <p>Was nobody going to tell me that any ring algebra can just be represented by real-valued matrices? Was nobody going to tell me that you can analytically continue functions to a matrix domain?</p>
+    <p>A number can be whatever you want it to be. Is $i\in\mathbb C$ a number? Is $j\notin\mathbb R$ where $j^2=1$ a number? Are vectors numbers? </p>
+    <p>This page summarizes my exploration with finite-dimensional rings, their matrix representations for carrying out arithmetic, and analytic continuation over matrices.</p>
+    <p>I was originally interested in this because I wanted to unify the</p>
+    <ul>
+      <li>Complex numbers, $i^2 := -1$</li>
+      <li>Hyperbolic numbers, $j^2 := 1$</li>
+      <li>Dual numbers, $\epsilon^2 := 0$</li>
+    </ul>
+    <p>Such a number system is eight-dimensional with a spanning set $\{1,i,j,ij,\epsilon,i\epsilon,j\epsilon,ij\epsilon\}$. I did figure out arithmetic and functions over these numbers, and compiled them into a JavaScript library. I have since learned a lot more about representing algebras with matrices, and then doing math using those matrices. I would happily turn this into a new, more generalized JavaScript library, but math.js doesn’t support Jordan decomposition, which is a really crucial computation. </p>
+    <h2>Rings that are also vector spaces</h2>
+    <p>For the purposes of this page, a number is an element of an algebra, a ring that is also a vector space. This is any set with the binary operations addition and multiplication such that</p>
+    <ul>
+      <li>Addition is associative and commutative</li>
+      <li>There is an additive identity, $0$</li>
+      <li>Every element has an additive inverse</li>
+      <li>Multiplication is associate</li>
+      <li>There is a multiplicative identity, $1$ — except sometimes there isn’t, that’s fine</li>
+      <li>Multiplication is distributive over addition</li>
+      <li>Any scalar multiple of an element also is an element</li>
+    </ul>
+    <p>Finite-dimensional rings can be represented with a minimal spanning set $A$, the elements of which are called units, and a multiplication table on those units. </p>
+    <table format>
+      <tr>
+        <th></th>
+        <th>
+          $a_1$
+        </th>
+        <th>
+          $a_2$
+        </th>
+        <th>
+          $\cdots$
+        </th>
+        <th>
+          $a_n$
+        </th>
+      </tr>
+      <tr>
+        <th>
+          $a_1$
+        </th>
+        <td>
+          $v_{1,1}$
+        </td>
+        <td>
+          $v_{1,2}$
+        </td>
+        <td>
+          $\cdots$
+        </td>
+        <td>
+          $v_{1,n}$
+        </td>
+      </tr>
+      <tr>
+        <th>
+          $a_2$
+        </th>
+        <td>
+          $v_{2,1}$
+        </td>
+        <td>
+          $v_{2,2}$
+        </td>
+        <td>
+          $\cdots$
+        </td>
+        <td>
+          $v_{2,n}$
+        </td>
+      </tr>
+      <tr>
+        <th>
+          $\vdots$
+        </th>
+        <td>
+          $\vdots$
+        </td>
+        <td>
+          $\vdots$
+        </td>
+        <td>
+          $\ddots$
+        </td>
+        <td>
+          $\vdots$
+        </td>
+      </tr>
+      <tr>
+        <th>
+          $a_n$
+        </th>
+        <td>
+          $v_{n,1}$
+        </td>
+        <td>
+          $v_{n,2}$
+        </td>
+        <td>
+          $\cdots$
+        </td>
+        <td>
+          $v_{n,n}$
+        </td>
+      </tr>
+    </table>
+    <p>Here, every $v_{i,j}$ is the linear combination over $A$ that results from multiplying $a_ia_j$. </p>
+    <p>Not all possible multiplication tables are valid. It still must be checked that $\forall a,b,c\in A:(ab)c=a(bc)$. </p>
+    <p>From this multiplication table, all multiplication can be defined. If $x$ and $y$ are elements of the ring with components $x_i$ and $y_j$, </p>
+    <p>
+      $$xy=\left(\sum_ix_ia_i\right)\left(\sum_jy_ja_j\right)$$
+    </p>
+    <p>
+      $$=\sum_{i,j}x_iy_ja_ia_j=\sum_{i,j}x_iy_jv_{i,j}$$
+    </p>
+    <p>Examples of rings that are also vector spaces include</p>
+    <ul>
+      <li>
+        <p>The real numbers, $\mathbb R$
+        </p>
+      </li>
+      <li>
+        <p>The complex numbers, $\mathbb C = \{a+bi \mid a,b\in\mathbb R\}$, $i^2 := -1$
+        </p>
+      </li>
+      <li>
+        <p>The hyperbolic numbers, $\{a+bj \mid a,b\in\mathbb R\}$, $j^2 := 1$
+        </p>
+      </li>
+      <li>
+        <p>The dual numbers, $\{a+b\epsilon \mid a,b\in\mathbb R\}$, $\epsilon^2 := 0$
+        </p>
+      </li>
+      <li>
+        <p>The quaternions, $\mathbb H$
+        </p>
+      </li>
+    </ul>
+    <p>Two rings are isomorphic if there is a bidirectional mapping between sets such that, for any $a\leftrightarrow A, b\leftrightarrow B, c\leftrightarrow C$, </p>
+    <ul>
+      <li>
+        <p>
+          $a+b=c \equiv A+B=C$
+        </p>
+      </li>
+      <li>
+        <p>
+          $ab=c \equiv AB=C$
+        </p>
+      </li>
+    </ul>
+    <p>Since square matrices are a ring, it’s nice to find an isomorphism from a ring to a set of matrices to carry out arithmetic “on behalf” of that ring. Matrix calculators exist, even when calculates for a particular ring don’t exist.</p>
+    <h2>Matrix representation for a ring</h2>
+    <p>It proves useful at this point to treat elements of the ring as coordinate vectors over the basis $A$. </p>
+    <p>The left-hand multiplication by $x$ is a linear transformation on the coordinate vector $y$ to create the resulting coordinate vector $xy$. </p>
+    <p>
+      $$x(\alpha y)=\alpha xy$$
+    </p>
+    <p>
+      $$x(y+z)=xy+xz$$
+    </p>
+    <p>Thus left-hand multiplication by $x$ can be represented as a matrix. The element in row $n$ column $m$ of this matrix will be the coefficient multiplied by $y[m]$ to contribute to $(xy)[n]$. Recall how the $xy$ vector can be calculated: </p>
+    <p>
+      $$(xy)=\sum_{i,j}x_iy_j(v_{i,j})$$
+    </p>
+    <p>It’s possible to only calculate the $n$<sup>th</sup> component of the $xy$ vector.</p>
+    <p>
+      $$(xy)[n]=\sum_{i,j}x_iy_j(v_{i,j}[n])$$
+    </p>
+    <p>The part of this sum which comes from $y$’s $m$<sup>th</sup> component is</p>
+    <p>
+      $$\sum_{i}x_iy_m(v_{i,m}[n])$$
+    </p>
+    <p>In the case that $x$ is one of the units, $x=a_k$, then $x_k=1$, and $x_i=0$ for $i\neq k$. Then the sum simplifies to </p>
+    <p>
+      $$y_m(v_{k,m}[n])$$
+    </p>
+    <p>Thus $v_{k,m}[n]$ is the entry in row $n$ column $m$ of the matrix for left-hand multiplication by $a_k$. </p>
+    <p>This means every unit $a_k$ can be represented by the matrix formed from the $k$<sup>th</sup> row of the multiplication table, where each coordinate vector in the $k$<sup>th</sup> row becomes a column in the matrix. This is a valid matrix representation.</p>
+    <p>By flipping the multiplication table about the diagonal, left-hand matrix multiplication represents right-hand ring multiplication. By transposing each matrix representation, left-hand matrix multiplication again represents left-hand ring multiplication. This creates a different but also valid matrix multiplication system that is easier to create from a multiplication table. As demonstration, consider the quaternion ring:</p>
+    <table format>
+        <tr>
+          <th></th>
+          <th>
+            $1$
+          </th>
+          <th>
+            $\mathbf i$
+          </th>
+          <th>
+            $\mathbf j$
+          </th>
+          <th>
+            $\mathbf k$
+          </th>
+        </tr>
+        <tr>
+          <th>
+            $1$
+          </th>
+          <td>
+            $1$
+          </td>
+          <td>
+            $\mathbf i$
+          </td>
+          <td>
+            $\mathbf j$
+          </td>
+          <td>
+            $\mathbf k$
+          </td>
+        </tr>
+        <tr>
+          <th>
+            $\mathbf i$
+          </th>
+          <td>
+            $\mathbf i$
+          </td>
+          <td>
+            $-1$
+          </td>
+          <td>
+            $\mathbf k$
+          </td>
+          <td>
+            $-\mathbf j$
+          </td>
+        </tr>
+        <tr>
+          <th>
+            $\mathbf j$
+          </th>
+          <td>
+            $\mathbf j$
+          </td>
+          <td>
+            $-\mathbf k$
+          </td>
+          <td>
+            $-1$
+          </td>
+          <td>
+            $\mathbf i$
+          </td>
+        </tr>
+        <tr>
+          <th>
+            $\mathbf k$
+          </th>
+          <td>
+            $\mathbf k$
+          </td>
+          <td>
+            $\mathbf j$
+          </td>
+          <td>
+            $-\mathbf i$
+          </td>
+          <td>
+            $-1$
+          </td>
+        </tr>
+    </table>
+    <p>By the algorithm described above, the matrix representation for $\mathbf j$ will come from the column headed by $\mathbf j$. Each cell will become a coordinate set over the ordered basis $\{1,\mathbf i,\mathbf j,\mathbf k\}$: </p>
+    <p>
+      $$\mathbf j\leftrightarrow\vv{\mathbf j\\\mathbf k\\-1\\-\mathbf i}\leftrightarrow\vv{0&amp;0&amp;1&amp;0\\0&amp;0&amp;0&amp;1\\-1&amp;0&amp;0&amp;0\\0&amp;-1&amp;0&amp;0}$$
+    </p>
+    <p>It is even possible to choose a non-standard basis for the algebra and still arrive at a correct matrix representation. Demonstrated with the complex numbers,</p>
+    <table format style="table-layout: auto;">
+        <tr>
+          <th></th>
+          <th>
+            $6$
+          </th>
+          <th>
+            $3-5i$
+          </th>
+        </tr>
+        <tr>
+          <th>
+            $6$
+          </th>
+          <td>
+            $36\leftrightarrow\langle6,0\rangle$
+          </td>
+          <td>
+            $18-30i\leftrightarrow\langle0,6\rangle$
+          </td>
+        </tr>
+        <tr>
+          <th>
+            $3-5i$
+          </th>
+          <td>
+            $18-30i\leftrightarrow\langle0,6\rangle$
+          </td>
+          <td>
+            $-16-30i\leftrightarrow\langle-\frac{17}{3},6\rangle$
+          </td>
+        </tr>
+    </table>
+    <p>
+      $$6\leftrightarrow\vv{6&amp;0\\0&amp;6}~~~~~\to~~~~~1\leftrightarrow I_2$$
+    </p>
+    <p>
+      $$3-5i\leftrightarrow\vv{0&amp;6\\-\frac{17}3&amp;6}~~~~~\to~~~~~i\leftrightarrow\vv{\frac35&amp;-\frac65\\\frac{51}{45}&amp;-\frac35}$$
+    </p>
+    <h2>Matrices for a commutative ring</h2>
+    <p>If a ring is known to be commutative and include the real unit $a$, there’s another method to quickly find a matrix representation. </p>
+    <p>Suppose there is a non-real unit $z$ that, when cubed, can simplify. This means the basis set $A$ is $\{1, z, z^2\}$, and we seek a 3×3 matrix representation. We can find it by multiplying an arbitrary $a+bz+cz^2$ by $z$ and representing that linear transformation as left-hand matrix multiplication. If $z$’s simplification rule is $z^3:=\alpha+\beta z+\gamma z^2$, then </p>
+    <p>
+      $$zy=z(a+bz+cz^2)=az+bz^2+c(\alpha+\beta z+\gamma z^2)$$
+    </p>
+    <p>
+      $$\vv{(zy)[1]\\(zy)[2]\\(zy)[3]}=\vv{0&amp;0&amp;\alpha\\1&amp;0&amp;\beta\\0&amp;1&amp;\gamma}\vv{a\\b\\c}$$
+    </p>
+    <p>
+      $a$ and $b$, formerly coefficients for $1$ and $z$, are promoted to coefficients for $z$ and $z^2$. $c$ ends up distributed across $\alpha+\beta z+\gamma z^2$.
+    </p>
+    <p>If $z$ simplifies at the $n$<sup>th</sup> power, the matrix representation for $z$ will be an $n\times n$ matrix with $1$s below the diagonal and the simplification rule spelled out in the rightmost column. The real unit $1$ will always be represented by $I_n$.</p>
+    <p>If the basis includes elements other than $z$ and its powers, the commutative ring has another non-real unit that can’t be reached with $z$. Let’s call that unit $k$ and say it simplifies at the second power. Thus the spanning set is $A=\{1,k,z,zk,z^2,z^2k\}$, the “Cartesian product” of $\{1,z,z^2\}$ and $\{1,k\}$. From this, $k^2:=\delta+\epsilon k$ will be represented by </p>
+    <p>
+      $$k\leftrightarrow\vv{0&amp;\delta\\1&amp;\epsilon}$$
+    </p>
+    <p>To combine $k$ into the previous 3×3 system for representing the algebra with $z$, replace each cell of the 3×3 matrix with a 2×2 for this $k$ algebra. The matrices representing $1$, $z$, and $z^2$ dictate the outer structure of 6×6 matrices: </p>
+    <p>
+      $$\vv{1&amp;0&amp;0\\0&amp;1&amp;0\\0&amp;0&amp;1}\to\vv{I_2&amp;O_2&amp;O_2\\O_2&amp;I_2&amp;O_2\\O_2&amp;O_2&amp;I_2}$$
+    </p>
+    <p>
+      $$\vv{0&amp;0&amp;\alpha\\1&amp;0&amp;\beta\\0&amp;1&amp;\gamma}\to\vv{O_2&amp;O_2&amp;\vv{\alpha&amp;0\\0&amp;\alpha}\\I_2&amp;O_2&amp;\vv{\beta&amp;0\\0&amp;\beta}\\O_2&amp;I_2&amp;\vv{\gamma&amp;0\\0&amp;\gamma}}$$
+    </p>
+    <p>
+      $$\vv{0&amp;\alpha&amp;\alpha\gamma\\0&amp;\beta&amp;\alpha+\beta\gamma\\1&amp;\gamma&amp;\gamma^2+\beta}\to\vv{O_2&amp;\alpha I_2&amp;\alpha\gamma I_2\\O_2&amp;\beta I_2&amp;(\alpha+\beta\gamma)I_2\\I_2&amp;\gamma I_2&amp;(\gamma^2+\beta)I_2}$$
+    </p>
+    <p>From there, the little 2×2 matrices representing $1$ and $k$ can dictate the inner structure of these 6×6 matrices: </p>
+    <p>
+      $$I_2\to\vv{I_2&amp;O_2&amp;O_2\\O_2&amp;I_2&amp;O_2\\O_2&amp;O_2&amp;I_2}$$
+    </p>
+    <p>
+      $$\vv{0&amp;\delta\\1&amp;\epsilon}\to\vv{\vv{0&amp;\delta\\1&amp;\epsilon}&amp;O_2&amp;O_2\\O_2&amp;\vv{0&amp;\delta\\1&amp;\epsilon}&amp;O_2\\O_2&amp;O_2&amp;\vv{0&amp;\delta\\1&amp;\epsilon}}$$
+    </p>
+    <p>Removing the internal brackets, those are valid matrix representations for $\{1, z, z^2, k\}$. They can be multiplied to find $zk$ and $z^2k$. The left column of a matrix in this system will read out the components over the ordered basis $\{1,k,z,zk,z^2,z^2k\}$. </p>
+    <p>This algorithm also works if $\alpha,\beta,\gamma$ include terms of $k$, or if $\delta,\epsilon$ include terms of $z$ or $z^2$. Consider the system with $i^2:=-1$ and $n^2:=1+i+n$: </p>
+    <p>
+      $$i\leftrightarrow\vv{0&amp;-1\\1&amp;0}$$
+    </p>
+    <p>
+      $$n\leftrightarrow\vv{0&amp;i+i\\1&amp;1}$$
+    </p>
+    <p>Choosing $i$ for the outer structure and $n$ for the inner structure, </p>
+    <p>
+      $$i\leftrightarrow\vv{0&amp;-1\\1&amp;0}\to\vv{O_2&amp;-I_2\\I_2&amp;O_2}$$
+    </p>
+    <p>
+      $$n\leftrightarrow\vv{0&amp;i+i\\1&amp;1}\to\vv{O_2&amp;\vv{1&amp;-1\\1&amp;1}\\I_2&amp;I_2}$$
+    </p>
+    <p>The representation for $in=ni$ follows from multiplying these matrices. </p>
+    <h2>Caveat about coordinates</h2>
+    <p>Matrix arithmetic becomes a lot more forgiving if I declare here that coefficients/entries themselves can be complex. The fundamental theorem of algebra is too important to do otherwise.</p>
+    <p>From here on, the spanning set $A$ will not include $i$ or a product involving $i$ and another $a\in A$. The dimensionality of a ring will still refer to $|A|$. By this convention, the complex numbers are a one-dimensional ring over the basis $A=\{1\}$. If you find this nomenclature confusing, I’m sorry. </p>
+    <h2>Matrix functions</h2>
+    <p>Those two techniques create an isomorphic correspondence between any ring and a set of matrices, where addition and multiplication on the matrices corresponds exactly to those same actions on the ring. Thus investigating function evaluation on a matrix, defined through multiplication and addition, will prove useful for evaluating those functions on any ring.</p>
+    <p>An analytic function $f$ can be represented with the power series </p>
+    <p>
+      $$f(x)=\sum_{n=0}^\infty a_nx^n$$
+    </p>
+    <p>This function can totally accept matrix inputs.</p>
+    <p>If a matrix $M$ can be represented as $PDP^{-1}$, where $D$ is a diagonal matrix containing $M$’s eigenvalues $\lambda_1,\lambda_2,\cdots\lambda_k$, </p>
+    <p>
+      $$f(M)=\sum_{n=0}^\infty a_n\left(PDP^{-1}\right)^n=P\left(\sum_{n=0}^\infty a_nD^n\right)P^{-1}$$
+    </p>
+    <p>
+      $$=P\vv{\sum a_n\lambda_1^n\\&amp;\ddots\\&amp;&amp;\sum a_n\lambda_k^n}P^{-1}=P\vv{f(\lambda_1)\\&amp;\ddots\\&amp;&amp;f(\lambda_k)}P^{-1}$$
+    </p>
+    <p>Evaluating $f$ on $M$ is a matter of evaluating $f$ at the eigenvalues of $M$. </p>
+    <p>If $D$ must contain Jordan blocks larger than 1 ( $M$ is non-diagonalizable), and thus $D$ is not perfectly diagonal, use </p>
+    <p>
+      $$f\left(\vv{x&amp;1&amp;0&amp;\cdots&amp;0\\0&amp;\ddots&amp;\ddots&amp;\ddots&amp;\vdots\\\vdots&amp;\ddots&amp;\ddots&amp;\ddots&amp;0\\\vdots&amp;\ddots&amp;\ddots&amp;\ddots&amp;1\\0&amp;\cdots&amp;\cdots&amp;0&amp;x}\right)=\vv{\frac{f(x)}{0!}&amp;\frac{f&#39;(x)}{1!}&amp;\cdots &amp; \frac{f^{k-1}(x)}{(k-1)!} \\ 0 &amp; \ddots &amp; \ddots &amp; \vdots \\ \vdots &amp; \ddots &amp; \ddots &amp; \frac{f&#39;(x)}{1!} \\ 0 &amp; \cdots &amp; 0 &amp; \frac{f(x)}{0!} }$$ In MATLAB, this can be performed using $\mathrm{funm}(M,g)$, where $M$ is the matrix and $g(x, n)$ is the scalar function that returns the $n$<sup>th</sup> derivative of the desired function at $x$.</p>
+    <p>Because the function $f$ is defined as the limit of multiplication and addition, it maintains isomorphism between matrices and any non-matrix rings. That’s awesome. </p>
+    <h2>Analytic continuation without matrices</h2>
+    <p>The hyperbolic numbers and dual numbers, the only possible 2-dimensional algebras — other than the complex numbers, but I hear they’re 1-dimensional these days — have these standard matrix representations:</p>
+    <p>
+      $$a+bj\leftrightarrow\vv{a&amp;b\\b&amp;a}$$
+    </p>
+    <p>
+      $$a+b\epsilon\leftrightarrow\vv{a&amp;0\\b&amp;a}$$
+    </p>
+    <p>The hyperbolic numbers’ representation can be diagonalized. The dual numbers’ representation has a Jordan decomposition.</p>
+    <p>
+      $$\vv{a&amp;b\\b&amp;a} = \vv{1&amp;-1\\1&amp;1} \vv{a+b&amp;0\\0&amp;a-b} \vv{\frac12&amp;\frac12\\-\frac12&amp;\frac12}$$
+    </p>
+    <p>
+      $$\vv{a&amp;0\\b&amp;a} = \vv{0&amp;1\\b&amp;0} \vv{a&amp;1\\0&amp;a} \vv{0&amp;\frac1b\\1&amp;0}$$
+    </p>
+    <p>Applying an analytic function $f$, corresponds to evaluating $f$ on the diagonal matrix on the inside. </p>
+    <p>
+      $$\vv{1&amp;-1\\1&amp;1} \vv{f(a+b)&amp;0\\0&amp;f(a-b)} \vv{\frac12&amp;\frac12\\-\frac12&amp;\frac12}$$
+    </p>
+    <p>
+      $$\vv{0&amp;1\\b&amp;0} \vv{f(a)&amp;f&#39;(a)\\0&amp;f(a)} \vv{0&amp;\frac1b\\1&amp;0}$$
+    </p>
+    <p>These can be recombined into the matrices</p>
+    <p>
+      $$\vv{\frac{f(a+b)+f(a-b)}2&amp;\frac{f(a+b)-f(a-b)}2\\\frac{f(a+b)-f(a-b)}2&amp;\frac{f(a+b)+f(a-b)}2}$$
+    </p>
+    <p>
+      $$\vv{f(a)&amp;0\\bf&#39;(a)&amp;f(a)}$$
+    </p>
+    <p>which can be read as hyperbolic and dual numbers, no matrices involved.</p>
+    <p>
+      $$\boxed{\begin{array}{c}f(a+bj)=\frac{f(a+b)+f(a-b)}2\\+\frac{f(a+b)-f(a-b)}2j\end{array}}$$
+    </p>
+    <p>
+      $$\boxed{f(a+b\epsilon)=f(a)+bf&#39;(a)\epsilon}$$
+    </p>
+    <p>These formulae are really cool because they effortlessly extend analytic functions to the hyperbolic and dual domains. The one for dual numbers can also be discovered using a Taylor series centered at $a$. </p>
+    <p>
+      $$f(a+b\epsilon)=\sum_{n=0}^\infty\frac{f^n(a)}{n!}(b\epsilon)^n=f(a)+bf&#39;(a)\epsilon$$
+    </p>
+    <p>By the same process, but for quaternions,</p>
+    <p>
+      $$\boxed{\begin{array}{l} z=i\sqrt{a^2+b^2+c^2} \\ x = f(a+z) \\ y = f(a-z) \\ f(a+b\mathbf i+c\mathbf j+d\mathbf k)=\frac{x+y}2+\frac{x-y}{2z}(b\mathbf i+c\mathbf j+d\mathbf k) \end{array}}$$
+    </p>
+    <p>Be careful not to confuse the imaginary unit $i$ with the quaternion unit $\mathbf i\in A$. </p>
+    <p>Using this process on the real-valued matrix representation for the complex numbers does not work because such a matrix has complex eigenvalues.</p>
+    <h2>Different matrix representations still correspond to the same arithmetic</h2>
+    <p>The hypercomplex numbers can be represented by any matrix representation of the form</p>
+    <p>
+      $$a+bj\leftrightarrow aI_2+\frac{b}{\sqrt{x^2+y^2}}\vv{x&amp;y\\y&amp;-x}$$
+    </p>
+    <p>It can be verified that squaring the $j$ matrix always produces $I_2$. I’m going to pick the matrix representation </p>
+    <p>
+      $$a+bj\leftrightarrow\vv{a+b&amp;0\\0&amp;a-b}$$
+    </p>
+    <p>because it can also be represented by a different basis:</p>
+    <p>
+      $$A=\left\{\alpha=\vv{1&amp;0\\0&amp;0},\beta=\vv{0&amp;0\\0&amp;1}\right\}$$
+    </p>
+    <p>This corresponds to this multiplication table, where each component acts independently.</p>
+    <table format>
+      <thead>
+        <tr>
+          <th></th>
+          <th>
+            $\alpha$
+          </th>
+          <th>
+            $\beta$
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>
+            $\alpha$
+          </th>
+          <td>
+            $\alpha$
+          </td>
+          <td>
+            $0$
+          </td>
+        </tr>
+        <tr>
+          <th>
+            $\beta$
+          </th>
+          <td>
+            $0$
+          </td>
+          <td>
+            $\beta$
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>The number called $1$, represented by $I_2$, now is expressed as $\alpha+\beta$. Likewise, $j$ is now $\alpha-\beta$. Going backwards, $\alpha=\frac12+\frac12j$ and $\beta=\frac12-\frac12j$. </p>
+    <p>I propose that evaluating an analytic function on the $\left\{\alpha,\beta\right\}$ system is equivalent to evaluating an analytic function on the $\left\{1,j\right\}$ system as long as you correctly change your basis. </p>
+    <p>
+      $$f(a+bj)=f(a(\alpha+\beta)+b(\alpha-\beta))=f((a+b)\alpha+(a-b)\beta)$$
+    </p>
+    <p>
+      $$\leftrightarrow f\left(\vv{a+b&amp;0\\0&amp;a-b}\right)=\vv{f(a+b)&amp;0\\0&amp;f(a-b)}$$
+    </p>
+    <p>
+      $$\leftrightarrow f(a+b)\alpha + f(a+b)\beta$$
+    </p>
+    <p>
+      $$=\frac{f(a+b)+f(a-b)}2+\frac{f(a+b)-f(a-b)}2j$$
+    </p>
+    <p>It’s the equation from before! It worked out!</p>
+    <p>Weirdly, $\{\alpha,\beta\}$ seems like a more natural basis for this number space because $f(a\alpha+b\beta)=f(a)\alpha+f(b)\beta$. It's still a ring with unity, even though $1\notin A$.</p>
+    <h2>Ways to define magnitudes</h2>
+    <p>The magnitude of a number can be defined in a lot of ways. One way that makes sense to me is to take the $n$th root of the absolute value of the determinant of its $n\times n$ matrix representation. </p>
+    <p>
+      $$\left|X_{n\times n}\right|:=\sqrt[n]{\left|\det X\right|}$$
+    </p>
+    <p>This results in the following magnitude definitions, which make intuitive sense to me:</p>
+    <p>
+      $$\left|a+bi\right|=\sqrt{a^2+b^2}$$
+    </p>
+    <p>
+      $$\left|a+bj\right|=\sqrt{\left|a^2-b^2\right|}$$
+    </p>
+    <p>
+      $$\left|a+b\epsilon\right|=\sqrt{\left|a^2\right|}=|a|$$
+    </p>
+    <p>This magnitude is the geometric mean of the eigenvalues. When this magnitude is 0, the given number is uninvertible. This definition can be verified to obey most of the typical axioms for a magnitude:</p>
+    <ul>
+      <li>
+        <p>
+          $|x|\geq 0$
+        </p>
+      </li>
+      <li>
+        <p>
+          $|x|=0$ iff $x$ “ $=$” $0$
+        </p>
+      </li>
+      <li>
+        <p>
+          $|kx|=k|x|$ for $k\in\mathbb R^+$
+        </p>
+      </li>
+      <li>
+        <p>
+          $|x+y|\leq |x|+|y|$
+        </p>
+      </li>
+      <li>
+        <p>
+          $|xy|\leq |x||y|$ (This definition actually ensures these are equal)
+        </p>
+      </li>
+    </ul>
+    <p>It however does not obey $|x+y|\leq |x|+|y|$. </p>
+    <p>
+      $$\left|\vv{0&amp;0\\0&amp;1}+\vv{1&amp;0\\0&amp;0}\right|=1\not\leq\left|\vv{0&amp;0\\0&amp;1}\right|+\left|\vv{1&amp;0\\0&amp;0}\right|=0$$
+    </p>
+    <p>So perhaps it’s better to instead use a more typical matrix norm.</p>
+    <ul>
+      <li>
+        The maximum sum of absolute entries over a column
+        <ul>
+          <li>
+              $\left|a+bi\right|=|a|+|b|$, Manhattan style
+          </li>
+          <li>
+              $\left|a+bj\right|=|a|+|b|$
+          </li>
+          <li>
+              $\left|a+b\epsilon\right|=|a|$
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>The maximum sum of absolute entries over a row</p>
+        <ul>
+          <li>
+            Produces the same formulae as above
+          </li>
+        </ul>
+      </li>
+      <li>
+        The Euclidean norm, scaled by $\frac1{\sqrt n}$
+        <ul>
+          <li>
+              $\left|a+bi\right|=\sqrt{|a|^2+|b|^2}$
+          </li>
+          <li>
+              $\left|a+bj\right|=\sqrt{|a|^2+|b|^2}$
+          </li>
+          <li>
+              $\left|a+b\epsilon\right|=\sqrt{|a|^2+\frac12|b|^2}$
+          </li>
+          <li>
+              $\left|a+bj+c\epsilon+dj\epsilon\right|=\sqrt{|a|^2+|b|^2+\frac12|c|^2+\frac12|d|^2}$
+          </li>
+          <li>
+              $\left|I_n\right|=1$
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p>But these typical norms are also unsatisfactory because the same number can have several valid matrix representations, each with different magnitudes.</p>
+    <script src="../makemath.js"></script>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <style>
+    :root {
+      --black: #001;
+      --white: #eee;
+      --0: #1FDFFC;
+      --1: #FFCB47;
+      --2: #E7288E;
+      --3: #4AD727;
+      --square: 3rem;
+      --squareeee: 4.854rem;
+    }
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      user-select: none;
+      font-family: InterDisplay;
+      font-weight: 600;
+    }
+    main {
+      height: var(--squareeee);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .octave {
+      position: relative;
+      margin: 1rem auto;
+    }
+    .note {
+      background-color: var(--white);
+      color: var(--black);
+      width: var(--square);
+      height: var(--squareeee);
+      display: inline-block;
+      position: absolute;
+      text-align: center;
+      font-size: 1.75rem;
+      border: solid 0.125rem var(--black);
+      box-sizing: border-box;
+    }
+    .note cents {
+      font-size: 0.75rem;
+      display: block;
+    }
+    .note power {
+      font-size: 0.75rem;
+      display: block;
+    }
+    .note[active="true"] {
+      background-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <input type="text" id="input-ratio" oninput="makeScale();">
+    <input type="range" min="2" max="16" id="input-times" oninput="makeScale();">
+  </nav>
+  <main></main>
+  <script src="http://unpkg.com/tone"></script>
+  <script>
+    let noteNames = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+    let keyboardOrder = [
+      "zxcvbnm,./".split(""),
+      "asdfghjkl;'".split(""),
+      "qwertyuiop[]".split(""),
+      "123456789-=".split("")
+    ];
+    function noteName(n) { //n in semitones
+      let mainName = noteNames[Math.round(n+12)%12];
+      let centsOff = Math.round((n - Math.round(n))*100);
+      if (!centsOff) return [mainName, ""];
+      centsOff = centsOff.toString();
+      if (centsOff != "0" && centsOff.length == 1) centsOff = "0"+centsOff;
+      if (centsOff.startsWith("-")) return [mainName, "-" + (-centsOff) + "c"];
+      return [mainName, " +" + centsOff + "c"];
+    }
+    
+    let main = document.querySelector("main");
+    
+    let synth = new Tone.PolySynth().toDestination();
+    let playedNotes = {};
+    let lastPlayedNote = null;
+    function play(hz) {
+      if (playedNotes[hz]) return;
+      playedNotes[hz] = true;
+      synth.triggerAttack(hz, Tone.now());
+    }
+    function stop(hz) {
+      if (playedNotes[hz]) delete playedNotes[hz];
+      synth.triggerRelease(hz, Tone.now());
+    }
+    function stopAll() {
+      for (let hz of Object.keys(playedNotes))
+        synth.triggerRelease(parseFloat(hz), Tone.now());
+      playedNotes = {};
+    }
+    
+    let scale = [];
+    
+    document.onmouseup = function() {
+      if (!lastPlayedNote) return;
+      lastPlayedNote.element.setAttribute("active", "false");
+      stop(lastPlayedNote.hz);
+      lastPlayedNote = null;
+    }
+    document.querySelector("#input-ratio").value = "1.6180339";
+    document.querySelector("#input-times").value = 6;
+    makeScale();
+    function makeScale(times = parseInt(document.querySelector("#input-times").value), basePitch = 3, octaves = 4) {
+      let ratio;
+      try {
+        ratio = math.evaluate(document.querySelector("#input-ratio").value);
+        if (Number.isNaN(ratio)) throw "";
+        while (ratio > 2) ratio /= 2;
+        if (ratio <= 1.00001) throw "";
+      } catch(e) {
+        ratio = 1.5;
+      }
+      stopAll();
+      while (main.firstChild) main.firstChild.remove();
+      let pitch = 1/ratio;
+      scale = [];
+      for (let i = 0; i < times; i++) {
+        pitch *= ratio;
+        while (pitch > 2) pitch /= 2;
+        let semitones = Math.log(pitch)*12/Math.LN2;
+        for (let octave = 0; octave < octaves; octave++) {
+          scale.push({
+            power: i,
+            octave: octave,
+            pitch: pitch*(2**octave),
+            hz: 110*pitch*(2**octave)*(2**(basePitch/12)),
+            semitones: semitones+12*octave,
+            name: noteName(semitones+basePitch)
+          });
+        }
+      }
+      scale = scale.sort((a,b) => a.pitch - b.pitch);
+      for (let octave = 0; octave < octaves; octave++) {
+        let i = 0;
+        for (let note of scale) if (note.octave == octave) {
+          note.keypress = keyboardOrder[octave][i];
+          i++;
+        }
+      }
+      let row
+      for (let note of scale) {
+        if (note.power == 0) {
+          row = main.appendChild(document.createElement("div"));
+          row.setAttribute("class", "octave");
+          row.style.top = "calc(" + (octaves - note.octave-1) + " * var(--squareeee))";
+          row.style.setProperty("--accent", "var(--"+note.octave+")");
+        }
+        note.element = row.appendChild(document.createElement("div"));
+        note.element.setAttribute("class", "note");
+        note.element.innerHTML = note.name[0].replaceAll("#", "<sup>#</sup>");
+        note.element.appendChild(document.createElement("cents")).innerText = note.name[1];
+        note.element.appendChild(document.createElement("power")).innerHTML = "r<sup>" + note.power + "</sup>";
+        note.element.onmousedown = function() {
+          lastPlayedNote = note;
+          play(note.hz);
+          note.element.setAttribute("active", "true");
+        }
+        note.element.onmouseup = function() {
+          stop(note.hz);
+          note.element.setAttribute("active", "false");
+        }
+      }
+      let emptySpacesToDistribute = 0.5 * times;
+      main.style.width = "calc(" + (times + emptySpacesToDistribute) + " * var(--square))";
+      main.style.height = "calc(" + octaves + " * var(--squareeee))";
+      let semitoneSpaceToFill = scale[times-1].semitones;
+      //ith element will have left: i + semitones * emptySpacesToDistribut / semitoneSpaceToFill
+      for (let i = 0; i < scale.length; i++)
+        scale[i].element.style.left = "calc(" + (i%times + scale[i%times].semitones*emptySpacesToDistribute/semitoneSpaceToFill) + " * var(--square))";
+      console.log(scale);
+      console.log(semitoneSpaceToFill);
+    }
+    
+    document.onkeydown = function(event) {
+      try {
+        for (let note of scale) if (note.keypress == event.key) note.element.onmousedown();
+      } catch(e) {
+      }
+    }
+    document.onkeyup = function(event) {
+      try {
+        for (let note of scale) if (note.keypress == event.key) note.element.onmouseup();
+      } catch(e) {
+      }
+    }
+  </script>
+</body>
+</html>

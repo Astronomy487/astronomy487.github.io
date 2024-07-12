@@ -65,7 +65,7 @@
 <body>
   <main></main>
   <script>
-    let maxDistance = 50;
+    let maxDistance = 20;
     let transitionTime = 1000;
     let currentGeneration = 0;
     let main = document.querySelector("main");
@@ -73,10 +73,10 @@
     let flowerTypes = 5;
     let grassTypes = 5;
     
-    repopulate(200);
+    repopulate(180);
     function repopulate(n) {
       for (let i = 0; i < n; i++) {
-        let [x,y] = [Math.round(gaussianRandom(0,10)), Math.round(gaussianRandom(0,10))];
+        let [x,y] = [Math.round(gaussianRandom(0,7)), Math.round(gaussianRandom(0,7))];
         let coord = x+","+y;
         if (!existing[coord] && Math.abs(x)<maxDistance && Math.abs(y)<maxDistance) existing[coord] = {
           x: x,
@@ -90,7 +90,7 @@
     //make grass
     let grassTaken = {};
     for (let i = 0; i < 200; i++) {
-      let [x,y] = [gaussianRandom(0,10), gaussianRandom(0,10)];
+      let [x,y] = [gaussianRandom(0,5), gaussianRandom(0,5)];
       let coord = Math.round(x)+","+Math.round(y);
       if (grassTaken[coord]) i--;
       else makeASwayingImage("grass"+Math.floor(Math.random()*grassTypes+1)+".png", x, y, 0.5, 0.5);

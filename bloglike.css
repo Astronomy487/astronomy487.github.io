@@ -1,0 +1,250 @@
+/* big scope things */
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+	--white: #ddd;
+	--accent: #fff;
+	--math: #fff;
+	--black: #111;
+	--gray: #777;
+}
+
+body {
+	font-family: sans-serif;
+	background-color: var(--black);
+	color: var(--white);
+	font-size: 1.25rem;
+	overflow-x: hidden;
+	width: min(48rem, calc(100vw - 4rem));
+	margin: 8rem auto;
+	margin-bottom: 16rem;
+}
+
+::selection {
+	background: var(--accent);
+	color: var(--black);
+}
+
+/* headings */
+
+h1 {
+	font-weight: inherit;
+	color: var(--accent);
+	font-size: 3.5rem;
+	line-height: 100%;
+}
+
+h2 {
+	font-weight: inherit;
+	font-size: 2rem;
+	text-align: left;
+	padding-top: 3rem;
+	margin-top: -2rem; /* weird margin/padding shenanigans for anchor reasons */
+}
+
+h2::before, nav a::before {
+	content: '# ';
+	color: var(--accent);
+}
+
+/* typical document contents */
+
+p, li {
+	line-height: 150%;
+}
+
+a {
+	color: var(--accent);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+code {
+	font-size: 1.125rem;
+}
+
+em {
+	font-style: normal;
+	font-weight: inherit;
+	text-decoration: underline;
+}
+
+.website-icon {
+	height: 1rem;
+	margin: 0 0.125rem;
+	user-select: none;
+}
+
+mjx-container {
+	color: var(--math);
+	user-select: none;
+	pointer-events: none;
+}
+a mjx-container, h1 mjx-container {
+	color: inherit;
+}
+
+[summary]::before {
+	content: '[summary] ';
+	color: var(--gray);
+}
+footer {
+	margin-top: 6rem;
+	color: var(--gray);
+	text-align: center;
+	user-select: none;
+	font-size: 1.5rem;
+}
+
+strong {
+	font-weight: inherit;
+	color: var(--accent);
+}
+
+blockquote {
+	margin-left: 3rem;
+}
+blockquote q::before {
+	font-size: 6rem;
+	display: block;
+	margin-top: -1rem;
+	margin-bottom: -6rem;
+	margin-left: -2.5rem;
+}
+blockquote cite {
+	display: block;
+	font-style: normal;
+	text-align: right;
+}
+li::marker {
+	color: var(--gray);
+}
+nav a:not(:hover) {
+	color: inherit;
+}
+nav {
+	margin: 1rem 0;
+}
+
+/* tables */
+
+table {
+	width: 100%;
+}
+
+table[format] {
+	width: 75%;
+	margin: 2rem auto;
+	border: solid 2px var(--white);
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+table[format] td, table[format] th {
+	padding: 0.5rem;
+	border: solid 1px var(--white);
+}
+table[format] th {
+	background-color: var(--accent);
+	color: var(--black);
+	font-weight: inherit;
+}
+table[format] th::selection {
+	background: var(--black);
+	color: var(--white);
+}
+table[format] ul {
+	margin: 0;
+}
+
+table[langexample] {
+	margin: 1rem 0;
+	margin-left: 4rem;
+	border-collapse: collapse;
+}
+table[langexample] td:first-child {
+	width: 7rem;
+	color: var(--gray);
+	vertical-align: top;
+}
+
+/* inputs */
+
+select {
+	background-color: inherit;
+	border: solid 1px var(--white);
+	color: inherit;
+	font-family: system-ui;
+	font-size: inherit;
+	padding: 0.25rem;
+	width: 8rem;
+	text-align: center;
+	height: 3rem;
+	vertical-align: middle;
+}
+input, button {
+	accent-color: var(--accent);
+	background-color: inherit;
+	border: solid 1px var(--gray);
+	font-family: inherit;
+	font-size: inherit;
+	padding: 0.25rem;
+	color: inherit;
+	margin: 0.5rem 0;
+}
+
+button {
+	padding: 0.5rem 1rem;
+	display: block;
+	cursor: pointer;
+}
+button:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+button:hover mjx-container {
+	color: var(--accent);
+}
+
+/* modals, for when i want them */
+
+.modal {
+	position: fixed;
+	background-color: var(--black);
+	border: solid 1px var(--gray);
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: none;
+	padding: 2rem 3rem;
+	box-shadow: 0 0 4rem black;
+	animation-fill-mode: forward;
+	z-index: 100;
+}
+@keyframes modal-in {
+	from {opacity: 0; transform: translate(-50%, calc(-50% + 4rem)) scale(0.875);}
+}
+@keyframes modal-out {
+	to {opacity: 0; transform: translate(-50%, calc(-50% + 4rem)) scale(0.875);}
+}
+.modal .close-modal {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	background-color: var(--accent);
+	margin: 0;
+	font-size: 1.75rem;
+	line-height: 2.25rem;
+	text-align: center;
+}
+.modal .close-modal:hover {
+	background-color: var(--math);
+	color: var(--black);
+}

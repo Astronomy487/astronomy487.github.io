@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../bloglike.css">
+  <title>The most dissonant interval is a minor sixth, 33 cents sharp</title>
+  <style>
+    #show-volume, #show-hz {
+      width: 5rem;
+      display: inline-block;
+    }
+    div:has(input[type="range"]) {
+      margin: 1rem auto;
+      width: 21.5rem;
+    }
+    input[type="range"] {
+      vertical-align: middle;
+      width: 16rem;
+    }
+    beep {
+      border: solid 1px var(--accent);
+      padding: 0.75rem 0;
+      margin: 1rem auto;
+      width: 60%;
+      display: block;
+      text-align: center;
+      user-select: none;
+      height: 2rem;
+      vertical-align: middle;
+      line-height: 2rem;
+    }
+    beep:hover, graph1[freq]:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+    }
+    beep:hover mjx-container, graph1[freq]:hover mjx-container {
+      color: var(--accent);
+    }
+    beep[active="true"], graph1[freq][active="true"] {
+      background-color: var(--accent);
+      color: var(--black);
+      animation: 0.5s beeeep;
+    }
+    beep[active="true"] mjx-container, graph1[freq][active="true"] mjx-container {
+      color: var(--black);
+    }
+    @keyframes beeeep {
+      from {
+        outline: solid 2px var(--accent);
+      } to {
+        outline-offset: 1rem;
+        outline: solid 2px #1FDFFC00;
+      }
+    }
+    graph1[freq] {
+      padding: 1rem;
+    }
+    graph1[freq] canvas {
+      background-color: var(--black);
+      margin: 0;
+      margin-top: 0.5rem;
+    }
+    
+    div beep {
+      width: 23%;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    div:has(beep) {
+      user-select: none;
+    }
+    div:has(beep:nth-child(2)) beep {
+      width: 48%;
+    }
+    div:has(beep:nth-child(3)) beep {
+      width: 31.34%;
+    }
+    div:has(beep:nth-child(4)) beep {
+      width: 23.33%;
+    }
+    div:has(beep) beep:last-child {
+      margin-right: 0;
+    }
+
+    graph1 {
+      display: block;
+      border: solid 1px var(--gray);
+    }
+    div graph1[freq] {
+      width: 44%;
+      user-select: none;
+      display: inline-block;
+    }
+    div graph1[freq]:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+    
+    div:has(beep:nth-child(11)) beep {
+      width: 3.879rem;
+      margin-right: 0;
+    }
+    beep[format="tiny"] {
+      width: 1rem;
+    }
+  </style>
+</head>
+<body style="--accent: #1FDFFC;">
+  <h1>The most dissonant interval is a minor sixth, 33 cents sharp</h1>
+  <h2>Preface</h2>
+  <p>This article will discuss musical intervals and the mathematical approaches you can use to classify them as "dissonant" or "consonant".</p>
+  <p>In music theory, dissonance is a very broad term. In the context of intervals, it describes the experience of two notes clashing against one another and producing a 'harsh' or 'unpleasant' sound.</p>
+  <p>I'm going to spare you the discussion of how perception of music is largely a social construction informed by your enculteration, that intervals are not inherently dissonant or consonant. I'm just going to look at how people mathematically prescribe intervals as dissonant or consonant, and give my two cents on this mathematical theory of dissonance.</p>
+  <p><em>This article will have lots of sounds!</em> Make sure you're alone or wearing headphones. Click this rectangular button to play an interval, and adjust the volume.</p>
+  <beep tex="\frac32" freq="1.5" format="full"></beep>
+  <div><span id="show-volume"></span><input type="range" min="0" max="100" oninput="volumeChange();" id="set-volume"></div>
+  <h2>What's an interval</h2>
+  <p>All sounds are just oscillations in air pressure. The frequency of this oscillation is measured in hz (oscillations per second). When two notes of different frequencies ($f_1$ and $f_2$, where $f_1&lt;f_2$) are played together they form an <em>interval</em>. You can measure this interval in terms of:</p>
+  <ul>
+    <li>The ratio of frequencies: $R=\frac{f_2}{f_1}&gt;1$</li>
+    <li>The distance of notes in semitones: $D=\log_{\sqrt[12]{2}}R=\frac{\ln f_2-\ln f_1}{\ln \sqrt[12]{2}}&gt;0$</li>
+  </ul>
+  <p>Pythagoras, ever a fan of integer ratios, said that integer ratios sound harmonious, particular when their ratios are simple:</p>
+  <div>
+    <beep tex="\frac32" freq="1.5" format="small"></beep>
+    <beep tex="\frac43" freq="1.33333333333" format="small"></beep>
+    <beep tex="\frac54" freq="1.25" format="small"></beep>
+    <beep tex="\frac65" freq="1.2" format="small"></beep>
+  </div>
+  <p>Whereas a complicated ratio sounds dissonant.</p>
+  <div>
+    <beep tex="\frac{11}{10}" freq="1.1" format="small"></beep>
+    <beep tex="\frac{13}{10}" freq="1.3" format="small"></beep>
+    <beep tex="\frac{20}{17}" freq="1.17647059" format="small"></beep>
+  </div>
+  <p>By the way, I'm keeping the lower frequency $f_1$ constant between intervals, and only changing $f_2=Rf_1$. Adjust $f_1$ if you want here:</p>
+  <div><span id="show-hz"></span><input type="range" min="0" max="200" oninput="hzChange();" id="set-hz"></div>
+  <p>The first issue with this is that different ratios can sound similar! Take the very consonant-sounding $\frac32$, the incredibly similar $\frac{25}{17}$, and the irrational $2^{\frac{7}{12}}$:</p>
+  <div>
+    <beep tex="\frac{3}{2}" freq="1.5" format="small"></beep>
+    <beep tex="\frac{25}{17}" freq="1.47058824" format="small"></beep>
+    <beep tex="2^\frac{7}{12}" freq="1.49830708" format="small"></beep>
+  </div>
+  <p>Can you even hear the difference between the first and third interval there? What sense does it make to say these are more or less dissonant than each other? They all sound like major fifths.</p>
+  <p>I guess you can hear $R=\frac{25}{17}$ buzz a little bit, as long as these are sine waves. That buzzing is usually how an idea of dissonance emerges.</p>
+  <h2>Not repeating yourself</h2>
+  <p>$R=\frac{3}{2}$ will repeat itself in a fairly short time; 2 oscillations of <b style="color: #AD3F23">the first wave</b> ($f_1$) sync up with 3 oscillations of <b style="color: #15906B;">the second wave</b> ($f_2$).</p>
+  <graph1 xmin="0" xmax="12.5663706" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*1.5), x=>Math.sin(x)+Math.sin(x*1.5)]"tex="\frac{3}{2}" freq="1.5" format="full"></graph1>
+  <p>The width of this graph is how long it takes to sync up. Now look at $R=\frac{11}{10}$:</p>
+  <graph1 xmin="0" xmax="62.8318531" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*1.1), x=>Math.sin(x)+Math.sin(x*1.1)]"tex="\frac{11}{10}" freq="1.1" format="full"></graph1>
+  <p>You can see in the middle where those <b style="color: #AD3F23">first</b> and <b style="color: #15906B;">second</b> waves are cancelling each other out, interfering, creating the buzz.</p>
+  <p>This can help explain why two intervals which sound similar can still have one be consonant and one dissonant. The dissonant one takes longer to repeat itself.</p>
+  <div>
+    <graph1 xmin="0" xmax="18.8495559" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*4/3), x=>Math.sin(x)+Math.sin(x*4/3)]"tex="\frac{4}{3}" freq="1.333333333" format="small"></graph1>
+    <graph1 xmin="0" xmax="69.1150384" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*15/11), x=>Math.sin(x)+Math.sin(x*15/11)]"tex="\frac{15}{11}" freq="1.36363636" format="small"></graph1>
+  </div>
+  <p>If $R=\frac pq$ (in simplified form), it takes $q$ oscillations of <b style="color: #AD3F23">the lower wave</b> to match $p$ oscillations of <b style="color: #15906B;">the higher wave</b>. High $q$ means a long time to repeat yourself. But you can't do this kind of analysis for $R=2^\frac{7}{12}$. That one never repeats itself at all.</p>
+  <graph1 xmin="0" xmax="100" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*1.49830708), x=>Math.sin(x)+Math.sin(x*1.49830708)]"tex="2^\frac{7}{12}" freq="1.49830708" format="full"></graph1>
+  <p>Why does this irrational interval sound consonant? Because it <em>kinda repeats itself</em> in the same period that $R=\frac32$ exactly repeats itself. Because $2^\frac{7}{12}\approx\frac32$.</p>
+  <h2>Finding near-simple ratios</h2>
+  <p>The way to quantify how complicated $R=\frac pq$ would be to use $q$ itself (assuming the fraction is in simplified form). The time for$q\tau$</p>
+  <h2>When are frequencies too close for comfort?</h2>
+  <p>Earlier, I showed you how combining sine waves, among other things, can cancel one another out to create a buzzing effect. The buzzing is most audible when $R$ is close to $1$:</p>
+  <graph1 xmin="0" xmax="188.495559" ymin="-2" ymax="2" colors="#AD3F23,#15906B" lambda="[x => Math.sin(x), x => Math.sin(x*31/30), x=>Math.sin(x)+Math.sin(x*31/30)]"tex="\frac{31}{30}" freq="1.03333333" format="full"></graph1>
+  <p>You can literally hear the oscillating amplitude! And further, this doesn't really sound dissonant, does it? Even though it takes <b style="color: #AD3F23">30</b> and <b style="color: #15906B;">31</b> times to repeat itself. Why is that?</p>
+  <p>That "buzzing of notes" can actually be quantified. But first, let's take a look (and a listen!) at some graphs. First, we have $R=\frac32=1.5$:</p>
+  <graph1 xmin="0" xmax="200" ymin="-2" ymax="2" lambda="x => Math.sin(x) + Math.sin(x*1.5)" tex="\frac{3}{2}" freq="1.5" format="full"></graph1>
+  <p>But here's $R=\frac{11}{10}=1.1$, where $R$ is very close to $1$. You can see a pattern emerge:</p>
+  <graph1 xmin="0" xmax="200" ymin="-2" ymax="2" lambda="x => Math.sin(x) + Math.sin(x*1.1)"tex="\frac{11}{10}" freq="1.1" format="full"></graph1>
+  <p>The waves together look a lot like a single sine wave, <em>oscillating in amplitude</em>. Let's bring $R$ even closer to $1$ (also zooming out the x-axis):</p>
+  <graph1 xmin="0" xmax="400" ymin="-2" ymax="2" lambda="x => Math.sin(x) + Math.sin(x*1.03333333)"tex="\frac{31}{30}" freq="1.03333333" format="full"></graph1>
+  <p>Do you hear that buzzing? It doesn't sound like two notes anymore; now it it <em>sounds</em> like one note oscillating in amplitude.</p>
+  <p>Here's an algebraic look at things. The sum of sine waves is equal to this product of a sine and cosine:</p>
+  <p>$$\sin(f_1\tau t)+\sin(Rf_1\tau t)=2\sin\left(\frac{R+1}{2}f_1\tau t\right)\color{#1FDFFC}\cos\left(\frac{R-1}{2}f_1\tau t\right)$$</p>
+  <p>That <b style="color: #1FDFFC;">cosine component</b> is exactly what's responsible that buzzing. It has a period of $\frac{R-1}{2}f_1$, meaning you hear $|f_2-f_1|$ oscillations of the buzz every second.</p>
+  <p>When $R$ was high, the buzzing phenomenon "existed", but it happened so many times per second that it's not heard as oscillating amplitude. But for $R\approx1$, $|f_2-f_1|$ is a low enough frequency to be actually heard as oscillating amplitude.</p>
+  <p>How close is close enough? You be the judge:</p>
+  <div>
+    <beep tex="2^\frac{1.2}{12}" freq="1.071774" format="small"></beep>
+    <beep tex="2^\frac{0.9}{12}" freq="1.053362" format="small"></beep>
+    <beep tex="2^\frac{0.6}{12}" freq="1.035265" format="small"></beep>
+    <beep tex="2^\frac{0.3}{12}" freq="1.017480" format="small"></beep>
+  </div>
+  <h2>Not repeating yourself</h2>
+  <p>The $\frac pq$ method for finding if a waveform repeats itself isn't good at detecting:</p>
+  <ul>
+    <li>The fact that $R=2^\frac{7}{12}$ looks a lot like $R=\frac 23$, and thus <em>kinda</em> repeats itself very quickly</li>
+    <li>The fact that $R=\frac{31}{30}$ looks a lot like unison ($R=1$, and thus <em>kinda</em> repeats itself very very quickly</li>
+  </ul>
+  <p>We want to let $R$ be anything in the real numbers, and we don't want to rely on the $R=\frac{p}{q}$ trick to know how long it takes for a wave to exactly repeat itself. <em>How long does it take a wave to kinda repeat itself?</em></p>
+  <!-- <p>A waveform that repeats itself every $\alpha$ is a waveform $w$ where $w(t)=w(t+\alpha)$ for all values of $t$. To quantify how close a wave is to repeating itself, you should examine the difference between $w(t)$ and $w(t+\alpha)$ and see if it's close to 0 across values of $t$, particularly near $t=0$.</p>
+  <p>Here's a graph of $|w(t)-w(t+{\color{#1FDFFC}0.5})|$ where $w(t)=\sin(t)+\sin({\color{#1FDFFC}\frac32}t)$. This is in effect checking if the interval $R={\color{#1FDFFC}\frac32}$ repeats itself every $\alpha={\color{#1FDFFC}0.5}$. The x-axis goes from $t=-30$ to $t=30$.</p>
+  <graph1 xmin="-30" xmax="30" ymin="0" ymax="1.5" lambda="[t=>Math.abs(wave(t,1.5)-wave(t+0.5,1.5))]"></graph1>
+  <p>(I've removed the $f_1\tau$ terms from the picture to simplify things; the actual period of repetition being checked for is $\frac{\alpha}{f_1\tau}$.)</p>
+  <p>Now let's choose an $\alpha$ over which we know $R=\frac32$ actually does repeat itself, such as $\alpha=2\tau$ (we know that $R=\frac pq\to\alpha=q\tau$). The interference function is now actually zero; the function exactly repeats!</p>
+  <graph1 xmin="-30" xmax="30" ymin="0" ymax="1.5" lambda="[t=>Math.abs(wave(t,1.5)-wave(t+4*Math.PI,1.5))]"></graph1>
+  <p>Now here's the tricky bit: let's change from $R=\frac32$ to the similar $R=2^\frac{7}{12}$, but keep $\alpha=2\tau$.</p>
+  <graph1 xmin="-30" xmax="30" ymin="0" ymax="1.5" lambda="[t=>Math.abs(wave(t,Math.pow(2,7/12))-wave(t+4*Math.PI,Math.pow(2,7/12)))]"></graph1>
+  <p>This function is basically zero. To quantify just how basically-zero the interference function is, let's find its average value using $\lim_{m\to\infty}\frac1m\int_0^m$.</p>
+  <p>Measure for how much the interval $R$ repeats itself every $\alpha$:</p>
+  <p>$$R,\alpha\mapsto\lim_{m\to\infty}\frac1m\int_0^m e^{-t^2}|\sin(t)+\sin(Rt)-\sin(t+\alpha)-\sin(R(t+\alpha))|dt$$</p>
+  <p>If we plot $\alpha$ on the x-axis, we can see the results of this test for a bunch of possible repetition periods. Let's look at $R=\frac32$.</p>
+  <graph1 xmin="0" xmax="40" ymin="0" ymax="2" lambda="[alpha=>dissonanceTest2(1.5, alpha)]" freq="1.5" tex="\frac32" format="full"></graph1>
+  <p>Those spots where it dips back down are at $\alpha=2\tau$ (and its multiples). This matches what we know about rational intervals.</p>
+  <p>What about a rational interval nearby that is secretly more complicated? Such as $\frac{19}{13}$? This truly repeats itself every $13\tau$, but it should also kinda-repeat itself every $2\tau$ because of its resemblance to $\frac32$. I'm gonna stretch the $\alpha$-axis to include $\alpha=13\tau$, and graph $R=\frac32$ in <b style="color:#1FDFFC;">blue</b> and $R=\frac{19}{13}$ in <b style="color:#FFCB47;">yellow</b>.</p>
+  <graph1 xmin="0" xmax="82" ymin="0" ymax="5" colors="#1FDFFC,#FFCB47" lambda="[alpha=>dissonanceTest(1.5, alpha),alpha=>dissonanceTest(19/13, alpha)]"></graph1>
+  <div>
+    <beep tex="\frac{3}{2}" freq="1.5" format="full"></beep>
+    <beep tex="\frac{19}{13}" freq="1.46153846" format="full" style="--accent: #FFCB47;"></beep>
+  </div>
+  <p>These two curves really resemble each other at the start! Except although $\color{#1FDFFC}R=\frac32$ hits 0 every $2\tau$, $\color{#FFCB47}R=\frac{19}{13}$ only ever <em>actually touches 0</em> at every $13\tau$. Reading this curve tells us that these two intervals sound very similar, but $\color{#1FDFFC}R=\frac32$ is a little more consonant.</p>
+  <graph1 xmin="0" xmax="190" ymin="0" ymax="5" lambda="[alpha=>dissonanceTest(31/30, alpha)]"></graph1>
+  <graph1 xmin="0" xmax="40" ymin="0" ymax="5" lambda="[alpha=>dissonanceTest(1.61803399, alpha),alpha=>dissonanceTest2(1.61803399, alpha)]"></graph1> -->
+  <!-- <p>Saying that a waveform "repeats" itself every $a$ is saying that $\text{Waveform}(t)-\text{Waveform}(t-a)=0$. Shifting the waveform $a$ leaves it unchanged.</p>
+  <p>If something <em>kinda</em> repeats itself, then maybe that subtraction is <em>close to</em> 0 across time $t$. To describe this idea of "across time $t$", I'll chuck the subtraction in an integral. Also there's an absolute value now.</p>
+  <p>$$\int_0^m|\text{Waveform}(t)-\text{Waveform}(t-a)|\approx0$$</p>
+  <p>The choice of window $m$ to look at is arbitrary. For large enough $m$, scaling $m$ becomes the same thing as scaling the integral expression (the area of the function within is kinda periodic). So I'm going to throw $\frac1m$ in front, and comfortably let $m\to\infty$.</p>
+  <p>$$\lim_{m\to\infty}\frac1m\int_0^m|\text{Waveform}(t)-\text{Waveform}(t-a)|\approx0$$</p>
+  <p>I did <a>a bunch of messy algebra</a> for the case of our waveform being two sine waves, at $f_1$ and $f_2=Rf_1$. I did some work to clean it up, and made the test invariant to your choice of $f_1$ (turning $a$ into $\alpha$ in the process!). I also wanted to prioritize , so I added a  I ended up at our test being:</p>
+  <p>$$y=\lim_{m\to\infty}\frac1m\int_0^m\left|\sin(\alpha)\cos(t)+\sin(R\alpha)\cos(Rt)\right|dt$$</p>
+  <h2>Dissonance curves</h2>
+  <p>$$y=\lim_{m\to\infty}\frac1m\int_0^m\left|\sin(\alpha)\cos(t)+\sin(R\alpha)\cos(Rt)\right|dt$$</p>
+  <p>The interpretation goes thusly: for an interval $R$, try many values of $\alpha$: if a lower value of $\alpha$ yields a pretty low value of $y$, then $R$ closely repeats itself (over $2f_1\tau\alpha$ seconds) and is consonant. If $y$ stays high, and it takes a big $\alpha$ to lower $y$, the interval doesn't repeat itself as much and is dissonant.</p> -->
+  <p>$$\left(\sin(f_1\tau t)+\sin(Rf_1\tau t)\right)-\left(\sin(f_1\tau(t-a))+\sin(Rf_1\tau (t-a))\right)$$</p>
+  <p>Through some painful algebra, this ends up equal to:</p>
+  <p>$$2\sin\left(\frac{af_1\tau}{2}\right)\cos\left(f_1\tau\left(t-\frac a2\right)\right)+2\sin\left(\frac{aRf_1\tau}{2}\right)\cos\left(Rf_1\tau\left(t-\frac a2\right)\right)$$</p>
+  <p>These are two cosine waves, scaled by their constant $\sin$ expression, and added together.</p>
+  <p>I'm going to do something really sneaky: I'm going to shift this wave to the left by $\frac a2$, thus turning each $(t-\frac 12)$ into just $(t)$. Because we just want to see when this function is approximately zero <em>across different values of $t$</em>, I think shifting it is fine.</p>
+  <p>$$2\sin\left(\frac{a}{2}f_1\tau\right)\cos\left(f_1\tau t\right)+2\sin\left(\frac{a}{2}Rf_1\tau\right)\cos\left(Rf_1\tau t\right)$$</p>
+  <p>The idea is, if we have some interval $R$, we don't know what values $a$ will make this expression close to 0. We should test many different values of $a$, and when the expression ends up close to zero, $a$ is the period of time of this almost-repetition in the wave.</p>
+  <p>My claim was that, when this function is "around 0" "across values of $t$", then the ratio $R$ produces an interval that kinda-repeats every $a$. I'm going to put this into words as the integral expression:</p>
+  <p>$$\int_0^m\left|2\sin\left(\frac{a}{2}f_1\tau\right)\cos\left(f_1\tau t\right)+2\sin\left(\frac{a}{2}Rf_1\tau\right)\cos\left(Rf_1\tau t\right)\right|dt\approx0$$</p>
+  <p>I can really choose any upper bound of $m$, the interval of time where I'm looking at this function. Long-term, increasing the upper bound should be roughly equivalent to scaling the area we find, so I'm going to throw $\frac 1m$ at the front.</p>
+  <p>$$\frac1m\int_0^m\left|2\sin\left(\frac{a}{2}f_1\tau\right)\cos\left(f_1\tau t\right)+2\sin\left(\frac{a}{2}Rf_1\tau\right)\cos\left(Rf_1\tau t\right)\right|dt\approx0$$</p>
+  <p>I would love to make this test invariant under choices of $f_1$. And because $\frac1m\int_0^m$ effectively takes the average of the function over $(0,m)$, I'm unbothered with horizontally stretching the wave. Right now, testing $R$ using some $f_1,a$ will yield the same results as testing $\frac12f_1,2a$. For this reason, I'm going to horizontally stretch by $f_1\tau$ ($t\mapsto\frac{t}{f_1\tau}$), and gonna define $\alpha:=\frac{a}{2}f_1\tau$. $\alpha$ will now be the parameter we test many values of. The actual repetition time, measured in seconds, is still $a=2f_1\tau\alpha$.</p>
+  <p>$$\frac1m\int_0^m\left|2\sin(\alpha)\cos(t)+2\sin(R\alpha)\cos(Rt)\right|dt\approx0$$</p>
+  some note about the (m-t)/m term
+  <p>And lastly, because I'm just using this as a measure of repetition in the wave, I'm gonna scale it by $\frac12$ to take away some inner coefficients:</p>
+  <p>$$\boxed{\frac1m\int_0^m\left|\sin(\alpha)\cos(t)+\sin(R\alpha)\cos(Rt)\right|dt\approx0}$$</p>
+  <p>Isn't that so clean now?</p>
+  <p>If I'm dealing with some interval $R$, and I want to know if it repeats itself, I can test many values of $\alpha$ and see when this integral expression is lowest:</p>
+  <p>$$\lim_{m\to\infty}\frac1m\int_0^m\left|\sin(\alpha)\cos(t)+\sin(R\alpha)\cos(Rt)\right|dt$$</p>
+  <p>When some $\alpha$ makes a local minimum, then the wave kinda repeats itself with a period of $2f_1\tau\alpha$. The test itself is invariant over $f_1$.</p>
+  <p>Here's a graph of that integral across different values of $\alpha$. <em>I repeat, the x-axis is $\alpha$</em>.</p>
+  <graph1 xmin="0" xmax="16" ymin="0" ymax=".5" colors="#1FDFFC,#FFCB47,#E7288E,#4AD727" lambda="[
+    alpha => doTheIntegral(3/2, alpha),
+    alpha => doTheIntegral(4/3, alpha),
+    alpha => doTheIntegral(5/4, alpha),
+    alpha => doTheIntegral(Math.sqrt(2), alpha)
+  ]"></graph1>
+  <div showcolors>
+    <beep tex="\frac32" format="small" freq="1.5"></beep>
+    <beep tex="\frac43" format="small" freq="1.333333" style="--accent: #FFCB47"></beep>
+    <beep tex="\frac54" format="small" freq="1.25" style="--accent: #E7288E;"></beep>
+    <beep tex="\frac65" format="small" freq="1.2" style="--accent: #4AD727;"></beep>
+  </div>
+  <p>I'm going to call these Dissonance Curves. Reading them can offer insight into the repetition of waves, and thus the dissonance of an interval. $\color{1FDFFC}R=\frac32$ is the first to hit $y=0$ (an $\alpha$ where the wave actually repeats itself), so it's the most consonant of these.</p>
+  <p>(You could really make such a curve to check for repetition in any waveform $w$, using $y(\alpha)=\frac1m\int_0^m|w(t)-w(t-\alpha)|dt$. Wonder what kind of use cases this has!)</p>
+  <p>Here's some irrational choices of $R$, intervals which will never actually repeat themselves (thus the waveform will never reach $y=0$, except at $\alpha=0$).</p>
+  <graph1 xmin="0" xmax="16" ymin="0" ymax="0.5" colors="#1FDFFC,#FFCB47,#E7288E,#4AD727" lambda="[
+    alpha => doTheIntegral(Math.PI/2, alpha),
+    alpha => doTheIntegral(1.61803399, alpha),
+    alpha => doTheIntegral(1.35914091, alpha),
+    alpha => doTheIntegral(Math.sqrt(2), alpha)
+  ]"></graph1>
+  <div showcolors>
+    <beep tex="\frac{\tau}{4}" format="small" freq="1.57079633"></beep>
+    <beep tex="\phi" format="small" freq="1.61803399" style="--accent: #FFCB47;"></beep>
+    <beep tex="\frac{e}{2}" format="small" freq="1.35914091" style="--accent: #E7288E;"></beep>
+    <beep tex="\sqrt{2}" format="small" freq="1.41421356" style="--accent: #4AD727;"></beep>
+  </div>
+  <p>The weird thing is that these curves are all continuous with respect to $R$, right? Similar intervals $R$ will create very similar curves. Here's a rainbow of curves going from $\color{#CD1341}R=1.0$ to $\color{#227F78}R=1.2$.</p>
+  <graph1 xmin="0" xmax="16" ymin="0" ymax=".7" colors="#CD1341,#D6573E,#DC7C3A,#E3B036,#EAE432,#BCDB40,#8ED24E,#60C95C,#31BF6A,#24A06A,#227F78" lambda="[1.00,1.02,1.04,1.06,1.08,1.10,1.12,1.14,1.16,1.18,1.20].map(x => x).map(R => (alpha => doTheIntegral(R, alpha)))"></graph1>
+  <div showcolors>
+    <beep style="--accent: #CD1341" tex="1.00" freq="1.00" format="tiny"></beep>
+    <beep style="--accent: #D6573E" tex="1.02" freq="1.02" format="tiny"></beep>
+    <beep style="--accent: #DC7C3A" tex="1.04" freq="1.04" format="tiny"></beep>
+    <beep style="--accent: #E3B036" tex="1.06" freq="1.06" format="tiny"></beep>
+    <beep style="--accent: #EAE432" tex="1.08" freq="1.08" format="tiny"></beep>
+    <beep style="--accent: #BCDB40" tex="1.10" freq="1.10" format="tiny"></beep>
+    <beep style="--accent: #8ED24E" tex="1.12" freq="1.12" format="tiny"></beep>
+    <beep style="--accent: #60C95C" tex="1.14" freq="1.14" format="tiny"></beep>
+    <beep style="--accent: #31BF6A" tex="1.16" freq="1.16" format="tiny"></beep>
+    <beep style="--accent: #24A06A" tex="1.18" freq="1.18" format="tiny"></beep>
+    <beep style="--accent: #227F78" tex="1.20" freq="1.20" format="tiny"></beep>
+  </div>
+  <!-- <graph1 xmin="0" xmax="10" ymin="0" ymax="1" lambda="x => doTheIntegral(1.1, 0.3, x)"></graph1>
+  <h2>always has been</h2>
+  <p>Can I break your heart and point out that dissonance/consonance isn't necessarily promised by any mathematical truth?</p>
+  <p>All this look at fractions and integrals have been a very fun exercise. But dissonance and consonance aren't something you can prove. They are phenomena that exist within a musical culture. The fact that the labels "dissonant" and "consonant" are applied to things gravely more complex than an interval of sine waves, things such as immense chord stacks or the overtones of a certain timbre, shows that nothing I've pointed to here is actually a rigorous way to describe dissonance/consonance.</p>
+  <p>Remember how 12-TET uses irrational values $R$ as approximations for integer ratios? Such as $2^\frac{4}{12}$ instead of $\frac54$ to create a major third.</p> -->
+  <script src="http://unpkg.com/tone"></script>
+  <script>
+    let volume = new Tone.Volume().toDestination();
+    let hz = 200;
+    document.querySelector("#set-volume").value = 50;
+    document.querySelector("#set-hz").value = 96;
+    volumeChange();
+    hzChange();
+    function volumeChange() {
+      let val = parseInt(document.querySelector("#set-volume").value);
+      volume.volume.value = 20*Math.log(val*0.01);
+      document.querySelector("#show-volume").innerText = val + "%";
+    }
+    function hzChange() {
+      hz = Math.round(100 * Math.exp(parseInt(document.querySelector("#set-hz").value)*0.00805));
+      document.querySelector("#show-hz").innerText = hz + "hz";
+    }
+    
+    let attack = 0.005;
+    let release = 0.05;
+    
+    let audioBusy = false;
+    
+    let envelope = new Tone.AmplitudeEnvelope({
+      attack: attack,
+      sustain: 1,
+      release: release
+    }).connect(volume);
+    let osc1, osc2;
+    
+    function forceDecimals(x, n) {
+      x += "";
+      if (x.includes(".")) x+= "000000000000000";
+      else x+= ".000000000000000000";
+      x = x.substring(0, x.indexOf(".")+n);
+      return x;
+    }
+    
+    let currentBeep = null;
+    for (let beep of document.querySelectorAll("beep, graph1[freq]")) {
+      let freq = parseFloat(beep.getAttribute("freq"));
+      let st = Math.log(freq)/Math.log(Math.pow(2, 1/12));
+      let roundFreq = Math.round(freq*1000)/1000;
+      if (beep.getAttribute("format") == "small") beep.innerHTML = "$"+beep.getAttribute("tex")+"$&emsp;"+forceDecimals(st,4)+"st";
+      if (beep.getAttribute("format") == "full") beep.innerHTML = "$R=" + beep.getAttribute("tex") +"$&emsp;" + forceDecimals(st,4)+" semitones";
+      if (beep.getAttribute("format") == "tiny") beep.innerHTML = "$"+beep.getAttribute("tex")+"$";
+      beep.innerHTML = "<div>"+beep.innerHTML+"</div>";
+      beep.onmousedown = function() {
+        if (audioBusy) return;
+        audioBusy = true;
+        osc1 = new Tone.Oscillator(hz, "sine").connect(envelope);
+        osc2 = new Tone.Oscillator(hz*freq, "sine").connect(envelope);
+        osc1.start();
+        osc2.start();
+        envelope.triggerAttack();
+        currentBeep = beep;
+        currentBeep.setAttribute("active", "true");
+      }
+    }
+    document.onmouseup = function() {
+      envelope.triggerRelease();
+      setTimeout(function() {
+        if (osc1) osc1.stop();
+        if (osc2) osc2.stop();
+        audioBusy = false;
+      }, (attack+release)*1000);
+      if (currentBeep) currentBeep.setAttribute("active", "false");
+    }
+  </script>
+  <script src="../makemath.js"></script>
+  <script>
+    //custom : graph1
+    for (let div of document.querySelectorAll("graph1")) {
+      doGraph1(div);
+    }
+    async function doGraph1(div) {
+      let [xmin, xmax, ymin, ymax] = ["xmin", "xmax", "ymin", "ymax"].map(x => parseFloat(div.getAttribute(x)));
+      width = 768;
+      if (div.getAttribute("format") == "small") width = 336; //carefully calculated
+      if (div.getAttribute("format") == "full") width = 734; //carefully calculated
+      height = 120;
+      let transformations = eval(div.getAttribute("lambda"));
+      if (typeof transformations == "function") transformations = [transformations];
+      let colors = div.hasAttribute("colors") ? div.getAttribute("colors").split(",") : [];
+      let canvas = div.appendChild(document.createElement("canvas"));
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", height);
+      div.style.width = width;
+      div.style.height = height;
+      let context = canvas.getContext("2d");
+      context.lineWidth = 2;
+      
+      //do the axes
+      context.beginPath();
+      context.stroke();
+      
+      for (let i = 0; i < transformations.length; i++) {
+        //do the curve
+        if (i < colors.length) context.strokeStyle = colors[i]
+        else context.strokeStyle = "#1FDFFC";
+        //context.lineWidth = (i < colors.length) ? 1 : 3;
+        context.beginPath();
+        for (let x = 0; x < width; x += 1) {
+          let t = x/(width-1); //0 <= t <= 1
+          let f = transformations[i](t*(xmax-xmin)+xmin); //f according to function output space
+          //f -> y : ymax -> 0 , ymin -> height-1
+          let outt = 1 - (f - ymin) / (ymax - ymin); //0 for biggest output, 1 for smallest output
+          context.lineTo(x, outt*(height-1));
+        }
+        context.stroke();
+      }
+    }
+    
+    /* let tau = Math.PI*2;
+    function doTheIntegral(R, a, f, m=10) {
+      let waves = (t) => 2*Math.sin(a/2*f*tau)*Math.cos(f*tau*t) + 2*Math.sin(a/2*R*f*tau)*Math.cos(R*f*tau*t);
+      let dt = 0.01;
+      let area = 0;
+      for (let t = 0; t < m; t += dt)
+        area += dt * Math.abs(waves(t));
+      return area/m;
+    } */
+    
+    let tau = Math.PI * 2;
+    /* function doTheIntegral(R, alpha, m=50, dt=0.1) {
+      let area = 0;
+      for (let t = 0; t < m; t+= dt)
+        area += dt * Math.abs(Math.sin(alpha) * Math.cos(t) + Math.sin(R*alpha) * Math.cos(R*t)) * (m-t);
+      return area/m/m;
+    } */
+    
+    function dissonanceTest(R, alpha) {
+      return integrate(t => (
+        Math.exp(-1 * t * t) * Math.abs(wave(t,R) - wave(t+alpha, R))
+      ), -50, 50);
+    }
+    function dissonanceTest2(R, alpha) {
+      return integrate(t => (
+        Math.abs(wave(t,R) - wave(t+alpha, R))
+      ), 0, 100) / 100;
+    }
+    
+    function doTheIntegral(R, alpha) {
+      return integrate(t => (
+        Math.abs(wave(t,R) - wave(t+alpha, R))
+      ), 0, 100) / 400;
+    }
+    
+    function integrate(funct, lower, upper, slices=1000) {
+      let dx = (upper-lower)/slices;
+      let area = 0;
+      for (let x = lower; x < upper; x += dx)
+        area += funct(x) * dx;
+      return area;
+    }
+    
+    function wave(t, R) {
+      return Math.sin(t) + Math.sin(t*R);
+    }
+  </script>
+</body>
+</html>

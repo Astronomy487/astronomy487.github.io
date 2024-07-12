@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../bloglike.css">
+  <style>
+    .playground {
+      user-select: none;
+      border: solid 1px var(--gray);
+      padding: 2rem 2rem;
+      margin: 1.5rem 0;
+    }
+    .playground label {
+      width: 8rem;
+      display: inline-block;
+      user-select: text;
+    }
+    .playground span {
+      margin-left: 2rem;
+      user-select: text;
+    }
+    .playground .dimension-output {
+      height: 16rem;
+    }
+    #pick-measurements-result .dimension-output {
+      height: 20rem;
+    }
+    #pick-measurements label {
+      margin-left: 0.5rem;
+    }
+    #pick-measurements span {
+      float: right;
+      line-height: 100%;
+      font-size: 1rem;
+    }
+    #pick-measurements div:has(:checked) {
+      color: var(--accent);
+      background: linear-gradient(90deg, #ffffff00, #ffffff44);
+    }
+    #pick-measurements div:has([disabled]) {
+      color: var(--gray);
+    }
+    #pick-measurements div:has([disabled]) mjx-container {
+      opacity: 0.5;
+    }
+    #pick-measurements mjx-container {
+      margin-right: 0.25rem;
+      margin-top: 0.25rem;
+      display: inline-block;
+    }
+    
+    #measurement-request-meters, #measurement-request-seconds, #measurement-request-kilograms, #measurement-request-kelvins, #measurement-request-amperes, #measurement-request-candelas {
+      width: 3rem;
+      margin-right: 0.5remrem;
+    }
+    
+    input[invalid="true"] {
+      border-color: var(--accent);
+      outline: solid 1px #DC1FAF00;
+      animation: 2s invalid-animation;
+      animation-fill-mode: forward;
+    }
+    @keyframes invalid-animation {
+      from {
+        outline-width: 4px;
+        outline-color: var(--accent);
+      }
+    }
+    
+    input[type="range"] {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <title>All the Planck units you could ever want</title>
+</head>
+<body style="--accent: #DC1FAF;">
+  <!-- <div style="display: none;">$\newcommand{\ll}{{\color{#DC1FAF}[}}$</div>
+  <div style="display: none;">$\newcommand{\rr}{{\color{#DC1FAF}]}}$</div> -->
+  <div style="display: none;">$\newcommand{\ll}{\color{#DC1FAF}\left[\color{white}}$</div>
+  <div style="display: none;">$\newcommand{\rr}{\color{#DC1FAF}\right]\color{white}}$</div>
+  <div style="display: none;">$\newcommand{\M}{{\color{#DC1FAF}M}}$</div>
+  <h1>All the Planck units you could ever want</h1>
+  <p summary>The Planck units are a coherent set of units based on universal constants ($c$, $G$, $\hbar$, $k_B$). In using them, you have to express all quantities (like mass, length, time) in terms of multiplication/division of those constants. I find it hilarious that you can measure normal-looking physical quantities, like energy or acceleration, using these. I mess around with other coherent measurement systems, taking advantage of linear algebra shenanigans.</p>
+  <h2>Quantities vs. units</h2>
+  <p>"Quantities" are things like length, time, velocity, mass, and so on. In algebra, they might be written as:</p>
+  <table format>
+    <tr><th>Quantity</th><th>Algebraic representation</th></tr>
+    <tr><td>Length</td><td>$\mathsf{L}$</td></tr>
+    <tr><td>Time</td><td>$\mathsf{T}$</td></tr>
+    <tr><td>Velocity</td><td>$\mathsf{L}/\mathsf{T}$</td></tr>
+    <tr><td>Mass</td><td>$\mathsf{M}$</td></tr>
+    <tr><td>Temperature</td><td>$\mathsf{\Theta}$</td></tr>
+  </table>
+  <p>"Units" are things like the meter, the inch, the second, the hour. Each unit describes some particular quantity. We might say "the meter measures length", or in algebraic terms, $\ll\text{m}\rr=\mathsf{L}$ (note the brackets).</p>
+  <p>Quantities and units can be related to each other algebraically. Velocity is a measure of distance/length changed over time, thus:</p>
+  <p>$$\text{velocity}=\frac{\mathsf{L}}{\mathsf{T}}=\ll\text{m/s}\rr=\frac{\ll\text{m}\rr}{\ll\text{s}\rr}$$</p>
+  <p>Meters-per-second is a "derived unit" from meters and seconds, specifically $\text{m}^{1}\;\text{s}^{-1}$. The quantity it describes comes in the same way: $\mathsf{L}^{1}\;\mathsf{T}^{-1}$.</p>
+  <h2>Coherent units</h2>
+  <p>In a coherent system of units, among other things, whenever you <em>can</em> derive a unit for a quantity, you <em>must</em> derive that unit from existing units.</p>
+  <p>For example, say we were constructing a coherent system of units, and we have already defined the inch (for length) and the hour (for time). We now want a unit for velocity. We <em>must</em> define it as $\frac{\text{favored unit of length}}{\text{favored unit of time}}$! Thus we have no choice but to let our unit of velocity be inches-per-hour.</p>
+  <p>The metric system is cool because it follows this so neatly. The base units of length, time, and mass are the meter, second, and kilogram (ignore prefixes for now). The quantity of energy, which feels unrelated to length/time/mass, is in fact related! $\text{energy}=\mathsf{M}\;\mathsf{L}^2\;\mathsf{T}^{-2}=\ll\text{kg}\rr\;\ll\text{m}\rr^2\;\ll\text{s}\rr^{-2}$. So our unit of energy absolutely must be defined to be $\text{kg}\;\text{m}^2\;\text{s}^{-2}$. We can nickname it 'joule', though.</p>
+  <p>For metric units, the base units are $\text{m}$ for length, $\text{s}$ for time, $\text{kg}$ for mass, and $\text{K}$ for temperature shenanigans. (I'm ignoring funkier measures.) <em>Every single quantity</em> can be expressed as a combination of these basis quantities, and thus every coherent unit is a combination of these base units.</p>
+  <h2>Brief talk of vector spaces</h2>
+  <p>Maybe I'm just obsessed with vectors right now, but quantities and units are totally vector spaces, right?</p>
+  <p>The quantity of length is the unit vector $\langle 1,0,0,0\rangle$. Time is the unit vector $\langle 0,1,0,0\rangle$. Velocity is the vector $\langle 1,-1,0,0\rangle$. Right? Where $\langle a,b,c,d\rangle$ corresponds to the quantity of $\mathsf{L}^a\;\mathsf{T}^b\;\mathsf{M}^c\;\mathsf{\Theta}^d$.</p>
+  <p>This goes for units too. Meters are $\langle 1,0,0,0\rangle$ and seconds are $\langle 0,1,0,0\rangle$, and meters-per-second are $\langle 1,-1,0,0\rangle$, and joules are $\langle 2,-2,1,0\rangle$.</p>
+  <p>Length, time, mass, and temperature together form a basis for all possible desired quantities. And in the metric system, this is accomplished by picking a particular length unit, a particular time unit, a particular mass unit, and a particular temperature unit. These are the basis vectors that span to all $\mathbb{R}^4$.</p>
+  <h2>What are Planck units</h2>
+  <p>The coherent metric system uses these base units:</p>
+  <table format>
+    <tr><th>Unit</th><th colspan="2">Quantity</th></tr>
+    <tr><td>Meter</td><td>$\mathsf{L}$ "length"</td><td>$\langle 1,0,0,0\rangle$</td></tr>
+    <tr><td>Second</td><td>$\mathsf{T}$ "time"</td><td>$\langle 0,1,0,0\rangle$</td></tr>
+    <tr><td>Kilogram</td><td>$\mathsf{M}$ "mass"</td><td>$\langle 0,0,1,0\rangle$</td></tr>
+    <tr><td>Kelvin</td><td>$\mathsf{\Theta}$ "temperature"</td><td>$\langle 0,0,0,1\rangle$</td></tr>
+  </table>
+  <p>Planck units are instead based on physical constants for their base units. It has:</p>
+  <table format>
+    <tr><th>Unit</th><th colspan="2">Quantity</th></tr>
+    <tr><td>$c$</td><td>$\mathsf{L}\;\mathsf{T}^{-1}$ "velocity"</td><td>$\langle 1,-1,0,0\rangle$</td></tr>
+    <tr><td>$G$</td><td>$\mathsf{L}^3\;\mathsf{T}^{-2}\;\mathsf{M}^{-1}$</td><td>$\langle 3, -2, -1, 0\rangle$</td></tr>
+    <tr><td>$\hbar$</td><td>$\mathsf{L}^2\;\mathsf{T}^{-1}\;\mathsf{M}$</td><td>$\langle 2,-1,1,0\rangle$</td></tr>
+    <tr><td>$k_B$</td><td>$\mathsf{L}^2\;\mathsf{T}^{-2}\;\mathsf{M}^1\;\mathsf{\Theta}^{-1}$</td><td>$\langle 2,-2,1,-1\rangle$</td></tr>
+  </table>
+  <p>The idea is that you can still combine these to form units for any desired quantity. There is no unit of length here, but you can still make a unit of length as a <em>derived</em> unit! We like to conceptualize of length as a primitive, non-derived unit, but they're all just vectors in the vector space. Length isn't more primitive or fundamental than these Planck basis quantities.</p>
+  <p>Those vectors that represent quantities form a basis in all of $\mathbb{R}^4$, so those base units can in fact make any unit. If those vectors only spanned to some subspace, only quantities in that subspace could be represented using our base units.</p>
+  <h2>Finding derived Planck units</h2>
+  <p>However it's not obvious, from these base units, what the Planck unit of length might be. How can we combine these units to create something that measures length? What values $w,x,y,z$ will have $\ll c\rr^w\;\ll G\rr^x\;\ll \hbar\rr^y\;\ll k_B\rr^z=\mathsf{L}$?</p>
+  <p>Of course, I don't <em>only</em> want the Planck unit of length ($\mathsf{L}$): I want to easily be able to find the units for any arbitrary desired quantity, which I'll call $\mathsf{L}^i\;\mathsf{T}^j\;\mathsf{M}^k\;\mathsf{\Theta}^l$.</p>
+  <p>The good news is linear algebra exists.</p>
+  <p>In our vector space reframing of the question, we're really asking what values $w,x,y,z$ will make $w\langle 1,-1,0,0\rangle+x\langle 0,1,0,0\rangle+y\langle 0,0,1,0\rangle+z\langle 0,0,0,1\rangle$ result in $\langle i,j,k,l\rangle$, our vector for the desired quantity. As a matrix equation, this is:</p>
+  <p>$$\left[\begin{matrix}1&3&2&2\\-1&-2&-1&-2\\0&-1&1&1\\0&0&0&-1\end{matrix}\right]\left[\begin{matrix}w\\x\\y\\z\end{matrix}\right]=\left[\begin{matrix}i\\j\\k\\l\end{matrix}\right]$$</p>
+  <p>Each column of this matrix is a Planck base unit, expressed as their dimensions of length-time-mass-temperature. Let's invert this matrix!</p>
+  <p>$$\left[\begin{matrix}w\\x\\y\\z\end{matrix}\right]=\frac12\left[\begin{matrix}-3&-5&1&5\\1&1&-1&-1\\1&1&1&1\\0&0&0&-2\end{matrix}\right]\left[\begin{matrix}i\\j\\k\\l\end{matrix}\right]=\M\left[\begin{matrix}i\\j\\k\\l\end{matrix}\right]$$</p>
+  <p>Incredible! I made that $\M$ colorful to highlight its immense importance.</p>
+  <p>We now know what $\ll c\rr^w\;\ll G\rr^x\;\ll \hbar\rr^y\;\ll k_B\rr^z$ will be the quantity $\mathsf{L}^i\;\mathsf{T}^j\;\mathsf{M}^k\;\mathsf{\Theta}^l$.</p>
+  <p>Let's find the Planck unit of length. Multiplying that $\M$ by $\langle 1,0,0,0\rangle$ yields $\langle w,x,y,z\rangle=\langle-\frac32,\frac12,\frac12,0\rangle$. In other words, our unit is $c^{-\frac32}\;G^{\frac12}\;\hbar^{\frac12}=\sqrt{\frac{G \hbar}{c^3}}$. Checks out! This is in fact the Planck length!</p>
+  <p>If we use this to find the Planck length ($\sqrt{\frac{G \hbar}{c^3}}$), Planck time ($\sqrt{\frac{G \hbar}{c^5}}$), Planck mass ($\sqrt{\frac{c \hbar}{G}}$), and Planck temperature ($\sqrt{\frac{c^5 \hbar}{Gk_B^2}}$), we can start using these units as a new basis all over again to find derived units. Let's find the Planck velocity!</p>
+  <p>$$\mathsf{L}\;\mathsf{T}^{-1}=\frac{\ll\text{Planck length}\rr}{\ll\text{Planck time}\rr}=\ll\frac{\sqrt{\frac{G \hbar}{c^3}}}{\sqrt{\frac{G \hbar}{c^5}}}\rr=\ll\sqrt{\frac{c^5 G \hbar}{c^3 G \hbar}}\rr=\ll\sqrt{c^2}\rr=\ll c\rr$$</p>
+  <p>Wow! The Planck velocity is $c$!</p>
+  <h2>Planck unit playground</h2>
+  <p>Here, throw whatever dimensions you want at $\M$ to find out what the corresponding planck unit is.</p>
+  <div id="playtime-planck"></div>
+  <p>Very silly, isn't it? A lot of Planck units have meaningful physics interpretations. But a lot of them don't seem to. I don't know a lot about physics.</p>
+  <p>Let's reuse this code to flesh out other silly unit systems, like <a href="https://www.youtube.com/watch?v=KmfdeWd0RMk">jan Misali's "CCC" system</a>, where everything is derived from:</p>
+  <ul>
+    <li>The frequency middle C ($\text{C}_4$), around 261.6 hz</li>
+    <li>The speed of light $c$</li>
+    <li>The amount of energy in a calorie $\text{cal}$</li>
+  </ul>
+  <div id="playtime-ccc"></div>
+  <p>Finally! I can figure out what all the coherent CCC units are! These units have no foothold in temperature units, but that's fine. $\mathbb{R}^3$ instead of $\mathbb{R}^4$, it all works out.</p>
+  <p>Because I'm linear algebra-ing everything, I can even figure out how to describe arbitrary Planck units in terms of their CCC units. Why not.</p>
+  <div id="playtime-planck-ccc"></div>
+  <h2>Meta-playground</h2>
+  <p>Go wild. Create a coherent system of measurement using whatever base units you'd like. I'll throw dimensions for electricity and luminosity, too, just for fun. $\mathbb{R}^6$. Make your dreams come true.</p>
+  <div id="pick-measurements"></div>
+  <button onclick="requestMeasurement();">Add a new measurement to this list</button>
+  <div class="modal" id="measurement-request">
+    <button class="close-modal" onclick="byeModal(this.parentElement);">×</button>
+    <p>Measurement name:</p>
+    <input id="measurement-request-name" placeholder="Gravitational acceleration">
+    <input id="measurement-request-latex" placeholder="g_\oplus">
+    <p>Measurement value:</p>
+    <input type="number" id="measurement-request-value" placeholder="9.807">
+    <br>
+    $\text{m}$^<input type="number" id="measurement-request-meters" placeholder="1">
+    $\text{s}$^<input type="number" id="measurement-request-seconds" placeholder="-2">
+    $\text{kg}$^<input type="number" id="measurement-request-kilograms" placeholder="">
+    <br>
+    $\text{K}$^<input type="number" id="measurement-request-kelvins" placeholder="">
+    $\text{A}$^<input type="number" id="measurement-request-amperes" placeholder="">
+    $\text{cd}$^<input type="number" id="measurement-request-candelas" placeholder="">
+    <button onclick="submitMeasurementRequest();">Submit</button>
+  </div>
+  <div id="pick-measurements-result" style="height: 28rem;"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.js" type="text/javascript"></script>
+  <script src="../makemath.js"></script>
+  <script src="../bloglikemodal.js"></script>
+  <script>
+    function makePlayground(parentDiv, given, siBasis, siRelativeToStandardestBasis = math.identity(siBasis.length)._data) {
+      parentDiv.setAttribute("class", "playground");
+      let inputElements = siBasis.map(x => x.quantity).map(x => {
+        let div = parentDiv.appendChild(document.createElement("div"));
+        div.setAttribute("class", "dimension-input");
+        let label = div.appendChild(document.createElement("label"));
+        label.innerText = x;
+        let input = div.appendChild(document.createElement("input"));
+        input.type = "range";
+        input.min = -5;
+        input.max = 5;
+        input.value = 0;
+        let span = div.appendChild(document.createElement("span"));
+        span.innerText = input.value + " dimension"+s(input.value)+" of " + x;
+        input.oninput = function() {
+          span.innerText = this.value + " dimension" + s(this.value) + " of " + x;
+          runThing();
+        }
+        return input;
+      });
+      let output = parentDiv.appendChild(document.createElement("div"));
+      output.setAttribute("class", "dimension-output");
+      let matrix = math.transpose(given.map(x => x.dim));
+      let determinant = Math.abs(math.det(matrix));
+      matrix = math.inv(matrix);
+      matrix = matrix.map(a => a.map(b => Math.round(b*determinant))); //rounding to integers :3 REMEMBER TO DIVIDE BY DETERMINANT ON THE OUTSIDE. integer fraction style
+      runThing();
+      matrixBTW = parentDiv.insertBefore(makeMath(
+        "\\M=\\frac{1}{"+determinant+"}"+math.parse(JSON.stringify(matrix)).toTex()
+      ), parentDiv.firstChild);
+      matrixBTW.remove(); //decided i dont like this
+      function runThing() {
+        let desiredDimensions = inputElements.map(x => parseInt(x.value));
+        let neededOfUnits = math.multiply(matrix, desiredDimensions); //emotionally. divide by determinant after this
+        let root = determinant; //root that our units will go under. represents that outside division
+        //if neededOfUnits are all divisible by something that the root is also divisible by, do all the division now and make everyone happy
+        let divisibleBy = Math.abs(gcf(gcfList(neededOfUnits), root)); //very possible 1
+        neededOfUnits = neededOfUnits.map(x => x/divisibleBy);
+        root /= divisibleBy;
+        let qtyName = quantityName(math.multiply((math.transpose(siRelativeToStandardestBasis)), desiredDimensions));
+        //write down dimensions that we're getting
+        let gettingDim = []; //will look like L^2 T^-2 K^1
+        let gettingSI = []; //will look like m^2 s^-2 K^1
+        for (let i = 0; i < siBasis.length; i++) {
+          let q = desiredDimensions[i];
+          if (q == 1) gettingDim.push(siBasis[i].quantitySymbol);
+          else if (q != 0) gettingDim.push(siBasis[i].quantitySymbol + "^{"+q+"}");
+          if (q == 1) gettingSI.push(siBasis[i].symbol);
+          else if (q != 0) gettingSI.push(siBasis[i].symbol + "^{"+q+"}");
+        }
+        //write down what we need to use
+        let usingNum = []; //will look like c^2 G^-1 hbar^5
+        let usingDen = []; //will look like c^2 G^-1 hbar^5
+        for (let i = 0; i < given.length; i++) {
+          let q = neededOfUnits[i]; //really has power q/root; root is going outside all of this
+          if (q == 1) usingNum.push(given[i].tex);
+          else if (q > 0) usingNum.push(given[i].tex + "^{"+q+"}");
+          else if (q == -1) usingDen.push(given[i].tex);
+          else if (q < 0) usingDen.push(given[i].tex + "^{"+(-q)+"}");
+        }
+        if (!usingNum.length) usingNum = ["1"];
+        if (!gettingDim.length) gettingDim = ["1"];
+        
+        //format stuff now
+        //first, write out numerator and denominator
+        let expression = (usingDen.length) ? "\\frac{"+usingNum.join("\\;")+"}{"+usingDen.join("\\;")+"}" : usingNum.join("\\;");
+        //ok now wrap it in sqrt
+        if (root == 1) expression = expression;
+        else if (root == 2) expression =  "\\sqrt{"+expression+"}";
+        else expression = "\\sqrt["+root+"]{"+expression+"}";
+        
+        let valueInSI = 1;
+        for (let i = 0; i < given.length; i++)
+          valueInSI *= Math.pow(given[i].valueInSI, neededOfUnits[i]/root);
+        
+        while (output.firstChild) output.firstChild.remove();
+        output.appendChild(makeMath(
+          "\\ll " + expression + "\\rr=" + gettingDim.join("\\;") + (qtyName ? "\\;\\;\\color{#777777}(\\text{"+qtyName+"})" : "") + "$$ $$" + expression + (valueInSI==1 ? "=" : "\\approx") + toScientificNotation(valueInSI) + "\\;" + gettingSI.join("\\;")
+          //"\\ll " + expression + "\\rr=" + dims.join("\\;") + "$$ $$" + expression + "\\approx" + toScientificNotation(valueInSI) + "\\;" + siUnits.join("\\;")
+        ));
+      }
+    }
+    
+    function writeSimplifiedFraction(p, q) {
+      let g = Math.abs(gcf(p, q));
+      let negative = (p<0) ^ (q<0);
+      p = Math.abs(p)/g;
+      q = Math.abs(q)/g;
+      return (negative?"-":"")+"\\frac{"+p+"}{"+q+"}";
+    }
+    function gcf(a, b) {
+      if (b == 0) return a;
+      return gcf(b, a%b);
+    }
+    function gcfList(a) {
+      return a.reduce(gcf,a[0]);
+    }
+    
+    function toScientificNotation(x) {
+      if (x == 1) return "1";
+      if (x == Infinity) return "{\\color{#DC1FAF}\\text{very big}}";
+      if (x == -Infinity) return "{\\color{#DC1FAF}-\\text{very big}}";
+      if (x == 0) return "{\\color{#DC1FAF}\\text{very small}}";
+      return x.toExponential(3).replace("e+","\\times 10^{").replace("e-","\\times 10^{-") + "}";
+    }
+  
+    makePlayground(document.querySelector("#playtime-planck"), [
+      {tex: "c", dim: [1,-1,0,0], valueInSI: 299792458},
+      {tex: "G", dim: [3,-2,-1,0], valueInSI: 6.6743015E-11},
+      {tex: "\\hbar", dim: [2,-1,1,0], valueInSI: 1.054571817E-34},
+      {tex: "k_B", dim: [2,-2,1,-1], valueInSI: 1.380649E-23}
+    ], [
+      {quantity: "length", quantitySymbol: "\\mathsf{L}", symbol: "\\text{m}"},
+      {quantity: "time", quantitySymbol: "\\mathsf{T}", symbol: "\\text{s}"},
+      {quantity: "mass", quantitySymbol: "\\mathsf{M}", symbol: "\\text{kg}"},
+      {quantity: "temperature", quantitySymbol: "\\mathsf{\\Theta}", symbol: "\\text{K}"}
+    ]);
+    
+    makePlayground(document.querySelector("#playtime-ccc"), [
+      {tex: "\\text{C}_4", dim: [0,-1,0], valueInSI: 261.625565},
+      {tex: "c", dim: [1,-1,0], valueInSI: 299792458},
+      {tex: "\\text{cal}", dim: [2,-2,1], valueInSI: 4.184}
+    ], [
+      {quantity: "length", quantitySymbol: "\\mathsf{L}", symbol: "\\text{m}"},
+      {quantity: "time", quantitySymbol: "\\mathsf{T}", symbol: "\\text{s}"},
+      {quantity: "mass", quantitySymbol: "\\mathsf{M}", symbol: "\\text{kg}"}
+    ]);
+    
+  
+    makePlayground(document.querySelector("#playtime-planck-ccc"), [
+      //{tex: "c", dim: [0,1,0], valueInSI: 1}, //the attribute is called "value in SI" but technically here it's "value in ccc". thats funny
+      //{tex: "G", dim: [1,5,0], valueInSI: 1},
+      //{tex: "\\hbar", dim: [0,-1,1], valueInSI: 1}
+      {tex: "c", dim: [0,1,0], valueInSI: 1}, //the attribute is called "value in SI" but technically here it's "value in ccc". thats funny
+      {tex: "G", dim: [-1,5,-1], valueInSI: 3.01699134e-50},
+      {tex: "\\hbar", dim: [-1,0,1], valueInSI: 6.59423871e-33}
+    ], [
+      {quantity: "frequency", quantitySymbol: "\\left(\\frac{\\mathsf{1}}{\\mathsf{T}}\\right)", symbol: "\\text{C}_4"},
+      {quantity: "velocity", quantitySymbol: "\\left(\\frac{\\mathsf{L}}{\\mathsf{T}}\\right)", symbol: "c"},
+      {quantity: "energy", quantitySymbol: "\\left(\\frac{\\mathsf{M}\\;\\mathsf{L}^2}{\\mathsf{T}^2}\\right)", symbol: "\\text{cal}"}
+    ], [
+      [0, -1, 0],
+      [1, -1, 0],
+      [2, -2, 1]
+    ]);
+    
+    
+    /* makePlayground(document.querySelector("#playtime-random"), [
+      {tex: "\\text{Amazon}", dim: [3,-1,0], valueInSI: 216000}, //flow rate of the amazon river
+      {tex: "\\text{g.g.e.}", dim: [2,-2,1], valueInSI: 1.2132e8}, //aproximate amount of energy in a gallon of gas
+      {tex: "\\text{shot}", dim: [3,0,0], valueInSI: 4.4e-5} //volume of a shot
+    ], [
+      {quantity: "length", quantitySymbol: "\\mathsf{L}", symbol: "\\text{m}"},
+      {quantity: "time", quantitySymbol: "\\mathsf{T}", symbol: "\\text{s}"},
+      {quantity: "mass", quantitySymbol: "\\mathsf{M}", symbol: "\\text{kg}"}
+    ]); */
+    
+    
+    
+    let randomMeasurementsBank = [
+      {tex: "\\text{m}", dim: [1,0,0,0,0,0], valueInSI: 1, name: "Meter"},
+      {tex: "\\text{s}", dim: [0,1,0,0,0,0], valueInSI: 1, name: "Second"},
+      {tex: "\\text{kg}", dim: [0,0,1,0,0,0], valueInSI: 1, name: "Kilogram"},
+      {tex: "\\text{K}", dim: [0,0,0,1,0,0], valueInSI: 1, name: "Kelvin"},
+      {tex: "\\text{A}", dim: [0,0,0,0,1,0], valueInSI: 1, name: "Ampere"},
+      {tex: "\\text{cd}", dim: [0,0,0,0,0,1], valueInSI: 1, name: "Candela"},
+      /* {tex: "\\text{N}", dim: [1,-2,1,0,0,1], valueInSI: 1, name: "Newton"},
+      {tex: "\\text{J}", dim: [2,-2,1,0,0,0], valueInSI: 1, name: "Joule"},
+      {tex: "\\text{W}", dim: [2,-3,1,0,0,0], valueInSI: 1, name: "Watt"},
+      {tex: "\\text{Pa}", dim: [1,-2,1,0,0,0], valueInSI: 1, name: "Pascal"},
+      {tex: "\\text{C}", dim: [0,0,1,0,1,0], valueInSI: 1, name: "Coulomb"},
+      {tex: "\\text{V}", dim: [2,-3,1,0,-1,0], valueInSI: 1, name: "Volt"},
+      {tex: "\\text{F}", dim: [-2,4,-1,0,2,0], valueInSI: 1, name: "Farad"}, */
+      {tex: "c", dim: [1,-1,0,0,0,0], valueInSI: 299792458, name: "Speed of light"},
+      {tex: "G", dim: [3,-2,-1,0,0,0], valueInSI: 6.6743015E-11, name: "Gravitational constant"},
+      {tex: "\\hbar", dim: [2,-1,1,0,0,0], valueInSI: 1.054571817E-34, name: "Reduced Planck constant"},
+      {tex: "k_B", dim: [2,-2,1,-1,0,0], valueInSI: 1.380649E-23, name: "Boltzmann constant"},
+      {tex: "\\text{C}_4", dim: [0,-1,0,0,0,0], valueInSI: 261.625565, name: "Pitch of middle C (C4)"},
+      {tex: "\\text{cal}", dim: [2,-2,1,0,0,0], valueInSI: 4.184, name: "Calorie"},
+      {tex: "R_\\odot", dim: [1,0,0,0,0,0], valueInSI: 6.957e+8, name: "Solar radius"},
+      {tex: "m_\\odot", dim: [0,0,1,0,0,0], valueInSI: 1.989e+30, name: "Solar mass"},
+      {tex: "L_\\odot", dim: [2,-3,1,0,0,0], valueInSI: 3.828e26, name: "Solar luminosity"},
+      {tex: "\\text{MPG}", dim: [-2,0,0,0,0,0], valueInSI: 0.354006, name: "Mile per galon"}
+    ];
+    makeTheMeasurementBank();
+    function makeTheMeasurementBank() {
+      document.querySelector("#pick-measurements").innerHTML = "";
+      for (let i = 0; i < randomMeasurementsBank.length; i++) {
+        let div = document.querySelector("#pick-measurements").appendChild(document.createElement("div"));
+        let input = div.appendChild(document.createElement("input"));
+        randomMeasurementsBank[i].element = input;
+        input.type = "checkbox";
+        input.checked = false;
+        input.setAttribute("id", "pick-measurement-"+i);
+        let label = div.appendChild(document.createElement("label"));
+        label.innerText = randomMeasurementsBank[i].name;
+        //let span = label.appendChild(document.createElement("span"));
+        let valueText = toScientificNotation(randomMeasurementsBank[i].valueInSI);
+        for (let d = 0; d < 6; d++) {
+          let q = randomMeasurementsBank[i].dim[d];
+          if (q == 1) valueText += "\\;\\text{"+["m", "s", "kg", "K", "A", "cd"][d]+"}";
+          else if (q != 0) valueText += "\\;\\text{"+["m", "s", "kg", "K", "A", "cd"][d]+"}^{"+q+"}";
+        }
+        valueText = "{\\color{#DC1FAF}" + randomMeasurementsBank[i].tex + "}" + (randomMeasurementsBank[i].valueInSI==1 ? "=" : "\\approx") + valueText;
+        label.appendChild(makeMath(valueText, "$"));
+        label.setAttribute("for", "pick-measurement-"+i);
+        input.oninput = runTotallyCustom;
+        div.appendChild(document.createElement("br"));
+      }
+      runTotallyCustom();
+    }
+    function runTotallyCustom() {
+      //given what is currently selected, find which ones are allowable extensions
+      let selected = randomMeasurementsBank.filter(x => x.element.checked).map(x => x.dim);
+      if (selected.length < 6) for (let possibleExtension of randomMeasurementsBank.filter(x => !x.element.checked)) {
+        let m = JSON.parse(JSON.stringify(selected));
+        m.push(possibleExtension.dim);
+        m = math.transpose(m);
+        //are the columns of m linearly independent?
+        //if so, possibleExtension.element.disabled = false
+        //if not, possibleExtension.element.disabled = true
+        let r = math.qr(m).R; //if r has any zeros on diagonal, linear DEPENDENCE
+        possibleExtension.element.disabled = false;
+        for (let i = 0; i < r.length; i++) if (r[i][i] < 10e-10 || Number.isNaN(r[i][i])) possibleExtension.element.disabled = true; //'r[i][i] < 10e-10 || Number.isNaN(r[i][i])' oh i spent an hour+ debugging this
+      }
+      if (selected.length >= 6) for (let possibleExtension of randomMeasurementsBank.filter(x => !x.element.checked)) possibleExtension.element.disabled = true;
+      for (let s of randomMeasurementsBank.filter(x => x.element.checked)) s.element.disabled = false;
+      try {
+        let measures = randomMeasurementsBank.filter(x => x.element.checked);
+        document.querySelector("#pick-measurements-result").innerHTML = "";
+        makePlayground(document.querySelector("#pick-measurements-result"), measures, [
+          {quantity: "length", quantitySymbol: "\\mathsf{L}", symbol: "\\text{m}"},
+          {quantity: "time", quantitySymbol: "\\mathsf{T}", symbol: "\\text{s}"},
+          {quantity: "mass", quantitySymbol: "\\mathsf{M}", symbol: "\\text{kg}"},
+          {quantity: "temperature", quantitySymbol: "\\mathsf{\\Theta}", symbol: "\\text{K}"},
+          {quantity: "current", quantitySymbol: "\\mathsf{I}", symbol: "\\text{A}"},
+          {quantity: "intensity", quantitySymbol: "\\mathsf{J}", symbol: "\\text{cd}"}
+        ]);
+        return true;
+      } catch(e) {
+        document.querySelector("#pick-measurements-result").innerHTML = "<p>This does not form a coherent system of units.</p>";
+        let checkedBoxes = randomMeasurementsBank.filter(x => x.element.checked).length;
+        if (checkedBoxes < 6) {
+          document.querySelector("#pick-measurements-result").innerHTML += "<p>You only have " + checkedBoxes + " base unit"+s(checkedBoxes)+" selected, but you need 6.</p>";
+        } else if (checkedBoxes > 6) {
+          document.querySelector("#pick-measurements-result").innerHTML += "<p>You have " + checkedBoxes + " base units selected, but this is redundant, as only 6 are needed to make a coherent set of base units.</p>";
+        } else {
+          document.querySelector("#pick-measurements-result").innerHTML += "<p>You have the right number of base units (6), but the ones you picked are somehow redundant to each other (e.g. a volume unit and a length unit can be derived from each other). Try picking different ones.</p>";
+        }
+        return false;
+      }
+    }
+    
+    function rref(r){for(var f=r.length,n=r[0].length,e=0,o=0;o<f;o++){if(n<=e)return;for(var t=o;0===r[t][e];)if(t++,f===t&&(t=o,n===++e))return;var a=r[t],i=r[o];r[t]=i,r[o]=a;for(var u=r[o][e],v=0;v<n;v++)r[o][v]/=u;for(t=0;t<f;t++)if(t!==o){u=r[t][e];for(v=0;v<n;v++)r[t][v]-=u*r[o][v]}e++}return r}
+    
+    function requestMeasurement() {
+      hiModal(document.querySelector("#measurement-request"));
+      for (let input of document.querySelectorAll("#measurement-request input")) input.value = "";
+      for (let input of document.querySelectorAll("#measurement-request input")) input.setAttribute("invalid", "false");
+    }
+    function submitMeasurementRequest() {
+      let name = document.querySelector("#measurement-request-name").value;
+      let symbol = document.querySelector("#measurement-request-latex").value;
+      let v = parseFloat(document.querySelector("#measurement-request-value").value);
+      let dims = ["meters", "seconds", "kilograms", "kelvins", "amperes", "candelas"].map(x => document.querySelector("#measurement-request-" + x).value);
+      //set valid/invalid
+      for (let input of document.querySelectorAll("#measurement-request input")) input.setAttribute("invalid", "false");
+      setTimeout(function() {
+        document.querySelector("#measurement-request-name").setAttribute("invalid", name.length == 0);
+        document.querySelector("#measurement-request-latex").setAttribute("invalid", symbol.length == 0);
+        document.querySelector("#measurement-request-value").setAttribute("invalid", !v);
+        if (dims.reduce((a,b)=>a+Math.abs(b),0) == 0)
+          for (let e of ["meters", "seconds", "kilograms", "kelvins", "amperes", "candelas"].map(x => document.querySelector("#measurement-request-"+x)))
+            e.setAttribute("invalid", "true");
+      }, 10); //i hate that setTimeout fixes so many problems
+      if ((name.length && symbol.length && v && dims.reduce((a,b)=>a+Math.abs(b),0)) == 0) return; //return if anything was bad
+      //submit the measurement
+      randomMeasurementsBank.push({
+        tex: symbol,
+        dim: dims,
+        valueInSI: v,
+        name: name
+      });
+      byeModal(document.querySelector("#measurement-request"));
+      makeTheMeasurementBank();
+    }
+    
+    function quantityName(e){
+      while (e.length<6) e.push(0);
+      while (e.length>6) e.pop();
+      return{"0,0,0,0,0,0":"unitless","1,0,0,0,0,0":"length","0,1,0,0,0,0":"time","0,0,1,0,0,0":"mass","0,0,0,1,0,0":"temperature","1,1,0,0,0,0":"absement","1,-2,0,0,0,0":"acceleration","2,-1,1,0,0,0":"spin","2,0,0,0,0,0":"area","-2,0,1,0,0,0":"area density","1,-5,0,0,0,0":"crackle","1,1,1,0,0,0":"dynamic viscosity","2,-2,1,0,0,0":"energy","1,-2,1,0,0,0":"force","2,-2,1,-1,0,0":"heat capacity","0,-1,0,0,0,0":"frequency","1,-1,1,0,0,0":"momentum","0,-3,1,0,0,0":"intensity or radiance","1,-3,0,0,0,0":"jerk","1,-4,0,0,0,0":"jounce or snap","-1,0,1,0,0,0":"linear density","-3,0,1,0,0,0":"density","2,0,1,0,0,0":"moment of inertia","2,-3,1,0,0,0":"power","-1,-2,1,0,0,0":"stress","1,-6,0,0,0,0":"pop","0,-2,1,0,0,0":"surface tension","0,-1,0,1,0,0":"temperature gradient","2,-3,1,-1,0,0":"thermal conductance","1,-3,1,-1,0,0":"thermal conductivity","-2,3,-1,1,0,0":"thermal resistance","-1,3,-1,1,0,0":"thermal resistivity","1,-1,0,0,0,0":"velocity","3,0,0,0,0,0":"volume","3,-1,0,0,0,0":"volumetric flow rate","0,-1,1,0,0,0":"mass flow rate","0,0,0,0,1,0":"electric current","0,0,0,0,0,1":"luminous intensity"}[e.join(",")]
+    }
+    
+    function s(n) { //silly plural function
+      return n==1 ? "" : "s";
+    }
+  </script>
+</body>
+</html>
