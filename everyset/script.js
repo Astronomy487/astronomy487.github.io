@@ -65,10 +65,7 @@ function makePage(n) { //1, 2, 3, ..
 	tr.appendChild(document.createElement("th")).innerText = "Rank";
 	tr.appendChild(document.createElement("th")).innerText = "Cardinality";
 	for (let i = n*setsPerPage-setsPerPage; i < n*setsPerPage; i++) {
-		let tr = tableout.appendChild(sets[i].html());
-		setTimeout(function() {
-			tr.style.opacity = 1;
-		}, (i - n*setsPerPage + setsPerPage) * 5);
+		tableout.appendChild(sets[i].html());
 	}
 	while (nav.firstChild) nav.firstChild.remove();
 	let a = ["a", "a", "span", "a", "a"].map(x => nav.appendChild(document.createElement(x)));
