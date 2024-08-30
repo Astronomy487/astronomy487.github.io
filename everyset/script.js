@@ -1,88 +1,148 @@
+let sets = {}; //keys are bigints-converted-to-strings
+
+function getSet(index) {
+	if (!sets[index.toString()])
+		new Set(index);
+	return sets[index.toString()];
+}
+function noteImportantSet(set, comment, color) {
+	let indexStr = findIndexFromSetString(set).toString();
+	if (!importantNote[indexStr])
+		importantNote[indexStr] = [];
+	importantNote[indexStr].push('<span style="color: '+color+'">' + comment + '</span>');
+}
+
+let importantNote = {};
+
 class Set {
-	constructor(m = []) {
-		this.string = "{" + m.sort((a, b) => a.index - b.index).map(x => x.string).join(",") + "}";
-		if (this.string == "{}") this.string = "∅";
-		this.rank = -1;
-		for (let member of m) this.rank = Math.max(this.rank, member.rank);
-		this.rank++;
-		this.index = sets.length;
-		sets.push(this);
-		this.members = m;
-	}
-	equals(other) {
-		return this.string == other.string;
-	}
-	html() {
-		let tr = document.createElement("tr");
-		let td = [0,1,2,3].map(x => tr.appendChild(document.createElement("td")));
-		td[0].innerText = this.index+1 + ".";
-		td[1].innerText = this.string;
-		if (this.members.length) td[1].setAttribute("title", "Elements: " + this.members.map(x => "#" + x.index).join(", "));
-		td[2].innerText = this.rank;
-		td[3].innerText = this.members.length;
-		return tr;
+	constructor(index) { //index is bigint
+		sets[index.toString()] = this;
+		this.index = index;
+		let n = index;
+		let i = 0n;
+		this.elements = [];
+		while (n > 0) {
+			if (n % 2n > 0) {
+				this.elements.push(getSet(i));
+			}
+			n = n >> 1n;
+			i = i + 1n;
+		}
+		this.cardinality = this.elements.length;
+		this.string = this.cardinality ? "{" + this.elements.map(x => x.string).join(",") + "}" : "∅";
+		this.rank = 0;
+		for (let element of this.elements) this.rank = Math.max(this.rank, element.rank + 1);
 	}
 }
 
-let sets = [];
+new Set(BigInt("3785924987"));
 
-new Set(); //New SET💜
+let perPage = 50n;
+let currentPage = 0n;
 
-//these are horrible variable names
-let explored = 0; //we are making sets with members any-set-indexed-less-than-this and MANDATORY the-set-indexed-with-this
-let max = 1; //the number of steps to take within this round of explored. always a power of two
-let indexWithinRound = 0; //slowly counting up to max; then bumps explored
+let indexToHighlight = -1n;
 
-function step() { //figure out the next
-	if (indexWithinRound >= max) {
-		explored++;
-		max = Math.pow(2, explored);
-		indexWithinRound = 0;
-	}
-	let members = [sets[explored]];
-	for (let b = 0; b < explored; b++) {
-		if ((indexWithinRound>>b)&1) members.push(sets[b]);
-	}
-	new Set(members);
-	indexWithinRound++;
+function prepareTable() {
+	while (output.firstChild) output.firstChild.remove();
+	let tr = output.appendChild(document.createElement("tr"));
+	output.appendChild(document.createElement("th")).innerText = "Index";
+	output.appendChild(document.createElement("th")).innerText = "Set";
+	output.appendChild(document.createElement("th")).innerText = "Rank";
+	output.appendChild(document.createElement("th")).innerText = "Cardinality";
+	output.appendChild(document.createElement("th")).innerText = "Notes";
 }
-
-function findUpTo(index) {
-	while (sets.length < index+1) step();
+function doRow(i) {
+	let set = getSet(i);
+	let tr = output.appendChild(document.createElement("tr"));
+	tr.appendChild(document.createElement("td")).innerText = set.index;
+	tr.appendChild(document.createElement("td")).innerText = set.string;
+	tr.appendChild(document.createElement("td")).innerText = set.rank;
+	tr.appendChild(document.createElement("td")).innerText = set.cardinality;
+	if (i == indexToHighlight) tr.setAttribute("highlight", "true");
+	tr.appendChild(document.createElement("td")).innerHTML = importantNote[i.toString()] ? importantNote[i.toString()].join("<br>") : "";
 }
-
-let setsPerPage = 25;
-let pageSkipSize = 10;
-let currentPage;
-
-function makePage(n) { //1, 2, 3, ..
+function makePage(n = currentPage) { //start on page 0; display n through n+perPage-1; n is bigint
+	if (n < 0n) n = 0n;
+	while (output.firstChild) output.firstChild.remove();
 	currentPage = n;
-	while (tableout.firstChild) tableout.firstChild.remove();
-	findUpTo(n*setsPerPage);
-	let tr = tableout.appendChild(document.createElement("tr"));
-	tr.appendChild(document.createElement("th")).innerText = "";
-	tr.appendChild(document.createElement("th")).innerText = "Set";
-	tr.appendChild(document.createElement("th")).innerText = "Rank";
-	tr.appendChild(document.createElement("th")).innerText = "Cardinality";
-	for (let i = n*setsPerPage-setsPerPage; i < n*setsPerPage; i++) {
-		tableout.appendChild(sets[i].html());
+	prepareTable();
+	for (let i = n * perPage; i < n * perPage + perPage; i = i + 1n) doRow(i);
+	currentPageDisplay.value = n.toString();
+	try {
+		output.querySelector("[highlight]").scrollIntoView();
+	} catch(e) {
+		
 	}
-	while (nav.firstChild) nav.firstChild.remove();
-	let a = ["a", "a", "span", "a", "a"].map(x => nav.appendChild(document.createElement(x)));
-	a[0].innerText = "<<";
-	a[1].innerText = "<";
-	a[2].innerText = currentPage;
-	a[3].innerText = ">";
-	a[4].innerText = ">>";
-	if (currentPage == 1) {
-		a[0].setAttribute("class", "disabled");
-		a[1].setAttribute("class", "disabled");
-	} else {
-		a[0].onclick = function() {makePage(Math.max(1, currentPage - pageSkipSize));}
-		a[1].onclick = function() {makePage(currentPage - 1);}
+}
+function makeSpecialPage() {
+	prepareTable();
+	for (let i of Object.keys(importantNote).map(BigInt)) doRow(i);
+	currentPageDisplay.value = "special";
+	try {
+		output.querySelector("[highlight]").scrollIntoView();
+	} catch(e) {
+		
 	}
-	a[3].onclick = function() {makePage(currentPage + 1);}
-	a[4].onclick = function() {makePage(currentPage + pageSkipSize);}
 }
 
-makePage(1);
+function findIndexFromSetString(string) {
+	let ogString = string;
+	string = string.replaceAll("∅", "{}").replaceAll(" ", "").replaceAll("\t", "");
+	if (!string.length) throw "Gave me an empty string...";
+	let nestingLevel = 0;
+	for (let character of string.split("")) {
+		if (character == "{") nestingLevel++;
+		if (character == "}") nestingLevel--;
+		if (nestingLevel < 0) throw "Invalid curly brackets";
+	}
+	if (nestingLevel != 0) throw "Invalid curly brackets";
+	string = string.substring(1, string.length-1);
+	if (!string.length) return 0n;
+	//make children - string split by commas, but only on outer nesting level
+	let children = [];
+	nestingLevel = 0;
+	let latestChild = "";
+	for (let character of string.split("")) {
+		if (character == "{") nestingLevel++;
+		if (character == "}") nestingLevel--;
+		if (nestingLevel == 0 && character == ",") {
+			children.push(latestChild);
+			latestChild = "";
+		} else latestChild += character;
+	}
+	children.push(latestChild);
+	let total = 0n;
+	for (let child of children.map(findIndexFromSetString)) {
+		total |= 1n << child;
+	}
+	return total;
+}
+
+function doSearch() {
+	let str = setSearch.value;
+	try {
+		pullUpIndex(findIndexFromSetString(str));
+	} catch(e) {
+		
+	}
+}
+
+function pullUpIndex(index) {
+	indexToHighlight = index;
+	makePage((index-index%perPage)/(perPage));
+}
+
+//make notes about cool sets
+/* for (let [i, vonNeuman] = [0, "{}"]; i < 6; [i, vonNeuman] = [i+1, (vonNeuman.substring(0, vonNeuman.length-1) + ","+vonNeuman+"}").replace("{,","{")]) {
+	noteImportantSet(vonNeuman, "Von Neuman ordinal "+i, "#2af");
+	console.log(vonNeuman);
+} */
+
+let neumanOrdinals = ["{}", "{{}}", "{{},{{}}}", "{{},{{}},{{},{{}}}}", "{{},{{}},{{},{{}}},{{},{{}},{{},{{}}}}}", "{{},{{}},{{},{{}}},{{},{{}},{{},{{}}}},{{},{{}},{{},{{}}},{{},{{}},{{},{{}}}}}}"]
+
+for (let i = 0; i < neumanOrdinals.length; i++)
+	noteImportantSet(neumanOrdinals[i], "Von Neuman ordinal " + i, "#2af");
+
+//for (let [i, t] = [0, "{}"]; i < 6; [i, t] = [i+1, "{"+t+"}"]) noteImportantSet(t, "First set of rank " + i);
+
+makePage();
