@@ -114,17 +114,22 @@
 		h1 {
 			margin-top: 6rem;
 		}
+		
+		a {
+			color: inherit;
+		}
 	</style>
 </head>
 <body>
 	<main>
-		<h1>Every set ever</h1>
+		<h1>Every set ever<a style="float: right;" href="explanation">Explanation</a></h1>
 		<nav>
 			<!-- <a onclick="makePage(currentPage - 10n);">&lt;&lt;</a> -->
 			<a onclick="makePage(currentPage - 1n);">&lt;</a>
 			<a onclick="makePage(currentPage + 1n);">&gt;</a>
 			<!-- <a onclick="makePage(currentPage + 10n);">&gt;&gt;</a> -->
-			<span>Page
+			<span>
+				Page
 				<input type=tel required pattern="\d+" onchange="try{makePage(BigInt(this.value));} catch(e) {if (this.value == 'special') makeSpecialPage(); else makePage();}" id="currentPageDisplay">
 			</span>
 			<button id="setSearchButton" onclick="doSearch();">Search</button>

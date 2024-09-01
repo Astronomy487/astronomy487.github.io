@@ -37,7 +37,7 @@ class Set {
 
 new Set(BigInt("3785924987"));
 
-let perPage = 50n;
+let perPage = 100n;
 let currentPage = 0n;
 
 let indexToHighlight = -1n;
@@ -85,15 +85,18 @@ function makeSpecialPage() {
 	}
 }
 
+let maxRank = 5;
+
 function findIndexFromSetString(string) {
 	let ogString = string;
-	string = string.replaceAll("∅", "{}").replaceAll(" ", "").replaceAll("\t", "");
+	string = string.replaceAll("∅", "{}").replaceAll(" ", "").replaceAll("\t", "").replaceAll("\\","").replaceAll("emptyset","{}");
 	if (!string.length) throw "Gave me an empty string...";
 	let nestingLevel = 0;
 	for (let character of string.split("")) {
 		if (character == "{") nestingLevel++;
 		if (character == "}") nestingLevel--;
 		if (nestingLevel < 0) throw "Invalid curly brackets";
+		if (nestingLevel-1 > maxRank) if (!confirm("Looking for a set higher than rank "+maxRank+" will probably freeze your browser. Is that okay")) throw "Higher than rank "+maxRank;
 	}
 	if (nestingLevel != 0) throw "Invalid curly brackets";
 	string = string.substring(1, string.length-1);
@@ -142,6 +145,10 @@ let neumanOrdinals = ["{}", "{{}}", "{{},{{}}}", "{{},{{}},{{},{{}}}}", "{{},{{}
 
 for (let i = 0; i < neumanOrdinals.length; i++)
 	noteImportantSet(neumanOrdinals[i], "Von Neuman ordinal " + i, "#2af");
+
+for (let i = 0; i < 4; i++)
+	for (let j = 0; j < 4; j++)
+		noteImportantSet("{{"+neumanOrdinals[i]+"}, {"+neumanOrdinals[i]+", "+neumanOrdinals[j]+"}}", "Kuratowski ordered pair ("+i+", "+j+")", "#af2");
 
 //for (let [i, t] = [0, "{}"]; i < 6; [i, t] = [i+1, "{"+t+"}"]) noteImportantSet(t, "First set of rank " + i);
 

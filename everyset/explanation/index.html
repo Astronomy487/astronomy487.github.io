@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<link rel="stylesheet" href="../../bloglike.css">
+			<title>Every set ever - explanation</title>
+			<style>
+				body {
+				--accent: #0f8;
+				}
+			</style>
+		</head>
+		<body>
+			<h1>Every set ever - explanation</h1>
+			<h2 id="motivation">Motivation</h2>
+			<p>The Zermelo-Fraenkel axioms of set theory only assume the existence of the empty set, and for the existence of sets containing other such sets. These are &quot;pure&quot; sets, which are just nestings in nestings (all the way down!) until the empty set.</p>
+			<p>You can make silly set-theoretic definitions of integers, ordered pairs, functions, and other useful things by declaring that some pure sets correspond to them.</p>
+			<p>The first few integers according to the Von Neuman construction for ordinals</p>
+			<ul>
+				<li>$0=\emptyset$ (0)</li>
+				<li>$1={\emptyset}$ (1)</li>
+				<li>$2={\emptyset,{\emptyset}}$ (3)</li>
+				<li>$3={\emptyset,{\emptyset},{\emptyset,{\emptyset}}}$ (11)</li>
+				<li>$n+1=n\cup {n}$</li>
+			</ul>
+			<p>An ordered pair, per Kuratowski&#39;s definition</p>
+			<ul>
+				<li>$(a,b)={{a},{a, b}}$</li>
+				<li>$(0,1)={{\emptyset},{\emptyset, {\emptyset}}}$ (10)</li>
+			</ul>
+			<p>The boolean set, which also equals the Von Neuman ordinal 2</p>
+			<ul>
+				<li>${0,1}={\emptyset,{\emptyset}}$ (3)</li>
+			</ul>
+			<p>The cartesian self-product of the boolean set</p>
+			<ul>
+				<li>${0,1}^2={{{\emptyset}}, {{\emptyset},{\emptyset,{\emptyset}}}, {{{\emptyset}},{\emptyset,{\emptyset}}}, {{{\emptyset}}}}$ (5140)</li>
+			</ul>
+			<p>A subset of this cartesian product, corresponding to boolean not function</p>
+			<ul>
+				<li>${{{\emptyset},{\emptyset,{\emptyset}}}, {{{\emptyset}},{\emptyset,{\emptyset}}}}$ (5120)</li>
+			</ul>
+			<p>I find the notion comical that, whenever you use the number 3, you&#39;re secretly referring to this pure set. That&#39;s hilarious to me. It&#39;s funny to think that every function in calculus is some infinitely-complex set-full-of-sets, and that&#39;s what&#39;s _really_ going on.</p>
+			<p>Thus I thought it useful to list all of them.</p>
+			<h2 id="scheme">Scheme</h2>
+			<p>The correspondance between indices and sets relies on counting in binary. The $i$th set ($s_i$), where $i$ has the binary representation $\cdots b_4b_3b_2b_1b_0$, has as an element $s_0$ iff $b_0=1$,  has $s_1$ iff $b_1=1$, and so on.</p>
+			<p>$$s_n\in s_i\leftrightarrow b_n=1$$</p>
+			<p>This makes it easy to find the elements of the $i$th set. To work backwards from a set and find its index,</p>
+			<ul>
+				<li>Consider all elements of the set</li>
+				<li>Find their indices</li>
+				<li>For each (unique) index found, add $2^n$ to a running total</li>
+			</ul>
+			<p>Set operations can be represented as bitwise arithmetic with their indices, if you really feel like it:</p>
+			<p>$${s_i}=s_{2^i}$$
+				$$s_i\cap s_j=s_{i\mathtt \&amp; j}$$
+				$$s_i\cup s_j=s_{i\mathtt | j}$$
+				$${s_i,s_j,s_k,\cdots}=s_{2^i+2^j+2^k}\;(i\neq j\neq k\neq i)$$
+			</p>
+			<p>The successor function for Von Neuman ordinals can be turned into index arithmetic:
+				$$S(s_i)=2^i+i$$
+				This follows the sequence $0, 1, 3, 11, 2059, 6.619\times 10^{619}, \cdots$ (<a href="https://oeis.org/A034797">OEIS A034797</a>).
+			</p>
+			<p>Sets&#39; complements doesn&#39;t really make sense here, because</p>
+			<ul>
+				<li>A universal set would generate Russell&#39;s paradox here</li>
+				<li>Under the rules so far, $s_i&#39;=U\setminus s_i$ would be $s_{-n-1}$, a negative-indexed set (using two&#39;s complement)</li>
+				<li>Negative-indexed sets are incompatible with using indices for the binary strings $\cdots b_4b_3b_2b_1b_0$</li>
+			</ul>
+			<p>The cardinality of sets follows <a href="https://oeis.org/A000120">OEIS A000120</a>, the number of 1s in the binary expansion. The rank of $s_i$ (set nesting depth) is the smallest number $R$ such that $2\uparrow\uparrow R&gt;i$. The number of leaves on a set&#39;s tree (number of $\emptyset$s contained within) follows <a href="https://oeis.org/A033922">OEIS A033922</a>.</p>
+			<p>My computer starts to slow down around index $10^{2000}$, somewhere in rank 5.</p>
+			<h2 id="weird-things">Weird things</h2>
+			<ul>
+				<li>
+					The long-run proportion of sets containing $\emptyset$ is $\frac12$ (equal to the long-run proportion of odd numbers in $\mathbb N$) (according to this scheme)
+					<ul>
+						<li>A different mapping from $\mathbb N$ to pure sets could make any arbitrary proportion, including $0$ and $1$</li>
+						<li>This holds true for every set! Every set $s_i$ is contained in half of all sets! In the words of Pastor Jeff, &quot;Worst-case scenario, there&#39;s a 50-50 chance, and I like those odds.&quot; (Young Sheldon S1E3)</li>
+					</ul>
+				</li>
+			</ul>
+			<script src="../../makemath.js"></script>
+		</body>
+	</html>
