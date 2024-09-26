@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<input type="text" inputmode="decimal">
+	<input list="suggestedunits" placeholder="unit">
+	<datalist id="suggestedunits"></datalist>
+	<script>
+		
+		let suggestedUnitsList = {
+			mass: ["gram", "kilogram", "ounce"],
+			volume: ["cup"]
+		};
+		
+		for (let type of Object.keys(suggestedUnitsList)) for (let entry of suggestedUnitsList[type])
+			suggestedunits.appendChild(document.createElement("option")).innerText = entry;
+	</script>
+</body>
+</html>

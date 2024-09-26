@@ -86,7 +86,7 @@
 		
 		function findMorePrimes(n = BigInt(primes.length) + 50n) {
 			while (primes.length < n) {
-				value++;
+				value += 2n;
 				if (value > upcomingPowerOfTwo) upcomingPowerOfTwo = upcomingPowerOfTwo << 1n;
 				if (value > upcomingFactorial + 1n) {
 					lastFactorialFactorConsidered += 1n;
