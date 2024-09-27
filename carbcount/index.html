@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 	<style>
 		html {
 			font-size: 64px;
 		}
 		body {
-			background-color: black;
+			background-color: #222;
 			color: white;
-			font-family: system-ui;
+			font-family: 'Inter', system-ui;
 		}
-		table {
+		#form {
 			border-collapse: collapse;
-			position: fixed;
-			top: 40%;
+			position: absolute;
+			top: 35%;
 			left: 50%;
 			transform: translate(-50%, -50%);
 		}
-		table tr:nth-child(4) td {
-			padding-top: 1rem;
+		#form tr:nth-child(4) td {
+			padding-top: 1.25rem;
 		}
-		table tr:nth-child(5) td {
-			padding-top: 1rem;
-		}
-		table td {
+		#form td {
 			text-align: center;
 			padding: 0.0625rem 0;
 		}
@@ -34,12 +33,46 @@
 			font-family: inherit;
 			border: none;
 			padding: 0.25rem;
+			color: white;
+			background-color: inherit;
+		}
+		#form input {
+			background-color: #444;
+		}
+		#form select {
+			border: solid 0.0625rem white;
+		}
+		select {
+			text-align: center;
+		}
+		#entrylist {
+			margin: 4rem auto;
+			width: 100%;
+			text-align: center;
+		}
+		#addbutton, #form button {
+			background-color: #444;
+			display: inline-block;
+			margin: 1rem 0;
+			padding: 0.5rem 0.75rem;
+			border-radius: 2rem;
+		}
+		#addbutton::before {
+			content: "add_box";
+			font-family: 'Material Symbols Outlined';
+			transform: translateY(0.125rem);
+			display: inline-block;
+			margin-right: 0.25rem;
 		}
 	</style>
 </head>
 <body>
 	<!-- <input type="text" inputmode="decimal">
 	<select id="suggestedunits"> -->
+	<div id="entrylist">
+		<div id="addbutton">Add another item</div>
+		<div id="thetotal"></div>
+	</div>
 	<script>
 		let unitsList = {
 			mass: { //store into grams
@@ -58,10 +91,16 @@
 			}
 		};
 		
-		function doCalc(servingAmount, servingUnit, havingAmount, havingUnit, carbsPerServing) {
+		let pastEntries = [];
+		
+		function doCalc(x) {
+			for (let field of "servingAmount havingAmount carbsPerServing".split(" ")) {
+				if (!(field in x) || !Number.isFinite(x[field]) || x[field] == 0) throw "bad";
+			}
+			for (let field of ["servingUnit", "havingUnit"]) if (!(field in x)) throw "bad";
 			for (let group of Object.keys(unitsList).map(x => unitsList[x])) {
-				if (servingUnit in group && havingUnit in group) {
-					return carbsPerServing * havingAmount / servingAmount * group[havingUnit] / group[servingUnit];
+				if (x.servingUnit in group && x.havingUnit in group) {
+					return x.carbsPerServing * x.havingAmount / x.servingAmount * group[x.havingUnit] / group[x.servingUnit];
 				}
 			}
 		}
@@ -82,35 +121,41 @@
 			for (let type of Object.keys(unitsList)) if (v in unitsList[type]) return type;
 		}
 		
-		function makeTable(height, width) {
-			let table = document.body.appendChild(document.createElement("table"));
-			let grid = [];
-			for (let y = 0; y < height; y++) {
-				let tr = table.appendChild(document.createElement("tr"));
-				grid[y] = [];
-				for (let x = 0; x < width; x++) {
-					grid[y][x] = tr.appendChild(document.createElement("td"));
-				}
-			}
-			return grid;
-		}
+		addbutton.onclick = function(){doModal();}
 		
-		function doModal() { //0 for unitless, undefined for all units, string category
+		let modalOpen = false;
+		
+		function doModal(pastEntry = null) { //0 for unitless, undefined for all units, string category
+			if (modalOpen) return;
+			modalOpen = true;
+			entrylist.style.display = "none";
+			if (pastEntry && pastEntry.ref) {
+				pastEntry.ref.remove();
+			}
+			pastEntries = pastEntries.filter(x => x != pastEntry);
 			let table = document.body.appendChild(document.createElement("table"));
+			table.setAttribute("id", "form");
 			let tr; newRow();
 			//table[0][0].innerText = "One serving of";
 			let inputServingAmount = numberInput(newCell());
+			if (pastEntry) inputServingAmount.value = pastEntry.servingAmount;
 			let selectServingUnit = makeSelectForUnit(newCell());
+			if (pastEntry) selectServingUnit.value = pastEntry.servingUnit;
 			newRow();
 			newCell(2).innerText = "will have"
 			newRow();
 			let inputCarbAmount = numberInput(newCell());
+			if (pastEntry) inputCarbAmount.value = pastEntry.carbsPerServing;
 			newCell().innerText = "carbs";
 			newRow();
+			newCell(2).innerText = "I'm having";
+			newRow();
 			let inputHavingAmount = numberInput(newCell());
+			if (pastEntry) inputHavingAmount.value = pastEntry.havingAmount;
 			let inputUnitType = unitTypeOfThisSelect(selectServingUnit);
 			let inputHavingUnitCell = newCell();
 			let inputHavingUnit = makeSelectForUnit(inputHavingUnitCell, unitTypeOfThisSelect(selectServingUnit), selectServingUnit.value);
+			if (pastEntry) inputHavingUnit.value = pastEntry.havingUnit;
 			selectServingUnit.onchange = function() {
 				let newInputUnitType = unitTypeOfThisSelect(selectServingUnit);
 				if (inputUnitType == newInputUnitType) return;
@@ -122,9 +167,31 @@
 			newRow();
 			let submit = newCell(2).appendChild(document.createElement("button"));
 			submit.onclick = function() {
+				try {
+					let obj = {
+						servingAmount: parseFloat(inputServingAmount.value),
+						servingUnit: selectServingUnit.value,
+						havingAmount: parseFloat(inputHavingAmount.value),
+						havingUnit: inputHavingUnit.value,
+						carbsPerServing: parseFloat(inputCarbAmount.value)
+					};
+					obj.ref = entrylist.insertBefore(document.createElement("div"), addbutton);
+					obj.ref.innerText = Math.round(doCalc(obj)) + " g carbs";
+					obj.ref.onclick = function() {
+						doModal(obj);
+					}
+					pastEntries.push(obj);
+					closeOut();
+				} catch(e) {
+				}
 			}
 			submit.innerText = "Submit";
-			
+			newRow();
+			let delet = newCell(2).appendChild(document.createElement("button"));
+			delet.innerText = "Delete";
+			delet.onclick = function() {
+				if (window.confirm("Delete this item?")) closeOut();
+			};
 			function newRow() {
 				tr = table.appendChild(document.createElement("tr"));
 			}
@@ -133,8 +200,15 @@
 				if (colspan) td.setAttribute("colspan", colspan);
 				return td;
 			}
+			function closeOut() {
+				table.remove();
+				modalOpen = false;
+				entrylist.style.display = "block";
+				if (pastEntries.length > 0) {
+					thetotal.innerText = Math.round(pastEntries.map(x => doCalc(x)).reduce((a, b) => a+b, 0)) + " g carbs total";
+				} else thetotal.innerText = "";
+			}
 		}
-		doModal();
 		
 		function numberInput(parent) {
 			let input = parent.appendChild(document.createElement("input"));
@@ -142,6 +216,7 @@
 			input.setAttribute("inputmode", "decimal");
 			return input;
 		}
+		doModal();
 	</script>
 </body>
 </html>
