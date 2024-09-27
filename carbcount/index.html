@@ -1,19 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<style>
+		html {
+			font-size: 64px;
+		}
+		body {
+			background-color: black;
+			color: white;
+			font-family: system-ui;
+		}
+		table {
+			border-collapse: collapse;
+			position: fixed;
+			top: 40%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		table tr:nth-child(4) td {
+			padding-top: 1rem;
+		}
+		table tr:nth-child(5) td {
+			padding-top: 1rem;
+		}
+		table td {
+			text-align: center;
+			padding: 0.0625rem 0;
+		}
+		input, select, button {
+			display: inline-block;
+			width: 6rem;
+			font-size: inherit;
+			font-family: inherit;
+			border: none;
+			padding: 0.25rem;
+		}
+	</style>
 </head>
 <body>
-	<input type="text" inputmode="decimal">
-	<select id="suggestedunits">
+	<!-- <input type="text" inputmode="decimal">
+	<select id="suggestedunits"> -->
 	<script>
-		
-		let suggestedUnitsList = {
-			mass: ["gram", "kilogram", "ounce"],
-			volume: ["cup"]
+		let unitsList = {
+			mass: { //store into grams
+				"gram": 1,
+				"ounce": 28.3495,
+				// "pound": 453.592
+			},
+			volume: { //store into milliliters
+				"cup": 236.588,
+				"tablespoon": 14.7868,
+				"teaspoon": 4.9289317406874,
+				"fl oz": 29.5735
+			},
+			units: {
+				"piece": 1
+			}
 		};
 		
-		for (let type of Object.keys(suggestedUnitsList)) for (let entry of suggestedUnitsList[type])
-			suggestedunits.appendChild(document.createElement("option")).innerText = entry;
+		function doCalc(servingAmount, servingUnit, havingAmount, havingUnit, carbsPerServing) {
+			for (let group of Object.keys(unitsList).map(x => unitsList[x])) {
+				if (servingUnit in group && havingUnit in group) {
+					return carbsPerServing * havingAmount / servingAmount * group[havingUnit] / group[servingUnit];
+				}
+			}
+		}
+		
+		function makeSelectForUnit(parent, cat = undefined, choice = undefined) {
+			let select = parent.appendChild(document.createElement("select"));
+			for (let type of Object.keys(unitsList)) if (cat == undefined || cat == type) {
+				for (let unit of Object.keys(unitsList[type])) {
+					select.appendChild(document.createElement("option")).innerText = unit;
+				}
+			}
+			if (choice) select.value = choice;
+			return select;
+		}
+		
+		function unitTypeOfThisSelect(select) {
+			let v = select.value;
+			for (let type of Object.keys(unitsList)) if (v in unitsList[type]) return type;
+		}
+		
+		function makeTable(height, width) {
+			let table = document.body.appendChild(document.createElement("table"));
+			let grid = [];
+			for (let y = 0; y < height; y++) {
+				let tr = table.appendChild(document.createElement("tr"));
+				grid[y] = [];
+				for (let x = 0; x < width; x++) {
+					grid[y][x] = tr.appendChild(document.createElement("td"));
+				}
+			}
+			return grid;
+		}
+		
+		function doModal() { //0 for unitless, undefined for all units, string category
+			let table = document.body.appendChild(document.createElement("table"));
+			let tr; newRow();
+			//table[0][0].innerText = "One serving of";
+			let inputServingAmount = numberInput(newCell());
+			let selectServingUnit = makeSelectForUnit(newCell());
+			newRow();
+			newCell(2).innerText = "will have"
+			newRow();
+			let inputCarbAmount = numberInput(newCell());
+			newCell().innerText = "carbs";
+			newRow();
+			let inputHavingAmount = numberInput(newCell());
+			let inputUnitType = unitTypeOfThisSelect(selectServingUnit);
+			let inputHavingUnitCell = newCell();
+			let inputHavingUnit = makeSelectForUnit(inputHavingUnitCell, unitTypeOfThisSelect(selectServingUnit), selectServingUnit.value);
+			selectServingUnit.onchange = function() {
+				let newInputUnitType = unitTypeOfThisSelect(selectServingUnit);
+				if (inputUnitType == newInputUnitType) return;
+				inputUnitType = newInputUnitType;
+				inputHavingUnit.remove();
+				inputHavingUnit = makeSelectForUnit(inputHavingUnitCell, inputUnitType, selectServingUnit.value);
+				inputHavingAmount.value = "";
+			}
+			newRow();
+			let submit = newCell(2).appendChild(document.createElement("button"));
+			submit.onclick = function() {
+			}
+			submit.innerText = "Submit";
+			
+			function newRow() {
+				tr = table.appendChild(document.createElement("tr"));
+			}
+			function newCell(colspan) {
+				let td = tr.appendChild(document.createElement("td"));
+				if (colspan) td.setAttribute("colspan", colspan);
+				return td;
+			}
+		}
+		doModal();
+		
+		function numberInput(parent) {
+			let input = parent.appendChild(document.createElement("input"));
+			input.setAttribute("type", "text");
+			input.setAttribute("inputmode", "decimal");
+			return input;
+		}
 	</script>
 </body>
 </html>
