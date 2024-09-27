@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 	<style>
 		html {
 			font-size: 64px;
@@ -10,14 +8,23 @@
 		body {
 			background-color: #222;
 			color: white;
-			font-family: 'Inter', system-ui;
+			font-family: system-ui;
+		}
+		@keyframes form-enter {
+			from {opacity: 0; transform: translate(-50%, 0);}
+		}
+		@keyframes form-leave {
+			to {opacity: 0; transform: translate(-50%, 0);}
 		}
 		#form {
 			border-collapse: collapse;
 			position: absolute;
-			top: 35%;
+			top: 40%;
 			left: 50%;
 			transform: translate(-50%, -50%);
+			animation: 0.2s form-enter;
+			z-index: 10;
+			background-color: inherit;
 		}
 		#form tr:nth-child(4) td {
 			padding-top: 1.25rem;
@@ -40,7 +47,7 @@
 			background-color: #444;
 		}
 		#form select {
-			border: solid 0.0625rem white;
+			background-color: #333;
 		}
 		select {
 			text-align: center;
@@ -50,19 +57,30 @@
 			width: 100%;
 			text-align: center;
 		}
-		#addbutton, #form button {
+		#addbutton {
 			background-color: #444;
 			display: inline-block;
 			margin: 1rem 0;
 			padding: 0.5rem 0.75rem;
 			border-radius: 2rem;
 		}
-		#addbutton::before {
-			content: "add_box";
-			font-family: 'Material Symbols Outlined';
-			transform: translateY(0.125rem);
+		.submit, .delet {
+			border: solid 0.0625rem #444;
+			background-color: inherit;
 			display: inline-block;
-			margin-right: 0.25rem;
+			margin: 1rem 0;
+			padding: 0.25rem 0.75rem;
+			border-radius: 0.5rem;
+		}
+		.submit {
+			background-color: #444;
+		}
+		.delet {
+			color: #888;
+		}
+		#thetotal[hastotal="true"] {
+			border-top: solid 0.0625rem #888;
+			padding-top: 0.5rem;
 		}
 	</style>
 </head>
@@ -70,24 +88,24 @@
 	<!-- <input type="text" inputmode="decimal">
 	<select id="suggestedunits"> -->
 	<div id="entrylist">
-		<div id="addbutton">Add another item</div>
+		<div id="addbutton">Add new item</div>
 		<div id="thetotal"></div>
 	</div>
 	<script>
 		let unitsList = {
 			mass: { //store into grams
-				"gram": 1,
-				"ounce": 28.3495,
+				"grams": 1,
+				"ounces": 28.3495,
 				// "pound": 453.592
 			},
 			volume: { //store into milliliters
-				"cup": 236.588,
-				"tablespoon": 14.7868,
-				"teaspoon": 4.9289317406874,
+				"cups": 236.588,
+				"tablespoons": 14.7868,
+				"teaspoons": 4.9289317406874,
 				"fl oz": 29.5735
 			},
 			units: {
-				"piece": 1
+				"pieces": 1
 			}
 		};
 		
@@ -142,11 +160,11 @@
 			let selectServingUnit = makeSelectForUnit(newCell());
 			if (pastEntry) selectServingUnit.value = pastEntry.servingUnit;
 			newRow();
-			newCell(2).innerText = "will have"
+			newCell(2).innerText = "would have"
 			newRow();
 			let inputCarbAmount = numberInput(newCell());
 			if (pastEntry) inputCarbAmount.value = pastEntry.carbsPerServing;
-			newCell().innerText = "carbs";
+			newCell().innerText = "g carbs";
 			newRow();
 			newCell(2).innerText = "I'm having";
 			newRow();
@@ -165,7 +183,8 @@
 				inputHavingAmount.value = "";
 			}
 			newRow();
-			let submit = newCell(2).appendChild(document.createElement("button"));
+			let delet = newCell().appendChild(document.createElement("button"));
+			let submit = newCell().appendChild(document.createElement("button"));
 			submit.onclick = function() {
 				try {
 					let obj = {
@@ -185,10 +204,10 @@
 				} catch(e) {
 				}
 			}
-			submit.innerText = "Submit";
-			newRow();
-			let delet = newCell(2).appendChild(document.createElement("button"));
+			submit.innerText = "Ok";
 			delet.innerText = "Delete";
+			submit.setAttribute("class", "submit");
+			delet.setAttribute("class", "delet");
 			delet.onclick = function() {
 				if (window.confirm("Delete this item?")) closeOut();
 			};
@@ -201,12 +220,16 @@
 				return td;
 			}
 			function closeOut() {
-				table.remove();
+				table.style.animation = "0.2s form-leave";
+				setTimeout(function() {
+					table.remove();
+				}, 190);
 				modalOpen = false;
 				entrylist.style.display = "block";
 				if (pastEntries.length > 0) {
 					thetotal.innerText = Math.round(pastEntries.map(x => doCalc(x)).reduce((a, b) => a+b, 0)) + " g carbs total";
 				} else thetotal.innerText = "";
+				thetotal.setAttribute("hastotal", pastEntries.length > 0 ? "true" : "false");
 			}
 		}
 		
