@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://fred-wang.github.io/MathFonts/LatinModern/mathfonts.css">
+	<script src="https://cdn.jsdelivr.net/npm/temml@0.10.29/dist/temml.min.js"></script>
+	<style>
+		body {
+			width: 48rem;
+			margin: 12rem auto;
+			font-family: system-ui;
+			font-size: 1.25em;
+			background: black;
+			color: white;
+		}
+		table {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<h2>The complex numbers $\mathbb C$ are cool</h2>
+	<p>The complex numbers $\mathbb C$ are cool! They come in the form $a+b i$, where $a,b\in\mathbb R$, thus they are a vector space with basis $\{1,i\}$. Addition can simply be executed component-wise. But this is no ordinary vector space, for it is also equipped with a product operation! It distributes over addition, thus</p>
+	<p>$$(a+b i)(c+d i)=(ac)+(ad+bc)i+(bd)i^2$$</p>
+	<p>Look at that last addent—$i^2$ isn't in our basis, get out of here! The complex numbers are characterized by the fact that $i^2:=-1$, so the $i^2$ component can go join the real component:</p>
+	<p>$$(a+b i)(c+d i)=(ac-bd)+(ad+bc)i$$</p>
+	<p>Once you have both additions and products, you can really have any analytic function, since</p>
+	<p>$$f(x)=\sum_{n=0}^{\infty}\frac{x^n}{n!}\frac{d^nf}{dx^n}(0)$$</p>
+	<p>only depends on computing powers of $x$, scaling them, and adding them together. This is how, only assuming that $i^2:=-1$, you can retrieve cool things like $e^{ix}=\cos x+i\sin x$. It's all just power series!</p>
+	<h2>Other algebras in two dimensions</h2>
+	<p>What if we defined $i^2$ to simplify to some other linear combination over the basis $\{1,i\}$? Let $i^2:=X+Yi$. Then we instead get the product rule</p>
+	<p>$$(a+b i)(c+d i)=(ac+Xbd)+(ad+bc+Ybd)i$$</p>
+	<p>This covers the behavior of any possible two-dimensional algebra, with the real component on basis element $1$ (which also happens to be the multiplicative identity, wow), and a second component on the basis element we're still calling $i$.</p>
+	<h2>All the algebras</h2>
+	<p>Let's broaden our scope! Let's say that our basis set is now $Z=\{z_0,z_1,z_2,\cdots\}$. I'm not even going to make any claims about one of these being a "real" basis element, or even about the multiplicative identity appearing as some linear combination over the basis. All I know is that a number in this algebra is represented as</p>
+	<p>$$a=a_0z_0+a_1b_1+a_2b_2+\cdots=\sum_na_nz_n$$</p>
+	<p>And when two such numbers multiply, it will distribute over addition, and we will have to consider many products:</p>
+	<p>$$ab=(a_0z_0+a_1z_1+\cdots)(b_0z_0+b_1z_1+\cdots)=\sum_{n,m}a_nb_mz_nz_m$$</p>
+	<p>Thus deducing the product of two members of this algebra is a matter of understanding the full multiplication table for all our basis elements. For the case of complex numbers and the basis $\{1,i\}$, this multiplication table appears as</p>
+	<!-- <script>
+		for (let e of document.querySelectorAll("m")) temml.render(e.innerText, e);
+		for (let e of document.querySelectorAll("mm")) temml.render(e.innerText, e, {displayMode: true});
+	</script> -->
+	<script src="../makemath.js"></script>
+</body>
+</html>

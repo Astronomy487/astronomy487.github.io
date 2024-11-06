@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://fred-wang.github.io/MathFonts/LatinModern/mathfonts.css">
+	<script src="https://cdn.jsdelivr.net/npm/temml@0.10.29/dist/temml.min.js"></script>
+	<style>
+		table {
+			border-collapse: collapse;
+		}
+		td, th {
+			padding: 0.25rem;
+		}
+		th {
+			background-color: #ddd;
+		}
+	</style>
+</head>
+<body>
+	<script>
+		let greekLetters = ["alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"];
+		function getGreekLetter() {
+			return greekLetters.splice(0, 1);
+			/* let choice = greekLetters[Math.floor(Math.random()*greekLetters.length)];
+			greekLetters = greekLetters.filter(x => x != choice);
+			return choice; */
+		}
+		class Group {
+			constructor(set /* set is a list */, identity, operation, inverse, setName) {
+				this.set = set;
+				this.id = identity;
+				this.op = operation;
+				this.inv = inverse;
+				this.name = setName
+			}
+			operate(...items) {
+				return items.reduce(this.op, this.id);
+			}
+			show() {
+				let div = document.body.appendChild(document.createElement("div"));
+				let span = div.appendChild(document.createElement("div"));
+				temml.render(this.name + "=\\left\\{" + this.set.map(x => x.tex).join(",") + "\\right\\}", span);
+				span = div.appendChild(document.createElement("div"));
+				temml.render("\\mathrm{id}=" + this.id.tex, span);
+				if (this.set.length) {
+					let table = div.appendChild(document.createElement("table"));
+					let tr = table.appendChild(document.createElement("tr"));
+					tr.appendChild(document.createElement("th"));
+					for (let i = 0; i < this.set.length; i++) {
+						temml.render(this.set[i].tex, tr.appendChild(document.createElement("th")));
+					}
+					for (let i = 0; i < this.set.length; i++) {
+						tr = table.appendChild(document.createElement("tr"));
+						temml.render(this.set[i].tex, tr.appendChild(document.createElement("th")));
+						for (let j = 0; j < this.set.length; j++) {
+							temml.render(this.op(this.set[i], this.set[j]).tex, tr.appendChild(document.createElement("td")));
+						}
+					}
+				} else {
+					div.appendChild(document.createElement("div")).innerText = "Infinite set; cannot make multiplication table";
+				}
+			}
+			static CyclicGroup(n = 2) {
+				let symbol = "\\" + getGreekLetter();
+				function textFor(x) {
+					if (n != Infinity) x = ((x%n)+n)%n;
+					if (x == 0) return "1";
+					if (x == 1) return symbol;
+					return symbol + "^{" + x + "}";
+				}
+				let makeGroupElement = val => {return{power: val, tex: textFor(val)}};
+				let identity = makeGroupElement(0);
+				let operation = (a, b) => makeGroupElement((a.power + b.power) % n);
+				let inverse = a => makeGroupElement((n==Infinity) ? -a.power : n-a.power);
+				let set = [];
+				if (n != Infinity) set = new Array(n).fill(0).map((x,i)=>i).map(makeGroupElement);
+				let setName = "\\mathbb Z" + (n!=Infinity ? "_{"+n	+"}" : "")
+				return new Group(set, identity, operation, inverse, setName);
+			}
+			static DihedralGroup(n = 3) {
+				function textFor(rho, sigma) {
+					if (rho == 0) return sigma ? "\\sigma" : "1";
+					if (rho == 1) return sigma ? "\\rho\\sigma" : "\\rho";
+					if (rho > 1) return sigma ? "\\rho^{"+rho+"}\\sigma" : "\\rho^{"+rho+"}";
+				}
+				let makeGroupElement = (val,val2) => {return{rho: val, sigma: val2, tex: textFor(val, val2)}};
+				let identity = makeGroupElement(0,0);
+				let operation = (a, b) => makeGroupElement(
+					(a.rho + (a.sigma ? n-1 : 1) * b.rho)%n,
+					a.sigma ^ b.sigma
+				);
+				let inverse = a => a.sigma ? a : makeGroupElement(n-a.rho, 0);
+				let set = [];
+				if (n != Infinity) set = [].concat(new Array(n).fill(0).map((x,i)=>i).map(i=>makeGroupElement(i,false))).concat(new Array(n).fill(0).map((x,i)=>i).map(i=>makeGroupElement(i,true)));
+				let setName = "D_{"+n+"}";
+				return new Group(set, identity, operation, inverse, setName);
+			}
+			static DirectProductGroup(...groups) {
+				let makeGroupElement = arr => {return{content: arr, tex: "(" + arr.map(x => x.tex).join(",") + ")"}};
+				let identity = makeGroupElement(groups.map(x => x.id)); //elements will be stored as arrays
+				let operation = (a, b) => makeGroupElement(groups.map((g, i) => g.op(a.content[i], b.content[i])));
+				let inverse = a => makeGroupElement(groups.map((g, i) => g.inv(a.content[i])));
+				let set = [[]];
+				for (let group of groups) {
+					let newSet = [];
+					for (let s of set) {
+						for (let item of group.set) {
+							newSet.push(s.concat(item));
+						}
+					}
+					set = newSet;
+				}
+				return new Group(set.map(makeGroupElement), identity, operation, inverse, groups.map(x => x.name).join("\\times"))
+			}
+			static PermutationGroup(n = 3) {
+				function makeGroupElement(arr) {
+					let cycles = [];
+					let considered = new Array(n).fill(false);
+					for (let i = 0; i < n; i++) if (!considered[i]) {
+						let latestCycle = [i];
+						let visiting = i;
+						while (!considered[visiting]) {
+							considered[visiting] = true;
+							visiting = arr[visiting];
+							latestCycle.push(visiting);
+						}
+						latestCycle.pop();
+						if (latestCycle.length > 1) cycles.push(latestCycle);
+					}
+					return {
+						content: arr,
+						tex: cycles.length ? cycles.map(x => "(" + x.join("") + ")").join("") : "(1)"
+					};
+				}
+				let identity = makeGroupElement(new Array(n).fill(0).map((v,i)=>i));
+				let operation = function(a, b) {
+					let arr = a.content;
+					arr = arr.map(i => b.content[i]);
+					return makeGroupElement(arr);
+				}
+				let inverse = a => makeGroupElement(a.content.map(i => a.content.indexOf(i)));
+				return new Group(permutations(identity.content).map(makeGroupElement), identity, operation, inverse, "S_{"+n+"}")
+			}
+		}
+		
+		let permutations=e=>{let t=[];const n=(l,c=[])=>{if(0===l.length)t.push(c);else for(let t=0;t<l.length;t++){let e=l.slice();var s=e.splice(t,1);n(e.slice(),c.concat(s))}};return n(e),t};
+		
+		let G = Group.DihedralGroup(5);
+		G.show();
+	</script>
+</body>
+</html>

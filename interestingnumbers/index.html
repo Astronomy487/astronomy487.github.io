@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+			background-color: #111;
+			color: #ddd;
+			font-family: system-ui, sans-serif;
+		}
+		th {
+			width: 4rem;
+			text-align: left;
+		}
+		td {
+			padding: 0;
+		}
+		table {
+			width: 32rem;
+			margin: 4rem auto;
+			border-collapse: collapse;
+		}
+		a {
+			margin-right: 0.5rem;
+			display: inline-block;
+		}
+		/* sup {
+			display: inline-block;
+			vertical-align: super;
+			font-size: 75%;
+			text-decoration: underline;
+		} */
+	</style>
+</head>
+<body>
+	<table id="table"></table>
+	<script>
+	
+		class NSSimple {
+			constructor(name, color, initial, findFunct) {
+				this.name = name;
+				this.color = color;
+				this.found = initial;
+				this.considered = this.found.reduce((a,b) => a<b ? b : a, 0n);
+				this.find = findFunct;
+			}
+			has(x) {
+				if (x <= this.considered) {
+					//todo: change to binary search
+					return this.found.indexOf(x);
+				} else {
+					while (this.considered < x) {
+						this.considered++;
+						if (this.find(this.considered, this.found, this.considered)) {
+							this.found.push(this.considered);
+						}
+					}
+					//todo: change to search at final element. thats the only place it would be, right
+					return this.found.indexOf(x);
+				}
+			}
+		}
+		class NSGenerator {
+			constructor(name, color, initial, findNext) {
+				this.name = name;
+				this.color = color;
+				this.found = initial;
+				this.findNextFunct = findNext;
+			}
+			has(x) {
+				while (x > this.found[this.found.length-1]) {
+					this.found.push(this.findNextFunct(this.found));
+				}
+				//todo make it a damn binary search!
+				return this.found.indexOf(x);
+			}
+		}
+		
+		let sets = [
+			new NSSimple("The # prime", "#0af", [2n, 3n], function(n, arr, maxdone) {
+				for (let p of arr) if (n%p==0) return false;
+				return true;
+			}),
+			new NSGenerator("The # Fibonacci number", "#0c6", [0n, 1n], function(arr) {
+				return arr[arr.length-2] + arr[arr.length-1];
+			}),
+			new NSGenerator("The # tribonacci number", "#0c6", [0n, 1n, 1n], function(arr) {
+				return arr[arr.length-3] + arr[arr.length-2] + arr[arr.length-1];
+			}),
+			new NSGenerator("The # power of 2", "#e2a", [1n], function(arr) {
+				return arr[arr.length-1] * 2n
+			}),
+			new NSGenerator("The # square", "magenta", [0n], function(arr) {
+				return BigInt(arr.length * arr.length);
+			}),
+			new NSGenerator("The # cube", "magenta", [0n], function(arr) {
+				return BigInt(arr.length * arr.length * arr.length);
+			})
+		];
+		
+		let count = 0n;
+		function doMore(goal = count+50n) {
+			while (count < goal) {
+				let tr = table.appendChild(document.createElement("tr"));
+				tr.appendChild(document.createElement("th")).innerText = count;
+				let td = tr.appendChild(document.createElement("td"));
+				for (let set of sets) {
+					let has = set.has(count);
+					if (has >= 0) {
+						let a = td.appendChild(document.createElement("a"));
+						//a.innerHTML = set.name.replace("#", ordinal(has));
+						a.innerText = set.name.replace("#", ordinal(has));
+						a.style.color = set.color;
+					}
+				}
+				count++;
+			}
+		}
+		
+		
+		doMore();
+		
+		setInterval(function() {
+			if (document.body.offsetHeight-500 < window.innerHeight + window.scrollY) doMore();
+		}, 10);
+		
+		/* function ordinal(n) {
+			n = n.toString();
+			if (n > 3 && n < 21) return n + "<sup>th</sup>";
+			if (n.endsWith("1")) return n + "<sup>st</sup>";
+			if (n.endsWith("2")) return n + "<sup>nd</sup>";
+			if (n.endsWith("3")) return n + "<sup>rd</sup>";
+			return n + "<sup>th</sup>";
+		} */
+		
+		function ordinal(n) {
+			n = n.toString();
+			if (n > 3 && n < 21) return n + "th";
+			if (n.endsWith("1")) return n + "st";
+			if (n.endsWith("2")) return n + "nd";
+			if (n.endsWith("3")) return n + "rd";
+			return n + "th";
+		}
+	</script>
+</body>
+</html>

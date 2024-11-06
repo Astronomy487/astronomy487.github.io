@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>recent events</title>
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	<style>
+		body {
+			background: linear-gradient(#F1CC28, #FF8B42, #D74444, #B63088, #503E95, #43406B);
+			font-family: system-ui;
+			text-transform: lowercase;
+		}
+		main {
+			position: relative;
+		}
+		main > div {
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			text-align: center;
+			box-sizing: border-box;
+			padding: 0.5rem 0.75rem;
+			border-radius: 4px;
+		}
+		main > div:not([marker]) {
+			outline: solid 2px white;
+			outline-offset: 2px;
+			background: linear-gradient(white, #ffffffaa);
+		}
+		main > div a {
+		}
+		main > div span {
+			font-size: 0.75em;
+			display: block;
+		}
+		main > div b {
+			font-family: 'Material Symbols Outlined';
+			font-size: 18px;
+			display: inline-block;
+			transform: translateY(0.25rem);
+			margin-right: 0.25rem;
+			line-height: 0;
+			font-weight: inherit;
+			user-select: none;
+		}
+		main > div:not([range]) {
+			transform: translate(-50%, -50%);
+		}
+		main > div[range] {
+		}
+		h1 {
+			font-size: 1.125rem;
+			font-weight: normal;
+			top: 6rem;
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			text-align: center;
+			z-index: 2;
+		}
+		h1 a {
+			color: inherit;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+		main hr {
+			width: 0;
+			border: solid 1px black;
+			mix-blend-mode: overlay;
+			top: 15rem;
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		main > div[marker] {
+			transform: translateY(-50%);
+			left: 0;
+			font-size: 2rem;
+			background-color: #ffffff00;
+			mix-blend-mode: overlay;
+		}
+	</style>
+</head>
+<body>
+	<h1>just getting a pulse on recent events<br>alternatively, <a onclick="window.scrollTo(0, document.body.scrollHeight);">start at the bottom</a></h1>
+	<main id="main">
+		<hr>
+	</main>
+	<script>
+		// store things as Number Of Years Since 0 AD (which doesnt exist btw)
+		function dateToNumber(date = new Date()) {
+			if (typeof date == "string") date = new Date(date);
+			let year = date.getYear() + 1900;
+			let thisTime = date.getTime();
+			let yearStartTime = new Date("Jan 1 " + year).getTime();
+			let yearEndTime = new Date("Jan 1 " + (year+1)).getTime();
+			return year + (thisTime-yearStartTime)/(yearEndTime-yearStartTime);
+		}
+		
+		function formatDuration(x, isMarker) { //x is a positive number, representing years
+			for (let [timeFactor, name, nameSingular] of [
+				[1000000000000, "trillion years", "trillion years"],
+				[1000000000, "billion years", "billion years"],
+				[1000000, "million years", "million years"],
+				//[1000, "thousand years", "thousand years"],
+				[1, "years", "year"],
+				[1/12, "months", "month"],
+				[1/365.25, "days", "day"],
+				[1/365.25/24, "hours", "hour"],
+				[1/365.25/24/60, "minutes", "minute"],
+				[1/365.25/24/60/60, "seconds", "second"],
+				[1/365.25/24/60/60/100, "milliseconds", "millisecond"],
+			]) {
+				if (x > timeFactor*20) {
+					let n = Math.round(x/timeFactor);
+					return (n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (n==1 ? nameSingular : name);
+				} else if (x >= timeFactor) {
+					if (!isMarker) {
+						return (x/timeFactor).toFixed(2) + " " + name;
+					} else {
+						let n = Math.round(x/timeFactor);
+						return (n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (n==1 ? nameSingular : name);
+					}
+				}
+			}
+			return "0";
+		}
+		
+		let events = [
+			/* {
+				time: dateToNumber(),
+				text: "You opened this page"
+			}, */
+			{
+				time: dateToNumber() - 1/12,
+				text: "A month ago",
+			},
+			{
+				time: 476, startTime: -625, durationSpot: 0,
+				text: "The roman empire"
+			},
+			{
+				time: -146, startTime: -750, durationSpot: 1,
+				text: "Ancient greece"
+			},
+			{
+				time: -30, startTime: -3100, durationSpot: 3,
+				text: "Ancient egypt"
+			},
+			{
+				time: -2550,
+				text: "Great pyramid of giza is built",
+				category: "tool"
+			},
+			{
+				time: -3500,
+				text: "Sumer invents writing, probably",
+				category: "book"
+			},
+			{
+				time: -1200,
+				text: "Bronze age collapse",
+				category: "fire"
+			},
+			{
+				time: 1368, startTime: 1206, durationSpot: 0,
+				text: "Mongol empire"
+			},
+			{
+				time: -66e6, startTime: -245e6, durationSpot: 3,
+				text: "Dinosaurs roam the earth",
+				category: "animal"
+			},
+			
+			{
+				time: -66e6,
+				text: "Cretaceous-Paleogene extinction\nwipes out the dinosaurs",
+				category: "bones"
+			},
+			{
+				time: -208e6,
+				text: "Late Triassic extinctions",
+				category: "bones"
+			},
+			{
+				time: -252e6,
+				text: "Permian-Triassic extinction wipes\nout half of all animal species",
+				category: "bones"
+			},
+			{
+				time: -372e6,
+				text: "Late Devonian extinction",
+				category: "bones"
+			},
+			{
+				time: -443.8e6,
+				text: "Ordovician-Silurian extinction",
+				category: "bones"
+			},
+			{
+				time: -225e6,
+				text: "Mammals appear",
+				category: "animal"
+			},
+			{
+				time: -375e6,
+				text: "First animals migrate to land",
+				category: "animal"
+			},
+			
+			{
+				time: "14 May 1948",
+				text: "The state of israel annexes Palestinian\nland and expels 700,000 arabs",
+				category: "war"
+			},
+			{
+				time: "September 2 1945", startTime: "September 1 1939", durationSpot: 3,
+				text: "WWII",
+				category: "war"
+			},
+			{
+				time: "November 11 1918", startTime: "July 28 1914", durationSpot: 3,
+				text: "WWI",
+				category: "war"
+			},
+			{
+				time: "July 13, 2024 18:11 -4",
+				text: "Someone tries to kill donald trump",
+				category: "assassination"
+			},
+			{
+				time: "December 25 2021 6:20 -5",
+				text: "James webb space\ntelescope is launched",
+				category: "rocketship"
+			},
+			{
+				time: "April 24, 1990",
+				text: "Hubble space\ntelescope is launched",
+				category: "rocketship"
+			},
+			{
+				time: "March 13 2020",
+				text: "March 13, 2020",
+				category: "covid"
+			},
+			{
+				time: "July 12 1562",
+				text: "Spain destroys all\nbut four maya books",
+				category: "fire"
+			},
+			{
+				time: "August 31 1143",
+				text: "Haudenosaunee Confederacy is founded, the\noldest continuous democracy in the world",
+				category: "flag"
+			},
+			{
+				time: "July 4 1776",
+				text: "United states declaration of\nindependence is signed and published",
+				category: "flag"
+			},
+			{
+				time: "August 22, 1791",
+				text: "Haitian revolt",
+				category: "flag"
+			},
+			{
+				time: "April 30, 1803",
+				text: "Louisiana purchase is made",
+				category: "money"
+			},
+			{
+				time: "January 1 1863", startTime: "September 8 1565", durationSpot: 3,
+				text: "Africans are enslaved as\nlaborers in the Americas",
+				category: "justice"
+			},
+			{
+				time: "December 5 1492",
+				text: "Columbus reaches hispaniola",
+				category: "boat"
+			},
+			{
+				time: "October 31 1517",
+				text: "Martin luther posts his 95 theses",
+				category: "church"
+			},
+			{
+				time: "February 21 1848",
+				text: "Karl marx's 'Communist\nmanifesto' is published",
+				category: "book"
+			},
+			{
+				time: "January 6 2021 12:00:00 -4",
+				text: "Donald trump tries and fails to overturn\nthe results of the 2020 election",
+				category: "election"
+			},
+			{
+				time: dateToNumber() - 1,
+				text: "One year ago"
+			},
+			{
+				time: "June 7 2024",
+				text: "charli xcx releases 'brat'",
+				category: "music"
+			},
+			{
+				time: "November 24, 1859",
+				text: "Darwin publishes 'on the\norigin of species'",
+				category: "book"
+			},
+			{
+				time: "July 24 2024",
+				text: "Joe biden drops out of the\n2024 presidential race",
+				category: "flag"
+			},
+			{
+				time: 2000,
+				text: "The new millenium",
+				category: "party"
+			},
+			{
+				time: "May 8, 1980",
+				text: "World health assembly\ndeclares smallpox eradicated",
+				category: "bacteria"
+			},
+			{
+				time: "May 17 1954",
+				text: "Brown v. board of education requires\npublic schools to desegregate",
+				category: "justice"
+			},
+			{
+				time: "15 October 1923",
+				text: "Insulin becomes manufactured\nat mass commercial scale",
+				category: "vaccine"
+			},
+			{
+				time: 1991,
+				text: "The soviet union collapses",
+				category: "flag"
+			},
+			
+			{
+				time: 0,
+				text: "Jesus Christ is born",
+				category: "party"
+			},
+			{
+				time: 610,
+				text: "gabriel reveals himself to\nprophet muhammad in first revelation",
+				category: "mosque"
+			},
+			
+			{
+				time: "June 24, 2022",
+				text: "Roe v. wade is overturned, revoking\nwomen of their right to an abortion",
+				category: "justice"
+			},
+			{
+				time: "June 26, 2015",
+				text: "Obergefell v. Hodges federally\nlegalizes gay marriage",
+				category: "justice"
+			},
+			
+			{
+				time: "21 July 1969 02:56 +0",
+				text: "Neil Armstrong walks on the moon",
+				category: "rocketship"
+			},
+			
+			
+			{
+				time: -38000,
+				text: "Neandertal 'Shanidar 3' has a\ntrauma-related injury and heals",
+				category: "bones"
+			},
+			{
+				time: -3.3e6,
+				text: "Earliest stone tools",
+				category: "tool"
+			},
+			{
+				time: -3.2e6,
+				text: "Australopithecus lucy\nwalks around in ethiopia",
+				category: "walk"
+			},
+			{
+				time: -7e6,
+				text: "Humans walk upright",
+				category: "walk"
+			},
+			
+			{
+				time: -1.2e9,
+				text: "First multicellular organisms",
+				category: "bacteria"
+			},
+			{
+				time: -485.4e6, startTime: -541e6, durationSpot: 1,
+				text: "Cambrian explosion",
+				category: "bug"
+			},
+			{
+				time: -3.8e9,
+				text: "First unicellular organisms",
+				category: "bacteria"
+			},
+			
+			{
+				time: -4.4e9,
+				text: "Theia hits earth",
+				category: "earth"
+			},
+			{
+				time: -160e6,
+				text: "Saturn gets its rings",
+				category: "galaxy"
+			},
+			{
+				time: -4.6e9,
+				text: "The earth forms",
+				category: "earth"
+			},
+			{
+				time: -13.7e9+0.8e9,
+				text: "The milky way forms",
+				category: "galaxy"
+			},
+			{
+				time: -13.7e9,
+				text: "The big bang",
+				category: "galaxy"
+			}
+		];
+		
+		let categoryToMaterial = {
+			earth: "public",
+			galaxy: "orbit",
+			walk: "directions_walk",
+			tool: "construction",
+			rocketship: "rocket_launch",
+			justice: "balance",
+			covid: "coronavirus",
+			election: "how_to_vote",
+			music: "music_note",
+			war: "swords",
+			bones: "skull",
+			bacteria: "microbiology",
+			party: "celebration",
+			flag: "flag",
+			assassination: "target",
+			boat: "sailing",
+			vaccine: "syringe",
+			book: "import_contacts",
+			animal: "pets",
+			bug: "bug_report",
+			fire: "local_fire_department",
+			money: "attach_money",
+			church: "church",
+			mosque: "mosque"
+		};
+		
+		/* for (let i of [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]) {
+			events.push({
+				time: dateToNumber() - i/365.25,
+				text: "",
+				marker: true
+			});
+		} */
+		for (let i = 1; i <= 11; i++) {
+			events.push({
+				time: dateToNumber() - i/12,
+				text: "",
+				marker: true
+			});
+		}
+		
+		for (let power of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+			for (let i = 1; i < 10; i++) {
+				events.push({
+					time: dateToNumber() - Math.pow(10, power) * i,
+					text: "",
+					marker: true
+				});
+			}
+		}
+		for (let billions = 10; billions <= 14; billions++)
+			events.push({
+				time: dateToNumber() - billions * 10e8,
+				text: "",
+				marker: true
+			});
+		
+		let rangeHorizontalValues = ["25%", "38%", "62%", "75%"]
+		for (let event of events) {
+			if (typeof event.time == "string") event.time = dateToNumber(event.time);
+			if (event.startTime && typeof event.startTime == "string") event.startTime = dateToNumber(event.startTime);
+			event.html = main.appendChild(document.createElement("div"));
+			event.html = {
+				container: event.html,
+				tag: event.html.appendChild(document.createElement("b")),
+				link: event.html.appendChild(document.createElement("a")),
+				desc: event.html.appendChild(document.createElement("span"))
+			};
+			event.html.link.innerText = event.text;
+			event.html.tag.innerText = categoryToMaterial[event.category] || "";
+			if (event.startTime) {
+				event.html.container.setAttribute("range", "");
+				event.html.container.style.left = rangeHorizontalValues[event.durationSpot];
+				let extra = event.html.container.appendChild(document.createElement("span"));
+				extra.innerText = "Lasts " + formatDuration(event.time - event.startTime);
+			}
+			if (event.marker) {
+				event.html.container.setAttribute("marker", "");
+			}
+		}
+		
+		function formula(x) {
+			return (Math.log(x)/Math.log(1.5)+6.5)*600;
+		}
+		
+		let maxDistSeen = 0;
+		//setInterval(doTimes, 1000/50);
+		doTimes();
+		
+		function doTimes() {
+			for (let event of events) {
+				// if (event.marker && event.html.desc.innerText.length) continue;
+				let nowNumber = dateToNumber();
+				let newDateText = formatDuration(nowNumber-event.time, event.marker) + " ago";
+				if (newDateText != event.html.desc.innerText) event.html.desc.innerText = newDateText;
+				let dist = formula(nowNumber - event.time);
+				event.html.container.style.top = dist + "px";
+				if (dist > maxDistSeen) {
+					maxDistSeen = dist;
+					main.style.height = dist + 250 + "px";
+					document.querySelector("hr").style.height = dist-16*16 + "px";
+				}
+				if (event.startTime) {
+					let height = formula(nowNumber - event.startTime) - dist;
+					event.html.container.style.minHeight = height + "px";
+				}
+			}
+		}
+		
+		for (let i = 0; i < events.length; i++) {
+			if (!events[i].startTime && !events[i].marker) {
+				for (let j = 0; j < events.length; j++) {
+					if (!events[j].startTime && !events[j].marker && i != j && events[i].time > events[j].time) {
+						let A = events[i].html.container;
+						let B = events[j].html.container;
+						let Abox = A.getBoundingClientRect();
+						let Bbox = B.getBoundingClientRect();
+						if (Abox.top < Bbox.bottom && Abox.bottom+16 > Bbox.top) {
+							let disparity = Abox.bottom - Bbox.top + 16;
+							A.style.top = parseInt(A.style.top) - disparity/2 + "px";
+							B.style.top = parseInt(B.style.top) + disparity/2 + "px";
+						}
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>

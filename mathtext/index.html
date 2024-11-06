@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://cdn.jsdelivr.net/npm/temml@0.10.29/dist/temml.min.js"></script>
+	<link rel="stylesheet" href="https://fred-wang.github.io/MathFonts/LatinModern/mathfonts.css">
+	<style>
+		body {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 28rem;
+		}
+		textarea {
+			width: 100%;
+			padding: 0.5rem;
+			resize: none;
+			height: 6rem;
+			font-family: inherit;
+			font-size: inherit;
+		}
+		#outputtex, #outputtext {
+			width: 100%;
+			text-align: center;
+			margin: 1rem 0;
+			font-size: 1.25rem;
+		}
+	</style>
+	<title>mathtext</title>
+</head>
+<body>
+	<h2>mathtext</h2>
+	<p>a lot of places don't support actual latex math expressions (discord i'm begging you) so here's a little place to type out equations in latex and then it turns it into text :) made this just for me to use But you can use it too!</p>
+	<p>of course, lots of things just can't be expressed in text! fractions, superscripts, and subscripts are especially hard. i try to use funky unicode characters where i can xoxo</p>
+	<p>uses <a href="https://temml.org/">temml</a> and also <a href="fred-wang.github.io/MathFonts">fred wang's web repo of math fonts</a></p>
+	<textarea id="textarea"></textarea>
+	<div id="outputtex"></div>
+	<div id="outputtext"></div> <!-- lol these two divs are named very similarly ! -->
+	<div style="text-align: center;">
+		<button onclick="try{navigator.clipboard.writeText(outputtext.innerText);}catch(e){}">Copy text</button>
+	</div>
+	<script>
+		
+		let sups = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","A":"ᴬ","a":"ᵃ","B":"ᴮ","b":"ᵇ","C":"ᶜ","c":"ᶜ","D":"ᴰ","d":"ᵈ","E":"ᴱ","e":"ᵉ","f":"ᶠ","G":"ᴳ","g":"ᵍ","H":"ᴴ","h":"ʰ","I":"ᴵ","i":"ⁱ","J":"ᴶ","j":"ʲ","K":"ᴷ","k":"ᵏ","L":"ᴸ","l":"ˡ","M":"ᴹ","m":"ᵐ","N":"ᴺ","n":"ⁿ","O":"ᴼ","o":"ᵒ","P":"ᴾ","p":"ᵖ","R":"ᴿ","r":"ʳ","S":"ˢ","s":"ˢ","T":"ᵀ","t":"ᵗ","U":"ᵁ","u":"ᵘ","V":"ⱽ","v":"ᵛ","W":"ᵂ","w":"ʷ","X":"ˣ","x":"ˣ","y":"ʸ","z":"ᶻ"};
+		let subs = {"0":"₀","1":"₁","2":"₂","3":"₃","4":"₄","5":"₅","6":"₆","7":"₇","8":"₈","9":"₉"}
+		function transformCharacters(str, mapping) {
+			return str.split("").map(x => mapping[x] || x).join("");
+		}
+		function run() {
+			let input = textarea.value;
+			while (outputtex.firstChild) outputtex.firstChild.remove();
+			while (outputtext.firstChild) outputtext.firstChild.remove();
+			temml.render(input, outputtex);
+			let hiddenMathML = document.createElement("div");
+			temml.render(input, hiddenMathML);
+			for (let [querySelectorString, mapping] of [
+				["msup :nth-child(2), msubsup :nth-child(3)", sups],
+				["msub :nth-child(2), msubsup :nth-child(2)", subs]
+			]) {
+				for (let element of hiddenMathML.querySelectorAll(querySelectorString)) {
+					for (let attr of ["textContent"]) {
+						if (element[attr]) {
+							element[attr] = element[attr].split("").map(x => mapping[x] || x).join("");
+							break;
+						}
+					}
+				}
+			}
+			for (let frac of hiddenMathML.querySelectorAll("mfrac")) {
+				console.log("s");
+				frac.textContent = Array.from(frac.children).map(x => x.innerText || x.textContent).join("/");
+			}
+			outputtext.innerText = hiddenMathML.innerText;
+		}
+		textarea.oninput = run;
+		textarea.value = "e^{ix}=\\cos x+i\\sin x";
+		run();
+	</script>
+</body>
+</html>
