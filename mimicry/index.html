@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>~ mimicry ~</title>
+	<style>
+		body {
+			background: repeating-linear-gradient(black, #008 16rem, black 32rem);
+			color: white;
+			margin: 0;
+			font-family: Georgia;
+			min-height: 100vh;
+		}
+		#output span {
+			animation: 0.1s span-enter;
+			display: inline-block;
+		}
+		#output span.unconfident {
+			color: #da0;
+			font-style: italic;
+		}
+		@keyframes span-enter {
+			from {opacity: 0; transform: translateX(0.5rem);}
+		}
+		main {
+			width: 48rem;
+			margin: 6rem auto;
+		}
+		#output {
+			border: solid 1px #da0;
+			padding: 1rem;
+			box-sizing: border-box;
+			margin-bottom: 16rem;
+		}
+		label, input {
+			vertical-align: middle;
+		}
+		label {
+			margin-right: 1rem;
+		}
+		textarea {
+			width: 100%;
+			margin: 1rem 0;
+			resize: none;
+			border: solid 1px #da0;
+			padding: 1rem;
+			box-sizing: border-box;
+			font-size: inherit;
+			font-family: inherit;
+			background: none;
+			color: inherit;
+			height: 8rem;
+		}
+		button {
+			width: 6rem;
+			font-family: inherit;
+			font-size: inherit;
+			color: #da0;
+			background: none;
+			border: solid 1px #da0;
+			padding: 0.25rem 0;
+			cursor: pointer;
+			margin-right: 0.75rem;
+		}
+		button:hover {
+			background: #da0;
+			color: black;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1 style="text-align: center; font-style: italic;">~ mimicry ~</h1>
+		<p>copy a big corpus of text into the text box and then click generate</p>
+		<label for="context-size-input" id="contextsizelabel">Context size</label><input type="range" min="2" max="9" id="context-size-input" oninput="contextsizelabel.innerText = 'Context size = '+this.value; cancel(); context = parseInt(this.value);">
+		<textarea id="textarea" placeholder="Paste text corpus here"></textarea>
+		<div style="user-select: none;">
+			<button onclick="startGenerating();">Generate</button>
+			<button onclick="pause();" id="pausebutton">Pause/resume</button>
+			<button onclick="cancel();">Clear</button>
+		</div>
+		<p id="output"></p>
+	</main>
+	<script>
+		let context;
+		let memory;
+		let simpleFrequencies;
+		function note(a, b) {
+			if (!(a in memory)) memory[a] = {};
+			if (!(b in memory[a])) memory[a][b] = 1;
+			else memory[a][b]++;
+		}
+		function train(text) {
+			text = text.replaceAll("\n", " ");
+			while (text.includes("  ")) text = text.replaceAll("  ", " ");
+			memory = {};
+			simpleFrequencies = {};
+			for (let i = 0; i < text.length - context - 1; i++) note(text.substr(i, context), text[i+context]);
+			for (let character of text) {
+				if (character in simpleFrequencies) simpleFrequencies[character]++;
+				else simpleFrequencies[character] = 1;
+			}
+			for (let a in memory) {
+				let sum = Object.keys(memory[a]).map(b => memory[a][b]).reduce((w1, w2) => w1 + w2, 0);
+				for (let b in memory[a]) memory[a][b] /= sum;
+			}
+			{
+				let sum = Object.keys(simpleFrequencies).map(b => simpleFrequencies[b]).reduce((w1, w2) => w1 + w2, 0);
+				for (let b in simpleFrequencies) simpleFrequencies[b] /= sum;
+			}
+		}
+		let predictionWasConfident = true; //stupid global variable as extra return from predictNext
+		function predictNext(prior) {
+			if (prior.length < context) {
+				prior = Object.keys(memory).filter(s => s.endsWith(prior))
+				prior = prior[Math.floor(Math.random()*prior.length)];
+				predictionWasConfident = false;
+			} else {
+				prior = prior.substring(prior.length-context);
+				predictionWasConfident = true;
+			}
+			let obj = memory[prior];
+			if (!obj) {
+				obj = simpleFrequencies;
+				predictionWasConfident = false;
+			}
+			predictionWasConfident = obj != simpleFrequencies;
+			let r = Math.random();
+			for (let nextCharacter in obj) {
+				if (r < obj[nextCharacter]) return nextCharacter;
+				r -= obj[nextCharacter];
+			}
+		}
+		
+		let paused = true;
+		pause();
+		function pause() {
+			paused = !paused;
+			pausebutton.innerText = paused ? "Resume" : "Pause";
+		}
+		textarea.value = "";
+		textarea.oninput = cancel;
+		let interval;
+		cancel();
+		function cancel() {
+			if (interval) clearInterval(interval);
+			output.innerText = "";
+			pausebutton.disabled = true;
+		}
+		document.querySelector("input[type=\"range\"]").value = 7;
+		document.querySelector("input[type=\"range\"]").oninput();
+		function startGenerating() {
+			if (interval) cancel();
+			train(textarea.value);
+			if (!memory) return;
+			pausebutton.disabled = false;
+			if (paused) pause();
+			let ongoingText = "";
+			interval = setInterval(function() {
+				let confident = true;
+				if (paused) return;
+				let newTexts = "";
+				let character;
+				for (let i = 0; i<20 && character!=" " || i==0; i++) {
+					character = predictNext(ongoingText);
+					if (character == undefined) {
+						if (output.innerText == "") {
+							let span = output.appendChild(document.createElement("span"));
+							span.innerText = "Couldn't generate anything :(";
+							span.setAttribute("class", "unconfident");
+						}
+						console.log(character, ongoingText);
+						return;
+					}
+					confident &&= predictionWasConfident;
+					newTexts += character;
+					ongoingText += character;
+				}
+				let span = output.appendChild(document.createElement("span"));
+				span.innerText = newTexts.trim();
+				if (character == " ") output.appendChild(document.createTextNode(" "));
+				if (!confident) span.setAttribute("class", "unconfident");
+			}, 10);
+		}
+	</script>
+</body>
+</html>
