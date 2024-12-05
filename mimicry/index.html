@@ -11,7 +11,7 @@
 			min-height: 100vh;
 		}
 		#output span {
-			animation: 0.1s span-enter;
+			animation: 0.2s span-enter;
 			display: inline-block;
 		}
 		#output span.unconfident {
@@ -155,7 +155,7 @@
 			pausebutton.disabled = false;
 			if (paused) pause();
 			let ongoingText = "";
-			interval = setInterval(function() {
+			interval = setInterval(function() {for(let _=0;_<1000;_++){
 				let confident = true;
 				if (paused) return;
 				let newTexts = "";
@@ -179,7 +179,7 @@
 				span.innerText = newTexts.trim();
 				if (character == " ") output.appendChild(document.createTextNode(" "));
 				if (!confident) span.setAttribute("class", "unconfident");
-			}, 10);
+			}}, 10);
 		}
 	</script>
 </body>
