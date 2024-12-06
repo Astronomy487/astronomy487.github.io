@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		canvas {
+			border-radius: 100%;
+			margin-right: 0.5rem;
+			margin-bottom: 0.5rem;
+		}
+		canvas:hover {
+			outline: solid 2px gray;
+		}
+	</style>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+	<h1>All finite graphs</h1>
+	<input type="checkbox" id="connectedness" onchange="firstConnectionNumberToTry = this.checked?1:0; reset();"><label for="connectedness" style="margin-left: 0.25rem;">Require connectedness</label>
+	<br>
+	<input type="checkbox" id="minimizeintersectionscheckbox" onchange="minimizeIntersections = this.checked; reset();"><label for="minimizeintersectionscheckbox" style="margin-left: 0.25rem;">Minimize intersections when rendering (Computationally expensive !)</label>
+	<div id="output"></div>
+	<script>
+		let linesIntersectCache = {};
+		function linesIntersect(ii, jj, kk, ll, n) { //INCREDIBLE NEWS - this doesn't even depend on n
+			let footprint = ii + " " + jj + " " + kk + " " + ll;
+			if (footprint in linesIntersectCache) return linesIntersectCache[footprint];
+			let intersect = true;
+			intersectionTest:
+			for (let direction of [1, n-1]) {
+				let walk = ii;
+				while (walk != kk && walk != ll) {
+					walk = (walk+direction)%n;
+					if (walk == jj) {
+						intersect = false;
+						break intersectionTest;
+					}
+				}
+			}
+			linesIntersectCache[footprint] = intersect;
+			return intersect;
+		}
+		
+		let thePermutations = [];
+		function updateThePermutations(n) {
+			let perms = [ [] ];
+			for (let i = 0; i < n; i++) {
+				let newPerms = [];
+				for (let p of perms) for (let position = 0; position <= i; position++) {
+					newPerms.push(p.slice(0, position).concat(i).concat(p.slice(position)))
+				}
+				perms = newPerms;
+			}
+			thePermutations = perms;
+		}
+		
+		/*
+		[	matrix			lower part		what's actually stored (REVERSED !)
+			[0,1,1,0,1],
+			[1,0,0,1,1],	1				   1
+			[1,0,0,0,1],	10				  01
+			[0,1,0,0,1],	010				 010
+			[1,1,1,1,0]		1111			1111
+		]
+		*/
+		let idCounter = 0;
+		let firstConnectionNumberToTry = 1;
+		let minimizeIntersections = true;
+		class Graph {
+			assignId() {
+				this.id = idCounter;
+				idCounter++;
+				this.size = this.storage ? this.storage.map(function(n){
+					let t=0;for(;n;)t+=1&n,n>>=1;return t
+				}).reduce((a,b)=>a+b,0) : 0; //while we're here
+			}
+			constructor(st) {
+				this.storage = st;
+				this.order = this.storage ? this.storage.length + 1 : 0;
+				let G = this;
+				this.vertexDegrees = [];
+				for (let i = 0; i < this.order; i++) {
+					this.vertexDegrees[i] = 0;
+					for (let j = 0; j < this.order; j++) if (this.hasEdge(i, j)) this.vertexDegrees[i]++;
+				}
+				this.vertexDegreesOrderedString = this.vertexDegrees.slice().sort().join(" ");
+			}
+			hasEdge(i, j) {
+				if (i == j) return false;
+				if (i < j) [i, j] = [j, i];
+				let row = this.storage[i-1];
+				return (row & (1 << j)) ? true : false;
+			}
+			isomorphic(B) {
+				let n = this.order;
+				let A = this;
+				//if (A.order != B.order) return false;
+				//if (A.vertexDegreesOrderedString != B.vertexDegreesOrderedString) return false;
+				//we need to consider mappings from A's vertices to B's vertices
+				//only consider mappings which preserve vertex degrees
+				//mappings are stored as lookup arrays (index A-vert to find B-vert)
+				let mappingsToTry = [ [] ];
+				for (let i = 0; i < n; i++) {
+					//consider places where A[i] could reasonably go to; add that to the mappingsToTry
+					let validDestinations = new Array(n).fill(0).map((v,i)=>i).filter(j => B.vertexDegrees[j] == A.vertexDegrees[i]);
+					let newMappingsToTry = [];
+					for (let m of mappingsToTry) {
+						for (let j of validDestinations) {
+							if (!m.includes(j)) newMappingsToTry.push(m.concat(j));
+						}
+					}
+					mappingsToTry = newMappingsToTry;
+				}
+				for (let m of mappingsToTry) {
+					//check that all i,j pairs have (i, j) in A iff (m(i), m(j)) in B
+					let valid = true;
+					validCheck:
+					for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) {
+						if (A.hasEdge(i, j) != B.hasEdge(m[i], m[j])) {
+							valid = false;
+							break validCheck;
+						}
+					}
+					if (valid) return true;
+				}
+				return false;
+			}
+			draw() {
+				function xpos(l) {
+					if (n == 1) return 50;
+					return 50 + 40 * Math.sin(l/n*2*Math.PI);
+				}
+				function ypos(l) {
+					if (n == 1) return 50;
+					return 50 - 40 * Math.cos(l/n*2*Math.PI);
+				}
+				function distanceOfPoints(ii, jj) { //going with reindexing. 0=on top of each other, 1 = maximum possible distance
+					return Math.abs(Math.sin((ii-jj)*Math.PI/n))
+				}
+				
+				let n = this.order;
+				
+				let bestReindex = thePermutations[0];
+				if (minimizeIntersections) {
+					let bestReindexScore = 99999999999999999999999999;
+					for (let reindex of thePermutations) {
+						let score = 0;
+						for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) if (this.hasEdge(i, j)) {
+							let ii = reindex[i];
+							let jj = reindex[j];
+							let iijjDistance = distanceOfPoints(ii, jj);
+							for (let k = i+1; k < n; k++) if (k != j) for (let l = k+1; l < n; l++) if (l != j) if (this.hasEdge(k, l)) {
+								let kk = reindex[k];
+								let ll = reindex[l];
+								let kkllDistance = distanceOfPoints(kk, ll);
+								if (linesIntersect(ii, jj, kk, ll, n)) score += 10/(iijjDistance+kkllDistance); //todo: maybe especially punish intersections on tiny lines?
+							}
+							//while you're here, consider inherent distance
+							score += iijjDistance;
+						}
+						if (score < bestReindexScore) [bestReindex, bestReindexScore] = [reindex, score];
+						if (!bestReindexScore) break;
+					}
+				}
+				
+				let canvas = output.appendChild(document.createElement("canvas"));
+				canvas.height = canvas.width = 100;
+				canvas.title = "#" + this.id // + ", |E| = "+this.size;
+				if (!this.storage) return;
+				let ctx = canvas.getContext("2d");
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = "white";
+				for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) if (this.hasEdge(i, j)) {
+					ctx.beginPath();
+					ctx.moveTo(xpos(bestReindex[i]), ypos(bestReindex[i]));
+					ctx.lineTo(xpos(bestReindex[j]), ypos(bestReindex[j]));
+					ctx.stroke();
+				}
+				for (let i = 0; i < n; i++) {
+					for (let [color, rad] of [["black",8],["white",6]]) { //this is so dumb because why isn't lineWidth just working
+						ctx.beginPath();
+						ctx.arc(xpos(i), ypos(i), rad, 0, 2 * Math.PI);
+						ctx.fillStyle = color;
+						ctx.fill();
+					}
+				}
+			}
+			extensions() {
+				if (!this.storage) return [new Graph([])];
+				//find all ways you could add a new vertex
+				//try appending all integers 00001 - 11111, where the number of bits is the order
+				let ext = [];
+				for (let i = firstConnectionNumberToTry; i < (1<<this.order); i++) {
+					let st = this.storage.slice();
+					st.push(i);
+					ext.push(new Graph(st));
+				}
+				return ext;
+			}
+		}
+		
+		function makeMeACanvas(number, order, size) {
+			let canvas = document.body.appendChild(document.createElement("canvas"));
+			canvas.height = canvas.width = 100;
+			canvas.title = "#" + (number) + " (|V| = " + order + ", |E| = "+size+")";
+			let ctx = canvas.getContext("2d");
+			return [canvas, ctx];
+		}
+		
+		let graphsUpToIsomorphism;
+		let graphsOfOrder; //extra list, points to same graphs ^^^, but by order. TODO include the vertex degree set as a pawprint
+		let graphsExtendedIndex;
+		let graphsToConsiderQueue;
+		reset();
+		
+		function reset() {
+			graphsUpToIsomorphism = [];
+			graphsUpToIsomorphismButStructured = []; //index as [order] [vertexDegreesOrderedString]
+			graphsExtendedIndex = -1;
+			graphsToConsiderQueue = [new Graph(null)];
+			while (output.firstChild) output.firstChild.remove();
+		}
+		
+		function process() { for (let _ = 0; _ < 10; _++) {
+			if (!graphsToConsiderQueue.length) {
+				//find a graph, add its extensions to the queue
+				graphsExtendedIndex++;
+				let base = graphsUpToIsomorphism[graphsExtendedIndex];
+				graphsToConsiderQueue = base.extensions();
+			}
+			let graph = graphsToConsiderQueue.shift();
+			let isIsomorphicToExistingGraph = false;
+			if (graph.order in graphsUpToIsomorphismButStructured) for (let g of (graphsUpToIsomorphismButStructured[graph.order][graph.vertexDegreesOrderedString] || [])) {
+				if (g.isomorphic(graph)) {
+					isIsomorphicToExistingGraph = true;
+					break;
+				}
+			}
+			if (!isIsomorphicToExistingGraph) {
+				graph.assignId();
+				graphsUpToIsomorphism.push(graph);
+				if (!(graph.order in graphsUpToIsomorphismButStructured)) {
+					output.appendChild(document.createElement("h2")).innerText = "|V| = " + graph.order;
+					graphsUpToIsomorphismButStructured[graph.order] = {};
+					updateThePermutations(graph.order);
+				}
+				if (!(graph.vertexDegreesOrderedString in graphsUpToIsomorphismButStructured[graph.order])) {
+					graphsUpToIsomorphismButStructured[graph.order][graph.vertexDegreesOrderedString] = [];
+				}
+				graphsUpToIsomorphismButStructured[graph.order][graph.vertexDegreesOrderedString].push(graph);
+				graph.draw();
+			} else _--;
+		} }
+		
+		connectedness.checked = true;
+		connectedness.onchange();
+		
+		minimizeintersectionscheckbox.checked = true;
+	</script>
+	<script src="../script.js"></script>
+</body>
+</html>

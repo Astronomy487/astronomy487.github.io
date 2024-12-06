@@ -1,0 +1,33 @@
+@import url('https://fonts.cdnfonts.com/css/frutiger');
+body {
+	background: black;
+	color: white;
+	width: min(64rem, calc(100vw - 6rem));
+	margin: 8rem auto;
+	font-family: 'Frutiger', 'Segoe UI', sans-serif;
+}
+h2 {
+	margin: 0.5rem 0;
+	margin-top: 1.5rem;
+}
+h1 {
+	font-size: 2rem;
+}
+input {
+	background: inherit;
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	border: solid 1px white;
+	padding: 0.5rem;
+	box-sizing: border-box;
+	accent-color: yellow;
+}
+a {
+	color: yellow;
+	text-decoration: underline;
+}
+::selection {
+	background: yellow;
+	color: black;
+}

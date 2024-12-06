@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		table {
+			width: 100%;
+			table-layout: fixed;
+			border-spacing: 0.5rem;
+		}
+		td {
+			word-break: break-all;
+		}
+	</style>
+</head>
+<body>
+	<h1>All prime numbers</h1>
+	<table id="table"></table>
+	<script>
+		let primeNumbers = [];
+		let value = 1;
+		
+		function process() { for (let _ = 0; _ < 20; _++) {
+			let newPrimesFound = [];
+			while (newPrimesFound.length < 15) {
+				value++;
+				//check if value is prime
+				let isPrime = true;
+				let sqrtValue = Math.sqrt(value);
+				for (let p of primeNumbers) {
+					if (p > sqrtValue) break;
+					if (value%p==0) {
+						isPrime = false;
+						break;
+					}
+				}
+				if (isPrime) {
+					primeNumbers.push(value);
+					newPrimesFound.push(value);
+				}
+			}
+			let tr = document.createElement("tr");
+			for (let p of newPrimesFound) tr.appendChild(document.createElement("td")).innerText = p;
+			table.appendChild(tr);
+		} }
+	</script>
+	<script src="../script.js"></script>
+</body>
+</html>

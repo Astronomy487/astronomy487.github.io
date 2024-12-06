@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		input {
+			width: 100%;
+			margin-bottom: 1rem;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		table {
+			width: 100%;
+		}
+		th {
+			text-align: left;
+			border-bottom: solid 1px white;
+		}
+		.highlight {
+			font-weight: bold;
+			color: yellow;
+		}
+		td i {
+			color: gray;
+		}
+		td {
+			word-break: break-all;
+		}
+	</style>
+</head>
+<body>
+	<h1>All strings</h1>
+	<input id="alphabetinput" placeholder="Given alphabet (e.g. abcdefghijklmnopqrstuvwxyz)">
+	<input id="input" placeholder="Search by index (e.g. 487) or string (e.g. abracadabra)">
+	<table id="table">
+		<thead><tr>
+			<th>n</th>
+			<th>String</th>
+		</tr></thead>
+		<tbody id="tbody"></tbody>
+	</table>
+	<script>
+		let alphabet, n;
+		
+		function string(index) {
+			if (index == 0n) return "<i>empty string</i>"
+			let length = 0n;
+			let nToLength = 1n;
+			while (index >= nToLength) {
+				index -= nToLength;
+				length++;
+				nToLength *= n;
+			}
+			//consists of LENGTH characters, is INDEX within that
+			let str = "";
+			for (let c = 0; c < length; c++) {
+				str = alphabet[index%n] + str;
+				index /= n;
+			}
+			return str;
+		}
+		
+		let highlight = null;
+		function reset(interestingItem) {
+			if (interestingItem) {
+				last = interestingItem - 2n;
+				highlight = interestingItem;
+			} else last = -1n;
+			while (tbody.firstChild) tbody.firstChild.remove();
+		}
+		
+		let last;
+		reset();
+		function process() { for (let _ = 0; _ < 20; _++) {
+			last++;
+			let tr = tbody.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("td")).innerText = last;
+			tr.appendChild(document.createElement("td")).innerHTML = string(last);
+			if (last == highlight) {
+				tr.setAttribute("class", "highlight");
+			}
+		} }
+		
+		function stringToIndex(string) {
+			let length = string.length;
+			let build = 0n;
+			for (let i = 0; i < string.length; i++) {
+				let theValue = alphabet.indexOf(string[i]);
+				if (theValue == -1) throw ("what do you mean " + string[i]);
+				build = n*build+BigInt(theValue);
+			}
+			for (let i = 0n; i < length; i++) build += n**i;
+			return build;
+		}
+		
+		input.value = "";
+		input.onchange = function() {
+			try {
+				let amount = BigInt(this.value);
+				reset(amount);
+			} catch(e) {
+				try {
+					let amount = stringToIndex(this.value);
+					reset(amount);
+				} catch(e) {
+					this.value = "";
+					console.log(e);
+				}
+			}
+		}
+		
+		alphabetinput.value = "abcdefghijklmnopqrstuvwxyz";
+		alphabetinput.oninput = function() {
+			if (!this.value.length) return;
+			alphabet = this.value.split("").filter((v,i,a)=>a.indexOf(v)==i);
+			n = BigInt(alphabet.length);
+			reset();
+			input.onchange();
+		}
+		alphabetinput.oninput();
+	</script>
+	<script src="../script.js"></script>
+</body>
+</html>

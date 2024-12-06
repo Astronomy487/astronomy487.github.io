@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<style>
+		body {
+			max-width: 32rem;
+			position: fixed;
+			margin: 0;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+	</style>
+</head>
+<body>
+	<h1>Enumerations</h1>
+	<p>I find it really really funny to enumerate mathematical objects using endless scrolling. Like ohohoho look at me I successfully enumerated all the graphs ever, trust me they're all in this list. Just keep scrolling dude</p>
+	<p>Here are the ones I've made</p>
+	<ul></ul>
+	<script>
+		for (let [url, name] of [
+			["sets", "All pure sets"],
+			["graphs", "All finite graphs"],
+			["primes", "All prime numbers"],
+			["strings", "All strings"],
+		]) document.body.querySelector("ul").innerHTML += "<li><a href=\""+url+"\">"+name+"</a></li>";
+	</script>
+</body>
+</html>

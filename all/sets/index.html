@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		input {
+			width: 100%;
+			margin-bottom: 1rem;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		td:nth-child(3) {
+			width: 2.5rem;
+		}
+		td:nth-child(2) {
+			letter-spacing: -0.125em;
+		}
+		td:not(:nth-child(3)) {
+			padding-right: 0.25rem;
+			word-break: break-all;
+		}
+		table {
+			width: 100%;
+		}
+		th {
+			text-align: left;
+			border-bottom: solid 1px white;
+		}
+		.highlight {
+			font-weight: bold;
+			color: yellow;
+		}
+		.highlight td:nth-child(2) {
+			letter-spacing: -0.0625em;
+		}
+	</style>
+</head>
+<body>
+	<h1>All pure sets</h1>
+	<p>A pure set is a set that only contains other pure sets.</p>
+	<input id="input" placeholder="Search by index (e.g. 487) or set notation (e.g. {{},{{}}})">
+	<table id="table">
+		<thead><tr>
+			<th>n</th>
+			<th>S<sub>n</sub></th>
+			<th>|S<sub>n</sub>|</th>
+		</tr></thead>
+		<tbody id="tbody"></tbody>
+	</table>
+	<script>
+		function setText(n) {
+			if (n == 0n) return "∅";
+			let elements = [];
+			let pow = 0n;
+			while (n) {
+				if (n&1n) elements.push(pow);
+				n >>= 1n;
+				pow++;
+			}
+			return "{" + elements.map(setText).join(",") + "}";
+		}
+		
+		let lastDone = -1n;
+		function process() { for (let _ = 0; _ < 20; _++) {
+			lastDone++;
+			let tr = tbody.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("td")).innerText = lastDone;
+			tr.appendChild(document.createElement("td")).innerText = setText(lastDone);
+			tr.appendChild(document.createElement("td")).innerText = function(n){
+					let t=0n;for(;n;)t+=1n&n,n>>=1n;return t
+				}(lastDone);
+			if (lastDone == highlight) tr.setAttribute("class", "highlight");
+		} }
+		
+		let highlight = null;
+		function startCountingFrom(n) {
+			lastDone = n-1n;
+			while (tbody.firstChild) tbody.firstChild.remove();
+		}
+		
+		function goToResult(n) {
+			let whereToStartPage = n;
+			if (whereToStartPage < 20n) whereToStartPage = 0n;
+			else whereToStartPage -= 1n;
+			highlight = n;
+			startCountingFrom(whereToStartPage);
+		}
+		
+		input.value = "";
+		input.onchange = function() {
+			try {
+				let amount = BigInt(this.value);
+				goToResult(amount);
+			} catch(e) {
+				try {
+					let amount = findIndexFromSetString(this.value);
+					goToResult(amount);
+				} catch(e) {
+					console.log(e);
+					this.value = "";
+				}
+			}
+		}
+		
+		function findIndexFromSetString(string) { //this function is so big and bulky but whatever
+			let ogString = string;
+			string = string.replaceAll("∅", "{}").replaceAll(" ", "").replaceAll("\t", "").replaceAll("\\","").replaceAll("emptyset","{}");
+			for (let c of string) if (c != "{" && c != "}" && c != ",") throw "Not set notation";
+			if (!string.length) throw "Gave me an empty string...";
+			let nestingLevel = 0;
+			for (let character of string.split("")) {
+				if (character == "{") nestingLevel++;
+				if (character == "}") nestingLevel--;
+				if (nestingLevel < 0) throw "Invalid curly brackets";
+			}
+			if (nestingLevel != 0) throw "Invalid curly brackets";
+			string = string.substring(1, string.length-1);
+			if (!string.length) return 0n;
+			//make children - string split by commas, but only on outer nesting level
+			let children = [];
+			nestingLevel = 0;
+			let latestChild = "";
+			for (let character of string.split("")) {
+				if (character == "{") nestingLevel++;
+				if (character == "}") nestingLevel--;
+				if (nestingLevel == 0 && character == ",") {
+					children.push(latestChild);
+					latestChild = "";
+				} else latestChild += character;
+			}
+			children.push(latestChild);
+			let total = 0n;
+			for (let child of children.map(findIndexFromSetString)) {
+				total |= 1n << child;
+			}
+			return total;
+		}
+	</script>
+	<script src="../script.js"></script>
+</body>
+</html>
