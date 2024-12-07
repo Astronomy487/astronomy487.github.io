@@ -26,6 +26,7 @@ input {
 a {
 	color: yellow;
 	text-decoration: underline;
+	cursor: pointer;
 }
 ::selection {
 	background: yellow;
