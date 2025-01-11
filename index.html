@@ -520,7 +520,7 @@
 				
 				if (song.url && song.url["YouTube"]) {
 					let iframe = div.appendChild(document.createElement("iframe"));
-					iframe.src = song.url["YouTube"].replace("/watch?v=", "/embed/");
+					iframe.src = song.url["YouTube"].replace("/watch?v=", "/embed/").replace("&t=", "?start=");
 					let aspectRatio = (1+Math.sqrt(5))/2;
 					if ((song.released||album.released) < "2022-07-25") aspectRatio = 16/9;
 					if (album && album.title == "somewhere in the milky way") aspectRatio = 1;
@@ -534,8 +534,9 @@
 					if (song.title == "Sad Machine (Astro Jazz Arrangement)") aspectRatio = 2;
 					if (song.title == "No Fear No More (Astro Remix)") aspectRatio = 2048/858;
 					if (song.title == "Stagestruck (Astro Remix)") aspectRatio = 2048/858;
-					iframe.width = 350 * Math.sqrt(aspectRatio);
-					iframe.height = 350 / Math.sqrt(aspectRatio);
+					if (song.title == "ROSALIE") aspectRatio = 1;
+					iframe.width = 325 * Math.sqrt(aspectRatio);
+					iframe.height = 325 / Math.sqrt(aspectRatio);
 					iframe.style.margin = "0";
 					iframe.style.border = "none";
 				}
