@@ -1,370 +1,828 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<link rel="icon" href="favicon.png">
+	<title>Astro</title>
 	<style>
-		@import url('https://fonts.cdnfonts.com/css/lucida-sans');
-		
-		body {
-			font-size: 1.125rem;
-			background-color: black;
-			font-family: Segoe UI;
-			text-transform: lowercase;
-			color: white;
-			--accent: white;
-			overflow-x: hidden;
+		:root {
+			--bg: #000;
+			--fg: #fff;
+			--med: #ffffff88;
+			--line: #ffffff44;
+			--link1: #08e;
+			--link2: #0af;
 		}
-		
 		::selection {
-			background: var(--accent);
-			color: black;
+			background: var(--fg);
+			color: var(--bg);
 		}
-		
+		html {
+			font-size: min(16px, calc(100vw / 70));
+		}
+		body {
+			margin: 0;
+			overflow-x: hidden;
+			background: var(--bg);
+			color: var(--fg);
+			text-align: left;
+			line-height: 125%;
+			font-family: 'Inter', sans-serif;
+			letter-spacing: -0.03125em;
+			font-feature-settings: 'cv02' 1,'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+		}
 		main {
-			margin: 8rem auto;
-			width: 48rem;
+			margin: 0;
+			width: 64rem;
+			position: absolute;
+			left: calc(50% - 32rem);
+			transition: 0.5s left;
+			pointer-events: none;
+		}
+		main * {
+			pointer-events: all;
+		}
+		.inspect {
+			position: fixed;
+			margin: 0;
+			left: calc(50% + 17rem);
+			width: calc(50% - 17rem);
+			padding-left: 2rem;
+			border-left: solid 0.125rem var(--line);
+			opacity: 0;
+			display: none;
+			transition: 0.2s opacity;
+			height: calc(100vh - 0rem);
+			background: black;
+			top: 0;
+		}
+		.inspect > div {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			animation-fill-mode: forwards;
+			width: 31rem;
+		}
+		.inspect table {
+			margin: 1rem 0;
+		}
+		.inspect h2 {
+			line-height: 100%;
+			margin: 0;
+		}
+		.inspect-artwork {
+			width: 6rem;
+			float: left;
+			margin-right: 1rem;
+		}
+		.inspect td:has(.inspect-artwork) {
+			width: 6rem;
+		}
+		@keyframes inspect-in {from {opacity: 0; transform: translateY(-50%) translateY(0.5rem);}}
+		@keyframes inspect-out {to {opacity: 0; transform: translateY(-50%) translateY(0.5rem);}}
+		p {
+			text-align: justify;
+		}
+		p br {
+			margin: 0.75rem 0;
+		}
+		img {
+			user-select: none;
 		}
 		
+		.mono-numbers {
+			font-feature-settings: 'cv02' 1, 'tnum' 1, 'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+		}
+		
+		table {
+			margin: 0;
+			border-collapse: collapse;
+			border-spacing: 0;
+			width: 100%;
+		}
+		table td {
+			vertical-align: top;
+			padding: 0;
+			margin: 0;
+		}
+		.tracklist-container {
+			margin: 1rem 0;
+		}
+		.album-event {
+			margin: 6rem 0;
+		}
+		.album-event h2 {
+			font-style: italic;
+		}
+		.album-event:first-child {
+			margin-top: 3rem;
+		}
+		.remix-tile {
+			display: inline-block;
+			border-left: solid 0.125rem var(--line);
+			padding: 0;
+			padding-left: 0.5rem;
+			width: 19.7rem;
+			margin: 0.25rem 0.5rem;
+			vertical-align: top;
+		}
+		.remix-tile div {
+			float: right;
+			color: var(--med);
+			margin-left: 0.5rem;
+		}
 		h2 {
 			margin: 0;
-			margin-top: 6rem;
+			margin-top: 0.5rem;
 			font-size: 2rem;
 		}
-		h2 span {
-			background-color: var(--accent);
-			color: black;
-		}
-		h2 span::selection {
-			color: var(--accent);
-			background: white;
-		}
-		
-		h1 {
-			font-size: 2.5rem;
-			line-height: 95%;
-			margin-top: 12rem;
-		}
-		
-		section {
-			display: inline-block;
-			width: calc(50% - 1.5rem);
-			vertical-align: top;
-			margin: 1rem 0;
-			margin-right: 1.5rem;
-		}
-		
-		p {
+		h4 {
 			margin: 0;
+			font-weight: normal;
+			margin-top: 0.5rem;
+			color: var(--med);
 		}
 		
-		a {
-			color: var(--accent);
+		.lyrics {
+			max-height: 16rem;
+			overflow-y: scroll;
+			border: solid 0.125rem var(--line);
+			width: 100%;
+			padding: 0.5rem;
+			margin: 1.5rem 0;
 		}
-		a.project {
+		.lyrics-header {
+			background: var(--bg);
 			display: inline-block;
-			margin-bottom: 0.5rem;
+			padding: 0 0.75rem;
+			position: absolute;
+			transform: translateY(-1.25rem);
+		}
+		.lyrics p {
+			margin: 0;
+			margin-left: 1rem;
+		}
+		.lyrics p:first-letter {
+			margin-left: -1rem;
+		}
+		a[href] {
+			color: var(--link1);
+		}
+		a[href]:hover {
+			color: var(--link2);
+		}
+		a {
+			cursor: pointer;
 		}
 		a:hover {
-			background-color: var(--accent);
-			color: black;
+			text-decoration: underline;
+		}
+		@keyframes nav-hover {
+			25% {scale: 1.25;}
+		}
+		nav a img {
+			width: 1.25rem;
+			margin-right: 0.625rem;
+			border-radius: 0;
+		}
+		nav.center {
+			text-align: center;
+		}
+		nav.center a img {
+			margin: 0 0.5rem;
+		}
+		nav a:hover img {
+			animation: 0.2s nav-hover;
+		}
+		nav {
+			text-align: left;
+			display: block;
+			margin: 0.5rem 0;
+		}
+		h1 {
+			font-size: 2.5rem;
+			font-weight: bold;
+		}
+		.birthday {
+			margin: 2rem 0;
+			height: 1.5rem;
+			position: relative;
+		}
+		.birthday span {
+			z-index: 3;
+			position: absolute;
+			padding: 0 2rem;
+			left: 50%;
+			transform: translate(-50%, 0);
+		}
+		.birthday hr {
+			z-index: 2;
+			border: none;
+			background: linear-gradient(90deg, var(--line) 40%, #ffffff00 40% 60%, var(--line) 60%);
+			height: 0.125rem;
+			position: absolute;
+			width: 100%;
+		}
+		.parentheses {
+			color: var(--med);
+			font-size: 0.875em;
+			line-height: 100%;
+		}
+		header {
+			width: 38.83rem;
+			height: 24rem;
+			position: absolute;
+			margin: calc(50vh - 12rem) calc(50% - 19.415rem);
+			padding: 1.5rem;
+			border: solid 0.125rem var(--fg);
+			background: #00000066;
+			backdrop-filter: blur(1rem);
+			box-sizing: border-box;
+		}
+		header #bio {
+			width: 65%;
+			text-align: justify;
+			position: absolute;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			left: 50%;
+		}
+		#cutearrow {
+			font-size: 1.5rem;
+			line-height: 2rem;
+			position: absolute;
+			background: var(--bg);
+			width: 2rem;
+			height: 2rem;
+			left: 50%;
+			bottom: -1.1875rem;
+			border-radius: 100%;
+			color: var(--fg);
+			text-align: center;
+			transform: translate(-50%, 0);
+			border: solid 0.125rem var(--fg);
+			user-select: none;
+		}
+		#rhombuses {
+			height: 100vh;
+			width: 100vw;
+			position: relative;
+			user-select: none;
+			overflow: hidden;
+			border-bottom: solid 0.125rem var(--line);
 		}
 		
-		.repo-link {
-			float: right;
-			--accent: gray;
-		}
-		
-		.album {
-			display: inline-block;
-			margin-right: 1.5rem;
-		}
+		#histogram img {border-radius: 4px;}
+		img, iframe, header {border-radius: 8px;}
 	</style>
-	<link rel="icon" href="favicon.png">
-	<title>astro's catalogue</title>
 </head>
 <body>
-	<main id="main">
-		<h1>My name is Astro<br>That is a pseudonym</h1>
+	<div style="position: absolute;"><div id="rhombuses"></div></div>
+	<main>
+		<header>
+			<div id="bio">My name is Astro (f.k.a. Astronomy487). I am a <span id="myage" class="mono-numbers"></span>-year-old musician. I appreciate electronic music, math, and linguistics.</div>
+			<div id="cutearrow">↓</div>
+		</header>
+		<h1 style="margin-top: calc(100vh + 8rem);">My music</h1>
+		<div>16-bit 44.1kHz lossless downloads freely available on Bandcamp for all music</div>
+		<div>All music shared under CC BY-NC-SA 4.0 license</div>
+		<div>This page reflects <a target="_blank" href="discog.json">discog.json</a></div>
+		<br><br>
+		<div id="output"></div>
+		<div style="margin-top: 5rem;">Histogram of music published</div>
+		<div id="histogram" style="position: relative; height: 22rem; margin-top: 4rem; margin-bottom: 16rem;"></div>
 	</main>
+	<div class="inspect"><div></div></div>
+	<script src="discog.js"></script>
+	<script>(function(a,b){'object'==typeof exports&&'object'==typeof module?module.exports=b():'function'==typeof define&&define.amd?define([],b):'object'==typeof exports?exports.smartquotes=b():a.smartquotes=b()})(this,function(){return function(a){function b(d){if(c[d])return c[d].exports;var e=c[d]={i:d,l:!1,exports:{}};return a[d].call(e.exports,e,e.exports,b),e.l=!0,e.exports}var c={};return b.m=a,b.c=c,b.d=function(a,c,d){b.o(a,c)||Object.defineProperty(a,c,{configurable:!1,enumerable:!0,get:d})},b.n=function(a){var c=a&&a.__esModule?function(){return a['default']}:function(){return a};return b.d(c,'a',c),c},b.o=function(a,b){return Object.prototype.hasOwnProperty.call(a,b)},b.p='',b(b.s=3)}([function(a,b,c){'use strict';var d=c(1);a.exports=function(a,b){return b=b||{},d.forEach(function(c){var d='function'==typeof c[1]?c[1](b.retainLength):c[1];a=a.replace(c[0],d)}),a}},function(a){'use strict';var b='a-zA-Z\xE1\xE0\xE2\xE4\xE3\xE5\xE7\xE9\xE8\xEA\xEB\xED\xEC\xEE\xEF\xF1\xF3\xF2\xF4\xF6\xF5\xFA\xF9\xFB\xFC\xFD\xFF\xE6\u0153\xC1\xC0\xC2\xC4\xC3\xC5\xC7\xC9\xC8\xCA\xCB\xCD\xCC\xCE\xCF\xD1\xD3\xD2\xD4\xD6\xD5\xDA\xD9\xDB\xDC\xDD\u0178\xC6\u0152';a.exports=[[/'''/g,function(a){return'\u2034'+(a?'\u2063\u2063':'')}],[/([^a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ_0-9]|^)"([a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ_0-9])/g,'$1\u201C$2'],[/(\u201c[^"]*)"([^"]*$|[^\u201c"]*\u201c)/g,'$1\u201D$2'],[/([^0-9])"/g,'$1\u201D'],[/''/g,function(a){return'\u2033'+(a?'\u2063':'')}],[/([^a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ_0-9]|^)'(\S)/g,'$1\u2018$2'],[/([a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ_0-9])'([a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ])/ig,'$1\u2019$2'],[/(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[$[pL}])/ig,'\u2019$2$3'],[/((\u2018[^']*)|[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ])'([^0-9]|$)/ig,'$1\u2019$3'],[/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B[^a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ_0-9][\u2018\u2019]\b|[^\u2018\u2019]*$))/ig,'$1\u2019'],[/"/g,'\u2033'],[/'/g,'\u2032']]},function(a,b,c){'use strict';function d(a){if(-1===['CODE','PRE','SCRIPT','STYLE','NOSCRIPT'].indexOf(a.nodeName.toUpperCase())){var b,c,h,i='',j=a.childNodes,k=[];for(b=0;b<j.length;b++)c=j[b],c.nodeType===g||'#text'===c.nodeName?(k.push([c,i.length]),i+=c.nodeValue||c.value):c.childNodes&&c.childNodes.length&&(i+=d(c));for(b in i=f(i,{retainLength:!0}),k)h=k[b],h[0].nodeValue?h[0].nodeValue=e(i,h[0].nodeValue,h[1]):h[0].value&&(h[0].value=e(i,h[0].value,h[1]));return i}}function e(a,b,c){return a.substr(c,b.length).replace('\u2063','')}var f=c(0),g='undefined'!=typeof Element&&Element.TEXT_NODE||3;a.exports=function(a){return d(a),a}},function(a,b,c){'use strict';function d(a){return'undefined'!=typeof document&&'undefined'==typeof a?(g.runOnReady(function(){return f(document.body)}),d):'string'==typeof a?h(a):f(a)}var e=c(1),f=c(2),g=c(4),h=c(0);a.exports=d,a.exports.string=h,a.exports.element=f,a.exports.replacements=e,a.exports.listen=g},function(a,b,c){'use strict';function d(a){var b=new MutationObserver(function(a){a.forEach(function(a){var b,c=!0,d=!1;try{for(var f,g,h=a.addedNodes[Symbol.iterator]();!(c=(f=h.next()).done);c=!0)g=f.value,e(g)}catch(a){d=!0,b=a}finally{try{!c&&h.return&&h.return()}finally{if(d)throw b}}})});return d.runOnReady(function(){b.observe(a||document.body,{childList:!0,subtree:!0})}),b}var e=c(2),f=c(0);d.runOnReady=function(a){if('loading'!==document.readyState)a();else if(document.addEventListener)document.addEventListener('DOMContentLoaded',a,!1);else var b=setInterval(function(){'loading'!==document.readyState&&(clearInterval(b),a())},10)},a.exports=d}])});
+//# sourceMappingURL=smartquotes.js.map</script>
 	<script>
-		//document.querySelector("h1").innerHTML = document.querySelector("h1").innerHTML.split("").map(x => "<span>"+x+"</span>").join("");
-		if (false) for (let c of document.querySelectorAll("h1 span")) {
-			c.style.transition = "0.1s";
-			c.onmouseenter = function() {
-				//this.style.color = "#" + [0,0,0,0,0,0].map(x => "0123456789abcdef".charAt(Math.floor(Math.random()*16))).join("");
-				this.style.color = ["cyan", "magenta", "yellow"][Math.floor(Math.random()*3)];
+		let histogramColors = ["cyan", "magenta", "yellow"];
+		doHistogram(["normal", "bonus", "remix"]);
+		function doHistogram(acceptedCategories) {
+			while (histogram.firstChild) histogram.firstChild.remove();
+			let historyBuckets = {
+				bonus: {},
+				normal: {},
+				remix: {}
+			};
+			function considerForHistory(song, date, category) {
+				if (!acceptedCategories.includes(category)) return;
+				let bucket = date.substring(0, 7);
+				if (!(bucket in historyBuckets[category])) historyBuckets[category][bucket] = 0;
+				historyBuckets[category][bucket] += song.length;
 			}
-		}
-		
-		let i = 0;
-		for (let category of [
-			{
-				header: "I am a musician",
-				entries: [
-					{
-						url: "bandcamp",
-						name: "my Bandcamp",
-						text: "All of my music is available losslessly on Bandcamp for free under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\">Creative Commons BY-NC-SA 4.0 license</a>. I put a ton of bonus tracks up there. I'm also on <a href=\"https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5\">Spotify</a>, <a href=\"https://music.apple.com/gb/artist/astro/1468743818\">Apple Music</a>, <a href=\"https://www.youtube.com/astronomy487\">YouTube</a>, and the like, if you prefer that."
-					},
-					{
-						url: "musiclab",
-						name: "music lab",
-						isRepo: true,
-						text: "I wrote some JavaScript to analyze chords (including polychords, inversions) into JavaScript objects. I want to use this library to revamp older musical code projects of mine, the <a href=\"musiclab/progression-o-tron\">PROGRESSION-O-TRON</a> and the <a href=\"musiclab/voiceleader\">Voice Leader</a>."
-					}
-				]
-			},
-			{
-				header: "I am a mathematician",
-				entries: [
-					{
-						url: "everyset",
-						name: "Every set ever",
-						text: "An exhaustive, indexed list of every (pure) set ever, including a very advanced search feature."
-					},
-					{
-						url: "allprimes",
-						name: "All the primes",
-						text: "An exhaustive list of every prime number ever, for convenience."
-					},
-					{
-						url: "ccdsc",
-						name: "ccdsc.js",
-						isRepo: true,
-						text: "A library for handling commutative complex dual split-complex numbers, numbers with extra non-real components where <var>i</var><sup>2</sup>&nbsp;=&nbsp;-1, <var>j</var><sup>2</sup>&nbsp;=&nbsp;1, and <var>ϵ</var><sup>2</sup>&nbsp;=&nbsp;0."
-					},
-					{
-						url: "ringalgebras",
-						name: "Ring algebras",
-						text: "An exploration for creating matrix representations for any ring algebra that maintains ring structure, and then evaluating analytic functions on those matrices."
-					},
-					{
-						url: "modularcalculator",
-						name: "Modular Calculator",
-						isRepo: true,
-						text: "A visual calculator paradigm inspired by modular synthesizer software <a href=\"https://vcvrack.com/\">VCV Rack</a>, where calculations are performed by modules and passed along to subsequent modules."
-					},
-					{
-						url: "interpolatedprojections",
-						name: "Interpolated Projections",
-						text: "An adaptation of <a href=\"https://www.jasondavies.com/maps/transition/\">code by Jason Davies</a> to linearly interpolate between three map projections, using a custom input element inspired by <a href=\"https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle\">soil composition triangles</a>."
-					},
-					{
-						url: "automata",
-						isRepo: true,
-						name: "automata engine",
-						text: "An unnamed engine for cellular automata on a square grid. Cell instructions are customizable and modular."
-					}
-				]
-			},
-			{
-				header: "I am a game creator",
-				entries: [
-					{
-						url: "chess",
-						name: "Chess Sandbox",
-						isRepo: true,
-						text: "A generalized and highly customizable chess engine. By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a href=\"https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js\">shenanigans</a>."
-					},
-					{
-						url: "sokopond",
-						name: "the sokopond",
-						isRepo: true,
-						text: "A sokoban engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!"
-					},
-					{
-						url: "minesweeper",
-						isRepo: true,
-						text: "A minesweeper engine that can play with alternative grids."
-					}
-				]
-			},
-			{
-				header: "I am a microgamer",
-				entries: [
-					{
-						url: "infinitescrabble",
-						name: "Infinite Scrabble",
-						isRepo: true,
-						text: "A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures."
-					},
-					{
-						url: "emojigarden",
-						name: "EmojiGarden",
-						isRepo: true,
-						text: "A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass."
-					},
-					{
-						url: "2048crossword",
-						isRepo: true,
-						text: "2048 if it took place on a crossword puzzle."
-					},
-					{
-						url: "abcde",
-						name: "ABCDE",
-						isRepo: true,
-						text: "A microgame based on a TikTok trend from January 2023."
-					},
-					{
-						url: "flowers",
-						name: "flower field",
-						text: "A cute Conway's Game of Life (Highlife variant) engine in your browser, depicted as a field of flowers."
-					}
-				]
-			},
-			/* {
-				header: "I am a conlanger",
-				entries: [
-					{
-						url: "niachang",
-						name: "Niachāng",
-						text: "An old language with Mandarin phonaesthetics based around the concept of language expressions as abstract syntax trees. The 'part of speech' (arity) a word takes on is demonstrated by its tone."
-					},
-					{
-						url: "tokiponido",
-						name: "Unnamed lojbo-tokiponido",
-						text: "A loglang inspired by the principles of Lojban and toki pona. It aims to formalize the ideas behind Niachāng into the language of first-order logic. The grammar is complete but undocumented. Currently it's literally just a parser, and the parser is a little broken."
-					}
-				]
-			}, */
-			{
-				header: "I am a gamer",
-				entries: [
-					{
-						url: "acnhcurator",
-						name: "ACNH Curator",
-						isRepo: true,
-						text: "A tool to track museum progress in Animal Crossing: New Horizons. Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price."
-					},
-					{
-						url: "wordlesolver",
-						name: "Wordle Solver",
-						isRepo: true,
-						text: "A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess. Equipped with two word lists: one for <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a> and <a href=\"https://gregcameron.com/infinite-wordle/\">Infinite Wordle</a>."
-					},
-					{
-						url: "mcpacks",
-						name: "Minecraft packs",
-						isRepo: true,
-						text: "This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too."
-					},
-					{
-						url: "https://gamebanana.com/mods/516617",
-						name: "Electric Universe (Celeste Mod)",
-						text: "This is my first time making a Celeste mod. This is a set of four little maps I made in the spring/summer of 2023."
-					}
-				]
-			},
-			/* {
-				header: "I'm a vexillologist",
-				entries: [
-					{
-						url: "flog",
-						name: "Flog",
-						text: "My Flog is where I keep photos of flags. I really need to redo its code to make navigation easier, and I really need to include more photos."
-					}
-				]
-			}, */
-			{
-				header: "I am a scientist",
-				entries: [
-					{
-						url: "planckunits",
-						name: "All the Planck units you could ever want",
-						text: "An interactive blog post about creating a cohesive set of units out of whatever 'universal' constants you want."
-					},
-					{
-						url: "lewis",
-						name: "Now who's Lewis?",
-						isRepo: true,
-						text: "An experimental (read: not very reliable) program to draw Lewis structures for simple molecules."
-					},
-					{
-						url: "balancingact",
-						name: "Balancing act",
-						isRepo: true,
-						text: "A program to balance chemical equations and solve simple stoichiometry questions using some basic matrix operations."
-					}
-				]
+			for (let album of discog.albums) {
+				for (let song of album.songs) considerForHistory(song, song.released || album.released, song.bonus ? "bonus" : "normal");
 			}
-		]) {
-			i++;
-			let h2 = main.appendChild(document.createElement("h2")).appendChild(document.createElement("span"));
-			h2.innerText = category.header;
-			h2.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
-			/* if (category.albums) for (let album of category.albums) {
-				let div = main.appendChild(document.createElement("div"));
-				div.setAttribute("class", "album");
-				div.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
-				let a = div.appendChild(document.createElement("a"));
-				a.innerText = album.name;
-				a.href = "https://astronomy487.bandcamp.com/album/" + album.bc;
-				div.appendChild(document.createTextNode(" [" + album.year + "]"));
-				//div.appendChild(document.createElement("sup")).innerText = album.year;
+			for (let remix of discog.remixes) considerForHistory(remix, remix.released, "remix");
+			let keys = Object.keys(historyBuckets.bonus).concat(Object.keys(historyBuckets.normal)).concat(Object.keys(historyBuckets.remix)).sort().filter((v,i,a)=>a.indexOf(v)==i);
+			let firstYear = parseInt(keys[0].substring(0, 4));
+			let lastYear = parseInt(keys[keys.length-1].substring(0, 4));
+			let firstMonth = parseInt(keys[0].substring(5));
+			let lastMonth = parseInt(keys[keys.length-1].substring(5));
+			let n = (lastYear-firstYear-1)*12 + lastMonth + 13 - firstMonth;
+			let allotForYAxis = 4;
+			n += allotForYAxis;
+			let i = 0;
+			let maxAmt = keys.map(k => (historyBuckets.bonus[k]||0) + (historyBuckets.normal[k]||0) + (historyBuckets.remix[k]||0)).reduce((a,b)=>Math.max(a,b));
+			for (let dur = 0; dur <= maxAmt; dur += 60*30) {
+				let label = histogram.appendChild(document.createElement("div"));
+				label.style.position = "absolute";
+				label.style.left = "0";
+				label.style.bottom = dur/maxAmt*24-0.5+"rem";
+				label.innerText = dur/(60*60) + "h";
+				let hr = histogram.appendChild(document.createElement("hr"));
+				hr.style.position = "absolute";
+				hr.style.left = allotForYAxis*64/n + "rem";
+				hr.style.bottom = dur/maxAmt*24-0.5+"rem";
+				hr.style.border = "none";
+				hr.style.height = "1px";
+				hr.style.background = "#555";
+				hr.style.width = (n-4)/n*64+"rem";
 			}
-			if (category.albums) main.appendChild(document.createElement("br")); */
-			for (let entry of category.entries) {
-				let section = main.appendChild(document.createElement("section"));
-				let a = section.appendChild(document.createElement("a"));
-				a.href = entry.url;
-				a.setAttribute("class", "project");
-				a.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
-				a.innerText = entry.name || ("/"+entry.url);
-				if (entry.isRepo) {
-					let a2 = section.appendChild(document.createElement("a"));
-					a2.setAttribute("class", "repo-link");
-					a2.href = "https://github.com/Astronomy487/" + entry.url;
-					a2.innerText = "see github repo";
+			for (let year = firstYear; year <= lastYear; year++) {
+				if (year != firstYear) {
+					let yearLabel = histogram.appendChild(document.createElement("div"));
+					yearLabel.style.left = ((i+allotForYAxis)*64/n) + "rem";
+					yearLabel.style.width = (12*64/n) + "rem";
+					yearLabel.style.borderLeft = "solid 1px white";
+					yearLabel.style.paddingLeft = "0.25rem";
+					yearLabel.style.bottom = "-2rem";
+					yearLabel.style.position = "absolute";
+					if (year != lastYear || lastMonth > 4) yearLabel.innerText = year;
+					else yearLabel.innerHTML = "&nbsp;";
 				}
-				section.appendChild(document.createElement("p")).innerHTML = entry.text;
+				for (let month = ((year==firstYear)?firstMonth:1); month <= ((year==lastYear)?lastMonth:12); month++) {
+					let bucket = year+"-"+month.toString().padStart(2, "0");
+					let amounts = ["normal", "bonus", "remix"].map(x => historyBuckets[x][bucket] || 0);
+					for (let a = 0; a < 3; a++) {
+						let bar = histogram.appendChild(document.createElement("div"));
+						bar.style.width = 64/n + "rem";
+						bar.style.left = (i+allotForYAxis) * 64 / n + "rem";
+						bar.style.bottom = amounts.slice(0,a).reduce((x,y)=>x+y,0) / maxAmt*24 + "rem";
+						bar.style.height = amounts[a]/maxAmt*24+"rem";
+						bar.style.position = "absolute";
+						bar.style.background = histogramColors[a];
+						bar.title = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[month-1] + " " + year + " - " + Math.round(amounts[a]/60)+ " minutes of " + ["original music", "bonus tracks", "remixes"][a];
+					}
+					let label = histogram.appendChild(document.createElement("div"));
+					label.style.width = (64/n)+"rem";
+					label.style.left = ((i+allotForYAxis)*64/n)+"rem";
+					label.style.bottom = "-1rem";
+					label.style.position = "absolute";
+					label.innerText = "JFMAMJJASOND"[month-1];
+					label.style.fontSize = "0.5rem";
+					label.style.textAlign = "center";
+					i++;
+					//check if album released this month
+					for (let album of discog.albums.filter(x => x.released.substring(0, 7) == bucket)) {
+						let img = histogram.appendChild(document.createElement("img"));
+						img.src = album.artwork.replace("_10", "_3");
+						img.style.position = "absolute";
+						img.style.left = ((i-0.5+allotForYAxis)*64/n)+"rem";
+						img.style.transform = "translateX(-50%)";
+						img.style.width = img.style.height = "2rem";
+						img.style.bottom = "-5rem";
+					}
+				}
+			}
+			let legend = histogram.appendChild(document.createElement("div"));
+			legend.style.position = "absolute";
+			legend.style.bottom = "-7.5rem";
+			for (let category of acceptedCategories) {
+				let color = legend.appendChild(document.createElement("span"));
+				color.innerHTML = "&nbsp;"
+				color.style.userSelect = "none";
+				color.style.width = "1.5rem";
+				color.style.display = "inline-block";
+				color.style.background = histogramColors[["normal", "bonus", "remix"].indexOf(category)];
+				let label = legend.appendChild(document.createElement("span"));
+				label.innerText = ["Main tracks", "Bonus tracks", "Remixes"][["normal", "bonus", "remix"].indexOf(category)];
+				label.style.marginLeft = "0.375rem";
+				label.style.marginRight = "2rem";
 			}
 		}
+		function navFromUrls(...urlSetsToTake) { //parameters go from low to high priority
+			let url = {};
+			for (let u of urlSetsToTake) for (let k in u) url[k] = u[k];
+			let nav = document.createElement("nav");
+			let done = 0;
+			for (let platform of Object.keys(url).sort()) {
+				if (!url[platform].length) continue;
+				//if (done) nav.appendChild(document.createTextNode(", "));
+				let a = nav.appendChild(document.createElement("a"));
+				//a.innerHTML = platform.replaceAll(" ", "&nbsp;");
+				let img = a.appendChild(document.createElement("img"));
+				let src = "socialicons/colors/"+platform.toLowerCase().replaceAll(" ", "")+".png";
+				img.src = src;
+				a.onmouseenter = function() {
+					img.src = src.replace("colors", "white");
+				}
+				a.onmouseleave = function() {
+					img.src = src
+				}
+				a.target = "_blank";
+				a.href = url[platform];
+				a.title = platform;
+				done++;
+			}
+			if (!done) nav.innerHTML = "<span style=\"color: var(--med);\">No links provided</span>";
+			return nav;
+		}
 		
-		let p = main.appendChild(document.createElement("p"));
-		p.innerHTML = "I also have a few other random projects sitting around. Many are grossly incomplete, or are something I threw together in a few minutes, and I have no plans to finish any of them into a presentable form. Expect less than nothing of them:";
-		p.style.marginTop = "6rem";
-		let table = main.appendChild(document.createElement("table"));
-		table.style.tableLayout = "fixed";
-		table.style.width = "80%";
-		let tr = table.appendChild(document.createElement("tr"));
-		let ul = [0,0].map(b => tr.appendChild(document.createElement("td")).appendChild(document.createElement("ul")));
-		[
-			"coloranalysis",
-			"conwaysgameofsabotage",
-			"cyoae",
-			"flog",
-			"grades",
-			"gravity",
-			"hangman",
-			"mathtypesetter",
-			"mccurves",
-			"prettyaveragefont",
-			"progression",
-			"tictactoe",
-			"weather",
-			"autoconlang",
-			"irrationalscales",
-			"mathtext",
-			"grouptheory",
-			"statemachine",
-			"interestingnumbers",
-			"timeline",
-			
-			
-			"autoconlang",
-			"dissonancetheory",
-			"somanyreals",
-			"tanru",
-			"tokimamemoriam",
-			"niachang"
-		].sort().forEach(function(extraUrl, index) {
-			let a = ul[index%ul.length].appendChild(document.createElement("li")).appendChild(document.createElement("a"));
-			a.href = extraUrl;
-			a.innerText = "/" + extraUrl;
-		});
+		function formatSongTitle(song, artistMandatory = false) {
+			artistMandatory ||= song.event;
+			let dash = song.event ? " @ " : " – ";
+			if (artistMandatory) {
+				return (smartquotes(song.artist||"Astro")) + dash + smartquotes(song.title);
+			} else return (song.artist ? smartquotes(song.artist)+dash : "") + smartquotes(song.title);
+		}
 		
-		for (let a of document.querySelectorAll("a"))
-			a.setAttribute("target", "_blank");
+		function formatDate(str) {
+			return new Date(str+" ").toLocaleString("en", {month: "short", day: "numeric", year: "numeric"}).replace(",","");
+		}
+		
+		let events = [];
+		
+		function addSimpleEvent(song) {
+			let div = document.createElement("div");
+			div.setAttribute("class", "remix-tile");
+			if (song.released < "2017-12-05") div.style.width = "11.125rem";
+			div.appendChild(document.createElement("div")).innerText = formatDate(song.released);
+			let titleArea = div.appendChild(document.createElement("a"));
+			setTextWithParentheses(titleArea, song);
+			events.push({
+				released: song.released,
+				element: div
+			});
+		}
+		
+		let inspectTransitioningRightNow = false;
+		let lastInspected = undefined;
+		function inspect(song) {
+			if (inspectTransitioningRightNow) return;
+			if (lastInspected == song) return inspect();
+			if (song && window.scrollY < document.body.getBoundingClientRect().height/2) window.scrollTo(0, document.body.getBoundingClientRect().height*2/3);
+			lastInspected = song;
+			document.querySelector("main").style.left = "calc(50% - 32rem - 17rem)";
+			inspectTransitioningRightNow = true;
+			let album = discog.albums.filter(x => x.songs.includes(song));
+			album = album.length ? album[0] : null;
+			let div = document.querySelector(".inspect > div");
+			div.style.animation = "0.2s inspect-out";
+			if (!song) document.querySelector(".inspect").style.opacity = "0";
+			if (!song) document.title = "Astro";
+			if (song) document.title = formatSongTitle(song, true);
+			if (!song) setTimeout(function(){
+				//while (document.querySelector(".inspect>div").firstChild) document.querySelector(".inspect>div").firstChild.remove();
+				setTimeout(function(){
+					document.querySelector(".inspect").style.display = "none";
+					while (document.querySelector(".inspect > div").firstChild) document.querySelector(".inspect > div").firstChild.remove();
+				}, 200);
+				document.querySelector("main").style.left = "calc(50% - 32rem)";
+				inspectTransitioningRightNow = false;
+			}, 100);
+			if (song) setTimeout(function(){
+				document.querySelector(".inspect").style.opacity = "1";
+				document.querySelector(".inspect").style.display = "block";
+				div.style.animation = "0.2s inspect-in";
+				setTimeout(function(){inspectTransitioningRightNow = false;}, 200);
+				while (div.firstChild) div.firstChild.remove();
+				
+				let escape = div.appendChild(document.createElement("div"));
+				let escapeA = escape.appendChild(document.createElement("a"));
+				escapeA.innerText = "← Return to catalogue";
+				escapeA.onclick = function(){inspect();};
+				escape.style.color = "var(--med)";
+				
+				let tr = div.appendChild(document.createElement("table")).appendChild(document.createElement("tr"))
+				
+				if (song.artwork || album&&album.artwork) {
+					let img = tr.appendChild(document.createElement("td")).appendChild(document.createElement("img"));
+					img.src = (song.artwork || album.artwork).replace("_10", "_4");
+					img.setAttribute("class", "inspect-artwork")
+				}
+				let td = tr.appendChild(document.createElement("td"));
+				setTextWithParentheses(td.appendChild(document.createElement("h2")), song, false, false);
+				
+				let essentialInfo = [];
+				//essentialInfo.push("Released " + formatDate(song.released || album.released));
+				essentialInfo.push(formatDuration(song.length)+"&emsp;Released " + formatDate(song.released || album.released));
+				if (album) essentialInfo.push((song.bonus ? "Bonus track" : "Track "+(1+album.songs.indexOf(song)))+" on <i>" + smartquotes(album.title) + "</i>");
+				//essentialInfo.push(formatDuration(song.length));
+				
+				let essentialInfoDiv = td.appendChild(document.createElement("div"));
+				essentialInfoDiv.style.marginTop = "0.5rem";
+				essentialInfoDiv.innerHTML = essentialInfo.join("<br>");
+				
+				essentialInfoDiv.appendChild(navFromUrls(album?{"Bandcamp": album.url["Bandcamp"]}:{}, song.url));
+				
+				if (song.url && song.url["YouTube"]) {
+					let iframe = div.appendChild(document.createElement("iframe"));
+					iframe.src = song.url["YouTube"].replace("/watch?v=", "/embed/");
+					let aspectRatio = (1+Math.sqrt(5))/2;
+					if ((song.released||album.released) < "2022-07-25") aspectRatio = 16/9;
+					if (album && album.title == "somewhere in the milky way") aspectRatio = 1;
+					if (album && album.title == "Too much!!") aspectRatio = 4/3;
+					if (album && album.title == "Exosphere") aspectRatio = 2048/858;
+					if (album && album.title == "Nexus Condition") aspectRatio = 2;
+					if (album && album.title == "ROSALIE") aspectRatio = 1;
+					if (song.title == "In a Heartbeat") aspectRatio = 2048/858;
+					if (song.title == "Fractured Bliss") aspectRatio = 2048/858;
+					if (song.title == "Villains") aspectRatio = 1.5;
+					if (song.title == "Sad Machine (Astro Jazz Arrangement)") aspectRatio = 2;
+					if (song.title == "No Fear No More (Astro Remix)") aspectRatio = 2048/858;
+					if (song.title == "Stagestruck (Astro Remix)") aspectRatio = 2048/858;
+					iframe.width = 350 * Math.sqrt(aspectRatio);
+					iframe.height = 350 / Math.sqrt(aspectRatio);
+					iframe.style.margin = "0";
+					iframe.style.border = "none";
+				}
+				
+				function makeInfoBox(header, content) {
+					let lyricsDiv = div.appendChild(document.createElement("div"));
+					lyricsDiv.setAttribute("class", "lyrics");
+					let head = lyricsDiv.appendChild(document.createElement("div"));
+					head.setAttribute("class", "lyrics-header");
+					head.innerText = header;
+					for (let c of content)
+						lyricsDiv.appendChild(document.createElement("p")).innerText = smartquotes(c).replace(" - ", " – ");
+				}
+				
+				if (song.lyrics) makeInfoBox("Lyrics", song.lyrics.split("\n"));
+				if (song.samples) makeInfoBox(song.artist ? "Samples" : "Mix tracklist", song.samples);
+			}, 190);
+		}
+		
+		function setTextWithParentheses(div, song, artistMandatory, setInspectClick = true) {
+			let text = formatSongTitle(song, artistMandatory);
+			div.setAttribute("class", "song");
+			if (setInspectClick) div.onclick = function() {inspect(song);}
+			let parens = 0;
+			let str = "";
+			function applyStr() {
+				if (parens) {
+					let span = div.appendChild(document.createElement("span"));
+					span.setAttribute("class", "parentheses");
+					span.innerText = str;
+				} else {
+					div.appendChild(document.createTextNode(str));
+				}
+				str = "";
+			}
+			for (let i = 0; i < text.length; i++) {
+				if (text[i] == "(") {
+					applyStr();
+					parens++;
+				}
+				str += text[i];
+				if (text[i] == ")") {
+					applyStr();
+					parens--;
+				}
+			}
+			applyStr();
+		}
+		
+		for (let remix of discog.remixes) {
+			addSimpleEvent(remix);
+		}
+		for (let album of discog.albums) for (let song of album.songs) if (song.released && (song.released < album.released)) {
+			addSimpleEvent(song);
+		}
+		
+		function ordinal(n) {
+			if (n >= 4 && n <= 20) return n + "th";
+			if (n%10 == 1) return n + "st";
+			if (n%10 == 2) return n + "nd";
+			if (n%10 == 3) return n + "rd";
+			return n + "th";
+		}
+		
+		for (let album of discog.albums) {
+			let table = document.createElement("table");
+			table.setAttribute("class", "album-event event")
+			let tr = table.appendChild(document.createElement("tr"));
+			{
+				let td = tr.appendChild(document.createElement("td"));
+				td.style.width = "21rem";
+				let img = td.appendChild(document.createElement("img"));
+				img.src = album.artwork;
+				img.style.width = img.style.height = "19rem";
+				td.appendChild(document.createElement("h4")).innerText = album.songs.filter(x => !x.bonus).length + " tracks, " + formatDuration(album.length);
+			}
+			{
+				let td = tr.appendChild(document.createElement("td"));
+				let date = td.appendChild(document.createElement("span"));
+				date.style.float = "right";
+				date.style.color = "var(--med)";
+				date.innerText = formatDate(album.released);
+				td.appendChild(document.createElement("h2")).innerText = smartquotes(album.title);
+				
+				let nav = td.appendChild(navFromUrls(album.url));
+				nav.style.marginTop = "1rem";
+				
+				if (album.about) for (let paragraph of album.about.split("\n\n")) {
+					td.appendChild(document.createElement("p")).innerHTML = discog.albums.reduce((a,b)=>a.replaceAll(b.title, "<i>"+b.title+"</i>"), smartquotes(paragraph));
+				}
+				
+				let tracklistContainer = td.appendChild(document.createElement("table"));
+				tracklistContainer.setAttribute("class", "tracklist-container");
+				let tracklistContainerTr = tracklistContainer.appendChild(document.createElement("tr"));
+				let tracklists = [];
+				let numberOfSongsToDisplay = album.songs.filter(x => !x.bonus).length;
+				let numberOfColumns = {
+					"Chase an Idea": 5,
+					"Asymmetric Silhouette": 4,
+					"Emerge": 6,
+					"Pulse Width": 3,
+					"Exosphere": 3,
+					"Absolute Zero": 3
+				}[album.title] || 2;
+				for (let i = 0; i < numberOfColumns; i++) {
+					tracklists[i] = tracklistContainerTr.appendChild(document.createElement("td"));
+					//tracklists[i].style.width = 100/numberOfColumns + "%";
+				}
+				function doTracklistItem(parent, i) {
+					let tracklistTr = parent.appendChild(document.createElement("tr"));
+					
+					let tracklistTd = tracklistTr.appendChild(document.createElement("td"));
+					tracklistTd.innerText = (i+1).toString().padStart(2, "0") + (album.songs[i].bonus?"*":"");
+					tracklistTd.style.paddingRight = "0.75rem";
+					tracklistTd.setAttribute("class", "mono-numbers");
+					tracklistTd = tracklistTr.appendChild(document.createElement("td"));
+					
+					let titleArea = tracklistTd.appendChild(document.createElement("a"));
+					setTextWithParentheses(titleArea, album.songs[i]);
+					
+					tracklistTd.style.paddingRight = "1rem";
+					if (album.songs[i].bonus) tracklistTr.style.color = "var(--med)";
+				}
+				for (let c = 0; c < numberOfColumns; c++) {
+					for (let i = Math.ceil(c/numberOfColumns*numberOfSongsToDisplay); i < (c+1)/numberOfColumns*numberOfSongsToDisplay; i++) doTracklistItem(tracklists[c], i);
+				}
+				let numberOfBonusTracks = album.songs.filter(x => x.bonus).length;
+				if (numberOfBonusTracks) {
+					let p = td.appendChild(document.createElement("p"));
+					p.style.color = "var(--med)";
+					p.innerText = numberOfBonusTracks + " bonus track"+(numberOfBonusTracks==1?"":"s")+" available upon download on Bandcamp: ";
+					for (let i = album.songs.length-numberOfBonusTracks; i < album.songs.length; i++) {
+						if (i>album.songs.length-numberOfBonusTracks && numberOfBonusTracks>2) p.appendChild(document.createTextNode(","));
+						if (i==album.songs.length-1 && numberOfBonusTracks>1) p.appendChild(document.createTextNode(" and"));
+						p.appendChild(document.createTextNode(" “"));
+						let a = p.appendChild(document.createElement("a"));
+						a.setAttribute("class", "song");
+						a.innerText = formatSongTitle(album.songs[i]);
+						a.onclick = function() {inspect(album.songs[i]);}
+						p.appendChild(document.createTextNode("”"));
+					}
+					p.style.fontSize = "0.875rem";
+					p.style.lineHeight = "1rem";
+				}
+			}
+			events.push({
+				released: album.released,
+				element: table
+			});
+		}
+		for (let year = 2016; true; year++) {
+			if (new Date(year+"-12-05 ").getTime() > new Date().getTime()) break;
+			let element = document.createElement("div");
+			element.setAttribute("class", "birthday");
+			element.appendChild(document.createElement("span")).innerText = "🎉 My " + ordinal(year-2004) + " birthday";
+			element.appendChild(document.createElement("hr"));
+			events.push({
+				released: year+"-12-05",
+				element: element
+			});
+		}
+		for (let event of events.sort((a,b)=>a.released>b.released?-1:1)) {
+			output.appendChild(event.element);
+		}
+		
+		function formatDuration(n) {
+			if (n < 60) return n + "s";
+			let sec = (n%60).toString().padStart(2, "0");
+			let min = Math.floor(n/60)%60;
+			if (n < 3600) return min + "m" + sec + "s";
+			min = min.toString().padStart(2, "0");
+			let hou = Math.floor(n/3600);
+			return hou + "h" + min + "m" + sec + "s";
+		}
+		
+		//stuff for the header
+		{
+			updateAge();
+			setInterval(updateAge, 31.5576);
+			function updateAge() {
+				myage.innerText = ((new Date() - new Date("Dec 5 2004"))/1000/60/60/24/365.25).toFixed(9);
+			}
+			bio.appendChild(document.createTextNode(" I’m studying mathematics and computer science at college. I have released "+discog.albums.length+" albums comprising "+discog.albums.map(x => x.songs.filter(b=>!b.bonus).length).reduce((a,b)=>a+b)+" songs, as well as "+discog.remixes.length+" remixes. My full catalogue is shown below. See also "));
+			let a = bio.appendChild(document.createElement("a"));
+			a.href = "codingprojects";
+			a.innerText = "my programming projects";
+			bio.appendChild(document.createTextNode("."));
+			let nav = navFromUrls({
+				"Apple Music": "https://music.apple.com/us/artist/astro/1468743818",
+				"Bandcamp": "https://astronomy487.bandcamp.com",
+				"Spotify": "https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5",
+				"YouTube": "https://youtube.com/astronomy487",
+				"Twitter": "https://twitter.com/astronomy487",
+				"Discord": "https://discord.com/invite/ZnMsetP"
+			});
+			nav.setAttribute("class", "center");
+			nav.style.marginTop = "1rem";
+			nav.style.marginBottom = "0";
+			bio.appendChild(nav);
+		}
+		
+		let allRhombuses = undefined;
+		function makeRhombuses() {
+			allRhombuses = [new Set(), new Set()];
+			while (rhombuses.firstChild) rhombuses.firstChild.remove();
+			let ww = window.innerWidth;
+			let hh = window.innerHeight;
+			let rhombusColors = (new Date().getMonth() == 9 && new Date().getDate() == 31) ? ["red", "blue", "lime"] : ["cyan", "yellow", "magenta"];
+			let triWidth = 38;
+			let triHeight = Math.floor(triWidth*Math.sqrt(3)/2);
+			let startX = Math.floor(triWidth*(-0.5-Math.random()));
+			let startY = Math.floor(triHeight*(-0.5-Math.random()));
+			let oddEven = true;
+			for (let x = startX; x < ww+triWidth; x += triWidth*1.5) {
+				oddEven = !oddEven;
+				for (let y = startY-(oddEven?0:triHeight); y < hh+triHeight; y += triHeight*2) {
+					for (let [color, addX, addY, width, height, clipPath] of [
+						[rhombusColors[0], 0, 0, triWidth, triHeight*2, "0% 50%, 50% 0%, 100% 50%, 50% 100%"],
+						[rhombusColors[1], -triWidth, 0, triWidth*1.5, triHeight, "0% 100%, 33.3% 0%, 100% 0%, 66.7% 100%"],
+						[rhombusColors[2], -triWidth, triHeight, triWidth*1.5, triHeight, "0% 0%, 33.3% 100%, 100% 100%, 66.7% 0%"]
+					]) {
+						let rhombus = rhombuses.appendChild(document.createElement("div"));
+						rhombus.innerHTML = "&nbsp;";
+						rhombus.style.background = color;
+						rhombus.style.position = "absolute";
+						rhombus.style.width = width + "px";
+						rhombus.style.height = height + "px";
+						rhombus.style.left = x+addX + "px";
+						rhombus.style.top = y+addY + "px";
+						rhombus.style.clipPath = "polygon("+clipPath+")";
+						let state = Math.random()<0.1 ? 1 : 0;
+						rhombus.style.opacity = state;
+						rhombus.style.transition = "1s opacity";
+						allRhombuses[state].add(rhombus);
+						rhombus.onclick = function() {
+							for (let i = 0; i < 2; i++) if (allRhombuses[i].has(this)) rhombusSwap(i, this);
+						}
+					}
+				}
+			}
+			document.onscroll();
+		}
+		function rhombusSwap(currentState, rhombus = undefined) {
+			if (!allRhombuses) return;
+			let otherState = 1 - currentState;
+			if (!rhombus) {
+				let list = Array.from(allRhombuses[currentState]);
+				if (!list.length) return;
+				rhombus = list[Math.floor(Math.random()*list.length)];
+			}
+			rhombus.style.opacity = otherState;
+			allRhombuses[currentState].delete(rhombus);
+			setTimeout(function(){
+				allRhombuses[otherState].add(rhombus);
+			}, 1000);
+		}
+		setInterval(function(){
+			if (window.scrollY > window.innerHeight+24) return;
+			rhombusSwap(0);
+			rhombusSwap(1);
+		}, 60);
+		
+		document.onscroll = function() {
+			rhombuses.style.top = 0.33*window.scrollY + "px";
+			rhombuses.style.height = Math.max(20, window.innerHeight-0.33*window.scrollY) + "px";
+		};
+		window.onresize = makeRhombuses;
+		makeRhombuses();
+		
+		/*{
+			let ev = [];
+			for (let album of discog.albums) for (let song of album.songs) ev.push({song: song, released: song.released || album.released, album: album});
+			for (let remix of discog.remixes) ev.push({song: remix, released: remix.released});
+			ev.sort((a,b) => a.released > b.released ? -1 : 1);
+			for (let e of ev) {
+				let song = e.song;
+				let album = e.album;
+				let img = output.appendChild(document.createElement("img"));
+				img.src = (song.artwork||(album?album.artwork:"https://f4.bcbits.com/img/a3653692583_10.jpg")).replace("_10.jpg", "_6.jpg");
+				//img.style.marginBottom = "0.125rem";
+				//img.style.marginRight = "0.375rem";
+				img.style.width = img.style.height = Math.sqrt(song.length*0.05)+"rem";
+				img.style.borderRadius = "4px";
+				img.title = formatSongTitle(song);
+				img.style.verticalAlign = "middle";
+			}
+		} */
 	</script>
-	<script src="https://smartquotes.js.org/src/smartquotes.js" onload="smartquotes();"></script>
 </body>
 </html>

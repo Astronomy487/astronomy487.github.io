@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		@import url('https://fonts.cdnfonts.com/css/lucida-sans');
+		
+		body {
+			font-size: 1.125rem;
+			background-color: black;
+			font-family: monospace;
+			text-transform: lowercase;
+			color: white;
+			--accent: white;
+			overflow-x: hidden;
+		}
+		
+		::selection {
+			background: var(--accent);
+			color: black;
+		}
+		
+		main {
+			margin: 8rem auto;
+			width: 48rem;
+		}
+		
+		h2 {
+			margin: 0;
+			margin-top: 6rem;
+			font-size: 2rem;
+		}
+		h2 span {
+			background-color: var(--accent);
+			color: black;
+		}
+		h2 span::selection {
+			color: var(--accent);
+			background: white;
+		}
+		
+		h1 {
+			font-size: 2.5rem;
+			line-height: 95%;
+			margin-top: 12rem;
+		}
+		
+		section {
+			display: inline-block;
+			width: calc(50% - 1.5rem);
+			vertical-align: top;
+			margin: 1rem 0;
+			margin-right: 1.5rem;
+		}
+		
+		p {
+			margin: 0;
+		}
+		
+		a {
+			color: var(--accent);
+		}
+		a.project {
+			display: inline-block;
+			margin-bottom: 0.5rem;
+		}
+		a:hover {
+			background-color: var(--accent);
+			color: black;
+		}
+		
+		.repo-link {
+			float: right;
+			--accent: gray;
+		}
+		
+		.album {
+			display: inline-block;
+			margin-right: 1.5rem;
+		}
+	</style>
+	<link rel="icon" href="../favicon.png">
+	<title>The programming catalogue</title>
+</head>
+<body>
+	<main id="main">
+		<h1>My name is Astro<br>That is a pseudonym</h1>
+	</main>
+	<script>
+		//document.querySelector("h1").innerHTML = document.querySelector("h1").innerHTML.split("").map(x => "<span>"+x+"</span>").join("");
+		if (false) for (let c of document.querySelectorAll("h1 span")) {
+			c.style.transition = "0.1s";
+			c.onmouseenter = function() {
+				//this.style.color = "#" + [0,0,0,0,0,0].map(x => "0123456789abcdef".charAt(Math.floor(Math.random()*16))).join("");
+				this.style.color = ["cyan", "magenta", "yellow"][Math.floor(Math.random()*3)];
+			}
+		}
+		
+		let i = 0;
+		for (let category of [
+			{
+				header: "I am a musician",
+				entries: [
+					{
+						url: "musiclab",
+						name: "music lab",
+						isRepo: true,
+						text: "I wrote some JavaScript to analyze chords (including polychords, inversions) into JavaScript objects. I want to use this library to revamp older musical code projects of mine, the <a href=\"musiclab/progression-o-tron\">PROGRESSION-O-TRON</a> and the <a href=\"musiclab/voiceleader\">Voice Leader</a>."
+					}
+				]
+			},
+			{
+				header: "I am a mathematician",
+				entries: [
+					{
+						url: "all",
+						name: "Enumerations",
+						text: "Collecting bijections between the natural numbers and various mathematical objects like sets and graphs."
+					},
+					{
+						url: "ccdsc",
+						name: "ccdsc.js",
+						isRepo: true,
+						text: "A library for handling commutative complex dual split-complex numbers, numbers with extra non-real components where <var>i</var><sup>2</sup>&nbsp;=&nbsp;-1, <var>j</var><sup>2</sup>&nbsp;=&nbsp;1, and <var>ϵ</var><sup>2</sup>&nbsp;=&nbsp;0."
+					},
+					{
+						url: "ringalgebras",
+						name: "Ring algebras",
+						text: "An exploration for creating matrix representations for any ring algebra that maintains ring structure, and then evaluating analytic functions on those matrices."
+					},
+					{
+						url: "modularcalculator",
+						name: "Modular Calculator",
+						isRepo: true,
+						text: "A visual calculator paradigm inspired by modular synthesizer software <a href=\"https://vcvrack.com/\">VCV Rack</a>, where calculations are performed by modules and passed along to subsequent modules."
+					},
+					{
+						url: "interpolatedprojections",
+						name: "Interpolated Projections",
+						text: "An adaptation of <a href=\"https://www.jasondavies.com/maps/transition/\">code by Jason Davies</a> to linearly interpolate between three map projections, using a custom input element inspired by <a href=\"https://commons.wikimedia.org/wiki/Category:Soil_texture_triangle\">soil composition triangles</a>."
+					},
+					{
+						url: "automata",
+						isRepo: true,
+						name: "automata engine",
+						text: "An unnamed engine for cellular automata on a square grid. Cell instructions are customizable and modular."
+					}
+				]
+			},
+			{
+				header: "I am a game creator",
+				entries: [
+					{
+						url: "chess",
+						name: "Chess Sandbox",
+						isRepo: true,
+						text: "A generalized and highly customizable chess engine. By generalizing the rules of chess and chess-adjacent games (Chess960, Chaturaji, Checkers, etc.) into JavaScript objects, I can use the same code to handle all games and allow for <a href=\"https://astronomy487.github.io/chess/?ruleset=rules/chesscheckers.js\">shenanigans</a>."
+					},
+					{
+						url: "sokopond",
+						name: "the sokopond",
+						isRepo: true,
+						text: "A sokoban engine with a dynamic level editor, plaintext level storage, and many non-standard game tiles. Warehouse management has never been so fun!"
+					},
+					{
+						url: "minesweeper",
+						isRepo: true,
+						text: "A minesweeper engine that can play with alternative grids."
+					}
+				]
+			},
+			{
+				header: "I am a microgamer",
+				entries: [
+					{
+						url: "infinitescrabble",
+						name: "Infinite Scrabble",
+						isRepo: true,
+						text: "A singleplayer Wordle-inspired solitaire Scrabble game that takes place on an infinite board. There's a few things I want to change (fix up UI, make letters from previous days carry on to future, random cleanup stuff) but it's pretty much all working. Inspired by a TikTok I saw of someone playing Scrabble on an infinite digital board and making cool structures."
+					},
+					{
+						url: "emojigarden",
+						name: "EmojiGarden",
+						isRepo: true,
+						text: "A tranquil browser simulator-sandbox game where you can construct your own virtual garden using emojified cellular automata. You can close the tab and return hours later to see that your tomatoes have grown, your palm trees have dropped coconuts, and your sheep have eaten all your grass."
+					},
+					{
+						url: "2048crossword",
+						isRepo: true,
+						text: "2048 if it took place on a crossword puzzle."
+					},
+					{
+						url: "abcde",
+						name: "ABCDE",
+						isRepo: true,
+						text: "A microgame based on a TikTok trend from January 2023."
+					},
+					{
+						url: "flowers",
+						name: "flower field",
+						text: "A cute Conway's Game of Life (Highlife variant) engine in your browser, depicted as a field of flowers."
+					}
+				]
+			},
+			/* {
+				header: "I am a conlanger",
+				entries: [
+					{
+						url: "niachang",
+						name: "Niachāng",
+						text: "An old language with Mandarin phonaesthetics based around the concept of language expressions as abstract syntax trees. The 'part of speech' (arity) a word takes on is demonstrated by its tone."
+					},
+					{
+						url: "tokiponido",
+						name: "Unnamed lojbo-tokiponido",
+						text: "A loglang inspired by the principles of Lojban and toki pona. It aims to formalize the ideas behind Niachāng into the language of first-order logic. The grammar is complete but undocumented. Currently it's literally just a parser, and the parser is a little broken."
+					}
+				]
+			}, */
+			{
+				header: "I am a gamer",
+				entries: [
+					{
+						url: "acnhcurator",
+						name: "ACNH Curator",
+						isRepo: true,
+						text: "A tool to track museum progress in Animal Crossing: New Horizons. Entries are sorted by type (bug, fish, deep sea creature, fossil, art) and includes information about when it can be found, where, and selling price."
+					},
+					{
+						url: "wordlesolver",
+						name: "Wordle Solver",
+						isRepo: true,
+						text: "A bare bones tool for making optimal Wordle guesses, where optimal is defined as maximizing the average reduction in the possibility space with every guess. Equipped with two word lists: one for <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a> and <a href=\"https://gregcameron.com/infinite-wordle/\">Infinite Wordle</a>."
+					},
+					{
+						url: "mcpacks",
+						name: "Minecraft packs",
+						isRepo: true,
+						text: "This is a collection of Minecraft resource packs (client-side visual modifications). Includes a bunch of pride packs (replaces XP bar + elytra with pride flags), some autumn leaves packs, and some random other packs too."
+					},
+					{
+						url: "https://gamebanana.com/mods/516617",
+						name: "Electric Universe (Celeste Mod)",
+						text: "This is my first time making a Celeste mod. This is a set of four little maps I made in the spring/summer of 2023."
+					}
+				]
+			},
+			/* {
+				header: "I'm a vexillologist",
+				entries: [
+					{
+						url: "flog",
+						name: "Flog",
+						text: "My Flog is where I keep photos of flags. I really need to redo its code to make navigation easier, and I really need to include more photos."
+					}
+				]
+			}, */
+			{
+				header: "I am a scientist",
+				entries: [
+					{
+						url: "planckunits",
+						name: "All the Planck units you could ever want",
+						text: "An interactive blog post about creating a cohesive set of units out of whatever 'universal' constants you want."
+					},
+					{
+						url: "lewis",
+						name: "Now who's Lewis?",
+						isRepo: true,
+						text: "An experimental (read: not very reliable) program to draw Lewis structures for simple molecules."
+					},
+					{
+						url: "balancingact",
+						name: "Balancing act",
+						isRepo: true,
+						text: "A program to balance chemical equations and solve simple stoichiometry questions using some basic matrix operations."
+					},
+					{
+						url: "mimicry",
+						name: "~ mimicry ~",
+						text: "A very simple character-by-character Markov chain you can run right in your browser. We have ChatGPT at home"
+					}
+				]
+			}
+		]) {
+			i++;
+			let h2 = main.appendChild(document.createElement("h2")).appendChild(document.createElement("span"));
+			h2.innerText = category.header;
+			h2.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+			/* if (category.albums) for (let album of category.albums) {
+				let div = main.appendChild(document.createElement("div"));
+				div.setAttribute("class", "album");
+				div.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+				let a = div.appendChild(document.createElement("a"));
+				a.innerText = album.name;
+				a.href = "https://astronomy487.bandcamp.com/album/" + album.bc;
+				div.appendChild(document.createTextNode(" [" + album.year + "]"));
+				//div.appendChild(document.createElement("sup")).innerText = album.year;
+			}
+			if (category.albums) main.appendChild(document.createElement("br")); */
+			for (let entry of category.entries) {
+				let section = main.appendChild(document.createElement("section"));
+				let a = section.appendChild(document.createElement("a"));
+				a.href = "../"+entry.url;
+				a.setAttribute("class", "project");
+				a.style.setProperty("--accent", ["cyan","magenta","yellow"][i%3]);
+				a.innerText = entry.name || ("/"+entry.url);
+				if (entry.isRepo) {
+					let a2 = section.appendChild(document.createElement("a"));
+					a2.setAttribute("class", "repo-link");
+					a2.href = "https://github.com/Astronomy487/" + entry.url;
+					a2.innerText = "see github repo";
+				}
+				section.appendChild(document.createElement("p")).innerHTML = entry.text;
+			}
+		}
+		
+		let p = main.appendChild(document.createElement("p"));
+		p.innerHTML = "I also have many other random projects sitting around. Many are grossly incomplete, or are something I threw together in a few minutes, and I have no plans to finish any of them into a presentable form. Expect less than nothing of them:";
+		p.style.marginTop = "6rem";
+		let table = main.appendChild(document.createElement("table"));
+		table.style.tableLayout = "fixed";
+		table.style.width = "80%";
+		let tr = table.appendChild(document.createElement("tr"));
+		let ul = [0,0].map(b => tr.appendChild(document.createElement("td")).appendChild(document.createElement("ul")));
+		[
+			"coloranalysis",
+			"conwaysgameofsabotage",
+			"cyoae",
+			"flog",
+			"grades",
+			"gravity",
+			"hangman",
+			"mathtypesetter",
+			"mccurves",
+			"prettyaveragefont",
+			"progression",
+			"tictactoe",
+			"weather",
+			"autoconlang",
+			"irrationalscales",
+			"mathtext",
+			"grouptheory",
+			"statemachine",
+			"interestingnumbers",
+			"timeline",
+			
+			
+			"autoconlang",
+			"dissonancetheory",
+			"somanyreals",
+			"tanru",
+			"tokimamemoriam",
+			"niachang"
+		].sort().forEach(function(extraUrl, index) {
+			let a = ul[index%ul.length].appendChild(document.createElement("li")).appendChild(document.createElement("a"));
+			a.href = extraUrl;
+			a.innerText = "/" + extraUrl;
+		});
+		
+		for (let a of document.querySelectorAll("a"))
+			a.setAttribute("target", "_blank");
+	</script>
+	<script src="https://smartquotes.js.org/src/smartquotes.js" onload="smartquotes();"></script>
+</body>
+</html>

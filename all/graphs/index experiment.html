@@ -2,39 +2,42 @@
 <html>
 <head>
 	<style>
+		body {
+			width: 100vw !important;
+			margin: 0;
+		}
+		#modal {
+			left: 0;
+			width: 50vw;
+			box-sizing: border-box;
+			border-right: solid 1px gray;
+			position: fixed;
+			height: 100vh;
+			top: 0;
+		}
+		#output-container {
+			left: 50vw;
+			width: 50vw;
+			position: absolute;
+			padding-left: 2rem;
+			box-sizing: border-box;
+		}
 		#output canvas {
 			border-radius: 100%;
 			margin-right: 0.5rem;
 			margin-bottom: 0.5rem;
 			cursor: pointer;
 		}
-		#modal {
-			position: fixed;
-			bottom: 0;
-			left: 50%;
-			transform: translateX(-50%);
-			background: black;
-			border: solid 1px white;
-			border-bottom: none;
-			padding: 1.5rem;
-			width: 48rem;
-		}
-		#modal canvas {
-			display: inline-block;
-			margin-right: 1rem;
-		}
-		#modal > div {
-			display: inline-block;
-			vertical-align: top;
-			width: calc(48rem - 150px - 1rem);
-		}
 	</style>
 	<link rel="stylesheet" href="../style.css">
 </head>
 <body>
-	<h1>All finite graphs</h1>
-	<input type="checkbox" id="connectedness" onchange="firstConnectionNumberToTry = this.checked?1:0; reset();"><label for="connectedness" style="margin-left: 0.25rem;">Require connectedness</label>
-	<div id="output"></div>
+	<div id="output-container">
+		<h1>All finite graphs</h1>
+		<input type="checkbox" id="connectedness" onchange="firstConnectionNumberToTry = this.checked?1:0; reset();"><label for="connectedness" style="margin-left: 0.25rem;">Require connectedness</label>
+		<div id="output"></div>
+	</div>
+	<div id="modal"></div>
 	<script>
 		let linesIntersectCache = {};
 		function linesIntersect(ii, jj, kk, ll, n) { //INCREDIBLE NEWS - this doesn't even depend on n. for cache purposes
@@ -168,7 +171,7 @@
 				if (cacheIt) this.bestReindex = bestReindex;
 				return bestReindex;
 			}
-			draw(canvas, mode = "plain", scale = 1) {
+			draw(canvas, colorful = false, scale = 1) {
 				function xpos(l) {
 					if (n == 1) return 50*scale;
 					return (50 + 40 * Math.sin(l/n*2*Math.PI))*scale;
@@ -203,10 +206,10 @@
 					ctx.lineTo(xpos(bestReindex[j]), ypos(bestReindex[j]));
 					ctx.stroke();
 				}
-				if (mode == "colorful") this.findColoring();
+				if (colorful) this.findColoring();
 				for (let i = 0; i < n; i++) {
 					let nodeColor = "white";
-					if (mode == "colorful") nodeColor = ["#F6D90F", "#2B65D9", "#E30C1E", "#5ABB39", "#DF57B6", "#ED8A18", "#8625BA", "#17BFB6", "#998678"][this.coloring[i]%8];
+					if (colorful) nodeColor = ["#F6D90F", "#2B65D9", "#E30C1E", "#5ABB39", "#DF57B6", "#ED8A18", "#8625BA", "#17BFB6", "#998678"][this.coloring[i]%8];
 					for (let [color, rad] of [["black",7*scale],[nodeColor,5*scale]]) { //this is so dumb because why isn't lineWidth just working
 						ctx.beginPath();
 						ctx.arc(xpos(bestReindex[i]), ypos(bestReindex[i]), rad, 0, 2 * Math.PI);
@@ -311,12 +314,11 @@
 		let graphsOfOrder; //extra list, points to same graphs ^^^, but by order. TODO include the vertex degree set as a pawprint
 		let graphsExtendedIndex;
 		let graphsToConsiderQueue;
-		let modal;
 		reset();
 		
 		function reset() {
 			idCounter = 0;
-			if (modal) modal.remove();
+			investigate(null);
 			graphsUpToIsomorphism = [];
 			graphsUpToIsomorphismButStructured = []; //index as [order] [degreeSequence]
 			graphsExtendedIndex = -1;
@@ -349,11 +351,15 @@
 		} }
 		
 		function investigate(graph) {
-			if (modal) modal.remove();
-			modal = document.body.appendChild(document.createElement("div"));
+			while (modal.firstChild) modal.firstChild.remove();
+			if (graph) {
+			} else {
+				//modal.innerText = "nothing";
+			}
+			/* modal = document.body.appendChild(document.createElement("div"));
 			modal.setAttribute("id", "modal");
 			
-			graph.draw(modal.appendChild(document.createElement("canvas")), "colorful", 1.5);
+			graph.draw(modal.appendChild(document.createElement("canvas")), true, 1.5);
 			
 			let info = modal.appendChild(document.createElement("div"));
 			
@@ -378,7 +384,7 @@
 				if (graph.size*2 % graph.order == 0) if (graph.degreeSequence.startsWith(graph.size*2/graph.order + " ")) features.push("regular");
 				addToInfo("div", features.join(", "));
 			} else addToInfo("div", "not much to say here...", {color: "gray"});
-			//if (graph.subgraphs().length) addToInfo("div", "Subgraphs: " + graph.subgraphs().map(id => "<a onclick=\"investigate(graphsUpToIsomorphism["+id+"])\">"+id+"</a>").join(" "));
+			//if (graph.subgraphs().length) addToInfo("div", "Subgraphs: " + graph.subgraphs().map(id => "<a onclick=\"investigate(graphsUpToIsomorphism["+id+"])\">"+id+"</a>").join(" ")); */
 		}
 		
 		connectedness.checked = true;

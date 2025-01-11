@@ -11,6 +11,10 @@
 		td {
 			word-break: break-all;
 		}
+		a:not(:hover) {
+			text-decoration: none;
+			color: inherit;
+		}
 	</style>
 </head>
 <body>
@@ -40,9 +44,37 @@
 				}
 			}
 			let tr = document.createElement("tr");
-			for (let p of newPrimesFound) tr.appendChild(document.createElement("td")).innerText = p;
+			for (let p of newPrimesFound) {
+				let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"))
+				a.innerText = p;
+				a.onclick = function() {
+					investigate(parseInt(this.innerText));
+				}
+			}
 			table.appendChild(tr);
 		} }
+		
+		function investigate(p) {
+			let index = primeNumbers.indexOf(p);
+			
+			//find generators --- surely i don't actually need to make the array, right??? whatever
+			let generators = [];
+			for (let gen = 1; gen < p; gen++) {
+				let wasHit = new Array(p).fill(0);
+				let lookingAt = 1;
+				for (let i = 0; i < p; i++) {
+					wasHit[lookingAt] = 1;
+					lookingAt = lookingAt * gen % p;
+				}
+				let worked = true;
+				for (let i = 1; i < p && worked; i++) if (!wasHit[i]) worked = false;
+				if (worked) generators.push(gen);
+			}
+			
+			console.log(generators);
+		}
+		
+		function gcd(c,n){return 0==n?c:gcd(n,c%n)}
 	</script>
 	<script src="../script.js"></script>
 </body>

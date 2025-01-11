@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>there are demorgans laws everywhere for those with the eyes to see</title>
+	<script src="https://cdn.jsdelivr.net/npm/temml@0.10.29/dist/temml.min.js"></script>
+	<link rel="stylesheet" href="https://fred-wang.github.io/MathFonts/LatinModern/mathfonts.css">
+	<style>
+		@import url('https://fonts.cdnfonts.com/css/frutiger');
+		body {
+			background: black;
+			color: white;
+			font-family: 'Frutiger', sans-serif;
+			width: 42rem;
+			margin: 8rem auto;
+			user-select: none;
+		}
+		
+		h1 {
+			color: cyan;
+			font-weight: normal;
+			font-size: 3rem;
+			line-height: 100%;
+			user-select: text;
+		}
+		
+		section {
+			display: inline-block;
+			width: 49%;
+			user-select: text;
+			vertical-align: top;
+			margin: 0.5rem 0;
+		}
+		
+		h2 {
+			font-size: 1.25rem;
+			margin-bottom: 0.5rem;
+			color: yellow;
+		}
+		section > span {
+			font-size: 1.5rem;
+			display: block;
+			margin-bottom: 0.5rem;
+		}
+		p {
+			user-select: text;
+			font-size: 1.125rem;
+		}
+	</style>
+</head>
+<body>
+	<h1>there are demorgans laws everywhere for those with the eyes to see</h1>
+	<!-- <p>im just collecting instances where two operators <span>A</span> and <span>B</span> behave like twins in that <span>A(-x)=-B(x)</span> and <span>B(-x)=-A(x)</span></p> -->
+	<section>
+		<h2>Boolean logic</h2>
+		<span>\neg(a\land b)\is(\neg a)\lor(\neg b)</span>
+		<span>\neg(a\lor b)\is(\neg a)\land(\neg b)</span>
+	</section>
+	<section>
+		<h2>Set theory</h2>
+		<span>\overline{(A\cup B)}\is\overline A\cap\overline B</span>
+		<span>\overline{(A\cap B)}\is\overline A\cup\overline B</span>
+	</section>
+	<section>
+		<h2>Predicate logic</h2>
+		<span>\neg\forall x:P(x)\is\exists x:\neg P(x)</span>
+		<span>\neg\exists x:P(x)\is\forall x:\neg P(x)</span>
+	</section>
+	<section>
+		<h2>Modal logic</h2>
+		<span>\neg\Box p\is\Diamond\neg p</span>
+		<span>\neg\Diamond p\is\Box\neg p</span>
+	</section>
+	<section>
+		<h2>Rounding functions</h2>
+		<span>-\lfloor x\rfloor\is\lceil-x\rceil</span>
+		<span>-\lceil x\rceil\is\lfloor-x\rfloor</span>
+	</section>
+	<section>
+		<h2>Odd functions <span>f</span></h2>
+		<span>f(-x)=-f(x)</span>
+		<p style="color: gray;">with themselves =]</p>
+	</section>
+	<!-- <p>have any additions? please please please please send them my way</p> -->
+	<script>
+		for (let d of document.querySelectorAll("span")) {
+			temml.render(d.innerText.replace("\\is", "\\;\\;{\\color{gray}\\leftrightarrow}\\;\\;"), d);
+		}
+	</script>
+</body>
+</html>

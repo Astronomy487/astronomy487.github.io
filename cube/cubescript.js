@@ -19,7 +19,7 @@ function setup() {
 	//establish canvas
 	createCanvas(0, 0, WEBGL);
 	canvas = document.body.querySelector("canvas");
-	document.body.querySelector("#container").appendChild(canvas);
+	document.body.appendChild(canvas);
 	frameRate(60);
 	noStroke();
 	windowResized();
@@ -34,8 +34,8 @@ function draw() {
 	tX = (mouseX / midX - 1) * (1-friction) + tX * friction;
 	tY = ((mouseY-scroll*2) / midY + 10) * (1-friction) + tY * friction;
 	translate(tX*0.2, 0, 0);
-	rotationX = -tY * 0.1 + Math.PI / 4 - frameCount * 0.001;
-	rotationY = tX * 0.1 + Math.PI * 2/3 + frameCount * 0.001;
+	rotationX = -tY * 0.1 + Math.PI / 4 - frameCount * 0.003;
+	rotationY = tX * 0.1 + Math.PI * 2/3 + frameCount * 0.003;
 	if (Math.cos(2*rotationX) > 0) {
 		lookingAt = (Math.cos(2*rotationY) > 0) ? "#f0f" : "#0ff";
 	}
@@ -99,7 +99,7 @@ function draw() {
 function windowResized() {
 	midX = window.innerWidth / 2;
 	midY = window.innerHeight / 2;
-	resizeCanvas(windowWidth * 4/5, windowHeight);
+	resizeCanvas(windowWidth, windowHeight);
 }
 
 if (window.innerWidth < 1100) {
