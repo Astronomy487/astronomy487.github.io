@@ -125,7 +125,7 @@
 		}
 		
 		function formatDate(str) {
-			return new Date(str+" ").toLocaleString("en", {month: "short", day: "numeric", year: "numeric"}).replace(",","");
+			return new Date(str.replaceAll("-","/")+" ").toLocaleString("en", {month: "short", day: "numeric", year: "numeric"}).replace(",","");
 		}
 		
 		function setTextWithParentheses(div, song, artistMandatory, setInspectClick = true) {
