@@ -353,7 +353,7 @@
 			"niachang"
 		].sort().forEach(function(extraUrl, index) {
 			let a = ul[index%ul.length].appendChild(document.createElement("li")).appendChild(document.createElement("a"));
-			a.href = extraUrl;
+			a.href = "../"+extraUrl;
 			a.innerText = "/" + extraUrl;
 		});
 		
