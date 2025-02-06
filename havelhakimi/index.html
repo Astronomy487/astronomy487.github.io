@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		main {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		
+		input {
+			display: block;
+			margin: 0 auto;
+			font-size: inherit;
+			background: white;
+			color: black;
+			border: solid 1px black;
+			padding: 0.5rem;
+			font-family: serif;
+			width: 100%;
+		}
+		input:focus {
+			outline: none
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<canvas id="canvas"></canvas>
+		<input oninput="run(this.value);">
+	</main>
+	<script>
+		let scale = 3;
+		function run(text) {
+			let sequence = text.replaceAll(" ", ",").split(",").filter(x => x.length).map(x => parseInt(x));
+			let result = havelHakimi(sequence);
+			canvas.style.opacity = (result==null) ? 0.33 : 1;
+			if (result == null) {
+				console.log("Bad");
+			}
+		}
+		function havelHakimi(sequence) {
+			function xpos(l, n = nodes.length) {
+				if (n == 1) return 50*scale;
+				return (50 + 40 * Math.sin(l/n*2*Math.PI))*scale;
+			}
+			function ypos(l, n = nodes.length) {
+				if (n == 1) return 50*scale;
+				return (50 - 40 * Math.cos(l/n*2*Math.PI))*scale;
+			}
+			let nodes = sequence.map(x => {return {neighbors: [], degreeLeft: x};});
+			nodes = nodes.sort((a, b) => a.degreeLeft < b.degreeLeft ? 1 : -1);
+			while (nodes[0].degreeLeft) {
+				let d = nodes[0].degreeLeft;
+				if (d >= nodes.length) return null;
+				for (let i = 1; i <= d; i++) {
+					nodes[0].degreeLeft--;
+					nodes[i].degreeLeft--;
+					nodes[i].neighbors.push(nodes[0]);
+					nodes[0].neighbors.push(nodes[i]);
+				}
+				for (let node of nodes) if (node.degreeLeft < 0) return null;
+				nodes = nodes.sort((a, b) => a.degreeLeft < b.degreeLeft ? 1 : -1);
+			}
+			canvas.height = canvas.width = 100*scale;
+			let ctx = canvas.getContext("2d");
+			ctx.fillStyle = "white";
+			ctx.fillRect(0, 0, canvas.width, canvas.height); 
+			ctx.lineWidth = 2*scale;
+			ctx.strokeStyle = "black";
+			let bestReindex = findBestReindex(nodes);
+			for (let i = 0; i < nodes.length; i++) for (let j = i+1; j < nodes.length; j++) if (nodes[i].neighbors.includes(nodes[j])) {
+				ctx.beginPath();
+				ctx.moveTo(xpos(bestReindex[i]), ypos(bestReindex[i]));
+				ctx.lineTo(xpos(bestReindex[j]), ypos(bestReindex[j]));
+				ctx.stroke();
+			}
+			for (let i = 0; i < nodes.length; i++) {
+				ctx.beginPath();
+				ctx.arc(xpos(bestReindex[i]), ypos(bestReindex[i]), 5*scale, 0, 2 * Math.PI);
+				ctx.fillStyle = "white";
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(xpos(bestReindex[i]), ypos(bestReindex[i]), 4*scale, 0, 2 * Math.PI);
+				ctx.fillStyle = "black";
+				ctx.fill();
+			}
+			return nodes;
+		}
+		function findBestReindex(nodes) { //for drawing
+			return new Array(nodes.length).fill(0).map((v,i)=>i);
+			/* function thePermutations(n) {
+				let perms = [ [0] ];
+				for (let i = 1; i < n; i++) {
+					let newPerms = [];
+					for (let p of perms) for (let position = 1; position <= i; position++) {
+						newPerms.push(p.slice(0, position).concat(i).concat(p.slice(position)))
+					}
+					perms = newPerms;
+				}
+				return perms;
+			}
+			function linesIntersect(ii, jj, kk, ll, n) { //INCREDIBLE NEWS - this doesn't even depend on n. for cache purposes
+				let footprint = ii + " " + jj + " " + kk + " " + ll;
+				let intersect = true;
+				intersectionTest:
+				for (let direction of [1, n-1]) {
+					let walk = ii;
+					while (walk != kk && walk != ll) {
+						walk = (walk+direction)%n;
+						if (walk == jj) {
+							intersect = false;
+							break intersectionTest;
+						}
+					}
+				}
+				return intersect;
+			}
+			function distanceOfPoints(ii, jj) {
+				return Math.abs(Math.sin((ii-jj)*Math.PI/n))
+			}
+			let bestReindex;
+			let n = nodes.length;
+			let bestReindexScore = 99999999999999999999999999;
+			for (let reindex of thePermutations(n)) {
+				let score = 0;
+				for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) if (nodes[i].neighbors.includes(nodes[j])) {
+					let ii = reindex[i];
+					let jj = reindex[j];
+					let iijjDistance = distanceOfPoints(ii, jj);
+					if (true) for (let k = i+1; k < n; k++) if (k != j) for (let l = k+1; l < n; l++) if (l != j) if (nodes[k].neighbors.includes(nodes[l])) {
+						let kk = reindex[k];
+						let ll = reindex[l];
+						let kkllDistance = distanceOfPoints(kk, ll);
+						if (linesIntersect(ii, jj, kk, ll, n)) score += 100; //todo: maybe especially punish intersections on tiny lines?
+					}
+					//while you're here, consider inherent distance
+					score += iijjDistance;
+				}
+				if (score < bestReindexScore) [bestReindex, bestReindexScore] = [reindex, score];
+				if (!bestReindexScore) break;
+			}
+			return bestReindex;*/
+		}
+		
+		havelHakimi([1,1,3,3,4,4,4]);
+	</script>
+</body>
+</html>
