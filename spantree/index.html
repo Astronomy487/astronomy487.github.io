@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+			color: white;
+			background: black;
+			user-select: none;
+		}
+		.vertex {
+			position: fixed;
+			transform: translate(-50%, -50%);
+			width: 1rem;
+			height: 1rem;
+			border-radius: 100%;
+			z-index: 3;
+			background: white;
+			outline: solid 2px black;
+		}
+		hr {
+			position: fixed;
+			transform: translate(-50%, -50%);
+			z-index: 2;
+			border: none;
+			height: 2px;
+			background: white;
+		}
+	</style>
+	<title>spantree</title>
+</head>
+<body>
+	<main id="main">
+		<div id="mainvertex"></div>
+		<div id="mainhr"></div>
+	</main>
+	<script>
+		let points = []; //list of html elements
+		
+		let dragging = null;
+		for (let i = 0; i < 30; i++) {
+			let vertex = main.appendChild(document.createElement("div"));
+			vertex.setAttribute("class", "vertex");
+			vertex.style.top = window.innerHeight/2 + (Math.random()-Math.random()) * window.innerHeight/3 + "px";
+			vertex.style.left = window.innerWidth/2 + (Math.random()-Math.random()) * window.innerWidth/3 + "px";
+			points[i] = vertex;
+			points[i].onmousedown = function(e) {
+				let box = this.getBoundingClientRect();
+				dragging = {
+					element: vertex,
+					initX: box.x + box.width/2 - e.clientX,
+					initY: box.y + box.height/2 - e.clientY
+				};
+			};
+		}
+		window.onmousemove = function(e) {
+			if (!dragging) return;
+			dragging.element.style.left = e.clientX + dragging.initX + "px";
+			dragging.element.style.top = e.clientY + dragging.initY + "px";
+			runIt();
+		}
+		window.onmouseup = function() {
+			dragging = null;
+		}
+		
+		runIt();
+		function runIt() {
+			let edges = [];
+			let x = [];
+			let y = [];
+			for (let i = 0; i < points.length; i++) {
+				let box = points[i].getBoundingClientRect();
+				x[i] = box.x + box.width/2;
+				y[i] = box.y;
+			}
+			for (let i = 0; i < points.length; i++) {
+				for (let j = i+1; j < points.length; j++) {
+					edges.push({from: i, to: j, distance: Math.sqrt((x[i]-x[j])**2+(y[i]-y[j])**2)});
+				}
+			}
+			edges = edges.sort((a, b) => a.distance - b.distance);
+			let components = new Array(points.length).fill(0).map((v,i)=>i);
+			let acceptedEdges = [];
+			while (acceptedEdges.length < points.length-1) {
+				let edge = edges.shift();
+				let i = edge.from;
+				let j = edge.to;
+				if (components[i] != components[j]) {
+					let oldComponent = components[j];
+					let newComponent = components[i];
+					acceptedEdges.push(edge);
+					for (let x = 0; x < points.length; x++) if (components[x] == oldComponent) components[x] = newComponent;
+				}
+			}
+			while (mainhr.firstChild) mainhr.firstChild.remove();
+			for (let edge of acceptedEdges) {
+				let hr = document.createElement("hr");
+				let xi = x[edge.from];
+				let xj = x[edge.to];
+				let yi = y[edge.from];
+				let yj = y[edge.to];
+				hr.style.left = (xi+xj)/2 + "px";
+				hr.style.top = (yi+yj)/2 + "px";
+				hr.style.width = edge.distance + "px";
+				hr.style.transform = "translate(-50%, -50%) rotate(" + Math.atan2(yi-yj, xi-xj) + "rad)";
+				mainhr.appendChild(hr);
+			}
+		}
+	</script>
+</body>
+</html>
