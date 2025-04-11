@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		#table {
+			border-collapse: collapse;
+			user-select: none;
+		}
+		#table td {
+			border: solid 1px black;
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	</style>
+</head>
+<body>
+	<table id="table"></table>
+	<button onclick="painting = 0;">paint with empty</button>
+	<button onclick="painting = 1;">paint with wall</button>
+	<button onclick="painting = 2;">paint with goal</button>
+	<br>
+	<button onclick="makeIt();">Do it!</button>
+	<pre id="pre"></pre>
+	<script>
+		let maxSize = 16;
+		let makeMapValues = new Array(maxSize*maxSize).fill(0);
+		
+		let mouseClicked = false;
+		window.onmousedown = function(){mouseClicked = true;}
+		window.onmouseup = function(){mouseClicked = false;}
+		
+		let painting = 0;
+		
+		for (let y = 0; y < maxSize; y++) {
+			let tr = table.appendChild(document.createElement("tr"));
+			for (let x = 0; x < maxSize; x++) {
+				let td = tr.appendChild(document.createElement("td"));
+				let i = y*maxSize+x;
+				td.onmouseenter = function() {
+					if (!mouseClicked) return;
+					makeMapValues[i] = painting;
+					this.style.background = ["white","black","red"][makeMapValues[i]];
+				}
+				td.onmousedown = function() {
+					makeMapValues[i] = painting;
+					this.style.background = ["white","black","red"][makeMapValues[i]];
+				}
+			}
+		}
+		function makeIt() {
+			let minCol = Infinity;
+			let maxCol = -Infinity;
+			let minRow = Infinity;
+			let maxRow = -Infinity;
+			for (let y = 0; y < maxSize; y++) for (let x = 0; x < maxSize; x++) if (makeMapValues[y*maxSize+x]) {
+				minCol = Math.min(minCol, x);
+				maxCol = Math.max(maxCol, x);
+				minRow = Math.min(minRow, y);
+				maxRow = Math.max(maxRow, y);
+			}
+			WIDTH = maxCol - minCol + 1;
+			HEIGHT = maxRow - minRow + 1;
+			SIZE = WIDTH * HEIGHT;
+			let level = [];
+			for (let y = minRow; y <= maxRow; y++) for (let x = minCol; x <= maxCol; x++) level.push([EMPTY,WALL,GOAL|BOX][makeMapValues[y*maxSize+x]]);
+			run(level);
+		}
+	</script>
+	<script>
+		let WIDTH;
+		let HEIGHT;
+		let SIZE;
+		
+		let EMPTY = 0;
+		let WALL = 1;
+		let PLAYER = 2;
+		let GOAL = 4;
+		let BOX = 8;
+
+		function sokToNative(sok) {
+			if (sok == ' ') return EMPTY;
+			if (sok == '#') return WALL;
+			if (sok == '.') return GOAL;
+			if (sok == '@') return PLAYER;
+			if (sok == '$') return BOX;
+			if (sok == '+') return GOAL | PLAYER;
+			if (sok == '*') return GOAL | BOX;
+			if (sok == '-') return EMPTY;
+			if (sok == '_') return EMPTY;
+		}
+
+		function nativeToSok(nat) {
+			if (nat == EMPTY) return ' ';
+			if (nat == WALL) return '#';
+			if (nat == GOAL) return '.';
+			if (nat == PLAYER) return '@';
+			if (nat == BOX) return '$';
+			if (nat == (GOAL | PLAYER)) return '+';
+			if (nat == (GOAL | BOX)) return '*';
+		}
+		
+		function printLevel(level, onlyOnePlayer = false) {
+			if (onlyOnePlayer) {
+				level = level.map(x => x);
+				let seenPlayer = false;
+				for (let i = 0; i < SIZE; i++) {
+					if (seenPlayer || (level[i] & GOAL)) level[i] &= ~PLAYER;
+					if (level[i] & PLAYER) if (!(level[i] & GOAL)) seenPlayer = true;
+				}
+			}
+			let str = "";
+			for (let y = 0; y < HEIGHT; y++) {
+				for (let x = 0; x < WIDTH; x++)
+					str += nativeToSok(level[y*WIDTH+x]);
+				str += "\n";
+			}
+			return str;
+		}
+		
+		function playerRemoveAndSpread(level, playerPosition) {
+			if (playerPosition == undefined)
+				for (let i = 0; playerPosition == undefined; i++) if (level[i] & PLAYER) playerPosition = i;
+			for (let i = 0; i < SIZE; i++) level[i] &= ~PLAYER;
+			playerSpreadRecursive(playerPosition);
+			function playerSpreadRecursive(position) {
+				if (level[position] & PLAYER) return;
+				if (level[position] & WALL) return;
+				if (level[position] & BOX) return;
+				level[position] |= PLAYER;
+				playerSpreadRecursive(position-1);
+				playerSpreadRecursive(position+1);
+				playerSpreadRecursive(position-WIDTH);
+				playerSpreadRecursive(position+WIDTH);
+			}
+		}
+		
+		function isMapOpen(level) { //preprocessing. spread boxes (ignore players, only look for walls tbh). if they make it to edges, panic
+			level = level.map(x => x);
+			for (let i = 0; i < SIZE; i++) if (level[i] & BOX) {
+				level[i] &= ~BOX;
+				if (spreadBox(i)) return true;
+			}
+			return false;
+			function spreadBox(pos) { //returns true if bad map
+				//make this box, if it's not wall/box already
+				if (level[pos] & BOX) return;
+				if (level[pos] & WALL) return;
+				level[pos] |= BOX;
+				//if on edges, this is bad!
+				let col = pos % WIDTH;
+				if (col == 0 || col == WIDTH-1) return true;
+				let row = Math.floor(pos / WIDTH);
+				if (row == 0 || row == HEIGHT-1) return true;
+				//spread
+				for (let neighbor of [pos+1, pos-1, pos+WIDTH, pos-WIDTH]) spreadBox(neighbor);
+			}
+			return false;
+		}
+		
+		function possiblePlayerRegionsNextToGoals(level) {
+			let seen = {};
+			let states = [];
+			//for every spot next to a goal, make level copy and do playerRemoveAndSpread
+			for (let i = 0; i < SIZE; i++) if (level[i] & GOAL) {
+				for (let spot of [i+WIDTH, i-WIDTH, i+1, i-1]) {
+					if (!(level[spot] & WALL)) if (!(level[spot] & GOAL)) {
+						let anew = level.map(x => x);
+						playerRemoveAndSpread(anew, spot);
+						if (seen[anew]) continue;
+						seen[anew] = true;
+						states.push(anew);
+					}
+				}
+			}
+			return states;
+		}
+		
+		function pastStates(level) {
+			let states = [];
+			//whenever you have, going in any direction, a BOX-PLAYER-PLAYER, you can also make it EMPTY-BOX-PLAYER. make that a future! spread it too
+			for (let i = 0; i < SIZE; i++) if (level[i] & BOX) {
+				for (let d of [-1, 1, WIDTH, -WIDTH]) {
+					let post = i+d;
+					if (!(level[post] & BOX)) if (!(level[post] & WALL)) if (level[post] & PLAYER) {
+						let postpost = post + d;
+						if (!(level[postpost] & BOX)) if (!(level[postpost] & WALL)) {
+							let newState = level.map(x => x);
+							newState[i] &= ~BOX;
+							newState[post] |= BOX;
+							playerRemoveAndSpread(newState, postpost);
+							states.push(newState);
+						}
+					}
+				}
+			}
+			return states;
+		}
+		
+		function run(level) {
+			if (isMapOpen(level)) return;
+			if (!level.includes(GOAL|BOX)) return;
+			printLevel(level);
+			let seen = {};
+			let queue = possiblePlayerRegionsNextToGoals(level);
+			let pick;
+			for (let i = 0; i < 1000000 && queue.length; i++) {
+				pick = queue.shift();
+				if (seen[pick]) continue;
+				seen[pick] = true;
+				for (let s of pastStates(pick)) if (!seen[s]) queue.push(s);
+			}
+			pre.innerText = printLevel(pick, true);
+			/* if (!queue.length) {
+				console.log("Wow the queue is empty");
+				printLevel(pick);
+			} else printLevel(pick); */
+		}
+		
+	</script>
+</body>
+</html>
