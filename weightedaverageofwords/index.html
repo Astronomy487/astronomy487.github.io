@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>weighted average of words</title>
+	<style>
+		input.invalid {
+			color: red;
+			border: solid 1px red;
+		}
+		body {
+			margin: 8rem auto;
+			width: 32rem;
+		}
+		table {
+			width: 100%;
+		}
+		td {
+			padding: 0.125rem 0.5rem;
+		}
+		input {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<script src="wordvecs25000.js"></script>
+	<p>finds the weighted average of the given words, using word2vec</p>
+	<table id="table">
+		<tr><th>Weight</th><th>Word</th></tr>
+	</table>
+	<div style="text-align: center; margin: 0.5rem 0;">
+		<button onclick="run()">Run</button>
+		<button onclick="addRow()">Add row</button>
+	</div>
+	<p>using <a href="https://github.com/turbomaze/word2vecjson/tree/master?tab=readme-ov-file">turbomaze's word2vec vectors</a> =] thank you turbomaze</p>
+	<table id="display"></table>
+	<script>
+		let DIMENSIONS = 300;
+		let N_ROWS = 0;
+		let inputs = {
+			weights: [],
+			words: []
+		};
+		addRow();
+		addRow();
+		addRow();
+		function addRow() {
+			N_ROWS++;
+			let tr = table.appendChild(document.createElement("tr"));
+			let it = tr.appendChild(document.createElement("td")).appendChild(document.createElement("input"));
+			inputs.weights.push(it);
+			it.oninput = getDesireAndCheckForValidity;
+			it = tr.appendChild(document.createElement("td")).appendChild(document.createElement("input"));
+			inputs.words.push(it);
+			it.oninput = getDesireAndCheckForValidity;
+		}
+		inputs.weights[0].value = "1";
+		inputs.words[0].value = "elephant";
+		inputs.weights[1].value = "1";
+		inputs.words[1].value = "priest";
+		run();
+		
+		function squareDistance(a, b) {
+			let w = 0;
+			for (let i = 0; i < DIMENSIONS; i++)
+				w += (a[i]-b[i]) * (a[i]-b[i]);
+			return w;
+		}
+		function getDesireAndCheckForValidity() {
+			let desire = [];
+			let anythingInvalid = false;
+			for (let i = 0; i < N_ROWS; i++) {
+				if (!inputs.weights[i].value.length && !inputs.words[i].value.length) continue;
+				
+				let weight = parseInt(inputs.weights[i].value);
+				if (Number.isNaN(weight)) {
+					inputs.weights[i].setAttribute("class", "invalid");
+					anythingInvalid = true;
+				} else inputs.weights[i].setAttribute("class", "valid");
+				let word = inputs.words[i].value.toLowerCase();
+				if (!(word in wordVecs)) {
+					inputs.words[i].setAttribute("class", "invalid");
+					anythingInvalid = true;
+				} else inputs.words[i].setAttribute("class", "valid");
+				desire.push([weight, word]);
+			}
+			if (!anythingInvalid) return desire;
+			return null;
+		}
+		function run() {
+			let desire = getDesireAndCheckForValidity();
+			if (desire == null) return;
+			let totalWeight = 0;
+			for (let [weight, word] of desire) {
+				totalWeight += weight;
+			}
+			for (let x of desire) {
+				x[0] /= totalWeight;
+			}
+			let targetVector = new Array(DIMENSIONS).fill(0);
+			for (let [weight, word] of desire) {
+				for (let i = 0; i < DIMENSIONS; i++) {
+					targetVector[i] += wordVecs[word][i] * weight;
+				}
+			}
+			console.log(targetVector);
+			let results = [];
+			for (let word of Object.keys(wordVecs)) {
+				let distance = squareDistance(targetVector, wordVecs[word]);
+				results.push([word, distance]);
+			}
+			results.sort((a,b)=>a[1] - b[1]);
+			while (display.firstChild) display.firstChild.remove();
+			let tr = display.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("th")).innerText = "Word";
+			tr.appendChild(document.createElement("th")).innerText = "Square distance";
+			for (let i = 0; i < 100; i++) {
+				tr = display.appendChild(document.createElement("tr"));
+				tr.appendChild(document.createElement("td")).innerText = results[i][0];
+				tr.appendChild(document.createElement("td")).innerText = results[i][1];
+			}
+		}
+	</script>
+</body>
+</html>
