@@ -14,7 +14,7 @@ function navFromUrls(...urlSetsToTake) { //parameters go from low to high priori
 		let a = nav.appendChild(document.createElement("a"));
 		//a.innerHTML = platform.replaceAll(" ", "&nbsp;");
 		let img = a.appendChild(document.createElement("img"));
-		let src = "socialicons/colors/"+platform.toLowerCase().replaceAll(" ", "")+".png";
+		let src = "https://astronomy487.com/socialicons/colors/"+platform.toLowerCase().replaceAll(" ", "")+".png";
 		img.src = src;
 		a.onmouseenter = function() {
 			img.src = src.replace("colors", "white");
