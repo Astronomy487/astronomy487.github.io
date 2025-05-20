@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		canvas {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+		}
+		body {
+			background: black;
+			color: white;
+			font-family: sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<div id="renderInfo" style="position: fixed; bottom: 2rem; left: 2rem;"></div>
+	<script>
+		let maxIterations = 50;
+		
+		let canvasSizes = [1000, 500];
+		let canvas = canvasSizes.map(x => document.body.appendChild(document.createElement("canvas")));
+		let ctx = canvas.map(x => x.getContext("2d"));
+		for (let i = 0; i < canvasSizes.length; i++) {
+			canvas[i].width = canvasSizes[i];
+			canvas[i].height = canvasSizes[i];
+			if (i) canvas[i].style.transform = "translate(-50%, -50%) scale("+(canvasSizes[0] / canvasSizes[i])+")";
+		}
+		
+		let center = [0, 0, 0, 0];
+		let u = [0, 0, 1, 0];
+		let v = [0, 0, 0, 1];
+		let radius = 2;
+		
+		function gaussianRandom(){var a=1-Math.random(),t=Math.random();return Math.sqrt(-2*Math.log(a))*Math.cos(2*Math.PI*t)}
+		function makeUAndV() {
+			{
+				u = new Array(4).fill(0).map(gaussianRandom);
+				let magnitude = Math.sqrt(u.reduce((a,b)=>a+b*b,0));
+				u = u.map(x => x/magnitude);
+			}
+			{
+				v = new Array(4).fill(0).map(gaussianRandom);
+				let magnitude = Math.sqrt(v.reduce((a,b)=>a+b*b,0));
+				v = v.map(x => x/magnitude);
+			}
+			console.log(v);
+			console.log(u);
+			{
+				let vDotU = [0,1,2,3].reduce((a,b)=>a+v[b]*u[b], 0);
+				v = [0,1,2,3].map(i => v[i] - vDotU * u[i]);
+				let magnitude = Math.sqrt(v.reduce((a,b)=>a+b*b,0));
+				v = v.map(x => x/magnitude);
+				
+				//v becomes norm(v - (v dot u)u)
+				//if they are already almost-perpendicular, then this change doesn't do anything
+			}
+			console.log(v[0]*u[0] + v[1]*u[1] + v[2]*u[2] + v[3]*u[3]);
+		}
+		function nudgeU(amt = 0.05) {
+			{
+				u = u.map(x => x + Math.abs(gaussianRandom()) * amt);
+				let magnitude = Math.sqrt(u.reduce((a,b)=>a+b*b,0));
+				u = u.map(x => x/magnitude);
+			}
+			{
+				let vDotU = [0,1,2,3].reduce((a,b)=>a+v[b]*u[b], 0);
+				v = [0,1,2,3].map(i => v[i] - vDotU * u[i]);
+				let magnitude = Math.sqrt(v.reduce((a,b)=>a+b*b,0));
+				v = v.map(x => x/magnitude);
+			}
+		}
+		makeUAndV();
+		draw();
+		
+		let nudge = {
+			right: function() {
+				for (let i = 0; i < 4; i++) center[i] += u[i] * 0.05;
+				draw();
+			},
+			left: function() {
+				for (let i = 0; i < 4; i++) center[i] -= u[i] * 0.05;
+				draw();
+			},
+			down: function() {
+				for (let i = 0; i < 4; i++) center[i] += v[i] * 0.05;
+				draw();
+			},
+			up: function() {
+				for (let i = 0; i < 4; i++) center[i] -= v[i] * 0.05;
+				draw();
+			},
+			rotateRight: function() {
+				let theta = Math.PI*0.03;
+				for (let i = 0; i < 4; i++) {
+					[u[i], v[i]] = [u[i]*Math.cos(theta)+v[i]*Math.sin(theta), -u[i]*Math.sin(theta)+v[i]*Math.cos(theta)];
+				}
+				draw();
+			},
+			rotateLeft: function() {
+				let theta = -Math.PI*0.03;
+				for (let i = 0; i < 4; i++) {
+					[u[i], v[i]] = [u[i]*Math.cos(theta)+v[i]*Math.sin(theta), -u[i]*Math.sin(theta)+v[i]*Math.cos(theta)];
+				}
+				draw();
+			},
+			zoomIn: function() {
+				radius *= 0.95;
+				draw();
+			},
+			zoomOut: function() {
+				radius /= 0.95;
+				draw();
+			},
+			nudge: function() {
+				nudgeU();
+				draw();
+			}
+		};
+		
+		setInterval(function() {
+			nudgeU(0.001);
+			draw(1);
+		}, 0)
+		
+		function draw(which = 0) {
+			let time = Date.now();
+			for (let i = 0; i < canvasSizes.length; i++) canvas[i].style.display = (which==i) ? "block" : "none";
+			let size = canvasSizes[which];
+			let imageData = ctx[which].createImageData(size, size);
+			for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+				let i = (x+y*size) << 2;
+				let pX = (2*x/size-1)*radius;
+				let pY = (2*y/size-1)*radius;
+				
+				imageData.data[i+3] = mandelbrot(
+					center[0] + u[0]*pX + v[0]*pY,
+					center[1] + u[1]*pX + v[1]*pY,
+					center[2] + u[2]*pX + v[2]*pY,
+					center[3] + u[3]*pX + v[3]*pY
+				);
+				imageData.data[i] = 255;
+				imageData.data[i+1] = 255;
+				imageData.data[i+2] = 255;
+			}
+			ctx[which].putImageData(imageData, 0, 0);
+			renderInfo.innerText = "Rendered in " + (Date.now() - time) + " ms";
+		}
+		
+		function mandelbrot(zRe, zIm, cRe, cIm) {
+			let i;
+			let newZRe;
+			let newZIm;
+			for (i = 0; i < maxIterations; i++) {
+				newZRe = zRe*zRe - zIm*zIm + cRe;
+				newZIm = 2*zRe*zIm + cIm;
+				zRe = newZRe;
+				zIm = newZIm;
+				if (zRe*zRe + zIm*zIm > 4) return Math.pow(i/maxIterations, 0.6) * 255;
+			}
+			return 255;
+		}
+	</script>
+</body>
+</html>

@@ -197,11 +197,13 @@
 				ctx.fillRect(0, 0, canvas.width, canvas.height); 
 				ctx.lineWidth = 2 * scale;
 				ctx.strokeStyle = "white";
+				let totalEdges = 0;
 				for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) if (this.hasEdge(i, j)) {
 					ctx.beginPath();
 					ctx.moveTo(xpos(bestReindex[i]), ypos(bestReindex[i]));
 					ctx.lineTo(xpos(bestReindex[j]), ypos(bestReindex[j]));
 					ctx.stroke();
+					totalEdges++;
 				}
 				if (mode == "colorful") this.findColoring();
 				for (let i = 0; i < n; i++) {
@@ -214,6 +216,7 @@
 						ctx.fill();
 					}
 				}
+				// if (this.vertexDegrees.map(x => x!=3).reduce((a,b)=>a||b,false)) canvas.remove();
 			}
 			extensions() {
 				if (!this.storage) return [new Graph([])];

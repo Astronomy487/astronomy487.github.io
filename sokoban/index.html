@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<head>
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<link rel="icon" href="soko.png">
+	<title>Sokoban</title>
+	<style>
+		:root {
+			--empty: #392d24;
+			--wall: #524028;
+			--white: #CDBEB3;
+			--box: #b0a740;
+			--goal: #b36179;
+			--player: #376d55;
+			--size: 3rem;
+		}
+		::selection {
+			background: var(--white);
+			color: var(--wall);
+		}
+		body {
+			background: var(--wall);
+			color: var(--white);
+			font-family: 'Inter', sans-serif;
+			font-weight: 500;
+			font-feature-settings: 'cv02' 1,'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+		}
+		#levelmetadata {
+			font-size: 1.25rem;
+			text-align: center;
+			letter-spacing: -0.03125em;
+			position: fixed;
+			bottom: 3rem;
+			width: 100%;
+			line-height: 100%;
+			z-index: 5;
+		}
+		#display {
+			background: var(--empty);
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: opacity 0.1s;
+		}
+		#display div {
+			z-index: 3;
+			width: var(--size);
+			height: var(--size);
+			position: absolute;
+		}
+		#display div[objecttype="player"] {
+			background: var(--player);
+			clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+			z-index: 4;
+		}
+		#display div[objecttype="box"] {
+			background: var(--box);
+			border-radius: 100%;
+			z-index: 4;
+		}
+		[objecttype] {
+			transition: top 0.1s, left 0.1s;
+		}
+		
+		#menu {
+			width: 36rem;
+			margin: 16rem auto;
+		}
+		#menu h2 {
+			font-size: inherit;
+			font-weight: inherit;
+			background: var(--white);
+			color: var(--wall);
+			padding: 0.25rem 0.5rem;
+			width: 36rem;
+			margin-bottom: 0.25rem;
+			margin-top: 1rem;
+		}
+		#menu h2::selection {
+			background: var(--wall);
+			color: var(--white);
+		}
+		#menu a {
+			text-decoration: underline;
+			cursor: pointer;
+		}
+		a:hover {
+			color: var(--goal);
+		}
+		#menu td:nth-child(2n+1) a:hover {
+			color: var(--box);
+		}
+		#menu td:nth-child(1) {width: 12rem;}
+		#menu td:nth-child(2) {width: 12rem;}
+		#menu td:nth-child(3) {width: 6rem;}
+		#menu td:nth-child(4) {width: 6rem;}
+		
+		#menu h1 {
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="levelmetadata"></div>
+	<div id="display"></div>
+	<div id="menu"><h1>Sokoban</h1></div>
+	<script src="campaigns.js"></script>
+	<script>
+		let campaignName;
+		
+		let localStorageData = JSON.parse(localStorage.getItem("astronomy487-sokoban") || "{}");
+		
+		if (!localStorageData[campaignName]) {
+			localStorageData[campaignName] = 0;
+		}
+		
+		let width;
+		let height;
+		let data;
+		
+		let EMPTY = 0;
+		let GOAL = 1;
+		let PLAYER = 2;
+		let WALL = 4;
+		let BOX = 8;
+		let PLAYER_COULD_EVER_REACH = 16;
+		
+		let LEFT;
+		let UP;
+		let RIGHT;
+		let DOWN;
+		
+		let currentLevel;
+		let objects = []; //array of {coord, element}. contains boxes and players, the only things which move. handles their moving animations
+		function makeLevel(levelNumber) {
+			while (display.firstChild) display.firstChild.remove();
+			if (levelNumber == null) {
+				display.style.width = "0";
+				display.style.height = "0";
+				return;
+			}
+			levelmetadata.innerText = campaignName + ": #" + (levelNumber+1);
+			document.title = campaignName.split("\n")[1] + ": #" + (levelNumber+1);
+			currentLevel = levelNumber;
+			let sok = campaigns[campaignName][levelNumber];
+			sok = sok.split("\n");
+			height = sok.length;
+			width = sok.map(x => x.length).reduce((a, b)=>Math.max(a, b), 0);
+			LEFT = -1;
+			RIGHT = 1;
+			UP = -width;
+			DOWN = width;
+			data = new Array(width*height).fill(0);
+			objects = [];
+			display.style.width = "calc(var(--size) * "+width+")";
+			display.style.height = "calc(var(--size) * "+height+")";
+			for (let y = 0; y < height; y++) for (let x = 0; x < sok[y].length; x++) {
+				if (sok[y][x] == ' ' || sok[y][x] == '-' || sok[y][x] == '_') data[y*width+x] = EMPTY;
+				if (sok[y][x] == '#') data[y*width+x] = WALL;
+				if (sok[y][x] == '.') data[y*width+x] = GOAL;
+				if (sok[y][x] == '$') data[y*width+x] = BOX;
+				if (sok[y][x] == '+') data[y*width+x] = (PLAYER | GOAL);
+				if (sok[y][x] == '*') data[y*width+x] = (BOX | GOAL);
+				if (sok[y][x] == '@') data[y*width+x] = PLAYER;
+			}
+			//spread to find places the player could never reach
+			function playerSpreadRecursive(position) {
+				if (data[position] & WALL) return;
+				data[position] |= PLAYER_COULD_EVER_REACH;
+				for (let offset of [LEFT, UP, RIGHT, DOWN]) if (!(data[position+offset] & PLAYER_COULD_EVER_REACH)) playerSpreadRecursive(position + offset);
+			}
+			for (let i = 0; i < width*height; i++) if (data[i] & PLAYER) {
+				playerSpreadRecursive(i);
+				break;
+			}
+			for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+				if (data[y*width+x] & GOAL) {
+					let div = display.appendChild(document.createElement("div"));
+					div.style.background = "var(--goal)";
+					div.style.top = "calc(var(--size) * " + y + ")";
+					div.style.left = "calc(var(--size) * " + x + ")";
+				} else if (!(data[y*width+x] & PLAYER_COULD_EVER_REACH)) {
+				//} else if (data[y*width+x] & WALL) {
+					let div = display.appendChild(document.createElement("div"));
+					div.style.background = "var(--wall)";
+					div.style.top = "calc(var(--size) * " + y + ")";
+					div.style.left = "calc(var(--size) * " + x + ")";
+				}
+				if (data[y*width+x] & PLAYER) makeObject(y*width+x, "player");
+				if (data[y*width+x] & BOX) makeObject(y*width+x, "box");
+			}
+			for (let i = 0; i < width*height; i++) data[i] &= (~PLAYER_COULD_EVER_REACH);
+			
+			gameHistory = [{data: data.map(x => x)}];
+		}
+		function makeObject(position, type) {
+			let div = display.appendChild(document.createElement("div"));
+			div.style.width = div.style.height = "var(--size)";
+			div.setAttribute("objecttype", type);
+			div.style.position = "absolute";
+			let object = {element: div};
+			objects.push(object);
+			updateObjectPosition(object, position);
+		}
+		function updateObjectPosition(object, newPosition) {
+			let y = Math.floor(newPosition / width);
+			let x = newPosition % width;
+			object.coord = newPosition;
+			object.element.style.top = "calc(var(--size) * " + y + ")";
+			object.element.style.left = "calc(var(--size) * " + x + ")";
+		}
+		function objectMoved(originalPosition, newPosition) {
+			for (let object of objects) if (object.coord == originalPosition) {
+				updateObjectPosition(object, newPosition);
+				return;
+			}
+		}
+		
+		window.onkeydown = function(e) {
+			if (!canMove) return;
+			if (e.keyCode == 37) playerMove(LEFT);
+			if (e.keyCode == 65) playerMove(LEFT);
+			if (e.keyCode == 38) playerMove(UP);
+			if (e.keyCode == 87) playerMove(UP);
+			if (e.keyCode == 39) playerMove(RIGHT);
+			if (e.keyCode == 68) playerMove(RIGHT);
+			if (e.keyCode == 40) playerMove(DOWN);
+			if (e.keyCode == 83) playerMove(DOWN);
+			if (e.keyCode == 90) undo();
+			if (e.keyCode == 82) {
+				canMove = false;
+				display.style.opacity = 0.5;
+				setTimeout(function(){
+					makeLevel(currentLevel);
+					display.style.opacity = 1;
+					canMove = true;
+				}, 100);
+			}
+		}
+		
+		gameHistory = []; //every entry is {data, objectMovedCalls}
+		function undo() {
+			if (gameHistory.length > 1) {
+				let removedState = gameHistory.pop();
+				data = gameHistory[gameHistory.length-1].data.map(x => x);
+				for (let [a, b] of removedState.objectMovedCalls.map(x => x).reverse()) objectMoved(b, a);
+				print();
+			}
+		}
+		
+		function print() {
+			let str = "";
+			for (let i = 0; i < width*height; i++) {
+				if (data[i] == EMPTY) str += ' ';
+				else if (data[i] == BOX) str += '$';
+				else if (data[i] == GOAL) str += '.';
+				else if (data[i] == WALL) str += '#';
+				else if (data[i] == (BOX | GOAL)) str += '*';
+				else if (data[i] == (PLAYER | GOAL)) str += '+';
+				else if (data[i] == PLAYER) str += '@';
+				if (i%width == width-1) str += '\n';
+			}
+		}
+		
+		let canMove = true;
+		function playerMove(d) {
+			for (let i = 0; i < width*height; i++) if (data[i] & PLAYER) {
+				let target = i + d;
+				if (data[target] & WALL) return;
+				let objectMovedCalls;
+				if (data[target] & BOX) {
+					let postTarget = target + d;
+					if ((data[postTarget] & BOX) || (data[postTarget] & WALL)) return;
+					data[postTarget] |= BOX;
+					data[target] -= BOX;
+					data[target] |= PLAYER;
+					data[i] -= PLAYER;
+					objectMovedCalls = [[target, postTarget], [i, target]];
+				} else {
+					//just walk there
+					data[target] |= PLAYER;
+					data[i] -= PLAYER;
+					objectMovedCalls = [[i, target]];
+				}
+				for (let objectMovedCall of objectMovedCalls) objectMoved(...objectMovedCall);
+				gameHistory.push({
+					data: data.map(x => x),
+					objectMovedCalls: objectMovedCalls
+				});
+				let satisfied = true;
+				for (let i = 0; i < width*height && satisfied; i++) if (data[i] & BOX) if (!(data[i] & GOAL)) satisfied = false;
+				if (satisfied) {
+					canMove = false;
+					setTimeout(function(){
+						display.style.opacity = 0;
+					}, 900);
+					setTimeout(function(){
+						canMove = true;
+						localStorageData[campaignName] = Math.max(localStorageData[campaignName], currentLevel+1);
+						localStorage.setItem("astronomy487-sokoban", JSON.stringify(localStorageData));
+						makeLevel(currentLevel+1);
+						display.style.opacity = 1;
+					}, 1000);
+				}
+				return;
+			}
+		}
+		
+		let lastAuthor = undefined;
+		for (let name of Object.keys(campaigns).sort()) {
+			let [author, title] = name.split("\n");
+			if (lastAuthor != author) {
+				lastAuthor = author;
+				menu.appendChild(document.createElement("h2")).innerText = author;
+			}
+			let tr = menu.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("td")).innerText = title;
+			let numberDone = localStorageData[name] || 0;
+			tr.appendChild(document.createElement("td")).innerText = numberDone + "/" + campaigns[name].length + " complete";
+			let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"));
+			a.innerText = (numberDone ? "Continue" : "Start");
+			a.onclick = function() {
+				campaignName = name;
+				menu.style.display = "none";
+				makeLevel(numberDone);
+			}
+			if (numberDone) {
+				a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"));
+				a.innerText = "Level select";
+				a.onclick = function() {
+					presentLevelSelect(name, numberDone);
+				}
+			}
+		}
+		
+		function presentLevelSelect(name, upTo) {
+			menu.style.display = "none";
+			let otherMenu = document.body.appendChild(document.createElement("div"));
+			otherMenu.setAttribute("id", "menu");
+			let h1 = otherMenu.appendChild(document.createElement("h1"));
+			h1.innerText = name;
+			h1.style.marginBottom = "2rem";
+			let tr;
+			for (let i = 0; i <= upTo; i++) {
+				if (!(i%10)) tr = otherMenu.appendChild(document.createElement("tr"));
+				let td = tr.appendChild(document.createElement("td"));
+				td.style.width = "3.6rem";
+				let a = td.appendChild(document.createElement("a"));
+				a.innerText = "#" + (i+1);
+				a.onclick = function() {
+					campaignName = name;
+					otherMenu.style.display = "none";
+					makeLevel(i);
+				}
+			}
+			let retDiv = otherMenu.appendChild(document.createElement("div"));
+			retDiv.style.marginTop = "2rem";
+			let ret = retDiv.appendChild(document.createElement("a"));
+			ret.innerText = "Back";
+			ret.onclick = function() {
+				otherMenu.remove();
+				menu.style.display = "block";
+			}
+		}
+		
+		// makeLevel(localStorageData[campaignName]);
+	</script>
+</body>
+</html>

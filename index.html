@@ -162,6 +162,7 @@
 			margin: 2rem 0;
 			height: 1.5rem;
 			position: relative;
+			display: none;
 		}
 		.birthday span {
 			z-index: 3;
@@ -371,7 +372,7 @@
 		function addSimpleEvent(song) {
 			let div = document.createElement("div");
 			div.setAttribute("class", "remix-tile");
-			if (song.released < "2017-12-05") div.style.width = "11.125rem";
+			//if (song.released < "2017-12-05") div.style.width = "11.125rem";
 			div.appendChild(document.createElement("div")).innerText = formatDate(song.released);
 			let titleArea = div.appendChild(document.createElement("a"));
 			setTextWithParentheses(titleArea, song);
@@ -446,8 +447,7 @@
 				if (song.url && song.url["YouTube"]) {
 					let iframe = div.appendChild(document.createElement("iframe"));
 					let src = song.url["YouTube"].replace("/watch?v=", "/embed/");
-					if (src.includes("&t=")) src = src.replace("&t=", "?start=") + "&autoplay=1";
-					else src = src + "?autoplay=1";
+					if (src.includes("&t=")) src = src.replace("&t=", "?start=");
 					iframe.src = src;
 					let aspectRatio = (1+Math.sqrt(5))/2;
 					if ((song.released||album.released) < "2022-07-25") aspectRatio = 16/9;
@@ -475,8 +475,14 @@
 					let head = lyricsDiv.appendChild(document.createElement("div"));
 					head.setAttribute("class", "lyrics-header");
 					head.innerText = header;
+					let lastParagraph;
 					for (let c of content)
-						lyricsDiv.appendChild(document.createElement("p")).innerText = smartquotes(c).replace(" - ", " – ");
+						if (c.length) {
+							lastParagraph = lyricsDiv.appendChild(document.createElement("p"));
+							lastParagraph.innerText = smartquotes(c).replace(" - ", " – ");
+						} else {
+							lastParagraph.style.marginBottom = "0.75em";
+						}
 				}
 				
 				if (song.lyrics) makeInfoBox("Lyrics", song.lyrics.split("\n"));

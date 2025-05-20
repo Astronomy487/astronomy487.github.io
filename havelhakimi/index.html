@@ -29,6 +29,7 @@
 	<main>
 		<canvas id="canvas"></canvas>
 		<input oninput="run(this.value);">
+		<div id="output"></div>
 	</main>
 	<script>
 		let scale = 3;
@@ -86,6 +87,12 @@
 				ctx.fillStyle = "black";
 				ctx.fill();
 			}
+			let tex = [];
+			for (let node of nodes) tex.push("\\node[vertex] ("+nodes.indexOf(node)+") at ("+nodes.indexOf(node)+", 0) {$"+node.neighbors.length+"$};");
+			for (let i = 0; i < nodes.length; i++) for (let j = i+1; j < nodes.length; j++) if (nodes[i].neighbors.includes(nodes[j])) {
+				tex.push("\\draw[-] ("+i+") to ("+j+");");
+			}
+			output.innerText = tex.join("\n");
 			return nodes;
 		}
 		function findBestReindex(nodes) { //for drawing

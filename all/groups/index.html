@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		table {
+			border: solid 1px black;
+			border-collapse: collapse;
+			table-layout: fixed;
+			margin: 0.5rem 0;
+		}
+		table td, table th {
+			width: 0.75rem;
+			height: 1rem;
+			text-align: center;
+		}
+		table th {
+			background: #ddd;
+		}
+	</style>
+</head>
+<body>
+	<script src="output.js"></script>
+	<button onclick="runLine();">runLine</button>
+	<script>
+		let greekAlphabet = "αβγδεζηθικλμνξοπρσςτυφχψω";
+		let ALL_GROUPS = [];
+		class Group {
+			constructor(n, name, generators = []) {
+				ALL_GROUPS.push(this);
+				let permutationSize = generators[0].length;
+				this.order = n;
+				this.name = name;
+				if (this.name == "C" + this.order || this.name == "1") this.cyclic = true;
+				this.elements = [new Array(permutationSize).fill(0).map((v,i) => i)];
+				this.elementNames = [""];
+				//Populate this.elements
+				for (let i = 0; i < generators.length; i++) {
+					this.addElementAndClose(generators[i], i);
+				}
+				if (this.elements.length != this.order) throw "Didn't work";
+				//Populate multiplication table
+				this.multiplicationTable = new Array(n).fill(0).map(x => new Array(n));
+				for (let i = 0; i < this.order; i++) for (let j = 0; j < this.order; j++) {
+					this.multiplicationTable[i][j] = this.findElement(Group.operateElements(this.elements[i], this.elements[j]));
+				}
+				//Populate orders
+				this.orders = new Array(n);
+				for (let i = 0; i < this.order; i++) {
+					//what k has i^k = 0 ?
+					let k = 1;
+					for (let pow = i; pow != 0; k++) pow = this.multiplicationTable[pow][i];
+					this.orders[i] = k;
+				}
+				this.findSubgroups();
+				this.makeTable();
+			}
+			static findMorphism(A, B) { //A and B are multiplication tables. id = 0 in both
+				if (A.length != B.length) return null;
+				let n = A.length;
+				//find orders
+				let ordersA = new Array(n);
+				if (true) for (let i = 0; i < n; i++) {
+					let k = 1;
+					for (let pow = i; pow != 0; k++) pow = A[pow][i];
+					ordersA[i] = k;
+				}
+				let ordersB = new Array(n);
+				if (true) for (let i = 0; i < n; i++) {
+					let k = 1;
+					for (let pow = i; pow != 0; k++) pow = B[pow][i];
+					ordersB[i] = k;
+				}
+				if (ordersA.map(x => x).sort().toString() != ordersB.map(x => x).sort().toString()) return null;
+				
+				let mappingsToTry = [ [] ];
+				for (let i = 0; i < n; i++) {
+					//consider places where A[i] could reasonably go to; add that to the mappingsToTry
+					let validDestinations = new Array(n).fill(0).map((v,i)=>i).filter(j => ordersB[j] == ordersA[i]);
+					let newMappingsToTry = [];
+					for (let m of mappingsToTry) {
+						for (let j of validDestinations) {
+							if (!m.includes(j)) newMappingsToTry.push(m.concat(j));
+						}
+					}
+					mappingsToTry = newMappingsToTry;
+				}
+				for (let map of mappingsToTry) {
+					let valid = true;
+					for (let i = 1; i < n && valid; i++) for (let j = 1; j < n && valid; j++) {
+						// map moves stuff from A world to B world
+						if (B[map[i]][map[j]] != map[A[i][j]]) valid = false;
+					}
+					if (valid) return map;
+				}
+				return null;
+			}
+			findSubgroups() {
+				if (this.cyclic) {
+					let n = this.order;
+					let divisors = new Array(n+1).fill(0).map((v,i) => i).filter(x => x && n%x == 0);
+					this.subgroups = divisors.map(function(d) {return {
+						set: new Array(n).fill(0).map((v,i)=>i).filter(x => x%d==0),
+						gens: [d],
+						grp: ALL_GROUPS.filter(x => x.cyclic).filter(x => x.order == d)[0],
+						morphism: new Array(n).fill(0).map((v,i)=>i).filter(x => x%d==0).map(x => x/d)
+					};});
+					return;
+				}
+				let subgroups = [{
+					set: [0],
+					gens: [],
+					grp: ALL_GROUPS[0]
+				}];
+				//for every subgroup in list, try adding every possible addition, and closing it out.
+				for (let s = 0; s < subgroups.length; s++) {
+					for (let newElement = 1; newElement < this.order; newElement++) if (!subgroups[s].set.includes(newElement)) {
+						let newSubgroupSet = subgroups[s].set.concat(newElement);
+						for (let i = 0; i < newSubgroupSet.length; i++) for (let j = 0; j < newSubgroupSet.length; j++) {
+							let ij = this.multiplicationTable[newSubgroupSet[i]][newSubgroupSet[j]];
+							if (!newSubgroupSet.includes(ij)) newSubgroupSet.push(ij);
+							let ji = this.multiplicationTable[newSubgroupSet[j]][newSubgroupSet[i]];
+							if (!newSubgroupSet.includes(ji)) newSubgroupSet.push(ji);
+						}
+						newSubgroupSet = newSubgroupSet.sort((a,b)=>a-b);
+						let alreadyExisted = false;
+						for (let su of subgroups) if (Group.listEquals(su.set, newSubgroupSet)) alreadyExisted = true;
+						if (!alreadyExisted) {
+							subgroups.push({set: newSubgroupSet, gens: subgroups[s].gens.concat(newElement)});
+						}
+					}
+				}
+				subgroups = subgroups.sort((a, b) => a.set.length - b.set.length);
+				for (let sub of subgroups) if (!sub.grp) {
+					if (sub.set.length == this.order) {
+						sub.grp = this;
+						sub.morphism = new Array(this.order).fill(0).map((v,i)=>i);
+						continue;
+					}
+					//make multiplication table out of the stuff from sub.set
+					let table = new Array(sub.set.length).fill(0).map(x => new Array(sub.set.length));
+					for (let i = 0; i < sub.set.length; i++) for (let j = 0; j < sub.set.length; j++) {
+						table[i][j] = sub.set.indexOf(this.multiplicationTable[sub.set[i]][sub.set[j]]);
+					}
+					
+					//find which other group has isomorphic multiplication table
+					for (let g = 0; g < ALL_GROUPS.length; g++) if (ALL_GROUPS[g].order == sub.set.length) {
+						let isomorphism = Group.findMorphism(table, ALL_GROUPS[g].multiplicationTable);
+						if (isomorphism) {
+							sub.grp = ALL_GROUPS[g];
+							sub.morphism = isomorphism;
+							break;
+						}
+					}
+					if (!sub.grp) throw "Never found what subgroup is isomorphic to";
+				}
+				this.subgroups = subgroups;
+			}
+			static makeSuperscript(integer) {
+				return integer.toString().split("").map(x => "⁰¹²³⁴⁵⁶⁷⁸⁹"[parseInt(x)]).join("");
+			}
+			static makeSubscript(integer) {
+				return integer.toString().split("").map(x => "₀₁₂₃₄₅₆₇₈₉"[parseInt(x)]).join("");
+			}
+			nameOf(i) {
+				//return i;
+				/* if (!i) return "1";
+				i--;
+				let fois = Math.floor(i/greekAlphabet.length);
+				if (!fois) return greekAlphabet[i];
+				return greekAlphabet[i%greekAlphabet.length] + Group.makeSubscript(fois+1); */
+				return Group.presentGreek(this.elementNames[i]);
+			}
+			static presentGreek(str) {
+				if (str == "") return "1";
+				let ret = "";
+				let letter = undefined;
+				let count = 0;
+				for (let character of str) {
+					if (character != letter) {
+						if (count > 1) ret += letter + Group.makeSuperscript(count);
+						if (count == 1) ret += letter;
+						letter = character;
+						count = 1;
+					} else {
+						count++;
+					}
+				}
+				if (count > 1) ret += letter + Group.makeSuperscript(count);
+				if (count == 1) ret += letter;
+				return ret;
+			}
+			makeTable() {
+				let table = document.body.appendChild(document.createElement("table"));
+				let th = table.appendChild(document.createElement("tr")).appendChild(document.createElement("th"));
+				th.setAttribute("colspan", this.order);
+				th.innerText = this.name;
+				for (let j = 0; j < this.order; j++) {
+					let tr = table.appendChild(document.createElement("tr"));
+					for (let i = 0; i < this.order; i++) {
+						let td = tr.appendChild(document.createElement("td"));
+						// td.innerText = this.multiplicationTable[i][j];
+						td.innerText = this.nameOf(this.multiplicationTable[i][j]);
+					}
+				}
+				th = table.appendChild(document.createElement("tr")).appendChild(document.createElement("th"));
+				th.setAttribute("colspan", this.order);
+				th.innerText = "Subgroups: {"+this.subgroups.map(x => x.grp.name).join(", ")+"}";
+			}
+			findElement(element) {
+				for (let i = 0; i < this.elements.length; i++) if (Group.listEquals(this.elements[i], element)) return i;
+				return -1;
+			}
+			hasElement(element, additionalQueue = []) {
+				for (let e of this.elements)
+					if (Group.listEquals(element, e)) return true;
+				for (let e of additionalQueue)
+					if (Group.listEquals(element, e)) return true;
+				return false;
+			}
+			addElementAndClose(element, generatorNumber) {
+				let queue = [element];
+				let queueNames = [greekAlphabet[generatorNumber]];
+				while (queue.length) {
+					let pick = queue.shift();
+					let pickName = queueNames.shift();
+					if (this.hasElement(pick, queue)) continue;
+					this.elements.push(pick);
+					this.elementNames.push(pickName);
+					for (let i = 1; i < this.elements.length; i++) {
+						//check for operating i and j, and j and i. maybe add to queue
+						let ij = Group.operateElements(this.elements[i], pick);
+						if (!this.hasElement(ij, queue)) {
+							queue.push(ij);
+							queueNames.push(this.elementNames[i] + pickName);
+						}
+						let ji = Group.operateElements(pick, this.elements[i]);
+						if (!this.hasElement(ji, queue)) {
+							queueNames.push(pickName + this.elementNames[i]);
+						}
+					}
+				}
+				if (queue.length) {
+					console.log(this.name);
+					console.log("Erroneous queue");
+					console.log(queue);
+					throw "BAD";
+				}
+			}
+			static operateElements(a, b) {
+				if (a.length != b.length) throw "Operating on elements of different lengths";
+				return a.map(v => b[v]);
+			}
+			static listEquals(a, b) {
+				if (a.length != b.length) return false;
+				for (let i = 0; i < a.length; i++) if (a[i] != b[i]) return false;
+				return true;
+			}
+		}
+		
+		new Group(1, "1", [[]]);
+		data = data.split("\n");
+		
+		function runLine() {
+			if (!data.length) return;
+			let line = data.shift();
+			let [n, name, gens] = line.split("|");
+			if (n > 24) return;
+			n = parseInt(n);
+			gens = gens.split("&").map(x => x.substring(1, x.length-1).split(")(").map(y => y.split(",").map(z => parseInt(z)-1)));
+			let permutationSize = 1 + gens.map(gen => gen.map(sequence => sequence.reduce((a,b)=>Math.max(a,b))).reduce((a,b)=>Math.max(a,b))).reduce((a,b)=>Math.max(a,b));
+			for (let g = 0; g < gens.length; g++) {
+				let reindexArray = new Array(permutationSize).fill(0).map((v,i)=>i);
+				for (let sequence of gens[g]) {
+					for (let i = 0; i < sequence.length; i++) {
+						let from = sequence[i];
+						let to = sequence[(i+1)%sequence.length];
+						reindexArray[from] = to;
+					}
+				}
+				gens[g] = reindexArray;
+			}
+			new Group(n, name, gens);
+		}
+	</script>
+</body>
+</html>

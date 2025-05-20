@@ -45,33 +45,36 @@
 			}
 			let tr = document.createElement("tr");
 			for (let p of newPrimesFound) {
-				let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"))
+				/* let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"))
 				a.innerText = p;
 				a.onclick = function() {
 					investigate(parseInt(this.innerText));
-				}
+				} */
+				tr.appendChild(document.createElement("td")).innerText = p;
 			}
 			table.appendChild(tr);
 		} }
 		
 		function investigate(p) {
 			let index = primeNumbers.indexOf(p);
-			
-			//find generators --- surely i don't actually need to make the array, right??? whatever
-			let generators = [];
-			for (let gen = 1; gen < p; gen++) {
-				let wasHit = new Array(p).fill(0);
-				let lookingAt = 1;
-				for (let i = 0; i < p; i++) {
-					wasHit[lookingAt] = 1;
-					lookingAt = lookingAt * gen % p;
+			console.log(smallestGenerator(p));
+		}
+		
+		function smallestGenerator(p) {
+			outer:
+			for (let g = 1; g < p; g++) {
+				let hit = {};
+				//check that g^0 through g^(p-1) are all unique, indicating they hit everything
+				let pow = 0;
+				let gTo = 1;
+				while (pow < p-1) {
+					if (hit[gTo]) continue outer;
+					hit[gTo] = true;
+					pow++;
+					gTo = (gTo*g)%p;
 				}
-				let worked = true;
-				for (let i = 1; i < p && worked; i++) if (!wasHit[i]) worked = false;
-				if (worked) generators.push(gen);
+				return g;
 			}
-			
-			console.log(generators);
 		}
 		
 		function gcd(c,n){return 0==n?c:gcd(n,c%n)}
