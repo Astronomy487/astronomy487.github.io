@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<link rel="stylesheet" href="discogcss.css">
+	<link rel="icon" href="favicon.png">
+	<title>Astro</title>
+	<style>
+		html {
+			font-size: min(16px, calc(100vw / 100));
+		}
+		body {
+			margin: 0;
+			overflow-x: hidden;
+		}
+		main {
+			margin: 0;
+			width: 64rem;
+			position: absolute;
+			left: calc(50% - 32rem);
+			transition: 0.5s left;
+			pointer-events: none;
+		}
+		main * {
+			pointer-events: all;
+		}
+		.inspect {
+			position: fixed;
+			margin: 0;
+			left: calc(50% + 17rem);
+			width: calc(50% - 17rem);
+			padding-left: 2rem;
+			border-left: solid 0.125rem var(--line);
+			opacity: 0;
+			display: none;
+			transition: 0.2s opacity;
+			height: calc(100vh - 0rem);
+			background: black;
+			top: 0;
+		}
+		.inspect > div {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			animation-fill-mode: forwards;
+			width: 31rem;
+		}
+		.inspect table {
+			margin: 1rem 0;
+		}
+		.inspect h2 {
+			line-height: 100%;
+			margin: 0;
+		}
+		.inspect-artwork {
+			width: 6rem;
+			float: left;
+			margin-right: 1rem;
+		}
+		.inspect td:has(.inspect-artwork) {
+			width: 6rem;
+		}
+		@keyframes inspect-in {from {opacity: 0; transform: translateY(-50%) translateY(0.5rem);}}
+		@keyframes inspect-out {to {opacity: 0; transform: translateY(-50%) translateY(0.5rem);}}
+		p br {
+			margin: 0.75rem 0;
+		}
+		table {
+			margin: 0;
+			border-collapse: collapse;
+			border-spacing: 0;
+			width: 100%;
+		}
+		table td {
+			vertical-align: top;
+			padding: 0;
+			margin: 0;
+		}
+		.tracklist-container {
+			margin: 1rem 0;
+		}
+		.album-event {
+			margin: 6rem 0;
+		}
+		.album-event h2 {
+			font-style: italic;
+		}
+		.album-event:first-child {
+			margin-top: 3rem;
+		}
+		.remix-tile {
+			display: inline-block;
+			border-left: solid 0.125rem var(--line);
+			padding: 0;
+			padding-left: 0.5rem;
+			width: 19.7rem;
+			margin: 0.25rem 0.5rem;
+			vertical-align: top;
+		}
+		.remix-tile div {
+			float: right;
+			color: var(--med);
+			margin-left: 0.5rem;
+		}
+		h2 {
+			margin: 0;
+			margin-top: 0.5rem;
+			font-size: 2rem;
+		}
+		h4 {
+			margin: 0;
+			font-weight: normal;
+			margin-top: 0.5rem;
+			color: var(--med);
+		}
+		
+		.lyrics {
+			max-height: 16rem;
+			overflow-y: scroll;
+			border: solid 0.125rem var(--line);
+			width: 100%;
+			padding: 0.5rem;
+			margin: 1.5rem 0;
+		}
+		.lyrics-header {
+			background: var(--bg);
+			display: inline-block;
+			padding: 0 0.75rem;
+			position: absolute;
+			transform: translateY(-1.25rem);
+		}
+		.lyrics p {
+			margin: 0;
+			margin-left: 1rem;
+		}
+		.lyrics p:first-letter {
+			margin-left: -1rem;
+		}
+		a[href] {
+			color: var(--link1);
+		}
+		a[href]:hover {
+			color: var(--link2);
+		}
+		a {
+			cursor: pointer;
+		}
+		a:hover {
+			text-decoration: underline;
+		}
+		@keyframes nav-hover {
+			25% {scale: 1.25;}
+		}
+		nav a:hover img {
+			animation: 0.2s nav-hover;
+		}
+		h1 {
+			font-size: 2.5rem;
+			font-weight: bold;
+		}
+		.birthday {
+			margin: 2rem 0;
+			height: 1.5rem;
+			position: relative;
+			display: none;
+		}
+		.birthday span {
+			z-index: 3;
+			position: absolute;
+			padding: 0 2rem;
+			left: 50%;
+			transform: translate(-50%, 0);
+		}
+		.birthday hr {
+			z-index: 2;
+			border: none;
+			background: linear-gradient(90deg, var(--line) 40%, #ffffff00 40% 60%, var(--line) 60%);
+			height: 0.125rem;
+			position: absolute;
+			width: 100%;
+		}
+		header {
+			width: 38.83rem;
+			height: 24rem;
+			position: absolute;
+			margin: calc(50vh - 12rem) calc(50% - 19.415rem);
+			padding: 1.5rem;
+			border: solid 0.125rem var(--fg);
+			background: #00000066;
+			backdrop-filter: blur(1rem);
+			box-sizing: border-box;
+		}
+		header #bio {
+			width: 65%;
+			text-align: justify;
+			position: absolute;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			left: 50%;
+		}
+		#cutearrow {
+			font-size: 1.5rem;
+			line-height: 2rem;
+			position: absolute;
+			background: var(--bg);
+			width: 2rem;
+			height: 2rem;
+			left: 50%;
+			bottom: -1.1875rem;
+			border-radius: 100%;
+			color: var(--fg);
+			text-align: center;
+			transform: translate(-50%, 0);
+			border: solid 0.125rem var(--fg);
+			user-select: none;
+		}
+		#rhombuses {
+			height: 100vh;
+			width: 100vw;
+			position: relative;
+			user-select: none;
+			overflow: hidden;
+			border-bottom: solid 0.125rem var(--line);
+		}
+		
+		#histogram img {border-radius: 0.25rem;}
+		img, iframe, header, .lyrics {border-radius: 0.5rem;}
+	</style>
+</head>
+<body>
+	<script>
+		{
+			let isMobile = (a=>/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))(navigator.userAgent||navigator.vendor||window.opera);
+			if (isMobile) window.location.replace("mobile");
+		}
+	</script>
+	<div style="position: absolute;"><div id="rhombuses"></div></div>
+	<main>
+		<header>
+			<div id="bio">My name is Astro (a.k.a. astronomy487). I am a <span id="myage" class="mono-numbers"></span>-year-old musician. I appreciate electronic music, math, and linguistics.</div>
+			<div id="cutearrow">↓</div>
+		</header>
+		<h1 style="margin-top: calc(100vh + 8rem);">My music</h1>
+		<div>16-bit 44.1kHz lossless downloads freely available on Bandcamp for all music</div>
+		<div>All music shared under CC BY-NC-SA 4.0 license</div>
+		<br><br>
+		<div id="output"></div>
+		<div style="margin-top: 5rem;">Histogram of music published</div>
+		<div id="histogram" style="position: relative; height: 22rem; margin-top: 4rem; margin-bottom: 16rem;"></div>
+	</main>
+	<div class="inspect"><div></div></div>
+	<script src="discog.js"></script>
+	<script src="discoghelperfunctions.js"></script>
+	<script>
+		let rhombusColors = ["cyan", "yellow", "magenta"];
+		{
+			let theDate = new Date().getMonth()+1+"-"+new Date().getDate();
+			if (theDate == "3-17") rhombusColors = ["#169B62", "#FF883E", "#FFFFFF"];
+			if (theDate == "3-31") rhombusColors = ["#3BBEFA", "#F589D8", "#FFFFFF"];
+			if (theDate == "7-4") rhombusColors = ["#FFFFFF", "#224CE2", "#E52F29"];
+			if (theDate == "10-31") rhombusColors = ["#E36622", "#666666", "#9315C1"];
+			if (theDate == "12-25") rhombusColors = ["#FFFFFF", "#46903A", "#D93344"];
+		}
+		doHistogram(["normal", "bonus", "remix"]);
+		function doHistogram(acceptedCategories) {
+			while (histogram.firstChild) histogram.firstChild.remove();
+			let historyBuckets = {
+				bonus: {},
+				normal: {},
+				remix: {}
+			};
+			function considerForHistory(song, date, category) {
+				if (!acceptedCategories.includes(category)) return;
+				let bucket = date.substring(0, 7);
+				if (!(bucket in historyBuckets[category])) historyBuckets[category][bucket] = 0;
+				historyBuckets[category][bucket] += song.length;
+			}
+			for (let album of discog.albums) {
+				for (let song of album.songs) considerForHistory(song, song.released || album.released, song.bonus ? "bonus" : "normal");
+			}
+			for (let remix of discog.remixes) considerForHistory(remix, remix.released, "remix");
+			let keys = Object.keys(historyBuckets.bonus).concat(Object.keys(historyBuckets.normal)).concat(Object.keys(historyBuckets.remix)).sort().filter((v,i,a)=>a.indexOf(v)==i);
+			let firstYear = parseInt(keys[0].substring(0, 4));
+			let lastYear = parseInt(keys[keys.length-1].substring(0, 4));
+			let firstMonth = parseInt(keys[0].substring(5));
+			let lastMonth = parseInt(keys[keys.length-1].substring(5));
+			let n = (lastYear-firstYear-1)*12 + lastMonth + 13 - firstMonth;
+			let allotForYAxis = 4;
+			n += allotForYAxis;
+			let i = 0;
+			let maxAmt = keys.map(k => (historyBuckets.bonus[k]||0) + (historyBuckets.normal[k]||0) + (historyBuckets.remix[k]||0)).reduce((a,b)=>Math.max(a,b));
+			for (let dur = 0; dur <= maxAmt; dur += 60*30) {
+				let label = histogram.appendChild(document.createElement("div"));
+				label.style.position = "absolute";
+				label.style.left = "0";
+				label.style.bottom = dur/maxAmt*24-0.5+"rem";
+				label.innerText = dur/(60*60) + "h";
+				let hr = histogram.appendChild(document.createElement("hr"));
+				hr.style.position = "absolute";
+				hr.style.left = allotForYAxis*64/n + "rem";
+				hr.style.bottom = dur/maxAmt*24-0.5+"rem";
+				hr.style.border = "none";
+				hr.style.height = "1px";
+				hr.style.background = "#555";
+				hr.style.width = (n-4)/n*64+"rem";
+			}
+			for (let year = firstYear; year <= lastYear; year++) {
+				if (year != firstYear) {
+					let yearLabel = histogram.appendChild(document.createElement("div"));
+					yearLabel.style.left = ((i+allotForYAxis)*64/n) + "rem";
+					yearLabel.style.width = (12*64/n) + "rem";
+					yearLabel.style.borderLeft = "solid 1px white";
+					yearLabel.style.paddingLeft = "0.25rem";
+					yearLabel.style.bottom = "-2rem";
+					yearLabel.style.position = "absolute";
+					if (year != lastYear || lastMonth > 4) yearLabel.innerText = year;
+					else yearLabel.innerHTML = "&nbsp;";
+				}
+				for (let month = ((year==firstYear)?firstMonth:1); month <= ((year==lastYear)?lastMonth:12); month++) {
+					let bucket = year+"-"+month.toString().padStart(2, "0");
+					let amounts = ["normal", "bonus", "remix"].map(x => historyBuckets[x][bucket] || 0);
+					for (let a = 0; a < 3; a++) {
+						let bar = histogram.appendChild(document.createElement("div"));
+						bar.style.width = 64/n + "rem";
+						bar.style.left = (i+allotForYAxis) * 64 / n + "rem";
+						bar.style.bottom = amounts.slice(0,a).reduce((x,y)=>x+y,0) / maxAmt*24 + "rem";
+						bar.style.height = amounts[a]/maxAmt*24+"rem";
+						bar.style.position = "absolute";
+						bar.style.background = rhombusColors[a];
+						bar.title = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[month-1] + " " + year + " - " + Math.round(amounts[a]/60)+ " minutes of " + ["original music", "bonus tracks", "remixes"][a];
+					}
+					let label = histogram.appendChild(document.createElement("div"));
+					label.style.width = (64/n)+"rem";
+					label.style.left = ((i+allotForYAxis)*64/n)+"rem";
+					label.style.bottom = "-1rem";
+					label.style.position = "absolute";
+					label.innerText = "JFMAMJJASOND"[month-1];
+					label.style.fontSize = "0.5rem";
+					label.style.textAlign = "center";
+					i++;
+					//check if album released this month
+					for (let album of discog.albums.filter(x => x.released.substring(0, 7) == bucket)) {
+						let img = histogram.appendChild(document.createElement("img"));
+						img.src = album.artwork.replace("_10", "_3");
+						img.style.position = "absolute";
+						img.style.left = ((i-0.5+allotForYAxis)*64/n)+"rem";
+						img.style.transform = "translateX(-50%)";
+						img.style.width = img.style.height = "2rem";
+						img.style.bottom = "-5rem";
+					}
+				}
+			}
+			let legend = histogram.appendChild(document.createElement("div"));
+			legend.style.position = "absolute";
+			legend.style.bottom = "-7.5rem";
+			for (let category of acceptedCategories) {
+				let color = legend.appendChild(document.createElement("span"));
+				color.innerHTML = "&nbsp;"
+				color.style.userSelect = "none";
+				color.style.width = "1.5rem";
+				color.style.display = "inline-block";
+				color.style.background = rhombusColors[["normal", "bonus", "remix"].indexOf(category)];
+				let label = legend.appendChild(document.createElement("span"));
+				label.innerText = ["Main tracks", "Bonus tracks", "Remixes"][["normal", "bonus", "remix"].indexOf(category)];
+				label.style.marginLeft = "0.375rem";
+				label.style.marginRight = "2rem";
+			}
+		}
+		
+		let events = [];
+		
+		function addSimpleEvent(song) {
+			let div = document.createElement("div");
+			div.setAttribute("class", "remix-tile");
+			//if (song.released < "2017-12-05") div.style.width = "11.125rem";
+			div.appendChild(document.createElement("div")).innerText = formatDate(song.released);
+			let titleArea = div.appendChild(document.createElement("a"));
+			setTextWithParentheses(titleArea, song);
+			let event = {
+				released: song.released,
+				element: div
+			};
+			events.push(event);
+			return event;
+		}
+		
+		let inspectTransitioningRightNow = false;
+		let lastInspected = undefined;
+		function inspect(song) {
+			if (inspectTransitioningRightNow) return;
+			if (lastInspected == song) return;
+			if (song && window.scrollY < document.body.getBoundingClientRect().height/2) window.scrollTo(0, document.body.getBoundingClientRect().height*2/3);
+			lastInspected = song;
+			document.querySelector("main").style.left = "calc(50% - 32rem - 17rem)";
+			inspectTransitioningRightNow = true;
+			let album = discog.albums.filter(x => x.songs.includes(song));
+			album = album.length ? album[0] : null;
+			let div = document.querySelector(".inspect > div");
+			div.style.animation = "0.2s inspect-out";
+			if (!song) document.querySelector(".inspect").style.opacity = "0";
+			if (!song) document.title = "Astro";
+			if (song) document.title = formatSongTitle(song, true);
+			if (!song) setTimeout(function(){
+				//while (document.querySelector(".inspect>div").firstChild) document.querySelector(".inspect>div").firstChild.remove();
+				setTimeout(function(){
+					document.querySelector(".inspect").style.display = "none";
+					while (document.querySelector(".inspect > div").firstChild) document.querySelector(".inspect > div").firstChild.remove();
+				}, 200);
+				document.querySelector("main").style.left = "calc(50% - 32rem)";
+				inspectTransitioningRightNow = false;
+			}, 100);
+			if (song) setTimeout(function(){
+				document.querySelector(".inspect").style.opacity = "1";
+				document.querySelector(".inspect").style.display = "block";
+				div.style.animation = "0.2s inspect-in";
+				setTimeout(function(){inspectTransitioningRightNow = false;}, 200);
+				while (div.firstChild) div.firstChild.remove();
+				
+				let escape = div.appendChild(document.createElement("div"));
+				let escapeA = escape.appendChild(document.createElement("a"));
+				escapeA.innerText = "← Return to catalogue";
+				escapeA.onclick = function(){inspect();};
+				escape.style.color = "var(--med)";
+				
+				let tr = div.appendChild(document.createElement("table")).appendChild(document.createElement("tr"))
+				
+				if (song.artwork || album&&album.artwork) {
+					let img = tr.appendChild(document.createElement("td")).appendChild(document.createElement("img"));
+					img.src = (song.artwork || album.artwork).replace("_10", "_4");
+					img.setAttribute("class", "inspect-artwork")
+				}
+				let td = tr.appendChild(document.createElement("td"));
+				setTextWithParentheses(td.appendChild(document.createElement("h2")), song, false, false);
+				
+				let essentialInfo = [];
+				//essentialInfo.push("Released " + formatDate(song.released || album.released));
+				essentialInfo.push(formatDuration(song.length)+"&emsp;Released " + formatDate(song.released || album.released));
+				if (album) essentialInfo.push((song.bonus ? "Bonus track" : "Track "+(1+album.songs.indexOf(song)))+" on <i>" + smartquotes(album.title) + "</i>");
+				//essentialInfo.push(formatDuration(song.length));
+				
+				let essentialInfoDiv = td.appendChild(document.createElement("div"));
+				essentialInfoDiv.style.marginTop = "0.5rem";
+				essentialInfoDiv.innerHTML = essentialInfo.join("<br>");
+				
+				essentialInfoDiv.appendChild(navFromUrls(album?{"Bandcamp": album.url["Bandcamp"]}:{}, song.url));
+				
+				if (song.url && song.url["YouTube"]) {
+					let iframe = div.appendChild(document.createElement("iframe"));
+					let src = song.url["YouTube"].replace("/watch?v=", "/embed/");
+					if (src.includes("&t=")) src = src.replace("&t=", "?start=");
+					iframe.src = src;
+					let aspectRatio = (1+Math.sqrt(5))/2;
+					if ((song.released||album.released) < "2022-07-25") aspectRatio = 16/9;
+					if (album && album.title == "somewhere in the milky way") aspectRatio = 1;
+					if (album && album.title == "Too much!!") aspectRatio = 4/3;
+					if (album && album.title == "Exosphere") aspectRatio = 2048/858;
+					if (album && album.title == "Nexus Condition") aspectRatio = 2;
+					if (album && album.title == "ROSALIE") aspectRatio = 1;
+					if (song.title == "In a Heartbeat") aspectRatio = 2048/858;
+					if (song.title == "Fractured Bliss") aspectRatio = 2048/858;
+					if (song.title == "Villains") aspectRatio = 1.5;
+					if (song.title == "Sad Machine (Astro Jazz Arrangement)") aspectRatio = 2;
+					if (song.title == "No Fear No More (Astro Remix)") aspectRatio = 2048/858;
+					if (song.title == "Stagestruck (Astro Remix)") aspectRatio = 2048/858;
+					if (song.title == "ROSALIE") aspectRatio = 1;
+					iframe.width = 325 * Math.sqrt(aspectRatio);
+					iframe.height = 325 / Math.sqrt(aspectRatio);
+					iframe.style.margin = "0";
+					iframe.style.border = "none";
+				}
+				
+				function makeInfoBox(header, content) {
+					let lyricsDiv = div.appendChild(document.createElement("div"));
+					lyricsDiv.setAttribute("class", "lyrics");
+					let head = lyricsDiv.appendChild(document.createElement("div"));
+					head.setAttribute("class", "lyrics-header");
+					head.innerText = header;
+					let lastParagraph;
+					for (let c of content)
+						if (c.length) {
+							lastParagraph = lyricsDiv.appendChild(document.createElement("p"));
+							lastParagraph.innerText = smartquotes(c).replace(" - ", " – ");
+						} else {
+							lastParagraph.style.marginBottom = "0.75em";
+						}
+				}
+				
+				if (song.lyrics) makeInfoBox("Lyrics", song.lyrics.split("\n"));
+				if (song.samples) makeInfoBox(song.artist ? "Samples" : "Mix tracklist", song.samples);
+			}, 190);
+		}
+		
+		for (let remix of discog.remixes) {
+			addSimpleEvent(remix);
+		}
+		for (let album of discog.albums) for (let song of album.songs) if (song.released && (song.released < album.released)) {
+			if (["Utopian", "Exosphere"].includes(album.title)) continue;
+			addSimpleEvent(song);
+		}
+		
+		for (let album of discog.albums) {
+			let table = document.createElement("table");
+			table.setAttribute("class", "album-event event")
+			let tr = table.appendChild(document.createElement("tr"));
+			{
+				let td = tr.appendChild(document.createElement("td"));
+				td.style.width = "21rem";
+				let img = td.appendChild(document.createElement("img"));
+				img.src = album.artwork;
+				img.style.width = img.style.height = "19rem";
+				td.appendChild(document.createElement("h4")).innerText = album.songs.filter(x => !x.bonus).length + " tracks, " + formatDuration(album.length);
+			}
+			{
+				let td = tr.appendChild(document.createElement("td"));
+				let date = td.appendChild(document.createElement("span"));
+				date.style.float = "right";
+				date.style.color = "var(--med)";
+				date.innerText = formatDate(album.released);
+				td.appendChild(document.createElement("h2")).innerText = smartquotes(album.title);
+				
+				let nav = td.appendChild(navFromUrls(album.url));
+				nav.style.marginTop = "1rem";
+				
+				if (album.about) for (let paragraph of album.about.split("\n\n")) {
+					td.appendChild(document.createElement("p")).innerHTML = discog.albums.reduce((a,b)=>a.replaceAll(b.title, "<i>"+b.title+"</i>"), smartquotes(paragraph));
+				}
+				
+				let tracklistContainer = td.appendChild(document.createElement("table"));
+				tracklistContainer.setAttribute("class", "tracklist-container");
+				let tracklistContainerTr = tracklistContainer.appendChild(document.createElement("tr"));
+				let tracklists = [];
+				let numberOfSongsToDisplay = album.songs.filter(x => !x.bonus).length;
+				let numberOfColumns = {
+					"Chase an Idea": 5,
+					"Asymmetric Silhouette": 4,
+					"Emerge": 6,
+					"Pulse Width": 3,
+					"Exosphere": 3,
+					"Absolute Zero": 3
+				}[album.title] || 2;
+				for (let i = 0; i < numberOfColumns; i++) {
+					tracklists[i] = tracklistContainerTr.appendChild(document.createElement("td"));
+					//tracklists[i].style.width = 100/numberOfColumns + "%";
+				}
+				function doTracklistItem(parent, i) {
+					let tracklistTr = parent.appendChild(document.createElement("tr"));
+					
+					let tracklistTd = tracklistTr.appendChild(document.createElement("td"));
+					tracklistTd.innerText = (i+1).toString().padStart(2, "0") + (album.songs[i].bonus?"*":"");
+					tracklistTd.style.paddingRight = "0.75rem";
+					tracklistTd.setAttribute("class", "mono-numbers");
+					tracklistTd = tracklistTr.appendChild(document.createElement("td"));
+					
+					let titleArea = tracklistTd.appendChild(document.createElement("a"));
+					setTextWithParentheses(titleArea, album.songs[i]);
+					
+					tracklistTd.style.paddingRight = "1rem";
+					if (album.songs[i].bonus) tracklistTr.style.color = "var(--med)";
+				}
+				for (let c = 0; c < numberOfColumns; c++) {
+					for (let i = Math.ceil(c/numberOfColumns*numberOfSongsToDisplay); i < (c+1)/numberOfColumns*numberOfSongsToDisplay; i++) doTracklistItem(tracklists[c], i);
+				}
+				let numberOfBonusTracks = album.songs.filter(x => x.bonus).length;
+				if (numberOfBonusTracks) {
+					let p = td.appendChild(document.createElement("p"));
+					p.style.color = "var(--med)";
+					p.innerText = numberOfBonusTracks + " bonus track"+(numberOfBonusTracks==1?"":"s")+" available upon download on Bandcamp: ";
+					for (let i = album.songs.length-numberOfBonusTracks; i < album.songs.length; i++) {
+						if (i>album.songs.length-numberOfBonusTracks && numberOfBonusTracks>2) p.appendChild(document.createTextNode(","));
+						if (i==album.songs.length-1 && numberOfBonusTracks>1) p.appendChild(document.createTextNode(" and"));
+						p.appendChild(document.createTextNode(" “"));
+						let a = p.appendChild(document.createElement("a"));
+						a.setAttribute("class", "song");
+						a.innerText = formatSongTitle(album.songs[i]);
+						a.onclick = function() {inspect(album.songs[i]);}
+						p.appendChild(document.createTextNode("”"));
+					}
+					p.style.fontSize = "0.875rem";
+					p.style.lineHeight = "1rem";
+				}
+			}
+			events.push({
+				released: album.released,
+				element: table
+			});
+		}
+		for (let year = 2016; true; year++) {
+			if (new Date(year+"-12-05 ").getTime() > new Date().getTime()) break;
+			let element = document.createElement("div");
+			element.setAttribute("class", "birthday");
+			element.appendChild(document.createElement("span")).innerText = "🎉 My " + ordinal(year-2004) + " birthday";
+			element.appendChild(document.createElement("hr"));
+			events.push({
+				released: year+"-12-05",
+				element: element
+			});
+		}
+		for (let event of events.sort((a,b)=>a.released>b.released?-1:1)) {
+			output.appendChild(event.element);
+		}
+		
+		//stuff for the header
+		{
+			updateAge();
+			setInterval(updateAge, 31.5576);
+			function updateAge() {
+				myage.innerText = ((new Date() - new Date("Dec 5 2004"))/1000/60/60/24/365.25).toFixed(9);
+			}
+			bio.appendChild(document.createTextNode(" I have released "+discog.albums.length+" albums comprising "+discog.albums.map(x => x.songs.filter(b=>!b.bonus).length).reduce((a,b)=>a+b)+" songs, as well as "+discog.remixes.length+" remixes. Scroll down to see my full catalogue ! =]"));
+			let nav = navFromUrls({
+				"Apple Music": "https://music.apple.com/us/artist/astro/1468743818",
+				"Bandcamp": "https://astronomy487.bandcamp.com",
+				"Spotify": "https://open.spotify.com/artist/2ajNTg6axZGx5gFZF0Upb5",
+				"YouTube": "https://youtube.com/astronomy487",
+				"Twitter": "https://twitter.com/astronomy487"
+			});
+			nav.setAttribute("class", "center");
+			nav.style.marginTop = "1rem";
+			nav.style.marginBottom = "0";
+			bio.appendChild(nav);
+		}
+		
+		let allRhombuses = undefined;
+		function makeRhombuses() {
+			allRhombuses = [new Set(), new Set()];
+			while (rhombuses.firstChild) rhombuses.firstChild.remove();
+			let ww = window.innerWidth;
+			let hh = window.innerHeight;
+			let triWidth = 38;
+			let triHeight = Math.floor(triWidth*Math.sqrt(3)/2);
+			let startX = Math.floor(triWidth*(-0.5-Math.random()));
+			let startY = Math.floor(triHeight*(-0.5-Math.random()));
+			let oddEven = true;
+			for (let x = startX; x < ww+triWidth; x += triWidth*1.5) {
+				oddEven = !oddEven;
+				for (let y = startY-(oddEven?0:triHeight); y < hh+triHeight; y += triHeight*2) {
+					for (let [color, addX, addY, width, height, clipPath] of [
+						[rhombusColors[0], 0, 0, triWidth, triHeight*2, "0% 50%, 50% 0%, 100% 50%, 50% 100%"],
+						[rhombusColors[1], -triWidth, 0, triWidth*1.5, triHeight, "0% 100%, 33.3% 0%, 100% 0%, 66.7% 100%"],
+						[rhombusColors[2], -triWidth, triHeight, triWidth*1.5, triHeight, "0% 0%, 33.3% 100%, 100% 100%, 66.7% 0%"]
+					]) {
+						let rhombus = rhombuses.appendChild(document.createElement("div"));
+						rhombus.innerHTML = "&nbsp;";
+						rhombus.style.background = color;
+						rhombus.style.position = "absolute";
+						rhombus.style.width = width + "px";
+						rhombus.style.height = height + "px";
+						rhombus.style.left = x+addX + "px";
+						rhombus.style.top = y+addY + "px";
+						rhombus.style.clipPath = "polygon("+clipPath+")";
+						let state = Math.random()<0.1 ? 1 : 0;
+						rhombus.style.opacity = state;
+						rhombus.style.transition = "1s opacity";
+						allRhombuses[state].add(rhombus);
+						rhombus.onclick = function() {
+							for (let i = 0; i < 2; i++) if (allRhombuses[i].has(this)) rhombusSwap(i, this);
+						}
+					}
+				}
+			}
+			document.onscroll();
+		}
+		function rhombusSwap(currentState, rhombus = undefined) {
+			if (!allRhombuses) return;
+			let otherState = 1 - currentState;
+			if (!rhombus) {
+				let list = Array.from(allRhombuses[currentState]);
+				if (!list.length) return;
+				rhombus = list[Math.floor(Math.random()*list.length)];
+			}
+			rhombus.style.opacity = otherState;
+			allRhombuses[currentState].delete(rhombus);
+			setTimeout(function(){
+				allRhombuses[otherState].add(rhombus);
+			}, 1000);
+		}
+		setInterval(function(){
+			if (window.scrollY > window.innerHeight+24) return;
+			rhombusSwap(0);
+			rhombusSwap(1);
+		}, 60);
+		
+		document.onscroll = function() {
+			rhombuses.style.top = 0.33*window.scrollY + "px";
+			rhombuses.style.height = Math.max(20, window.innerHeight-0.33*window.scrollY) + "px";
+		};
+		window.onresize = makeRhombuses;
+		makeRhombuses();
+		
+		/*{
+			let ev = [];
+			for (let album of discog.albums) for (let song of album.songs) ev.push({song: song, released: song.released || album.released, album: album});
+			for (let remix of discog.remixes) ev.push({song: remix, released: remix.released});
+			ev.sort((a,b) => a.released > b.released ? -1 : 1);
+			for (let e of ev) {
+				let song = e.song;
+				let album = e.album;
+				let img = output.appendChild(document.createElement("img"));
+				img.src = (song.artwork||(album?album.artwork:"https://f4.bcbits.com/img/a3653692583_10.jpg")).replace("_10.jpg", "_6.jpg");
+				//img.style.marginBottom = "0.125rem";
+				//img.style.marginRight = "0.375rem";
+				img.style.width = img.style.height = Math.sqrt(song.length*0.05)+"rem";
+				img.style.borderRadius = "4px";
+				img.title = formatSongTitle(song);
+				img.style.verticalAlign = "middle";
+			}
+		} */
+	</script>
+</body>
+</html>
