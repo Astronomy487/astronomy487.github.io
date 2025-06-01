@@ -511,7 +511,7 @@ let discog = {
 				{"title": "ok girl !", "length": 250, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264949", "YouTube": "https://www.youtube.com/watch?v=eLGPNDDyhc8", "Bandcamp": "https://astronomy487.bandcamp.com/track/ok-girl", "Spotify": "https://open.spotify.com/track/7FL7hYyLjJnbBblGnQAujl"}},
 				{"title": "Era", "length": 280, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264951", "YouTube": "https://www.youtube.com/watch?v=ECgQOUEVBnk", "Bandcamp": "https://astronomy487.bandcamp.com/track/era", "Spotify": "https://open.spotify.com/track/4Msmcgqn7NUhTdwUEvlcyx"}},
 				{"title": "Bézier Curve", "length": 180, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264952", "YouTube": "https://www.youtube.com/watch?v=oyi04gAdEqY", "Bandcamp": "https://astronomy487.bandcamp.com/track/b-zier-curve", "Spotify": "https://open.spotify.com/track/58l1kyaHBW0BwcxznGtVPj"}},
-				{"title": "TIME AND PLACE!!", "length": 121, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264953", "YouTube": "https://www.youtube.com/watch?v=7NCqbbNMv4I", "Bandcamp": "https://astronomy487.bandcamp.com/track/time-and-place!!", "Spotify": "https://open.spotify.com/track/4DUrvB9nVISNcgH03IxUcf"}},
+				{"title": "TIME AND PLACE!!", "length": 121, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264953", "YouTube": "https://www.youtube.com/watch?v=7NCqbbNMv4I", "Bandcamp": "https://astronomy487.bandcamp.com/track/time-and-place", "Spotify": "https://open.spotify.com/track/4DUrvB9nVISNcgH03IxUcf"}},
 				{"title": "Ctrl+ABCDEFG", "length": 373, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264954", "YouTube": "https://www.youtube.com/watch?v=ZfppBGBKeB0", "Bandcamp": "https://astronomy487.bandcamp.com/track/ctrl-abcdefg", "Spotify": "https://open.spotify.com/track/2SC27rOZV62SFyVQKtCxnF"}},
 				{"title": "Endless V", "length": 441, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730264955", "YouTube": "https://www.youtube.com/watch?v=H_75HlK0zj0", "Bandcamp": "https://astronomy487.bandcamp.com/track/endless-v", "Spotify": "https://open.spotify.com/track/4up0x78ERz8Il7jSldDHHb"}},
 				{"title": "bitter taste", "length": 135, "url": {"Apple Music": "https://music.apple.com/us/album/1730264942?i=1730265137", "YouTube": "https://www.youtube.com/watch?v=Bu6ikeCu97A", "Bandcamp": "https://astronomy487.bandcamp.com/track/bitter-taste", "Spotify": "https://open.spotify.com/track/5iaitLhyDzWOJsOMhngZBA"}},
@@ -559,20 +559,24 @@ let discog = {
 			"released": "2025-06-01",
 			"artwork": "https://f4.bcbits.com/img/a3576734946_10.jpg",
 			"length": 3600,
+			"bcid": "2854215380",
 			"url": {
+				"YouTube": "https://www.youtube.com/playlist?list=PL3RK0M75ja5sEpRyG2j3KUMmMlxUJt3Qn",
+				"YouTube Full Mix": "https://www.youtube.com/watch?v=QObVjukrwcg",
 				"Bandcamp": "https://astronomy487.bandcamp.com/album/obsessed"
 			},
 			"songs": [
-				{"title": "The symmetric property", "length": 356, "released": "2025-05-25"},
-				{"title": "LIFETIME", "length": 380},
-				{"title": "Great shot!", "length": 295},
-				{"title": "Ode to Joseph Fourier", "length": 236},
-				{"title": "64 diamonds", "length": 382},
-				{"title": "Junkyard wasteland etc", "length": 305},
-				{"title": "OKAAYYY", "length": 177},
-				{"title": "SATURATION", "length": 417},
-				{"title": "Endless VI", "length": 1047}
-			]
+				{"title": "The symmetric property", "length": 356, "released": "2025-05-25", "url": {"YouTube": "https://www.youtube.com/watch?v=ZmWZpDYijuc", "Bandcamp": "https://astronomy487.bandcamp.com/track/the-symmetric-property"}},
+				{"title": "LIFETIME", "length": 380, "url": {"YouTube": "https://www.youtube.com/watch?v=r0X8U1XnhRw", "Bandcamp": "https://astronomy487.bandcamp.com/track/lifetime"}},
+				{"title": "Great shot!", "length": 295, "url": {"YouTube": "https://www.youtube.com/watch?v=_4HGb4hjcsA", "Bandcamp": "https://astronomy487.bandcamp.com/track/great-shot!"}},
+				{"title": "Ode to Joseph Fourier", "length": 236, "url": {"YouTube": "https://www.youtube.com/watch?v=oZJ3k1CFrUU", "Bandcamp": "https://astronomy487.bandcamp.com/track/ode-to-joseph-fourier"}},
+				{"title": "64 diamonds", "length": 382, "url": {"YouTube": "https://www.youtube.com/watch?v=PaeZn20Gtg0", "Bandcamp": "https://astronomy487.bandcamp.com/track/64-diamonds"}},
+				{"title": "Junkyard wasteland etc", "length": 305, "url": {"YouTube": "https://www.youtube.com/watch?v=sQxiIYhMQUg", "Bandcamp": "https://astronomy487.bandcamp.com/track/junkyard-wasteland-etc"}},
+				{"title": "OKAAYYY", "length": 177, "url": {"YouTube": "https://www.youtube.com/watch?v=swgqWa0oQRE", "Bandcamp": "https://astronomy487.bandcamp.com/track/okaayyy"}},
+				{"title": "SATURATION", "length": 417, "url": {"YouTube": "https://www.youtube.com/watch?v=CcBsRs7wb90", "Bandcamp": "https://astronomy487.bandcamp.com/track/saturation"}},
+				{"title": "Endless VI", "length": 1047, "lyrics": "You're eleven years old, you don't know what to call it\nThey're taking you home, but you still never found it\nAnd sitting alone, only thinking about it\nThe stranger next door, the only one you've been honest with\nSome ways, he's like the only person who gets you\nYou laid your soul bare, and then he'll use it against you\nInnocuous words cut through the skin\nAnd he lets you try taking it back\nBut, of course, you'd never want to\n\nBite your tongue, hide your heart, 'cause there's no way to help him\nYou thought, in the end, it's all the same so just tell them\nOn nights like those, you felt exactly the same\nLights like home, but everyone knew your name\nFor once in your life, you were telling the truth\nJust showing up was enough for you\nYou text some guy, it's like a friend of a friend\nHe keeps on asking again and again\n\nTake it in right now, they won't see you again soon\nYou never told them, you didn't expect to\nYou stay inside, locked away in your bedroom\nWasting time until they come in to get you\nAnd you can't speak, as hard as you try\nThey gave you the world, all you can do is cry\nBegging for just a few years more time\nNever thought you'd make it to next summer alive\n\nA chronic liar for all your life\nNo one knows you, and isn't that nice\nIt's always you, he never left\nThat little boy is still obsessed\nNothing's changed in the past four years\nYou're just as weak and have all the same fears\nThe song won't suck as long as nobody hears\nNobody's here", "url": {"YouTube": "https://www.youtube.com/watch?v=y9eKdlqsx6o", "Bandcamp": "https://astronomy487.bandcamp.com/track/endless-vi"}}
+			],
+			"about": "I released an obscene number of remixes during 2023 and 2024. I am heavily influenced by the online plunderphonic and hyperflip scenes. High-energy electronic music has always been my escape. OBSESSED✧✦✧✦ is a snapshot of my life two years ago that indulges in the connection between sample-based dance music and feelings of despair and addiction. As I pieced it together, it dawned on me that this is the kind of music I needed to make. I hope the music does its job of communicating that exact set of feelings, and I also don't really care if it doesn't. First person to identify all 100 samples on this album gets $20."
 		}
 	],
 	"remixes": [
