@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		canvas {
+			margin: 0.25rem;
+		}
+	</style>
+</head>
+<body>
+	<h1>All Minecraft banners</h1>
+	<script src="data.js"></script>
+	<script>
+		let basePattern = data.shift();
+		let patterns = data;
+		
+		let colors = {"black":[25,25,25],"gray":[76,76,76],"light gray":[153,153,153],"white":[255,255,255],"pink":[242,127,165],"magenta":[178,76,216],"purple":[127,63,178],"blue":[51,76,178],"cyan":[76,127,153],"light blue":[102,153,216],"green":[102,127,51],"lime":[127,204,25],"yellow":[229,229,51],"orange":[216,127,51],"brown":[102,76,51],"red":[153,51,51]};
+		let colorsList = ["white", "light gray", "gray", "black", "red", "orange", "yellow", "lime", "green", "cyan", "light blue", "blue", "purple", "magenta", "pink", "brown"];
+		
+		function howManyBannersOfAParticularLayerCount(layerCount) {
+			let count = 16n;
+			for (let i = 1; i < layerCount; i++) count *= 16n * BigInt(patterns.length);
+			return count;
+		}
+		
+		function integerToBanner(n) {
+			let og = n;
+			for (let layerCount = 1; true; layerCount++) {
+				upperCap = howManyBannersOfAParticularLayerCount(layerCount);
+				//console.log("layerCount =", layerCount);
+				//console.log("upperCap =", upperCap);
+				if (n < upperCap) {
+					let layers = integerToBannerOfSpecifiedLayerCount(n, layerCount);
+					renderLayers(layers);
+					break;
+				}
+				n -= upperCap;
+			}
+			function integerToBannerOfSpecifiedLayerCount(n, layerCount) {
+				n = BigInt(n);
+				// treat as like multi radix type beat
+				// 16   : patterns.length : 16   : patterns.length : 16   ...
+				
+				let layers = [{
+					color: colorsList[n%16n],
+					pattern: basePattern
+				}];
+				n /= 16n;
+				while (layers.length < layerCount) {
+					layers.push({
+						color: colorsList[n%16n],
+						pattern: patterns[n/16n]
+					});
+					n /= 16n;
+					n /= BigInt(patterns.length);
+				}
+				return layers;
+			}
+		}
+		
+		let scalePixels = 2;
+		
+		function renderLayers(layers) {
+			let canvas = document.createElement("canvas");
+			canvas.width = 20;
+			canvas.height = 40;
+			let ctx = canvas.getContext("2d");
+			let imageData = ctx.createImageData(20, 40);
+			for (let i = 0; i < 800; i++) {
+				let r = 0;
+				let g = 0;
+				let b = 0;
+				for (let layer of layers) {
+					r = r*(255-layer.pattern.alpha[i])/255 + (layer.pattern.red[i])*(colors[layer.color][0])*(layer.pattern.alpha[i])/255/255;
+					g = g*(255-layer.pattern.alpha[i])/255 + (layer.pattern.red[i])*(colors[layer.color][1])*(layer.pattern.alpha[i])/255/255;
+					b = b*(255-layer.pattern.alpha[i])/255 + (layer.pattern.red[i])*(colors[layer.color][2])*(layer.pattern.alpha[i])/255/255;
+				}
+				imageData.data[4*i+0] = r;
+				imageData.data[4*i+1] = g;
+				imageData.data[4*i+2] = b;
+				imageData.data[4*i+3] = 255;
+			}
+			ctx.putImageData(imageData, 0, 0);
+			
+			let upscaleCanvas = document.body.appendChild(document.createElement("canvas"));
+			upscaleCanvas.width = canvas.width * scalePixels;
+			upscaleCanvas.height = canvas.height * scalePixels;
+			let upscaleCtx = upscaleCanvas.getContext("2d");
+			upscaleCtx.imageSmoothingEnabled = false;
+			upscaleCtx.drawImage(canvas, 0, 0, upscaleCanvas.width, upscaleCanvas.height);
+		}
+		
+		for (let i = 0n; i < 300n; i++) integerToBanner(i);
+		
+		let globalCount = 0n;
+		function process() {
+			for (let i = 0; i < 100; i++) integerToBanner(globalCount++);
+		}
+	</script>
+	<script src="../script.js"></script>
+</body>
+</html>
