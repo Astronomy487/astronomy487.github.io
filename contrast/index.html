@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="theme-color" content="#000000">
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<title data-talktalk="title"></title>
+	<style>
+		body {
+			margin: 0;
+			font-family: Inter;
+			font-weight: 600;
+			--bg: black;
+			--fg: white;
+			background: var(--bg);
+			color: var(--fg);
+			font-feature-settings: 'cv02' 1,'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+		}
+		
+		header {
+			font-size: 2rem;
+			padding: 0rem;
+			margin-bottom: 4rem;
+			margin-left: 4rem;
+			margin-top: 1rem;
+			user-select: none;
+		}
+		button {
+			background: var(--bg);
+			color: var(--fg);
+			font-size: inherit;
+			font-family: inherit;
+			font-weight: inherit;
+			padding: 0;
+			border: none;
+			cursor: pointer;
+			padding: 0.5rem 1.5rem;
+		}
+		button[current="true"] {
+			background: var(--fg);
+			color: var(--bg);
+			cursor: default;
+
+		}
+		button[current="false"]:hover {
+			background: #444;
+		}
+		button:hover {
+			background: #444;
+		}
+		::selection {
+			background: var(--fg);
+			color: var(--bg);
+		}
+		input[type="color"] {
+			width: 3.5rem;
+			height: 3.5rem;
+			vertical-align: top;
+			padding: 0;
+			border: 0.125rem solid white;
+			border-radius: 0;
+		}
+		#contain-colors {
+			margin: 0 1rem;
+			display: inline;
+		}
+		
+		.column {
+			width: 33.3333%;
+			display: inline-block;
+			vertical-align: top;
+		}
+		.column > div {
+			background: var(--bg);
+			color: var(--fg);
+			padding: 4rem;
+			height: 20rem;
+			font-size: 1.25rem;
+		}
+		h1 {
+			font-weight: inherit;
+			font-size: 4rem;
+			margin: 0;
+			margin-top: 3rem;
+			margin-left: 4rem;
+			letter-spacing: -0.03125em;
+		}
+		h2 {
+			margin: 0;
+			font-size: 2.75rem;
+			font-weight: inherit;
+			letter-spacing: -0.03125em;
+		}
+		code {
+			font-weight: light;
+		}
+		#level-buttons {
+			display: inline;
+		}
+	</style>
+</head>
+<body>
+	<script src="talktalk.0.1.0.min.js"></script>
+	<script src="https://colorjs.io/dist/color.global.js"></script>
+	<h1 data-talktalk="title"></h1>
+	<header>
+		<div id="level-buttons">
+			<button onclick="setCompliance('AA', this);">WCAG AA</button>
+			<button onclick="setCompliance('AAA', this);">WCAG AAA</button>
+		</div>
+		<div id="contain-colors"></div>
+		<button onclick="add()" data-talktalk="add"></button>
+		<button onclick="pasteTime()" data-talktalk="paste"></button>
+	</header>
+	<main id="main"></main>
+	<script src="color.js"></script>
+	<script>
+		Talktalk.indicator = "%";
+		Talktalk.provide({
+			on: {
+				en: "%a on %b",
+				fr: "%a sur %b",
+				zh: "%a在%b上"
+			},
+			add: {
+				en: "Add color",
+				fr: "Ajouter un couleur",
+				zh: "添加颜色"
+			},
+			paste: {
+				en: "Paste from clipboard",
+				fr: "Coller depuis clipboard",
+				zh: "剪贴板粘贴"
+			},
+			ratio: {
+				en: "Contrast ratio: %x",
+				fr: "Rapport de contraste: %x",
+				zh: "对比度：%x"
+			},
+			bigtextwarning: {
+				en: "This is only WCAG %x compliant for large text or graphical elements.",
+				fr: "Ceci ne conforme à WCAG %x que pour les éléments de texte ou graphiques volumineux.",
+				zh: "这仅对大型文本或图形元素符合 WCAG %x。"
+			},
+			title: {
+				en: "Contrast checker",
+				fr: "Vérificateur de contraste",
+				zh: "对比度检查器"
+			}
+		});
+		Talktalk.fillElements();
+		
+		let accessibilityLevel = "AA";
+		
+		function setCompliance(level, button) {
+			for (let btn of document.querySelectorAll("#level-buttons button")) btn.setAttribute("current", "false");
+			button.setAttribute("current", "true");
+			accessibilityLevel = level;
+			run();
+		}
+		
+		let numberOfColumns = 3;
+		let columns = new Array(numberOfColumns).fill(0).map(function() {
+			let col = main.appendChild(document.createElement("div"));
+			col.className = "column";
+			return col;
+		});
+		
+		function pickName(color) {
+			let minDist = 9999999999;
+			let bestLabel;
+			for (let proto of protoColors) {
+				let dist = proto.color.deltaE76(color);
+				if (dist < minDist) {
+					minDist = dist;
+					bestLabel = proto.label;
+				}
+			}
+			return bestLabel;
+		}
+		
+		let palette = [];
+		
+		function add(colorOfChoice, shouldRun = true) {
+			if (!colorOfChoice) {
+				try {
+					//pick anything that has sufficient minimum distance from everyone else
+					let choices = [];
+					for (let color of protoColors) {
+						let minimumDistance = 999999999;
+						for (let existing of palette) minimumDistance = Math.min(minimumDistance, existing.deltaE76(color.color));
+						if (minimumDistance > 40) choices.push(color.color);
+					}
+					if (choices.length == 0) throw "Can't randomly pick a sufficiently different color";
+					colorOfChoice = choices[Math.floor(Math.random() * choices.length)];
+				} catch(e) {
+					//pick furthest away
+					let maxDistanceSeen = 0;
+					for (let color of protoColors) {
+						color = color.color;
+						let minDistance = 99999999999;
+						for (let existing of palette) {
+							minDistance = Math.min(minDistance, existing.deltaE76(color));
+						}
+						if (minDistance > maxDistanceSeen) {
+							maxDistanceSeen = minDistance;
+							colorOfChoice = color;
+						}
+					}
+				}
+			}
+			let input = document.querySelector("#contain-colors").appendChild(document.createElement("input"));
+			input.type = "color";
+			let index = palette.length;
+			input.value = colorOfChoice.toString({format: "hex", collapse: false});
+			palette.push(colorOfChoice);
+			input.oninput = function() {
+				palette[index] = new Color(this.value);
+				run();
+			};
+			input.oncontextmenu = function(e) {
+				if (palette.length <= 2) return;
+				let newPalette = palette.concat()
+				newPalette.splice(index, 1);
+				palette = [];
+				for (let input of document.querySelectorAll("#contain-colors input")) input.remove();
+				e.preventDefault();
+				for (let color of newPalette) add(color, false);
+				run();
+			}
+			if (shouldRun) run();
+		}
+		
+		function run() {
+			for (let i = 0; i < numberOfColumns; i++) while (columns[i].firstChild) columns[i].firstChild.remove();
+			
+			let smallTextThreshold = {AA: 4.5, AAA: 7}[accessibilityLevel];
+			let bigTextThreshold = {AA: 3, AAA: 4.5}[accessibilityLevel];
+			
+			let mockups = [];
+			for (let bg of palette) for (let fg of palette) if (fg != bg) {
+				let contrast = fg.contrast(bg, "WCAG21");
+				if (contrast < bigTextThreshold) continue;
+				mockups.push({fg, bg, contrast});
+			}
+			mockups = mockups.sort((a, b) => b.contrast - a.contrast);
+			let i = 0;
+			for (let {fg, bg, contrast} of mockups) {
+				let div = columns[(i++)%numberOfColumns].appendChild(document.createElement("div"));
+				div.style.setProperty("--bg", bg.toString({format: "hex"}));
+				div.style.setProperty("--fg", fg.toString({format: "hex"}));
+				div.appendChild(document.createElement("h2")).innerText = capitalize(
+					Talktalk.say("on", {a: Talktalk.say("color:"+pickName(fg)), b: Talktalk.say("color:"+pickName(bg))})
+				);
+				div.appendChild(document.createElement("div")).innerText = (
+					Talktalk.say("on", {a: fg.toString({format: "hex", collapse: false}), b: bg.toString({format: "hex", collapse: false})})
+				);
+				div.appendChild(document.createElement("div")).innerText = Talktalk.say("ratio", {x: contrast.toFixed(1)});
+				if (contrast < smallTextThreshold) {
+					let extraComment = div.appendChild(document.createElement("div"));
+					extraComment.style.marginTop = "2rem";
+					extraComment.innerText = Talktalk.say("bigtextwarning", {x: "WCAG " + accessibilityLevel});
+				}
+			}
+			
+		}
+		
+		function capitalize(s) {
+			return s[0].toUpperCase() + s.substring(1);
+		}
+		
+		function pasteTime() {
+			navigator.clipboard.readText().then(text => {
+				let colors = [];
+				for (let line of text.split("\n")) {
+					try {
+						colors.push(new Color(line));
+					} catch(e) {}
+				}
+				if (colors.length > 2) {
+					palette = [];
+					for (let input of document.querySelectorAll("#contain-colors input")) input.remove();
+					for (let color of colors) add(color, false);
+					run();
+				}
+			}).catch(err => {
+			});
+		}
+		
+		add(new Color("sRGB", new Array(3).fill(Math.random()/6)), false);
+		add(new Color("sRGB", new Array(3).fill(1-Math.random()/6)), false);
+		// add(undefined, false);
+		document.querySelector("button").click();
+	</script>
+</body>
+</html>
