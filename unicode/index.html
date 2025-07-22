@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="twitter:site" content="@astronomy487" />
+	<meta name="twitter:creator" content="@astronomy487" />
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<link rel="icon" href="favicon.png">
+	<meta name="theme-color" content="#000000">
+	<link rel="canonical" href="https://www.astronomy487.com/unicode">
+	<meta name="description" content="An exhaustive list of every Unicode 16 character">
+	<meta name="og:description" content="An exhaustive list of every Unicode 16 character">
+	<meta name="keywords" content="unicode, character, encoding">
+	<meta name="author" content="Astro, astronomy487">
+	<meta name="robots" content="index, follow">
+	<meta property="og:site_name" content="astronomy487.com">
+	<meta property="og:title" content="Every Unicode 16 character">
+	<meta property="og:image" content="thumb.png">
+	<meta property="og:url" content="https://www.astronomy487.com/unicode">
+	<meta name="twitter:card" content="summary_large_image"></meta>
+	<style>
+		@font-face {
+			font-family: "Adobe Blank";
+			src: url("AdobeBlank.ttf");
+		}
+		body {
+			font-family: Inter, sans-serif;
+			margin: 0;
+			--bg: #261D23;
+			--fg: #FCF7FF;
+			--gray: #655560;
+			
+			--bg: black;
+			--fg: white;
+			--gray: gray;
+			
+			--acc: #08f;
+			background: var(--bg);
+			color: var(--fg);
+			--unicode-stack: "Adobe Blank";
+			font-weight: 500;
+		}
+		
+		#main-container {
+			width: 65vw;
+			text-align: right;
+			padding-right: 6rem;
+			padding-top: 14rem;
+			box-sizing: border-box;
+		}
+		header h1 {
+			margin: 0;
+			font-size: 3.5rem;
+			font-weight: inherit;
+			font-family: InterDisplay, sans-serif;
+		}
+		header label {
+			margin-right: 1rem;
+		}
+		main {
+			width: 52rem;
+			display: inline-block;
+			text-align: left;
+		}
+		#inspect {
+			position: fixed;
+			top: 0;
+			height: 100vh;
+			right: 0;
+			width: 35vw;
+		}
+		#inspect-middle {
+			margin-top: 50vh;
+			transform: translateY(-50%);
+			height: 32rem;
+		}
+		
+		a {
+			color: var(--acc);
+			text-decoration: underline;
+			cursor: pointer;
+		}
+		
+		::selection {
+			background: var(--acc);
+			color: white;
+		}
+		
+		h2 {
+			margin: 0;
+			font-size: 2.5rem;
+			margin-top: 8rem;
+			margin-bottom: 1.5rem;
+			font-family: InterDisplay, sans-serif;
+			font-weight: inherit;
+		}
+		h2::before {
+			background: var(--acc);
+			width: 3rem;
+			content: "-";
+			user-select: none;
+			color: var(--acc);
+			margin-right: 1rem;
+			text-align: center;
+			display: inline-block;
+		}
+		
+		main table {
+			border-collapse: collapse;
+			width: 100%;
+			table-layout: fixed;
+		}
+		
+		main table tr th:first-child {
+			width: 6rem;
+		}
+		
+		main table th {
+			color: var(--gray);
+			font-feature-settings: 'tnum' 1, 'cv02' 1,'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+			text-align: center;
+			font-weight: inherit;
+		}
+		
+		main table td.display-character {
+			text-align: center;
+			padding: 0.5rem 0;
+			overflow: hidden;
+			font-size: 2rem;
+			user-select: none;
+			font-family: var(--unicode-stack);
+			line-height: 100%;
+			font-weight: normal;
+		}
+		main table td.display-character:hover:not([selected="true"]) {
+			outline: solid 1px var(--acc);
+			cursor: pointer;
+		}
+		main table td.display-character[selected="true"] {
+			background: var(--acc);
+			color: white;
+			text-shadow: 0.125rem 0.125rem black;
+		}
+	
+		#super-big-display {
+			border: solid 1px var(--gray);
+			box-sizing: border-box;
+			font-family: var(--unicode-stack);
+			font-size: 15rem;
+			width: 24rem;
+			line-height: 24rem;
+			height: 24rem;
+			user-select: none;
+			text-align: center;
+			font-weight: normal;
+		}
+		table#display-info {
+			border-collapse: collapse;
+			margin-top: 1rem;
+			max-width: 24rem;
+		}
+		table#display-info td {
+			padding: 0;
+			padding-right: 2rem;
+			vertical-align: top;
+		}
+	</style>
+	<title>Every Unicode 16 character</title>
+</head>
+<body>
+	<div id="inspect"><div id="inspect-middle">
+		<div id="super-big-display"></div>
+		<table id="display-info"></table>
+	</div></div>
+	<div id="main-container"><main id="main">
+		<header>
+			<h1>Every Unicode 16 character</h1>
+			<div style="user-select: none; margin: 2rem 0; line-height: 150%;" id="forms">
+				<script>
+					for (let [id, text] of [
+						["system", "System UI"],
+						["systemsans", "System Sans"],
+						["systemserif", "System Serif"],
+						["systemmono", "System Mono"],
+					]) {
+						let input = forms.appendChild(document.createElement("input"));
+						input.type = "radio";
+						input.id = id;
+						input.name = "font-choice";
+						input.value = id;
+						input.onclick = function(){chooseFont();};
+						forms.appendChild(document.createTextNode(" "));
+						let label = forms.appendChild(document.createElement("label"));
+						label.setAttribute("for", id);
+						label.innerText = text;
+					}
+				</script>
+				<br>
+				<br>
+				<input type="checkbox" id="allow-fallback" name="allow-fallback" value="allow-fallback" onclick="chooseFont()">
+				<label for="allow-fallback">Allow system fallback fonts</label>
+			</div>
+			<div style="width: 50%;">This webpage loads one Unicode block at a time to run faster. <a onclick="while (loadMore()); this.parentElement.remove();">Click to load all blocks anyways.</a></div>
+		</header>
+	</main></div>
+	<script src="data.js"></script>
+	<script>
+		let blocks = [];
+		
+		function chooseFont() {
+			let key = document.querySelector("input[name=\"font-choice\"]:checked").value;
+			let fontStack = [];
+			for (let [a, b] of [
+				["system", "system-ui"],
+				["systemsans", "sans-serif"],
+				["systemserif", "serif"],
+				["systemmono", "monospace"],
+			]) if (key == a) fontStack.push(b);
+			if (!document.querySelector("input[name=\"allow-fallback\"]").checked) {
+				fontStack.push("'Adobe Blank'");
+			}
+			document.body.style.setProperty("--unicode-stack", fontStack.join(", "));
+		}
+		
+		let displaySet = null;
+		function pickHowToDisplay(cp) {
+			let asText = String.fromCodePoint(cp);
+			if (displaySet && !(displaySet.has(cp))) {
+				return "\u200b";
+			} else return asText;
+		}
+		
+		let dataPointer = 0;
+		function loadMore() {
+			if (dataPointer < data.length-1) {
+				showBlock(data[++dataPointer]);
+				return true;
+			}
+			return false;
+		}
+		
+		let charMap = {};
+		let selectedTd = null;
+		function showBlock(blockText) {
+			blockText = blockText.split("\n");
+			let [blockName, blockMin, blockMax, blockColor] = blockText[0].split("\t");
+			let block = {name: blockName, color: blockColor};
+			blocks.push(block);
+			let lowestCpSeen = 999999999999;
+			let highestCpSeen = -1;
+			for (let i = 1; i < blockText.length; i++) {
+				let [num, name] = blockText[i].split("\t");
+				num = parseInt(num)
+				charMap[num] = {
+					cp: num,
+					name,
+					block
+				};
+				lowestCpSeen = Math.min(lowestCpSeen, num);
+				highestCpSeen = Math.max(highestCpSeen, num);
+			}
+			let blockDiv = main.appendChild(document.createElement("div"));
+			blockDiv.appendChild(document.createElement("h2")).innerText = blockName;
+			blockDiv.style.setProperty("--acc", blockColor);
+			if (blockText.length == 1) {
+				blockDiv.appendChild(document.createElement("p")).innerText = "This block is left blank. For more information, visit Wikipedia.";
+				return;
+			}
+			let table = blockDiv.appendChild(document.createElement("table"));
+			let tr = table.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("th"));
+			for (let i = 0; i < 16; i++) {
+				tr.appendChild(document.createElement("th")).innerText = i.toString(16).toUpperCase();
+			}
+			for (let rowStart = lowestCpSeen & 0xffffff0; rowStart <= highestCpSeen; rowStart += 16) {
+				tr = table.appendChild(document.createElement("tr"));
+				let th = tr.appendChild(document.createElement("th"));
+				th.innerText = "U+" + (rowStart>>4).toString(16).toUpperCase().padStart(3, "0") + "*";
+				for (let cp = rowStart; cp < rowStart+16; cp++) {
+					if (!(cp in charMap)) continue;
+					let character = charMap[cp];
+					character.td = tr.appendChild(document.createElement("td"));
+					character.td.className = "display-character";
+					character.td.innerText = pickHowToDisplay(cp);
+					character.td.onclick = function() {
+						inspect(character);
+						if (selectedTd) selectedTd.setAttribute("selected", "false");
+						selectedTd = character.td;
+						selectedTd.setAttribute("selected", "true");
+					}
+					if (cp == 0xfc) character.td.onclick();
+					//td.innerText = "U+" + cp.toString(16).toUpperCase().padStart(4, "0");
+				}
+			}
+		}
+		
+		loadMore();
+		loadMore();
+		setInterval(function() {
+			if (document.body.offsetHeight-500 < window.innerHeight + window.scrollY) loadMore();
+		}, 0);
+		
+		function inspect(character) {
+			document.querySelector("#inspect").style.setProperty("--acc", character.block.color);
+			document.querySelector("#super-big-display").innerText = String.fromCodePoint(character.cp);
+			let table = document.querySelector("#display-info");
+			while (table.firstChild) table.firstChild.remove();
+			for (let [attr, value] of [
+				["Value", "U+" + character.cp.toString(16).toUpperCase().padStart(4, "0")],
+				["Name", character.name],
+				["Block", character.block.name]
+			]) {
+				let tr = table.appendChild(document.createElement("tr"));
+				tr.appendChild(document.createElement("td")).innerText = attr;
+				tr.appendChild(document.createElement("td")).innerText = value;
+			}
+		}
+		
+		document.querySelector("input[name=\"font-choice\"]").click();
+		document.querySelector("input[name=\"allow-fallback\"]").checked = true;
+	</script>
+</body>
+</html>
