@@ -1,0 +1,66 @@
+<style>
+	div {
+		width: 8rem;
+		height: 8rem;
+		font-size: 6rem;
+		color: white;
+		text-align: center;
+		line-height: 8rem;
+		text-shadow: 0.25rem 0.25rem black;
+		display: inline-block;
+	}
+	body {
+		margin: 0;
+	}
+</style>
+<main id="main"></main>
+<script src="data.js"></script>
+<script>
+
+function shuffle(array) {
+let currentIndex = array.length;
+
+// While there remain elements to shuffle...
+while (currentIndex != 0) {
+
+// Pick a remaining element...
+let randomIndex = Math.floor(Math.random() * currentIndex);
+currentIndex--;
+
+// And swap it with the current element.
+[array[currentIndex], array[randomIndex]] = [
+array[randomIndex], array[currentIndex]];
+}
+}
+
+
+
+	let i = 0;
+	function make(cp, bg) {
+		if (Number.isNaN(cp)) return;
+		i++;
+		let div = main.appendChild(document.createElement("div"));
+		div.style.background = bg;
+		div.innerText = String.fromCodePoint(cp);
+	}
+	let k = [];
+	for (let block of data) {
+		let bg;
+		for (let line of block.split("\n")) {
+			if (line == "") continue;
+			line = line.split("\t")
+			if (line.length > 2) {
+				bg = line[3];
+			} else if (Math.random() < 0.01) {
+				num = parseInt(line[0]);
+				if (num < 0x4000) k.push([num, bg]);
+				if (i > 100) throw "DONE";
+			}
+		}
+	}
+	
+	shuffle(k);
+	for (let [num, bg] of k) {
+		make(num, bg);
+	}
+</script>

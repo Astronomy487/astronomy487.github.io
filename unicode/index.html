@@ -18,10 +18,23 @@
 	<meta property="og:image" content="thumb.png">
 	<meta property="og:url" content="https://www.astronomy487.com/unicode">
 	<meta name="twitter:card" content="summary_large_image"></meta>
+	<link rel="stylesheet" href="loadnoto.css">
 	<style>
 		@font-face {
 			font-family: "Adobe Blank";
-			src: url("AdobeBlank.ttf");
+			src: url("fonts/AdobeBlank.ttf");
+		}
+		@font-face {
+			font-family: "Unifont";
+			src: url("fonts/unifont-16.0.04.otf");
+		}
+		@font-face {
+			font-family: "Plangothic1";
+			src: url("fonts/PlangothicP1-Regular.otf");
+		}
+		@font-face {
+			font-family: "Plangothic2";
+			src: url("fonts/PlangothicP2-Regular.otf");
 		}
 		body {
 			font-family: Inter, sans-serif;
@@ -29,6 +42,7 @@
 			--bg: #261D23;
 			--fg: #FCF7FF;
 			--gray: #655560;
+			--line: #444444;
 			
 			--bg: black;
 			--fg: white;
@@ -38,6 +52,7 @@
 			background: var(--bg);
 			color: var(--fg);
 			--unicode-stack: "Adobe Blank";
+			--recommended-stack: var(--noto-stack), "Plangothic1", "Plangothic2", "Unifont";
 			font-weight: 500;
 		}
 		
@@ -55,12 +70,19 @@
 			font-family: InterDisplay, sans-serif;
 		}
 		header label {
-			margin-right: 1rem;
+			padding: 0.0625rem 0;
+			display: inline-block;
+			margin-right: 2rem;
+		}
+		input {
+			font-family: inherit;
+			font-size: inherit;
 		}
 		main {
 			width: 52rem;
 			display: inline-block;
 			text-align: left;
+			padding-bottom: 8rem;
 		}
 		#inspect {
 			position: fixed;
@@ -76,9 +98,16 @@
 		}
 		
 		a {
-			color: var(--acc);
-			text-decoration: underline;
+			color: var(--fg);
+			text-decoration: none;
 			cursor: pointer;
+		}
+		a:hover {
+			text-decoration: underline;
+		}
+		.inspect a:hover::after {
+			content: " →";
+			user-select: none;
 		}
 		
 		::selection {
@@ -131,19 +160,22 @@
 			font-family: var(--unicode-stack);
 			line-height: 100%;
 			font-weight: normal;
+			border: solid 1px var(--line);
+			height: 2rem;
 		}
 		main table td.display-character:hover:not([selected="true"]) {
-			outline: solid 1px var(--acc);
+			outline: solid 1px var(--fg);
 			cursor: pointer;
 		}
 		main table td.display-character[selected="true"] {
 			background: var(--acc);
 			color: white;
 			text-shadow: 0.125rem 0.125rem black;
+			outline: solid 1px var(--fg);
 		}
 	
 		#super-big-display {
-			border: solid 1px var(--gray);
+			border: solid 1px var(--line);
 			box-sizing: border-box;
 			font-family: var(--unicode-stack);
 			font-size: 15rem;
@@ -156,7 +188,7 @@
 		}
 		table#display-info {
 			border-collapse: collapse;
-			margin-top: 1rem;
+			margin: 1rem 0;
 			max-width: 24rem;
 		}
 		table#display-info td {
@@ -164,25 +196,57 @@
 			padding-right: 2rem;
 			vertical-align: top;
 		}
+		button {
+			border: solid 1px var(--line);
+			font-size: inherit;
+			font-family: inherit;
+			padding: 0.25rem 0.5rem;
+			background: none;
+			color: var(--fg);
+			cursor: pointer;
+		}
+		button:hover {
+			border-color: var(--fg);
+			background: var(--acc);
+			color: white;
+		}
+		
+		@keyframes copy-button-bounce {
+			from {outline: solid 1px var(--gray);}
+			to {outline-color: var(--bg); outline-offset: 0.65rem;}
+		}
+		#copy-button.copied {
+			animation: 0.5s copy-button-bounce;
+		}
 	</style>
+	<style id="user-font-loader"></style>
 	<title>Every Unicode 16 character</title>
 </head>
 <body>
 	<div id="inspect"><div id="inspect-middle">
 		<div id="super-big-display"></div>
-		<table id="display-info"></table>
+		<div style="min-height: 6rem;"><table id="display-info"></table></div>
+		<button id="copy-button">Copy</button>
 	</div></div>
 	<div id="main-container"><main id="main">
 		<header>
 			<h1>Every Unicode 16 character</h1>
-			<div style="user-select: none; margin: 2rem 0; line-height: 150%;" id="forms">
+			<div style="user-select: none; margin: 1.5rem 0; line-height: 150%;" id="forms">
 				<script>
 					for (let [id, text] of [
+						["encouraged", "(Recommended) Noto, Plangothic, Unifont"],
+						[null, null],
 						["system", "System UI"],
 						["systemsans", "System Sans"],
 						["systemserif", "System Serif"],
+						[null, null],
 						["systemmono", "System Mono"],
+						["unifont", "GNU Unifont"],
 					]) {
+						if (id == null) {
+							forms.appendChild(document.createElement("br"));
+							continue;
+						}
 						let input = forms.appendChild(document.createElement("input"));
 						input.type = "radio";
 						input.id = id;
@@ -196,11 +260,18 @@
 					}
 				</script>
 				<br>
-				<br>
+				<input type="radio" id="uploadfont" name="font-choice" value="uploadfont" onclick="if (!userFontName) document.querySelector('input[type=\'file\']').click(); document.querySelector('input[name=\'allow-fallback\']').checked = false; chooseFont();">
+				<label for="uploadfont">Upload font</label>
+				<input type="file" accept=".ttf,.otf,.woff,.woff2" onchange="userUploadFont();">
+				<br style="margin-bottom: 1rem;">
 				<input type="checkbox" id="allow-fallback" name="allow-fallback" value="allow-fallback" onclick="chooseFont()">
 				<label for="allow-fallback">Allow system fallback fonts</label>
 			</div>
-			<div style="width: 50%;">This webpage loads one Unicode block at a time to run faster. <a onclick="while (loadMore()); this.parentElement.remove();">Click to load all blocks anyways.</a></div>
+			<p style="width: 50%;">This webpage loads one Unicode block at a time to run faster. <a onclick="while (loadMore()); this.parentElement.remove();">Click to load all blocks anyways.</a></p>
+			<p>I also have <a href="https://www.astronomy487.com/fontmapviewer">a separate page for looking only at characters supported in a particular font</a>.</p>
+			<!-- <p style="width: 50%;"><a>View companion video</a></p> -->
+			<!-- <textarea spellcheck="false"></textarea>
+			<script>document.querySelector("textarea").value = "Demo text here";</script> -->
 		</header>
 	</main></div>
 	<script src="data.js"></script>
@@ -211,15 +282,39 @@
 			let key = document.querySelector("input[name=\"font-choice\"]:checked").value;
 			let fontStack = [];
 			for (let [a, b] of [
+				["encouraged", "var(--recommended-stack)"],
 				["system", "system-ui"],
 				["systemsans", "sans-serif"],
 				["systemserif", "serif"],
 				["systemmono", "monospace"],
-			]) if (key == a) fontStack.push(b);
+				["uploadfont", userFontName],
+				["unifont", "'Unifont'"]
+			]) if (b && key == a) fontStack.push(b);
 			if (!document.querySelector("input[name=\"allow-fallback\"]").checked) {
 				fontStack.push("'Adobe Blank'");
 			}
+			if (fontStack.length == 0) fontStack.push("system-ui");
+			console.log(fontStack);
 			document.body.style.setProperty("--unicode-stack", fontStack.join(", "));
+		}
+		
+		userFontName = undefined;
+		function userUploadFont() {
+			let file = event.target.files[0];
+			if (!file) return;
+			let reader = new FileReader();
+			reader.onload = function(e) {
+				let fontDataUrl = e.target.result;
+				let style = document.getElementById('user-font-loader');
+				userFontName = "CUSTOMUSERFONT";
+				style.innerHTML = 
+					'@font-face {' +
+						'font-family: "' + userFontName + '";' +
+						'src: url("' + fontDataUrl + '");' +
+					'}';
+				document.querySelector("input[name=\"font-choice\"]#uploadfont").click();
+			};
+			reader.readAsDataURL(file);
 		}
 		
 		let displaySet = null;
@@ -273,13 +368,15 @@
 				tr.appendChild(document.createElement("th")).innerText = i.toString(16).toUpperCase();
 			}
 			for (let rowStart = lowestCpSeen & 0xffffff0; rowStart <= highestCpSeen; rowStart += 16) {
+				console.log(blockName, rowStart.toString(16));
 				tr = table.appendChild(document.createElement("tr"));
 				let th = tr.appendChild(document.createElement("th"));
 				th.innerText = "U+" + (rowStart>>4).toString(16).toUpperCase().padStart(3, "0") + "*";
 				for (let cp = rowStart; cp < rowStart+16; cp++) {
+					let td = tr.appendChild(document.createElement("td"));
 					if (!(cp in charMap)) continue;
 					let character = charMap[cp];
-					character.td = tr.appendChild(document.createElement("td"));
+					character.td = td;
 					character.td.className = "display-character";
 					character.td.innerText = pickHowToDisplay(cp);
 					character.td.onclick = function() {
@@ -313,6 +410,19 @@
 				let tr = table.appendChild(document.createElement("tr"));
 				tr.appendChild(document.createElement("td")).innerText = attr;
 				tr.appendChild(document.createElement("td")).innerText = value;
+			}
+			let tr = table.appendChild(document.createElement("tr"));
+			tr.appendChild(document.createElement("td"));
+			let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"));
+			a.innerText = "Open in UnicodePlus";
+			a.href = "https://unicodeplus.com/U+" + character.cp.toString(16).toUpperCase().padStart(4, "0");
+			a.setAttribute("target", "_blank");
+			document.querySelector("#copy-button").innerText = "Copy";
+			document.querySelector("#copy-button").className = "";
+			document.querySelector("#copy-button").onclick = function() {
+				navigator.clipboard.writeText(String.fromCodePoint(character.cp));
+				document.querySelector("#copy-button").innerText = "Copied \u2713";
+				document.querySelector("#copy-button").className = "copied";
 			}
 		}
 		

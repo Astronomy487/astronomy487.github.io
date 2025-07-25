@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="theme-color" content="#000000">
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<style>
+		body {
+			background: black;
+			color: white;
+			font-family: InterDisplay;
+			font-size: 3rem;
+			font-weight: 600;
+			line-height: 6rem;
+			margin: 0;
+		}
+		div span {
+			width: 16.66667vw;
+			text-align: center;
+			display: inline-block;
+		}
+		div span:nth-child(1) {background: black; color: var(--acc);}
+		div span:nth-child(2) {background: black; color: white;}
+		div span:nth-child(3) {background: white; color: var(--acc);}
+		div span:nth-child(4) {background: white; color: black;}
+		div span:nth-child(5) {background: var(--acc); color: black;}
+		div span:nth-child(6) {background: var(--acc); color: white;}
+	</style>
+	<script src="https://colorjs.io/dist/color.global.js"></script>
+</head>
+<body>
+	<script>
+		function getColor(hue, sat) {
+			sat *= 100;
+			let black = new Color("black");
+			let white = new Color("white");
+			let low = 0; let high = 100;
+			for (let it = 0; it < 20; it++) {
+				let mid = (low+high)/2;
+				let midColor = new Color("hsl", [hue*360, sat, mid]);
+				let contrastTowardsBlack = black.contrast(midColor, "WCAG21");
+				let contrastTowardsWhite = white.contrast(midColor, "WCAG21");
+				if (contrastTowardsBlack < contrastTowardsWhite/1.5) {
+					//bring closer to white!
+					low = mid;
+				} else {
+					//bring closer to black!
+					high = mid;
+				}
+			}
+			let midColor = new Color("hsl", [hue*360, sat, (low+high)/2]);
+			return midColor.toString({format: "hex"});
+		}
+		
+		let N = 500;
+		let canvas = document.createElement('canvas')
+		canvas.width = N
+		canvas.height = N
+		document.body.appendChild(canvas)
+		let ctx = canvas.getContext('2d')
+		for (let y = 0; y < N; y++) {
+			for (let x = 0; x < N; x++) {
+				let hue = x / (N - 1)
+				let sat = y / (N - 1)
+				let color = getColor(hue, sat)
+				ctx.fillStyle = color
+				ctx.fillRect(x, y, 1, 1)
+			}
+		}
+	</script>
+</body>
+</html>
