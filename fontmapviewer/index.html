@@ -224,7 +224,7 @@
 		let blocks = [];
 		
 		function isThisAValidUnicodePoint(cp, blockName) {
-			return cp in characterNameMap || ["High Surrogates", "High Private Use Surrogates", "Low Surrogates", "Private Use Area"].includes(blockName);
+			return cp in characterNameMap || ["High Surrogates", "High Private Use Surrogates", "Low Surrogates", "Private Use Area", "Supplementary Private Use Area-A", "Supplementary Private Use Area-B"].includes(blockName);
 		}
 		
 		let input = document.getElementById("file");
@@ -259,7 +259,6 @@
 				document.querySelector("header h3").innerText = userFonts[0].name;
 				document.body.style.setProperty("--unicode-stack", "'USERFONT'");
 				let cmap = userFonts[0].cmap;
-				console.log(cmap);
 				for (let blockText of data) {
 					blockText = blockText.split("\n");
 					let [blockName, min, max, blockColor] = blockText[0].split("\t");
@@ -281,7 +280,9 @@
 					let rowsThatHaveAnything = [];
 					for (let rowStart = min&0xffffff0; rowStart<=max; rowStart+=16) {
 						let anythingInThisRow = false;
-						for (let i = rowStart; i < rowStart+16 && !anythingInThisRow; i++) if (cmap.has(i)) if (isThisAValidUnicodePoint(i, blockName)) anythingInThisRow = true;
+						for (let i = rowStart; i < rowStart+16 && !anythingInThisRow; i++) if (cmap.has(i)) {
+							if (isThisAValidUnicodePoint(i, blockName)) anythingInThisRow = true;
+						}
 						if (anythingInThisRow) rowsThatHaveAnything.push(rowStart);
 					}
 					
