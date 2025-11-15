@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		.row {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 1rem;
+		}
+		.color {
+			border: solid 1px gray;
+			display: inline-block;
+		}
+		.color > div {
+			width: 7rem;
+			height: 4rem;
+			display: inline-block;
+			text-align: left;
+			vertical-align: top;
+			padding: 1rem;
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+	<h1>All colors</h1>
+	<!-- <input id="input" placeholder="Search by index (e.g. 487) or string (e.g. abracadabra)"> -->
+	<div id="output"></div>
+	<script>
+	</script>
+	<script src="../script.js"></script>
+	<script>
+		let K=[0x135,0x5bd,0xa12,0x3f6,0x7c1,0xd0e];
+		let F=(x,k)=>{x=(x^k)&0xfff;return(((x*0x9e5+0x7d)&0xfff)^((x<<3|x>>>9)&0xfff));};
+		let enc24=x=>{x&=0xffffff;let L=x>>>12,R=x&0xfff;for(let i=0;i<6;i++){let t=(L^F(R,K[i]))&0xfff;L=R;R=t;}return((L<<12)|R)&0xffffff;};
+		let dec24=x=>{x&=0xffffff;let L=x>>>12,R=x&0xfff;for(let i=5;i>=0;i--){let t=(R^F(L,K[i]))&0xfff;R=L;L=t;}return((L<<12)|R)&0xffffff;};
+		
+		let i = 0;
+		let row;
+		function process() {
+			for (let _ = 0; _ < 32; _++) {
+				row = output.appendChild(document.createElement("div"));
+				row.className = "row";
+				for (let _ = 0; _ < 4; _++) {
+					let color = enc24(i);
+					let colorHex = "#" + color.toString(16).padStart(6, "0");
+					let div = row.appendChild(document.createElement("div"));
+					div.className = "color";
+					let colorSpot = div.appendChild(document.createElement("div"));
+					colorSpot.style.background = colorHex;
+					let info = div.appendChild(document.createElement("div"));
+					info.innerText = i + "\n" + colorHex;
+					i++;
+				}
+			}
+		}
+	</script>
+</body>
+</html>

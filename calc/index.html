@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	<script src="https://unpkg.com/mathjs@14.4.0/lib/browser/math.js"></script>
+	<script>
+		math.config({
+			//number: "BigNumber"
+		});
+	</script>
+	<style>
+		:root {
+			--background: black;
+			--focus-background: #181818;
+			--border: #444;
+			--gray: #808080;
+			--output: #999;
+			--text: white;
+			
+			--error: #ddbb33;
+			--valid: #33aa66;
+			--comment: #5af;
+		}
+		:focus {
+			outline: none;
+		}
+		body {
+			font-family: Inter;
+			font-size: 1rem;
+			background: var(--background);
+			color: var(--text);
+			font-feature-settings: 'cv02' 1, 'tnum' 1, 'cv03' 1,'cv04' 1, 'cv09' 1, 'cv05' 1, 'ss07' 1, 'ss08' 1, 'cv08' 1, 'cv10' 1;
+		}
+		.cell {
+			margin: 0;
+			border-inline-start: solid 0.125rem var(--border);
+		}
+		.cell:has([error="true"]) {
+			border-inline-start-color: var(--error);
+		}
+		.cell:has([error="false"]) {
+			border-inline-start-color: var(--valid);
+		}
+		.cell:has([error="comment"]) {
+			border-inline-start-color: var(--comment);
+		}
+		.cell:has([error="comment"]) .cell-input {
+			color: var(--comment);
+			font-style: italic;
+		}
+		.cell:has([error="empty"]) {
+		}
+		.cell-output {
+			inset-inline-start: 2rem;
+			color: var(--output);
+			padding-bottom: 0.25rem;
+			margin-top: -0.25rem;
+			max-width: 100%;
+			overflow-x: auto;
+			padding-inline-start: 0.75rem;
+		}
+		.cell-output[error="true"] {
+			color: var(--error);
+			font-size: 0.875em;
+			font-style: italic;
+		}
+		.cell-input {
+			padding: 0.25rem 0;
+			padding-inline-start: 0.75rem;
+		}
+		.cell:has(.cell-input:focus) {
+			background: var(--focus-background);
+		}
+		#container {
+			width: 32rem;
+			margin: 4rem auto;
+			margin-bottom: 8rem;
+		}
+		table.matrix {
+			border-collapse: collapse;
+		}
+		table.matrix td {
+			padding: 0;
+			text-align: inline-start;
+		}
+		table.matrix td:not(:last-child) {
+			padding-inline-end: 1rem;
+		}
+		::selection {
+			background: var(--text);
+			color: var(--background);
+		}
+		header {
+			position: sticky;
+			top: 0;
+			background: inherit;
+			border-bottom: solid 0.125rem var(--border);
+		}
+		header main {
+			width: 32rem;
+			margin: 0 auto;
+			padding: 1rem 0;
+			margin-top: 2rem;
+		}
+		header h2 {
+			margin-top: 0;
+			font-weight: normal;
+			font-size: 2em;
+			opacity: 0.75;
+		}
+		header h2:focus {
+			opacity: 1;
+		}
+		nav a {
+			margin-right: 2rem;
+		}
+		a:hover {
+			text-decoration: underline;
+			cursor: pointer;
+		}
+		
+		.modal-background {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.modal {
+			position: fixed;
+			background: var(--background);
+			border: solid 0.125rem var(--text);
+			padding: 0.5rem 0.75rem;
+			margin-top: 0.5rem;
+			outline: solid 0.25rem black;
+		}
+		
+		table.files td:not(:last-child) {
+			padding-right: 1.5rem;
+		}
+		table.files td:nth-child(2), table.files td:nth-child(3) {
+			color: var(--gray);
+		}
+	</style>
+</head>
+<body>
+	<header><main>
+		<h2 contenteditable="plaintext-only"></h2>
+		<nav><a onclick="fileModal(this);">Documents</a></nav>
+	</main></header>
+	<div id="container"></div>
+	<script>
+		let lastSeen = undefined;
+		function doEvaluations(index) {
+			let inputs = Array.from(document.querySelectorAll(".cell-input"));
+			let textContent = inputs.map(x => x.textContent);
+			let outputs = Array.from(document.querySelectorAll(".cell-output"));
+			let textString = textContent.filter(x => x.length).join("\n");
+			if (lastSeen == textString) return save();
+			lastSeen = textString;
+			let parser = math.parser();
+			for (let i = 0; i < textContent.length; i++) {
+				let output = outputs[i];
+				while (output.firstChild) output.firstChild.remove();
+				try {
+					if (textContent[i].startsWith("//")) {
+						output.setAttribute("error", "comment");
+					} else if (textContent[i].length) {
+						let result = parser.evaluate(textContent[i]);
+						if (result._data && result._size && (result._size.length==1||result._size.length==2)) {
+							let table = output.appendChild(document.createElement("table"));
+							table.className = "matrix";
+							if (result._size.length == 1) { //write just a vector
+								let tr = table.appendChild(document.createElement("tr"));
+								tr.appendChild(document.createElement("td")).innerText = "[";
+								for (let i = 0; i < result._size[0]; i++) {
+									tr.appendChild(document.createElement("td")).innerText = result._data[i] + (i<result._size[0]-1 ? "," : "");
+								}
+								tr.appendChild(document.createElement("td")).innerText = "]";
+							} else if (result._size[1] == 1) { //column vector
+								let tr = table.appendChild(document.createElement("tr"));
+								tr.appendChild(document.createElement("td")).innerText = "[";
+								for (let i = 0; i < result._size[0]; i++) {
+									tr.appendChild(document.createElement("td")).innerText = result._data[i][0] + (i<result._size[0]-1 ? ";" : "");
+								}
+								tr.appendChild(document.createElement("td")).innerText = "]";
+							} else { //write matrix
+								for (let i = 0; i < result._size[0]; i++) {
+									let tr = table.appendChild(document.createElement("tr"));
+									tr.appendChild(document.createElement("td")).innerText = i ? "" : "[";
+									for (let j = 0; j < result._size[1]; j++) {
+										tr.appendChild(document.createElement("td")).innerText = result._data[i][j] + (j < result._size[1]-1 ? "," : (i < result._size[0]-1 ? ";" : ""));
+									}
+									tr.appendChild(document.createElement("td")).innerText = i == result._size[0]-1 ? "]" : "";
+								}
+							}
+						} else if (result._typedFunctionData) {
+							output.setAttribute("error", "false");
+						} else outputs[i].innerText = result.toString();
+						output.setAttribute("error", "false");
+					} else {
+						output.setAttribute("error", "empty");
+					}
+				} catch(e) {
+					output.innerText = e.toString();
+					output.setAttribute("error", "true");
+				}
+			}
+			save();
+		}
+		
+		function focusAtEnd(el) {
+			el.focus();
+			let range = document.createRange();
+			range.selectNodeContents(el);
+			range.collapse(false); // false = collapse to end
+			let sel = window.getSelection();
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}
+
+		function createCell(initialText = "") {
+			let cell = document.createElement("div");
+			cell.className = "cell";
+
+			let input = document.createElement("div");
+			input.className = "cell-input";
+			input.spellcheck = false;
+			input.contentEditable = "plaintext-only";
+			input.textContent = initialText;
+
+			let output = document.createElement("div");
+			output.className = "cell-output";
+
+			input.onblur = function() {
+				let index = Array.from(container.children).indexOf(cell);
+				doEvaluations(index);
+			};
+
+			input.onkeydown = function(e) {
+				let index = Array.from(container.children).indexOf(cell);
+
+				if (e.key == "Enter" && !e.shiftKey) {
+					e.preventDefault();
+					if (input.textContent.trim() == "") {
+						let newCell = createCell();
+						container.insertBefore(newCell, cell.nextSibling);
+						newCell.querySelector(".cell-input").focus();
+					} else {
+						doEvaluations(index);
+						let next = cell.nextElementSibling;
+						if (next) {
+							next.querySelector(".cell-input").focus();
+						} else {
+							let newCell = createCell();
+							container.appendChild(newCell);
+							newCell.querySelector(".cell-input").focus();
+						}
+					}
+				} else if (e.key == "Enter") {
+					e.preventDefault();
+					let newCell = createCell();
+					container.insertBefore(newCell, cell.nextSibling);
+					newCell.querySelector(".cell-input").focus();
+				}
+				if (e.key == "ArrowDown") {
+					let next = cell.nextElementSibling;
+					if (next) {
+						e.preventDefault();
+						next.querySelector(".cell-input").focus();
+						focusAtEnd(next.querySelector(".cell-input"));
+					}
+				}
+				if (e.key == "ArrowUp") {
+					let prev = cell.previousElementSibling;
+					if (prev) {
+						e.preventDefault();
+						prev.querySelector(".cell-input").focus();
+						focusAtEnd(prev.querySelector(".cell-input"));
+					}
+				}
+				if (e.key == "Backspace" && input.textContent == "") {
+					if (index > 0) {
+						e.preventDefault();
+						let prev = cell.previousElementSibling;
+						container.removeChild(cell);
+						prev.querySelector(".cell-input").focus();
+						focusAtEnd(prev.querySelector(".cell-input"));
+					}
+				}
+
+				if (e.key == "Delete" && input.textContent == "") {
+					let next = cell.nextElementSibling;
+					if (next) {
+						e.preventDefault();
+						container.removeChild(cell);
+						next.querySelector(".cell-input").focus();
+					}
+				}
+			};
+			
+			output.onclick = function() {
+				const selection = window.getSelection();
+				if (selection && selection.toString().length) return
+				input.focus();
+				focusAtEnd(input);
+			}
+
+			cell.appendChild(input);
+			cell.appendChild(output);
+			return cell;
+		}
+		
+		document.querySelector("h2").onblur = function() {
+			let newName = this.textContent;
+			if (newName == savestate.open) return;
+			if (savestate.documents[newName]) {
+				this.textContent = savestate.open;
+			}
+			savestate.documents[newName] = savestate.documents[savestate.open];
+			delete savestate.documents[savestate.open];
+			savestate.open = newName;
+			document.querySelector("title").innerText = newName;
+			save();
+		}
+		document.querySelector("h2").spellcheck = false;
+		
+		let currentSaveVersion = 1;
+		let savestate = JSON.parse(localStorage.getItem("math.astronomy487.com/calculator"));
+		if (savestate) {
+			for (let name in savestate.documents) savestate.documents[name].date = new Date(savestate.documents[name].date);
+			if (savestate.version < currentSaveVersion) savestate = null;
+		}
+		if (!savestate) {
+			savestate = {
+				documents: {
+					"Math notes": {
+						text: "// This is a calculator\nM = [1, 2; 3, 4]\ninv(M)\n5 inch to cm"
+					}
+				},
+				open: "Math notes",
+				version: currentSaveVersion
+			};
+			save();
+		}
+		function save() {
+			savestate.documents[savestate.open] = {
+				text: Array.from(document.querySelectorAll(".cell-input")).map(x => x.textContent.replaceAll("\n", "")).join("\n"),
+				date: new Date()
+			};
+			localStorage.setItem("math.astronomy487.com/calculator", JSON.stringify(savestate));
+		}
+		
+		function openFile(filename = savestate.open) {
+			if (!savestate.documents[filename]) savestate.documents[filename] = {
+				text: "",
+				date: new Date()
+			};
+			savestate.open = filename;
+			document.querySelector("h2").innerText = filename;
+			document.querySelector("title").innerText = filename;
+			while (container.firstChild) container.firstChild.remove();
+			for (let text of savestate.documents[filename].text.split("\n")) container.appendChild(createCell(text));
+			doEvaluations();
+		}
+		openFile();
+		
+		function openModal(element) {
+			let elementRect = element.getBoundingClientRect();
+
+			let modalBackground = document.createElement("div");
+			modalBackground.className = "modal-background";
+
+			let modalElement = document.createElement("div");
+			modalElement.className = "modal";
+			modalElement.style.left = elementRect.left + "px";
+			modalElement.style.top = elementRect.bottom + "px";
+
+			modalBackground.appendChild(modalElement);
+			document.body.appendChild(modalBackground);
+
+			modalBackground.addEventListener("click", function(event) {
+				if (event.target === modalBackground) {
+					modalBackground.remove();
+				}
+			});
+			
+			window.onresize = function() {
+				modalBackground.remove();
+			}
+
+			return {modal: modalElement, modalBackground};
+		}
+		
+		function fileModal(button) {
+			let {modal, modalBackground} = openModal(button);
+			let table = modal.appendChild(document.createElement("table"));
+			table.className = "files";
+			let sortedDocumentNames = Object.keys(savestate.documents).sort((a, b) => savestate.documents[b].date - savestate.documents[a].date);
+			for (let documentName of sortedDocumentNames) {
+				let tr = table.appendChild(document.createElement("tr"));
+				let a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"));
+				a.innerText = documentName;
+				a.onclick = function() {
+					if (documentName != savestate.open) openFile(documentName);
+					modalBackground.remove();
+				};
+				tr.appendChild(document.createElement("td")).innerText = new Intl.RelativeTimeFormat("en", {numeric: "auto"}).format(Math.round((savestate.documents[documentName].date-new Date())/1000/3600/24), "day");
+				if (sortedDocumentNames.length > 1) {
+					a = tr.appendChild(document.createElement("td")).appendChild(document.createElement("a"))
+					a.innerText = "delete";
+					a.onclick = function() {
+						deleteFile(documentName);
+						modalBackground.remove();
+						fileModal(button);
+					}
+				}
+			}
+			let a = table.appendChild(document.createElement("tr")).appendChild(document.createElement("td")).appendChild(document.createElement("a"));
+			a.innerText = "New file";
+			a.onclick = function() {
+				makeNewFile();
+				modalBackground.remove();
+			}
+		}
+		
+		function makeNewFile() {
+			let newFilename;
+			let i = 0;
+			do {
+				newFilename = "Math notes" + (i ? " ("+i+")" : "");
+				i++;
+			} while (savestate.documents[newFilename]);
+			console.log("Gonna make anew", newFilename);
+			openFile(newFilename);
+			save();
+		}
+		
+		function deleteFile(filename = savestate.open) {
+			delete savestate.documents[filename];
+			if (filename == savestate.open) {
+				let orderedDocumentNames = Object.keys(savestate.documents).sort((a, b) => savestate.documents[b].date - savestate.documents[a].date);
+				openFile(orderedDocumentNames.length ? orderedDocumentNames[0] : "Math notes");
+			}
+			save();
+		}
+		
+		//download("abc.math", textContent.map(line => line.replaceAll("\n", "")).join("\n"))
+		function download(filename, text) {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
+
+			element.style.display = 'none';
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+	</script>
+</body>
+</html>
