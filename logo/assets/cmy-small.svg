@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg id="svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-1645, -1645, 3290, 3290">
+	<title>Astro's Logo</title>
+	<desc>Three rhombuses forming a cube</desc>
+	<polygon points="63,0 531.5,811.5 1000,0 531.5,-811.5" fill="#00ffff" transform="rotate(0)"/>
+	<polygon points="63,0 531.5,811.5 1000,0 531.5,-811.5" fill="#ff00ff" transform="rotate(120)"/>
+	<polygon points="63,0 531.5,811.5 1000,0 531.5,-811.5" fill="#ffff00" transform="rotate(240)"/>
+</svg>
